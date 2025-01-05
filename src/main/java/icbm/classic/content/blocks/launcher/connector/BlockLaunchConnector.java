@@ -2,6 +2,7 @@ package icbm.classic.content.blocks.launcher.connector;
 
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
+import icbm.classic.content.reg.TileReg;
 import net.minecraft.block.Block;
 import net.minecraft.block.ContainerBlock;
 import net.minecraft.block.material.Material;
@@ -116,7 +117,7 @@ public class BlockLaunchConnector extends Block
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
-        return new TileLauncherConnector();
+        return TileReg.LAUNCHER_CONNECTOR.get().create();
     }
 
     @Override

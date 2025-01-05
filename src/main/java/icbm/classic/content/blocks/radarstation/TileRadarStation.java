@@ -360,13 +360,15 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     @Override
     public Object getServerGuiElement(int ID, PlayerEntity player)
     {
-        return new ContainerRadarStation(player, this);
+        //return new ContainerRadarStation(player, this);
+        return null;
     }
 
     @Override
     public Object getClientGuiElement(int ID, PlayerEntity player)
     {
-        return new GuiRadarStation(player, this);
+        //return new GuiRadarStation(player, this);
+        return null;
     }
 
     @Override
@@ -385,7 +387,8 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     @Nullable
     @Override
     public Container createMenu(int id, PlayerInventory inventory, PlayerEntity player) {
-        return new ContainerRadarStation(player, this);
+        //return new ContainerRadarStation(player, this);
+        return null;
     }
 
     private static final NbtSaveHandler<TileRadarStation> SAVE_LOGIC = new NbtSaveHandler<TileRadarStation>()

@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.screen;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -69,7 +70,7 @@ public class BlockLaunchScreen extends Block
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
-        return new TileLauncherScreen();
+        return TileReg.LAUNCHER_SCREEN.get().create();
     }
 
     @Override

@@ -3,19 +3,22 @@ package icbm.classic.content.blocks.launcher.cruise.gui;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
+import javax.annotation.Nullable;
+
 public class ContainerCruiseLauncher extends ContainerBase<TileCruiseLauncher>
 {
-    public ContainerCruiseLauncher(PlayerEntity player, TileCruiseLauncher tileEntity)
+    public ContainerCruiseLauncher(@Nullable ContainerType<?> type, int id, PlayerEntity player, TileCruiseLauncher tileEntity)
     {
-        super(player, tileEntity);
+        super(type, id, player, tileEntity);
         // Missile Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 0, 88, 47));
+        this.addSlot(new SlotItemHandler(tileEntity.inventory, 0, 88, 47));
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 1, 141, 47));
+        this.addSlot(new SlotItemHandler(tileEntity.inventory, 1, 141, 47));
         addPlayerInventory(player, 7, 84);
     }
 

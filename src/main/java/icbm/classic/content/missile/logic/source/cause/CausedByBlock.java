@@ -14,9 +14,12 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 /**
  * General purpose block cause
@@ -28,24 +31,14 @@ public class CausedByBlock extends ActionCause implements ICausedByBlock {
 
     public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block");
 
-    private World world;
     private BlockPos blockPos;
     private BlockState blockState;
-
-    private int worldId;
+    private ResourceLocation dimensionKey;
 
     public CausedByBlock(World world, BlockPos pos, BlockState state) {
-        this.world = world;
-        this.worldId = world.provider.getDimension();
+        this.dimensionKey = DimensionType.getKey(world.getDimension().getType());
         this.blockPos = pos;
         this.blockState = state;
-    }
-
-    public World getWorld() {
-        if(world == null) {
-            world = DimensionManager.getWorld(worldId);
-        }
-        return world;
     }
 
     @Nonnull
@@ -73,7 +66,7 @@ public class CausedByBlock extends ActionCause implements ICausedByBlock {
 
     private static final NbtSaveHandler<CausedByBlock> SAVE_LOGIC = new NbtSaveHandler<CausedByBlock>()
         .mainRoot()
-        /* */.nodeInteger("level", CausedByBlock::getWorldId, CausedByBlock::setWorldId)
+        /* */.nodeResourceLocation("level", CausedByBlock::getDimensionKey, CausedByBlock::setDimensionKey)
         /* */.nodeBlockPos("pos", CausedByBlock::getBlockPos, CausedByBlock::setBlockPos)
         /* */.nodeBlockState("state", CausedByBlock::getBlockState, CausedByBlock::setBlockState)
         .base();

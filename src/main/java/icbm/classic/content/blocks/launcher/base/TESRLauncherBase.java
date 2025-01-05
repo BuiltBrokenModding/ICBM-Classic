@@ -14,13 +14,13 @@ public class TESRLauncherBase extends TileEntityRenderer<TileLauncherBase>
     private static final float missileOffset = 2f; //TODO add custom render type for missiles as static blocks so offset can be driven by model
     private static final List<Vec3d> FACE_OFFSETS = Arrays.stream(Direction.values())
         .map(direction -> new Vec3d(
-            0.5 + direction.getFrontOffsetX() * missileOffset,
-            0.5 + direction.getFrontOffsetY() * missileOffset,
-            0.5 + direction.getFrontOffsetZ() * missileOffset
+            0.5 + direction.getXOffset() * missileOffset,
+            0.5 + direction.getYOffset() * missileOffset,
+            0.5 + direction.getZOffset() * missileOffset
         )).collect(Collectors.toList());
 
     @Override
-    public void render(TileLauncherBase launcher, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
+    public void render(TileLauncherBase launcher, double x, double y, double z, float partialTicks, int destroyStage)
     {
         //Render missile
         if (!launcher.getMissileStack().isEmpty())

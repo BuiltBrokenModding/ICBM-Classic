@@ -58,8 +58,8 @@ public class Point extends Pos2D<Point> implements IByteBufWriter, IPos2D
 
     public CompoundNBT save(CompoundNBT nbt)
     {
-        nbt.setDouble(NBTConstants.X, x());
-        nbt.setDouble(NBTConstants.Y, y());
+        nbt.putDouble(NBTConstants.X, x());
+        nbt.putDouble(NBTConstants.Y, y());
         return nbt;
     }
 

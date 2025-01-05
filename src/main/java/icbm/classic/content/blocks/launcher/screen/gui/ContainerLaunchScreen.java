@@ -3,9 +3,12 @@ package icbm.classic.content.blocks.launcher.screen.gui;
 import icbm.classic.content.blocks.launcher.screen.TileLauncherScreen;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
+
+import javax.annotation.Nullable;
 
 /**
  *
@@ -13,12 +16,12 @@ import net.minecraftforge.items.SlotItemHandler;
  */
 public class ContainerLaunchScreen extends ContainerBase<TileLauncherScreen>
 {
-    public ContainerLaunchScreen(PlayerEntity player, TileLauncherScreen node)
+    public ContainerLaunchScreen(@Nullable ContainerType<?> type, int id, PlayerEntity player, TileLauncherScreen node)
     {
-        super(player, node);
+        super(type, id, player, node);
 
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(node.inventory, 0, 141, 47));
+        this.addSlot(new SlotItemHandler(node.inventory, 0, 141, 47));
         addPlayerInventory(player, 7, 84);
     }
 

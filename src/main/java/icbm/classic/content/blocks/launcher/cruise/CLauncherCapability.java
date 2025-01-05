@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 
@@ -83,45 +84,42 @@ public class CLauncherCapability extends LauncherBaseCapability {
 
         final CausedByBlock selfCause = new CausedByBlock(host.getWorld(), host.getPos(), host.getBlockState());
         selfCause.setPreviousCause(cause);
-        final IActionSource missileSource = new ActionSource(getHost().getWorld(), new Vec3d(host.getPos().getX() + 0.5, host.getPos().getY() + TileCruiseLauncher.MISSILE__HOLDER_Y, host.getPos().getZ() + 0.5), selfCause);
+        final IActionSource missileSource = new ActionSource(DimensionType.getKey(getHost().getWorld().getDimension().getType()), new Vec3d(host.getPos().getX() + 0.5, host.getPos().getY() + TileCruiseLauncher.MISSILE__HOLDER_Y, host.getPos().getZ() + 0.5), selfCause);
 
         if (host.canLaunch()) //TODO update to mirror launch pad better
         {
             final ItemStack inventoryStack = host.missileHolder.getMissileStack();
 
-            if(inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
-                final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-                if(capabilityMissileStack != null) {
+            if(inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).isPresent()) {
+                final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).orElseThrow(IllegalStateException::new);
+                if (host.isServer()) {
+                    final IMissile missile = capabilityMissileStack.newMissile(host.getWorld());
+                    final Entity entity = missile.getMissileEntity();
+                    entity.setPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);
 
-                    if(host.isServer()) {
-                        final IMissile missile = capabilityMissileStack.newMissile(host.getWorld());
-                        final Entity entity = missile.getMissileEntity();
-                        entity.setPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);
-
-                        // Should always work but in rare cases capability might have failed
-                        if (!host.missileHolder.consumeMissile()) {
-                            return LauncherStatus.ERROR_INVALID_STACK;
-                        }
-
-                        // Check power again, with firing delay things could change
-                        if(!host.energyStorage.consumePower(host.getFiringCost(), true)) {
-                            return LauncherStatus.ERROR_POWER;
-                        }
-                        host.energyStorage.consumePower(host.getFiringCost(), false);
-
-                        //Setup missile
-                        missile.setMissileSource(missileSource);
-                        missile.setTargetData(target);
-                        missile.setFlightLogic(new DirectFlightLogic(ConfigMissile.CRUISE_FUEL));
-                        missile.launch();
-
-                        if (!host.getWorld().spawnEntity(entity)) {
-                            return LauncherStatus.ERROR_SPAWN;
-                        }
-                        return new LaunchedWithMissile().setMissile(missile);
+                    // Should always work but in rare cases capability might have failed
+                    if (!host.missileHolder.consumeMissile()) {
+                        return LauncherStatus.ERROR_INVALID_STACK;
                     }
-                    return LauncherStatus.LAUNCHED;
+
+                    // Check power again, with firing delay things could change
+                    if (!host.energyStorage.consumePower(host.getFiringCost(), true)) {
+                        return LauncherStatus.ERROR_POWER;
+                    }
+                    host.energyStorage.consumePower(host.getFiringCost(), false);
+
+                    //Setup missile
+                    missile.setMissileSource(missileSource);
+                    missile.setTargetData(target);
+                    missile.setFlightLogic(new DirectFlightLogic(ConfigMissile.CRUISE_FUEL));
+                    missile.launch();
+
+                    if (!host.getWorld().addEntity(entity)) {
+                        return LauncherStatus.ERROR_SPAWN;
+                    }
+                    return new LaunchedWithMissile().setMissile(missile);
                 }
+                return LauncherStatus.LAUNCHED;
             }
         }
         return LauncherStatus.ERROR_GENERIC;
@@ -130,7 +128,7 @@ public class CLauncherCapability extends LauncherBaseCapability {
     @Override
     public float getPayloadVelocity() {
         // TODO find a way to get this from the missile stack
-        return host.getMissileHolder().getMissileStack().getItem() == ItemReg.itemSAM
+        return host.getMissileHolder().getMissileStack().getItem() == ItemReg.MISSILE_SURFACE_TO_AIR.get()
             ? ConfigMissile.SAM_MISSILE.FLIGHT_SPEED : ConfigMissile.DIRECT_FLIGHT_SPEED;
     }
 }

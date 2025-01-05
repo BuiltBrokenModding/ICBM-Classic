@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.frame;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.TileReg;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -97,7 +98,7 @@ public class BlockLaunchFrame extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TileLauncherFrame();
+        return TileReg.LAUNCHER_FRAME.get().create();
     }
 
     @Override

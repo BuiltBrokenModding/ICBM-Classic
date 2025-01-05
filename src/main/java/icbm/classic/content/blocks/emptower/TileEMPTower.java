@@ -336,17 +336,18 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
     @Override
     public Object getServerGuiElement(int ID, PlayerEntity player)
     {
-        return new ContainerEMPTower(player, this);
+        //return new ContainerEMPTower(player, this);
+        return null;
     }
 
     @Override
     public Object getClientGuiElement(int ID, PlayerEntity player)
     {
-        return new GuiEMPTower(player, this);
+        //return new GuiEMPTower(player, this);
+        return null;
     }
 
     @Override
-    @Nullable
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing)
     {
         if(capability == CapabilityEnergy.ENERGY) {

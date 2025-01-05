@@ -31,8 +31,8 @@ public class GuiEMPTower extends GuiContainerBase {
 
     private final TileEMPTower tileEntity;
 
-    public GuiEMPTower(PlayerEntity player, TileEMPTower tileEntity) {
-        super(new ContainerEMPTower(player, tileEntity));
+    public GuiEMPTower(ContainerEMPTower container, PlayerEntity player, TileEMPTower tileEntity) {
+        super(container, player.inventory, null);
         this.tileEntity = tileEntity;
         this.ySize = 166;
         this.xSize = 175;

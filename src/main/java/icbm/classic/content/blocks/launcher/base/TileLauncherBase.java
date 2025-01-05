@@ -360,13 +360,15 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     @Override
     public Object getServerGuiElement(int ID, PlayerEntity player)
     {
-        return new ContainerLaunchBase(player, this);
+        //return new ContainerLaunchBase(player, this);
+        return null;
     }
 
     @Override
     public Object getClientGuiElement(int ID, PlayerEntity player)
     {
-        return new GuiLauncherBase(player, this);
+        //return new GuiLauncherBase(player, this);
+        return null;
     }
 
     @Override

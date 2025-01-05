@@ -5,6 +5,7 @@ import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
+import icbm.classic.content.cargo.balloon.EntityBalloon;
 import icbm.classic.content.cargo.parachute.EntityParachute;
 import icbm.classic.content.cluster.bomblet.EntityBombDroplet;
 import icbm.classic.content.entity.*;
@@ -478,6 +479,15 @@ public final class EntityReg {
         .size(0.98f, 0.98f)
         .immuneToFire()
         .build(ICBMConstants.PREFIX + "cargo_parachute_size_2")
+    );
+
+    public static final RegistryObject<EntityType<EntityBalloon>> CARGO_BALLOON = ENTITIES.register("cargo_balloon", () -> EntityType.Builder.<EntityBalloon>create(
+            (t, w) -> new EntityBalloon(t, w, () -> new ItemStack(ItemReg.BALLON::get)), EntityClassification.MISC)
+        .setTrackingRange(500)
+        .setUpdateInterval(1)
+        .size(0.98f, 0.98f)
+        .immuneToFire()
+        .build(ICBMConstants.PREFIX + "cargo_balloon")
     );
 
     // </editor-fold>

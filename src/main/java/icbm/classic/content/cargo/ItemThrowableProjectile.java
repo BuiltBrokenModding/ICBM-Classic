@@ -12,6 +12,7 @@ import icbm.classic.content.cargo.parachute.EntityParachute;
 import icbm.classic.content.cargo.parachute.ParachuteProjectileData;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.projectile.ProjectileStack;
@@ -32,6 +33,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -116,7 +118,7 @@ public class ItemThrowableProjectile extends ItemBase {
             final double y = thrower.posY + thrower.getEyeHeight()  ;
             final double z = thrower.posZ;
 
-            final IActionSource source = new ActionSource(world, new Vec3d(x, y, z), new EntityCause(thrower));
+            final IActionSource source = new ActionSource(DimensionType.getKey(world.getDimension().getType()), new Vec3d(x, y, z), new EntityCause(thrower));
             ((IProjectileThrowable<Entity>) parachute).throwProjectile(parachute, source, x, y, z, yaw, pitch, THROW_VELOCITY, 0);
 
         } else {
@@ -163,12 +165,12 @@ public class ItemThrowableProjectile extends ItemBase {
             items.add(new ItemStack(this));
 
             if(this == ItemReg.PARACHUTE.get()) {
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(net.minecraft.item.Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(net.minecraft.block.Blocks.FURNACE)).setParachuteMode(ProjectileCargoMode.BLOCK)));
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Blocks.TNT)).setParachuteMode(ProjectileCargoMode.BLOCK)));
+                items.add(parachuteWith(new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_1::get).setHeldItem(new ItemStack(net.minecraft.item.Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
+                items.add(parachuteWith(new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_2::get).setHeldItem(new ItemStack(net.minecraft.block.Blocks.FURNACE)).setParachuteMode(ProjectileCargoMode.BLOCK)));
+                items.add(parachuteWith(new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_2::get).setHeldItem(new ItemStack(Blocks.TNT)).setParachuteMode(ProjectileCargoMode.BLOCK)));
             }
             else if(this == ItemReg.BALLON.get()) {
-                items.add(parachuteWith(new BalloonProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
+                items.add(parachuteWith(new BalloonProjectileData(EntityReg.CARGO_BALLOON::get).setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
             }
         }
     }

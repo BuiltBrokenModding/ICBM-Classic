@@ -8,6 +8,7 @@ import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.api.missiles.parts.IMissileTarget;
+import icbm.classic.api.radio.IRadio;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
@@ -36,6 +37,7 @@ import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -43,6 +45,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
@@ -69,7 +72,9 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
         .withChangeCallback((s, i) -> markDirty())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
     private final LauncherNode launcherNode = new LauncherNode(this, false);
+
     public final RadioScreen radioCap = new RadioScreen(this);
+    private final LazyOptional<IRadio> lazyRadio = LazyOptional.of(() -> radioCap);
 
     @Getter
     private float launcherInaccuracy = 0;
@@ -80,7 +85,8 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
-    public TileLauncherScreen() {
+    public TileLauncherScreen(TileEntityType<?> type) {
+        super(type);
         tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {
             playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchScreen));
@@ -99,9 +105,9 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     @Override
-    public void update()
+    public void tick()
     {
-        super.update();
+        super.tick();
 
         if (isServer())
         {
@@ -164,19 +170,19 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
                 final CompoundNBT save = new CompoundNBT();
                 save.putInt("g", pair.getGroup());
                 save.putInt("i", pair.getIndex());
-                save.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
-                list.appendTag(save);
+                save.put("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
+                list.add(save);
             });
-            tag.setTag("p", list);
+            tag.put("p", list);
             return tag;
         }, (t, tag) -> {
-            final ListNBT list = tag.getTagList("p", 10);
-            final List<LauncherPair> status = new ArrayList<>(list.tagCount());
-            for(int i = 0; i < list.tagCount(); i++) {
+            final ListNBT list = tag.getList("p", 10);
+            final List<LauncherPair> status = new ArrayList<>(list.size());
+            for(int i = 0; i < list.size(); i++) {
                 final CompoundNBT save = (CompoundNBT) list.get(i);
                 final int group = save.getInt("g");
                 final int index = save.getInt("i");
-                final CompoundNBT partSave = save.getCompoundTag("p");
+                final CompoundNBT partSave = save.getCompound("p");
                 final IActionStatus part = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(partSave);
                 if(part != null) {
                     status.add(new LauncherPair(group, index, part));
@@ -287,13 +293,15 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     @Override
     public Object getServerGuiElement(int ID, PlayerEntity player)
     {
-        return new ContainerLaunchScreen(player, this);
+        //return new ContainerLaunchScreen(player, this);
+        return null;
     }
 
     @Override
     public Object getClientGuiElement(int ID, PlayerEntity player)
     {
-        return new GuiLauncherScreen(player, this);
+        //return new GuiLauncherScreen(player, this);
+        return null;
     }
 
     @Override
@@ -308,13 +316,13 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     @Override
-    public void invalidate()
+    public void remove()
     {
         if(isServer()) {
             RadioRegistry.remove(radioCap);
         }
         getNetworkNode().onTileRemoved();
-        super.invalidate();
+        super.remove();
     }
 
     public Vec3d getTarget()
@@ -347,25 +355,16 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing)
-    {
-        return super.hasCapability(capability, facing)
-            || capability == ICBMClassicAPI.RADIO_CAPABILITY
-            || Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.hasCapability(capability, facing)).orElse(false);
-    }
-
-    @Override
-    @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing)
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing)
     {
         //TODO add IEnergyStorage wrapper to ensure this tile and the network both get power
         if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
-            return (T) radioCap;
+            return lazyRadio.cast();
         }
         else if (getNetworkNode().getNetwork() != null)
         {
-            final T cap = getNetworkNode().getNetwork().getCapability(capability, facing);
-            if(cap != null) {
+            final LazyOptional<T> cap = getNetworkNode().getNetwork().getCapability(capability, facing);
+            if(cap.isPresent()) {
                 return cap;
             }
         }
@@ -373,22 +372,22 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     @Override
-    public void readFromNBT(CompoundNBT nbt)
+    public void read(CompoundNBT nbt)
     {
-        super.readFromNBT(nbt);
+        super.read(nbt);
         SAVE_LOGIC.load(this, nbt);
 
         // Legacy handling TODO data fixer
-        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
+        if(nbt.contains(NBTConstants.FREQUENCY)) {
             this.radioCap.setChannel(Integer.toString(nbt.getInt(NBTConstants.FREQUENCY)));
         }
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT nbt)
+    public CompoundNBT write(CompoundNBT nbt)
     {
         SAVE_LOGIC.save(this, nbt);
-        return super.writeToNBT(nbt);
+        return super.write(nbt);
     }
 
     private static final NbtSaveHandler<TileLauncherScreen> SAVE_LOGIC = new NbtSaveHandler<TileLauncherScreen>()

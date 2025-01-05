@@ -26,9 +26,9 @@ public class GuiLauncherBase extends GuiContainerBase
 
     private final TileLauncherBase tileEntity;
 
-    public GuiLauncherBase(PlayerEntity player, TileLauncherBase tileEntity)
+    public GuiLauncherBase(ContainerLaunchBase container, PlayerEntity player, TileLauncherBase tileEntity)
     {
-        super(new ContainerLaunchBase(player, tileEntity));
+        super(container, player.inventory, new TranslationTextComponent("gui.icbmclassic:launcherbase.title"));
         this.tileEntity = tileEntity;
         ySize = 166;
     }
@@ -40,20 +40,20 @@ public class GuiLauncherBase extends GuiContainerBase
 
     /** Adds the buttons (and other controls) to the screen in question. */
     @Override
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
 
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17, 30, 12,
+        addComponent(TextInput.intField(componentID++, this.font, 17, 17, 30, 12,
             tileEntity::getLockHeight, tileEntity::setLockHeight, (o) -> TileLauncherBase.PACKET_LOCK_HEIGHT.sendToServer(tileEntity)));
-        addComponent(TextInput.intField(componentID++, fontRenderer, 82, 17, 30, 12,
+        addComponent(TextInput.intField(componentID++, this.font, 82, 17, 30, 12,
             tileEntity::getGroupId, tileEntity::setGroupId, (o) -> TileLauncherBase.PACKET_GROUP_ID.sendToServer(tileEntity)));
-        addComponent(TextInput.intField(componentID++, fontRenderer, 127, 17, 30, 12,
+        addComponent(TextInput.intField(componentID++, this.font, 127, 17, 30, 12,
             tileEntity::getGroupIndex, tileEntity::setGroupIndex, (o) -> TileLauncherBase.PACKET_GROUP_INDEX.sendToServer(tileEntity)));
-        addComponent(TextInput.intField(componentID++, fontRenderer, 17, 17 + 16, 30, 12,
+        addComponent(TextInput.intField(componentID++, this.font, 17, 17 + 16, 30, 12,
             tileEntity::getFiringDelay, tileEntity::setFiringDelay, (o) -> TileLauncherBase.PACKET_FIRING_DELAY.sendToServer(tileEntity)));
 
         addComponent(new FaceRotationButton(0, guiLeft + 157, guiTop + 3,  tileEntity::getLaunchDirection, tileEntity::getSeatSide, tileEntity::setSeatSide,
@@ -75,7 +75,7 @@ public class GuiLauncherBase extends GuiContainerBase
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.icbmclassic:launcherbase.name"), 30, 6, 4210752);
+        this.font.drawString("\u00a77" + LanguageUtility.getLocal("gui.icbmclassic:launcherbase.name"), 30, 6, 4210752);
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
 }

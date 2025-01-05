@@ -25,9 +25,9 @@ public class GuiCruiseLauncher extends GuiContainerBase
     // Launcher
     private final TileCruiseLauncher tileEntity;
 
-    public GuiCruiseLauncher(PlayerEntity player, TileCruiseLauncher tileEntity)
+    public GuiCruiseLauncher(ContainerCruiseLauncher container, PlayerEntity player, TileCruiseLauncher tileEntity)
     {
-        super(new ContainerCruiseLauncher(player, tileEntity), player.inventory, null);
+        super(container, player.inventory, null);
         this.tileEntity = tileEntity;
         this.height = 166;
         this.width = 175;
@@ -46,9 +46,9 @@ public class GuiCruiseLauncher extends GuiContainerBase
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.vec3dField(componentID++, fontRenderer, 18, 17, 100, 12,
+        addComponent(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, (o) -> TileCruiseLauncher.PACKET_TARGET.sendToServer(tileEntity)));
-        addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
+        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.radio::getChannel, tileEntity.radio::setChannel, (o) -> TileCruiseLauncher.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
@@ -80,8 +80,8 @@ public class GuiCruiseLauncher extends GuiContainerBase
     protected void drawGuiContainerForegroundLayer(int par1, int par2)
     {
         // Draw text
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal(GUI_NAME), 52, 6, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("container.inventory"), 8, this.ySize - 96 + 4, 4210752);
+        this.font.drawString("\u00a77" + LanguageUtility.getLocal(GUI_NAME), 52, 6, 4210752);
+        this.font.drawString(LanguageUtility.getLocal("container.inventory"), 8, this.ySize - 96 + 4, 4210752);
 
         // Goes last so tooltips render above our UI elements
         super.drawGuiContainerForegroundLayer(par1, par2);

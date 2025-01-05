@@ -26,9 +26,9 @@ public class GuiLauncherScreen extends GuiContainerBase
 
     private final TileLauncherScreen tileEntity;
 
-    public GuiLauncherScreen(PlayerEntity player, TileLauncherScreen tileEntity)
+    public GuiLauncherScreen(ContainerLaunchScreen container, PlayerEntity player, TileLauncherScreen tileEntity)
     {
-        super(new ContainerLaunchScreen(player, tileEntity));
+        super(container, player.inventory, new TranslationTextComponent("gui.launcherscreen.title"));
         this.tileEntity = tileEntity;
         this.ySize = 166;
         this.xSize = 175;
@@ -41,18 +41,18 @@ public class GuiLauncherScreen extends GuiContainerBase
 
     /** Adds the buttons (and other controls) to the screen in question. */
     @Override
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
 
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.vec3dField(componentID++, fontRenderer, 18, 17, 100, 12,
+        addComponent(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, (o) -> TileLauncherScreen.PACKET_TARGET.sendToServer(tileEntity)));
 
         // Hz
-        addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
+        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, (o) -> TileLauncherScreen.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
@@ -80,8 +80,8 @@ public class GuiLauncherScreen extends GuiContainerBase
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherscreen.name"), 30, 6, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.inaccuracy").replaceAll("%1\\$s", String.format("%.2f", tileEntity.getLauncherInaccuracy())), 60, 32, 4210752);
+        this.font.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherscreen.name"), 30, 6, 4210752);
+        this.font.drawString(LanguageUtility.getLocal("gui.launcherscreen.inaccuracy").replaceAll("%1\\$s", String.format("%.2f", tileEntity.getLauncherInaccuracy())), 60, 32, 4210752);
 
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }

@@ -17,9 +17,9 @@ public class GuiRadarStation extends GuiContainerBase
 
     private final TileRadarStation tileEntity;
 
-    public GuiRadarStation(PlayerEntity player, TileRadarStation tileEntity)
+    public GuiRadarStation(ContainerRadarStation container, PlayerEntity player, TileRadarStation tileEntity)
     {
-        super(new ContainerRadarStation(player, tileEntity));
+        super(container, player.inventory, null);
         this.tileEntity = tileEntity;
         this.ySize = 184;
         this.xSize = 175;
@@ -31,22 +31,22 @@ public class GuiRadarStation extends GuiContainerBase
     }
 
     @Override
-    public void initGui()
+    public void init()
     {
-        super.initGui();
+        super.init();
 
         int componentID = 0;
 
         // Hz
-        addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
+        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.getRadio()::getChannel, tileEntity.getRadio()::setChannel, (o) -> TileRadarStation.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // trigger
-        addComponent(TextInput.intField(componentID++, fontRenderer, 18, 77, 29, 12,
+        addComponent(TextInput.intField(componentID++, font, 18, 77, 29, 12,
             tileEntity::getTriggerRange, tileEntity::setTriggerRange, (o) -> TileRadarStation.PACKET_TRIGGER_RANGE.sendToServer(tileEntity)));
 
         // detection
-        addComponent(TextInput.intField(componentID++, fontRenderer, 49, 77, 29, 12,
+        addComponent(TextInput.intField(componentID++, font, 49, 77, 29, 12,
             tileEntity::getDetectionRange, tileEntity::setDetectionRange, (o) -> TileRadarStation.PACKET_DETECTION_RANGE.sendToServer(tileEntity)));
 
         addComponent(
@@ -78,7 +78,7 @@ public class GuiRadarStation extends GuiContainerBase
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + tileEntity.getDisplayName().getFormattedText(), 30, 6, 4210752);
+        this.font.drawString("\u00a77" + tileEntity.getDisplayName().getFormattedText(), 30, 6, 4210752);
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
 }

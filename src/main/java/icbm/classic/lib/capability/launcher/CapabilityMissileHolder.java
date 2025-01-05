@@ -41,11 +41,9 @@ public class CapabilityMissileHolder implements IMissileHolder
     @Override
     public boolean consumeMissile() {
         if(hasMissile()) {
-            final ICapabilityMissileStack missileStack = getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-            if(missileStack != null) {
-                inventory.setStackInSlot(slot, missileStack.consumeMissile());
-                return true;
-            }
+            final ICapabilityMissileStack missileStack = getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).orElseThrow(IllegalStateException::new);
+            inventory.setStackInSlot(slot, missileStack.consumeMissile());
+            return true;
         }
         return false;
     }
