@@ -35,9 +35,6 @@ public class ExplosiveData extends ActionDataBase implements IExplosiveData
     private final int id;
 
     @Nonnull
-    private final EnumTier tier;
-
-    @Nonnull
     private final IBlastFactory blastCreationFactory;
 
     @Override

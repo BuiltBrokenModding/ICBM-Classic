@@ -24,16 +24,4 @@ public interface IExplosiveData extends Comparable<IExplosiveData>, IActionData
      * @deprecated will be removed in MC 1.13 and replaced with {@link #getRegistryKey()}
      */
     int getRegistryID();
-
-    /**
-     * Tier of the explosive.
-     *
-     * @return tier of the explosive
-     */
-    @Deprecated
-    @Nonnull
-    default EnumTier getTier() {
-        // Only for legacy explosives, moving forward tier is visual only and has no functionality
-        return EnumTier.NONE;
-    }
 }
