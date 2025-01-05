@@ -17,7 +17,7 @@ public class SaveBuildableObjectList<E, BUILDABLE extends IBuildableObject> exte
                 if(list != null && !list.isEmpty()) {
                     final ListNBT tagList = new ListNBT();
                     for(BUILDABLE obj : list) {
-                        tagList.appendTag(reg.get().save(obj));
+                        tagList.add(reg.get().save(obj));
                     }
                     return tagList;
                 }
@@ -27,8 +27,8 @@ public class SaveBuildableObjectList<E, BUILDABLE extends IBuildableObject> exte
                 final LIST object = getter.apply(source);
                 if(object != null) {
                     object.clear();
-                   for(int i = 0; i < data.tagCount(); i++) {
-                       object.add(reg.get().load(data.getCompoundTagAt(i)));
+                   for(int i = 0; i < data.size(); i++) {
+                       object.add(reg.get().load(data.getCompound(i)));
                    }
                 }
             });

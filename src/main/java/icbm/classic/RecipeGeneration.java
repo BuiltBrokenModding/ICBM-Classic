@@ -13,7 +13,7 @@ import java.io.Writer;
 
 public class RecipeGeneration {
 
-    public static void cartRecipes() {
+   /* public static void cartRecipes() {
         final File saveFolder = new File(".", "recipes/bombcarts");
         saveFolder.mkdirs();
 
@@ -157,5 +157,5 @@ public class RecipeGeneration {
                 throw new RuntimeException(e);
             }
         });
-    }
+    }*/
 }

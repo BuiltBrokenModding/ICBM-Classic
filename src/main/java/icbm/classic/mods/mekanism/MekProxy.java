@@ -44,7 +44,7 @@ public class MekProxy extends ModProxy
         if(machineBlock != null && basicBlock != null) {
 
             // Teleporter frame is basic block meta 7
-            final BlockState frameState = basicBlock.getStateFromMeta(7);
+            final BlockState frameState = basicBlock.getDefaultState(); //.getStateFromMeta(7);
 
             ICBMClassic.logger().info("Mekanism interaction: " + frameState);
 
@@ -160,7 +160,7 @@ public class MekProxy extends ModProxy
     }
 
     protected boolean isTeleporter(BlockState state) {
-        return state.getBlock() == machineBlock && state.getBlock().getMetaFromState(state) == 11;
+        return state.getBlock() == machineBlock; // && state.getBlock().getMetaFromState(state) == 11;
     }
 
     protected Direction getSide(World world, BlockPos pos) {

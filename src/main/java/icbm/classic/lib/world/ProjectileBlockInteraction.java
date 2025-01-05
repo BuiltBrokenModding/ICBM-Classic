@@ -8,12 +8,16 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.EndGatewayTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
 
 import java.util.HashMap;
 
@@ -76,8 +80,17 @@ public final class ProjectileBlockInteraction {
         final Block block = state.getBlock();
         if (block.canEntityDestroy(state, world, pos, entity))
         {
-            block.dropBlockAsItem(world, pos, state, 0);
-            world.setBlockToAir(pos);
+            // TODO see if a helper exists or this is the right away to do drops
+            if (world instanceof ServerWorld && state.canEntityDestroy(world, pos, entity)) {
+                TileEntity tileentity = state.hasTileEntity() ? world.getTileEntity(pos) : null;
+                LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)world)).withRandom(world.rand)
+                    .withParameter(LootParameters.POSITION, pos)
+                    .withParameter(LootParameters.TOOL, ItemStack.EMPTY)
+                    .withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
+
+                Block.spawnDrops(state, lootcontext$builder);
+            }
+            world.removeBlock(pos, false);
             return true;
         }
         return false;
@@ -112,8 +125,8 @@ public final class ProjectileBlockInteraction {
     public static void register() {
 
         // Portal handling
-        addCollisionInteraction(net.minecraft.block.Blocks.PORTAL);
-        addCollisionInteraction(net.minecraft.block.Blocks.END_PORTAL);
+        addCollisionInteraction(Blocks.NETHER_PORTAL);
+        addCollisionInteraction(Blocks.END_PORTAL);
         addBlockInteraction(Blocks.END_GATEWAY, (world, pos, hit, side, state, entity) -> {
             final TileEntity tile = world.getTileEntity(pos);
             if(tile instanceof EndGatewayTileEntity) {

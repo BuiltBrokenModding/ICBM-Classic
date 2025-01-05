@@ -8,6 +8,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -26,7 +27,7 @@ public class ItemProjectileData extends BuildableObject<ItemProjectileData, IPro
 
     @Override
     public ItemEntity newEntity(World world, boolean allowItemPickup) {
-        final ItemEntity entityItem = new ItemEntity(world);
+        final ItemEntity entityItem = EntityType.ITEM.create(world);
         entityItem.setItem(itemStack);
         if(!allowItemPickup) {
             entityItem.setInfinitePickupDelay();

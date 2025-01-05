@@ -4,6 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.lib.buildable.BuildableObject;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.ResourceLocation;
@@ -19,8 +20,8 @@ public class ArrowProjectileData extends BuildableObject<ArrowProjectileData, IP
 
     @Override
     public AbstractArrowEntity newEntity(World world, boolean allowItemPickup) {
-        final AbstractArrowEntity arrow = new ArrowEntity(world);
-        arrow.pickupStatus = allowItemPickup ? PickupStatus.ALLOWED : PickupStatus.DISALLOWED;
+        final AbstractArrowEntity arrow = EntityType.ARROW.create(world);
+        arrow.pickupStatus = allowItemPickup ? AbstractArrowEntity.PickupStatus.ALLOWED : AbstractArrowEntity.PickupStatus.DISALLOWED;
         return arrow;
     }
 }

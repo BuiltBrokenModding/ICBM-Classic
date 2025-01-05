@@ -17,9 +17,9 @@ public class SaveNodePos<E> extends NbtSaveNode<E, CompoundNBT>
                 if (pos != null)
                 {
                     final CompoundNBT compound = new CompoundNBT();
-                    compound.setDouble("x", pos.getX());
-                    compound.setDouble("y", pos.getY());
-                    compound.setDouble("z", pos.getZ());
+                    compound.putDouble("x", pos.getX());
+                    compound.putDouble("y", pos.getY());
+                    compound.putDouble("z", pos.getZ());
                     return compound;
                 }
                 return null;

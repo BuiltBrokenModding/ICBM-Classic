@@ -24,8 +24,8 @@ public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implem
     private final Supplier<Direction> currentRotationGetter;
     private final Supplier<Direction> blockFaceGetter;
     private Direction prevSide;
-    public FaceRotationButton(int buttonId, int x, int y, Supplier<Direction> blockFaceGetter, Supplier<Direction> currentRotationGetter, Consumer<Direction> setter, Runnable networkCall) {
-        super(buttonId, x, y, WIDTH, HEIGHT, "-");
+    public FaceRotationButton(int x, int y, Supplier<Direction> blockFaceGetter, Supplier<Direction> currentRotationGetter, Consumer<Direction> setter, Runnable networkCall) {
+        super(x, y, WIDTH, HEIGHT, "-");
         this.blockFaceGetter = blockFaceGetter;
         this.currentRotationGetter = currentRotationGetter;
         this.setAction(() -> {
@@ -38,7 +38,7 @@ public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implem
     protected Direction rotate() {
         final Direction currentRotation = currentRotationGetter.get();
         final Direction blockFace = blockFaceGetter.get();
-        if(ContainerScreen.isShiftKeyDown()) {
+        if(ContainerScreen.hasShiftDown()) {
             return FaceRotations.rotateLeft(blockFace, currentRotation);
         }
         return FaceRotations.rotateRight(blockFace, currentRotation);
@@ -52,13 +52,8 @@ public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implem
         if(prevSide != side) {
             prevSide = side;
             //displayString = (side.getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? "-" : "") + side.getAxis().getName().toUpperCase();
-            displayString = side.name().toUpperCase().substring(0, 1);
-        }
-    }
 
-    @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
-    {
-        return super.mousePressed(mc, mouseX, mouseY) && (ContainerScreen.isAltKeyDown() || ContainerScreen.isShiftKeyDown());
+            //displayString = side.name().toUpperCase().substring(0, 1);
+        }
     }
 }

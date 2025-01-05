@@ -17,7 +17,7 @@ public class SaveNodeBlockState<E> extends NbtSaveNode<E, CompoundNBT>
                 final BlockState blockState = save.apply(obj);
                 if (blockState != null)
                 {
-                    return NBTUtil.writeBlockState(new CompoundNBT(), blockState);
+                    return NBTUtil.writeBlockState(blockState);
                 }
                 return null;
             },

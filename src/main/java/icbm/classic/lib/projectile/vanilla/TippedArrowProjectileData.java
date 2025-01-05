@@ -8,6 +8,7 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
@@ -34,8 +35,8 @@ public class TippedArrowProjectileData extends BuildableObject<TippedArrowProjec
 
     @Override
     public AbstractArrowEntity newEntity(World world, boolean allowItemPickup) {
-        final ArrowEntity arrow = new ArrowEntity(world);
-        arrow.pickupStatus = allowItemPickup ? PickupStatus.ALLOWED : PickupStatus.DISALLOWED;
+        final ArrowEntity arrow = EntityType.ARROW.create(world);
+        arrow.pickupStatus = allowItemPickup ? AbstractArrowEntity.PickupStatus.ALLOWED : AbstractArrowEntity.PickupStatus.DISALLOWED;
         if(!arrowItem.isEmpty()) {
             arrow.setPotionEffect(arrowItem);
         }

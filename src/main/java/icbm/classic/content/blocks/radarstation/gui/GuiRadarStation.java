@@ -50,7 +50,7 @@ public class GuiRadarStation extends GuiContainerBase
             tileEntity::getDetectionRange, tileEntity::setDetectionRange, (o) -> TileRadarStation.PACKET_DETECTION_RANGE.sendToServer(tileEntity)));
 
         addComponent(
-            new RedstoneButton(0, 160 + guiLeft, 3 + guiTop, tileEntity::isOutputRedstone)
+            new RedstoneButton( 160 + guiLeft, 3 + guiTop, tileEntity::isOutputRedstone)
             .setAction(() -> TileRadarStation.PACKET_REDSTONE_OUTPUT.sendToServer(tileEntity))
                 .setTooltip(() -> {
                     if(tileEntity.isOutputRedstone()) {

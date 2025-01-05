@@ -17,12 +17,12 @@ public class SaveNodeUUID<E> extends NbtSaveNode<E, CompoundNBT>
                 final UUID blockState = save.apply(obj);
                 if (blockState != null)
                 {
-                    return NBTUtil.createUUIDTag(blockState);
+                    return NBTUtil.writeUniqueId(blockState);
                 }
                 return null;
             },
             (obj, data) -> {
-                load.accept(obj, NBTUtil.getUUIDFromTag(data));
+                load.accept(obj, NBTUtil.readUniqueId(data));
             }
         );
     }

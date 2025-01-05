@@ -71,7 +71,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         final int maxEnergy = energyMaxGetter.get();
         final int tickingCost = Optional.ofNullable(tickingCostGetter).map(Supplier::get).orElse(0);
         final int actionCost = Optional.ofNullable(actionCostGetter).map(Supplier::get).orElse(0);
-        final boolean shift = Screen.isShiftKeyDown();
+        final boolean shift = Screen.hasShiftDown();
 
         if(energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift) {
             prevEnergy = energy;
@@ -130,8 +130,8 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     @Override
     public void drawBackgroundLayer(float f, int mouseX, int mouseY) {
 
-        container.mc.renderEngine.bindTexture(container.getBackground());
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        container.getMinecraft().textureManager.bindTexture(container.getBackground());
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Calculate bar ratio
         final float barRatio = (float)Math.floor(ENERGY_BAR_WIDTH * energyPercent);
@@ -141,7 +141,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         int renderWidth = (int)Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
 
         // Render box
-        container.drawTexturedModalRect(container.getGuiLeft() + x, container.getGuiTop() + y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
+        container.blit(container.getGuiLeft() + x, container.getGuiTop() + y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
     }
 
     @Override

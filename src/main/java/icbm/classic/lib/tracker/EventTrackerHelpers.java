@@ -31,7 +31,7 @@ public class EventTrackerHelpers {
     }
 
     public static Integer getWorldId(World world) {
-        return Optional.ofNullable(world).map(w -> w.provider).map(Dimension::getDimension).orElse(null);
+        return Optional.ofNullable(world).map(w -> w.getWorld().getDimension().getType().getId()).orElse(null);
     }
 
     public static String getWorldName(World world) {

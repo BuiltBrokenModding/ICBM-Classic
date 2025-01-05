@@ -26,6 +26,6 @@ public class SaveNodeFacing<E> extends NbtSaveNode<E, ByteNBT> //TODO convert to
         return null;
     }
     public static Direction load(ByteNBT save) {
-        return Direction.getFront(save.getByte());
+        return Direction.byIndex(save.getByte());
     }
 }

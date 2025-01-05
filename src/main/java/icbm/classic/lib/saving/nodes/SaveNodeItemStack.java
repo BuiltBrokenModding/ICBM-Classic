@@ -15,12 +15,12 @@ public class SaveNodeItemStack<E> extends NbtSaveNode<E, CompoundNBT>
                 final ItemStack itemStack = getter.apply(obj);
                 if (itemStack != null && !itemStack.isEmpty())
                 {
-                    return itemStack.writeToNBT(new CompoundNBT());
+                    return itemStack.write(new CompoundNBT());
                 }
                 return null;
             },
             (obj, data) -> {
-                setter.accept(obj, new ItemStack(data));
+                setter.accept(obj, ItemStack.read(data));
             }
         );
     }

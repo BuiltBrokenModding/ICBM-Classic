@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -25,20 +26,20 @@ public class EnergySystemFE implements IEnergySystem
     {
         if (object instanceof TileEntity)
         {
-            return ((TileEntity) object).hasCapability(CapabilityEnergy.ENERGY, side);
+            return ((TileEntity) object).getCapability(CapabilityEnergy.ENERGY, side).isPresent();
         }
         else if (object instanceof Entity)
         {
-            return ((Entity) object).hasCapability(CapabilityEnergy.ENERGY, side);
+            return ((Entity) object).getCapability(CapabilityEnergy.ENERGY, side).isPresent();
         }
         else if (object instanceof ItemStack)
         {
-            return ((ItemStack) object).hasCapability(CapabilityEnergy.ENERGY, side);
+            return ((ItemStack) object).getCapability(CapabilityEnergy.ENERGY, side).isPresent();
         }
         return false;
     }
 
-    public IEnergyStorage getCapability(Object object, Direction side)
+    public LazyOptional<IEnergyStorage> getCapability(Object object, Direction side)
     {
         if (object instanceof TileEntity)
         {
@@ -52,16 +53,17 @@ public class EnergySystemFE implements IEnergySystem
         {
             return ((ItemStack) object).getCapability(CapabilityEnergy.ENERGY, side);
         }
-        return null;
+        return LazyOptional.empty();
     }
 
     @Override
     public int setEnergy(Object object, Direction side, int energy, boolean simulate)
     {
-        IEnergyStorage storage = getCapability(object, side);
+        final LazyOptional<IEnergyStorage> storageLazy = getCapability(object, side);
 
-        if (storage != null)
+        if (storageLazy.isPresent())
         {
+            final IEnergyStorage storage = storageLazy.orElseThrow(IllegalStateException::new);
             int energyLimited = Math.max(0, Math.min(storage.getMaxEnergyStored(), energy));
 
             //Edge case work around to help remove all energy, yes this will need to be done per mod
@@ -93,50 +95,30 @@ public class EnergySystemFE implements IEnergySystem
     @Override
     public boolean canSetEnergyDirectly(Object object, Direction side)
     {
-        return !failedEnergyStorageField && getCapability(object, side) instanceof EnergyStorage;
+        return !failedEnergyStorageField && getCapability(object, side).map(e -> e instanceof EnergyStorage).orElse(false);
     }
 
     @Override
     public int getEnergy(Object object, Direction side)
     {
-        IEnergyStorage storage = getCapability(object, side);
-        if (storage != null)
-        {
-            return storage.getEnergyStored();
-        }
-        return 0;
+        return getCapability(object, side).map(IEnergyStorage::getEnergyStored).orElse(0);
     }
 
     @Override
     public int getCapacity(Object object, Direction side)
     {
-        IEnergyStorage storage = getCapability(object, side);
-        if (storage != null)
-        {
-            return storage.getMaxEnergyStored();
-        }
-        return 0;
+        return getCapability(object, side).map(IEnergyStorage::getMaxEnergyStored).orElse(0);
     }
 
     @Override
     public int addEnergy(Object object, Direction side, int energyToAdd, boolean simulate)
     {
-        IEnergyStorage storage = getCapability(object, side);
-        if (storage != null)
-        {
-            return storage.receiveEnergy(energyToAdd, simulate);
-        }
-        return 0;
+        return getCapability(object, side).map((e) -> e.receiveEnergy(energyToAdd, simulate)).orElse(0);
     }
 
     @Override
     public int removeEnergy(Object object, Direction side, int energyToRemove, boolean simulate)
     {
-        IEnergyStorage storage = getCapability(object, side);
-        if (storage != null)
-        {
-            return storage.extractEnergy(energyToRemove, simulate);
-        }
-        return 0;
+        return getCapability(object, side).map((e) -> e.receiveEnergy(energyToRemove, simulate)).orElse(0);
     }
 }

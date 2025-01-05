@@ -29,9 +29,9 @@ public class SaveNodeVec3d<E> extends NbtSaveNode<E, CompoundNBT>
         return save(pos, new CompoundNBT());
     }
     public static CompoundNBT save(Vec3d pos, CompoundNBT compound) {
-        compound.setDouble("x", pos.x);
-        compound.setDouble("y", pos.y);
-        compound.setDouble("z", pos.z);
+        compound.putDouble("x", pos.x);
+        compound.putDouble("y", pos.y);
+        compound.putDouble("z", pos.z);
         return compound;
     }
 

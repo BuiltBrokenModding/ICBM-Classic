@@ -23,7 +23,7 @@ public class RadarEntity implements IWorldPosition
 
     public boolean isValid()
     {
-        return entity != null && entity.isEntityAlive() && entity.world != null;
+        return entity != null && entity.isAlive() && entity.world != null;
     }
 
     @Override

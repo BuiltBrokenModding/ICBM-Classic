@@ -22,7 +22,7 @@ public class TooltipTranslations extends TooltipBase {
 
     @Override
     protected ITextComponent getActualTooltip() {
-        if(Screen.isShiftKeyDown()) {
+        if(Screen.hasShiftDown()) {
             return shiftTooltip;
         }
         return normalTooltip;

@@ -293,8 +293,8 @@ public class RadioMap
      * <p>
      * Make sure if you call this you clear your
      * cache when the sender is no longer valid
-     * use {@link TileEntity#invalidate()}
-     * or {@link Entity#setDead()} to
+     * use {@link TileEntity#remove()}
+     * or {@link Entity#remove()} to
      * clear the cache.
      * <p>
      * As well make sure to call this method
@@ -375,15 +375,6 @@ public class RadioMap
     }
 
 
-    /**
-     * Dimension ID this map tracks
-     *
-     * @return valid dim ID.
-     */
-    public int dimID()
-    {
-        return dimID;
-    }
 
     @Override
     public boolean equals(Object object)

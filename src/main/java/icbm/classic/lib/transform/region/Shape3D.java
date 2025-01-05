@@ -22,7 +22,7 @@ public abstract class Shape3D
 
     public Shape3D(CompoundNBT nbt)
     {
-        this(new Pos(nbt.getCompoundTag(NBTConstants.CENTER)));
+        this(new Pos(nbt.getCompound(NBTConstants.CENTER)));
         angle = new EulerAngle(nbt.getDouble(NBTConstants.YAW), nbt.getDouble(NBTConstants.PITCH), nbt.getDouble(NBTConstants.ROLL));
     }
 

@@ -45,15 +45,15 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     @Deprecated
     private final Rectangle boundBox;
 
-    public TextInput(int componentId, FontRenderer fontrendererObj, int x, int y, int width, int height) {
-        super(componentId, fontrendererObj, x, y, width, height);
+    public TextInput(FontRenderer fontrendererObj, int x, int y, int width, int height) {
+        super(fontrendererObj, x, y, width, height);
         boundBox = new Rectangle(x, y, x + width + 1, y + height + 1); //TODO replace with internal check using data stored
     }
 
     public static TextInput<Vec3d> vec3dField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
                                               Supplier<Vec3d> getter, Consumer<Vec3d> setter, Consumer<Vec3d> network
     ) {
-        final TextInput<Vec3d> fieldTarget = new TextInput<Vec3d>(id, fontRenderer, x, y, width, height);
+        final TextInput<Vec3d> fieldTarget = new TextInput<Vec3d>(fontRenderer, x, y, width, height);
         fieldTarget.simpleHandler(getter, setter, GuiFormatHelpers::parseVec3d);
         fieldTarget.setParseOutput(LanguageUtility::posFormatted);
         fieldTarget.setOnSourceChange(network);
@@ -63,7 +63,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     public static TextInput<Integer> intField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
                                               Supplier<Integer> getter, Consumer<Integer> setter, Consumer<Integer> network
     ) {
-        final TextInput<Integer> fieldTarget = new TextInput<Integer>(id, fontRenderer, x, y, width, height);
+        final TextInput<Integer> fieldTarget = new TextInput<Integer>(fontRenderer, x, y, width, height);
         fieldTarget.simpleHandler(getter, setter, GuiFormatHelpers::parseInt);
         fieldTarget.setOnSourceChange(network);
         return fieldTarget;
@@ -72,7 +72,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     public static TextInput<String> textField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
                                               Supplier<String> getter, Consumer<String> setter, Consumer<String> network
     ) {
-        final TextInput<String> fieldTarget = new TextInput<String>(id, fontRenderer, x, y, width, height);
+        final TextInput<String> fieldTarget = new TextInput<String>(fontRenderer, x, y, width, height);
         fieldTarget.stringHandler(getter, setter);
         fieldTarget.setOnSourceChange(network);
         return fieldTarget;
@@ -158,13 +158,13 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         return (TextInput<String>) this;
     }
 
-    @Override
+    /*@Override TODO
     public void drawTextBox() {
         super.drawTextBox();
         if (this.getVisible() && this.getEnableBackgroundDrawing() && isErrored()) {
             drawHorizontalLine(this.x, this.x + this.width, this.y + this.height, ERROR_COLOR);
         }
-    }
+    }*/
 
     @Override
     public boolean isWithin(int cursorX, int cursorY) {

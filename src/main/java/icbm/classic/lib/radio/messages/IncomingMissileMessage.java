@@ -21,9 +21,9 @@ public class IncomingMissileMessage implements IIncomingMissileMessage {
             final Entity entity = missile.getMissileEntity();
             final int maxTime = 20;
             for(int time = 1; time <= maxTime; time++) { //TODO replace with alg equation that can calculate fn(t)
-                final double tX = entity.posX + entity.motionX * time;
-                final double tY = entity.posY + entity.motionY * time;
-                final double tZ = entity.posZ + entity.motionZ * time;
+                final double tX = entity.posX + entity.getMotion().x * time;
+                final double tY = entity.posY + entity.getMotion().y * time;
+                final double tZ = entity.posZ + entity.getMotion().z * time;
 
                 final double mag = Math.sqrt(tX * tX + tY * tY + tZ * tZ); //TODO remove need for sqrt
 

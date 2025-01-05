@@ -24,14 +24,14 @@ public class NumericField extends TextFieldWidget
         charsB.add('.');
     }
 
-    public NumericField(int id, FontRenderer fontRender, int xPos, int yPos, int width, int height)
+    public NumericField(FontRenderer fontRender, int xPos, int yPos, int width, int height)
     {
-        this(id, fontRender, NumericType.DOUBLE, xPos, yPos, width, height);
+        this(fontRender, NumericType.DOUBLE, xPos, yPos, width, height);
     }
 
-    public NumericField(int id, FontRenderer fontRender, NumericType type, int xPos, int yPos, int width, int height)
+    public NumericField(FontRenderer fontRender, NumericType type, int xPos, int yPos, int width, int height)
     {
-        super(id, fontRender, xPos, yPos, width, height);
+        super(fontRender, xPos, yPos, width, height, "-");
         this.type = type;
     }
 

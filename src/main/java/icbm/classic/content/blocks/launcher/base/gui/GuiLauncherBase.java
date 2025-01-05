@@ -56,7 +56,7 @@ public class GuiLauncherBase extends GuiContainerBase
         addComponent(TextInput.intField(componentID++, this.font, 17, 17 + 16, 30, 12,
             tileEntity::getFiringDelay, tileEntity::setFiringDelay, (o) -> TileLauncherBase.PACKET_FIRING_DELAY.sendToServer(tileEntity)));
 
-        addComponent(new FaceRotationButton(0, guiLeft + 157, guiTop + 3,  tileEntity::getLaunchDirection, tileEntity::getSeatSide, tileEntity::setSeatSide,
+        addComponent(new FaceRotationButton(guiLeft + 157, guiTop + 3,  tileEntity::getLaunchDirection, tileEntity::getSeatSide, tileEntity::setSeatSide,
             () -> TileLauncherBase.PACKET_SEAT_ROTATION.sendToServer(tileEntity)));
 
         addComponent(new SlotEnergyBar(141, 66,
