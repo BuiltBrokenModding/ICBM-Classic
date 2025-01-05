@@ -11,11 +11,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class PacketSpawnBlockExplosion implements IPacket<PacketSpawnBlockExplosion>
+public class PacketSpawnBlockExplosion //implements IPacket<PacketSpawnBlockExplosion>
 {
     /*
     Id of the dimension that this particle should be placed in.
-     */
+     *//*
     private int dimId;
 
     // x y and z positions
@@ -82,5 +82,5 @@ public class PacketSpawnBlockExplosion implements IPacket<PacketSpawnBlockExplos
         final PacketSpawnBlockExplosion packet = new PacketSpawnBlockExplosion(dimid, sourceX, sourceY, sourceZ, blastScale, pos);
         final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, pos.getX(), pos.getY(), pos.getZ(), 256);
         ICBMClassic.packetHandler.sendToAllAround(packet, point);
-    }
+    }*/
 }

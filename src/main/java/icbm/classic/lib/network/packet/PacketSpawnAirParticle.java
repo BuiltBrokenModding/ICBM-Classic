@@ -12,11 +12,11 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
+public class PacketSpawnAirParticle //implements IPacket<PacketSpawnAirParticle>
 {
     /*
     Id of the dimension that this particle should be placed in.
-     */
+     *//*
     private ResourceLocation dimId;
 
     // x y and z positions
@@ -112,5 +112,5 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
         final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
         final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, x, y, z, 256);
         ICBMClassic.packetHandler.sendToAllAround(packet, point);
-    }
+    }*/
 }

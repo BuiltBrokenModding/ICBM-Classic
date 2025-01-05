@@ -54,10 +54,10 @@ public class PacketManager
         HANDLER.registerMessage(nextID++, PacketLambdaTile.class, PacketLambdaTile::encode, PacketLambdaTile::decode, PacketLambdaTile::handle);
         HANDLER.registerMessage(nextID++, PacketLambdaEntity.class, PacketLambdaEntity::encode, PacketLambdaEntity::decode, PacketLambdaEntity::handle);
 
-        addPacket(PacketPlayerItem.class);
-        addPacket(PacketSpawnAirParticle.class);
-        addPacket(PacketSpawnBlockExplosion.class);
-        addPacket(PacketEntityPos.class);
+        //addPacket(PacketPlayerItem.class);
+        //addPacket(PacketSpawnAirParticle.class);
+        //addPacket(PacketSpawnBlockExplosion.class);
+        //addPacket(PacketEntityPos.class);
     }
 
     /**

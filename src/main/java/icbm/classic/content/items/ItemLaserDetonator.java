@@ -73,7 +73,7 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
             final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getPos());
             if (tileEntity == null || !tileEntity.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, objectMouseOver.getFace()).isPresent())
             {
-                ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getHitVec()));
+                // TODO ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.getHitVec()));
             }
         }
         else {

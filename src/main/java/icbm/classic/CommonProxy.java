@@ -136,7 +136,7 @@ public class CommonProxy implements IGuiHandler
     public void spawnAirParticle(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         //TODO allow client settings to sync to server to not received these packets
-        PacketSpawnAirParticle.sendToAllClients(world, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
+        //TODO PacketSpawnAirParticle.sendToAllClients(world, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
     }
 
     /**
@@ -153,7 +153,7 @@ public class CommonProxy implements IGuiHandler
     public void spawnExplosionParticles(World world, double sourceX, double sourceY, double sourceZ, double blastScale, BlockPos blockPos)
     {
         //TODO allow client settings to sync to server to not received these packets
-        PacketSpawnBlockExplosion.sendToAllClients(world, sourceX, sourceY, sourceZ, blastScale, blockPos);
+        //TODO PacketSpawnBlockExplosion.sendToAllClients(world, sourceX, sourceY, sourceZ, blastScale, blockPos);
     }
 
     public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir) //TODO refactor to be packet based or wired to each flight logic type

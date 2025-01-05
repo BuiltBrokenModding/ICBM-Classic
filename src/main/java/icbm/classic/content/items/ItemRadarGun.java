@@ -142,7 +142,7 @@ public class ItemRadarGun extends ItemBase implements IPacketIDReceiver {
     }
 
     public void sendToServer(PlayerEntity player, Hand hand, Vec3d hit) {
-        ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(hand == Hand.MAIN_HAND).addData(hit));
+        // TODO ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(hand == Hand.MAIN_HAND).addData(hit));
     }
 
     @Override

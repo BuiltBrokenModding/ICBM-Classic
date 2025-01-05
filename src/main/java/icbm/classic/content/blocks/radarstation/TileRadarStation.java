@@ -399,7 +399,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         /* */.nodeInteger(NBT_DETECTION_RANGE, TileRadarStation::getDetectionRange, TileRadarStation::setDetectionRange)
         /* */.nodeInteger(NBT_TRIGGER_RANGE, TileRadarStation::getTriggerRange, TileRadarStation::setTriggerRange)
         /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
-        /* */.nodeInteger("sam_delay", tile -> tile.firingCooldown, (tile, i) -> tile.firingCooldown = i)
+        /* */.nodeInteger("firing_delay", tile -> tile.firingCooldown, (tile, i) -> tile.firingCooldown = i)
         .base();
     public static void register() {
 

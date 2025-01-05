@@ -142,7 +142,7 @@ public class MekProxy extends ModProxy
                                 }
                             }
 
-                            ICBMClassic.packetHandler.sendToAllAround(new PacketEntityPos(entity), world, entity.posX, entity.posY, entity.posZ, 400);
+                            // TODO ICBMClassic.packetHandler.sendToAllAround(new PacketEntityPos(entity), world, entity.posX, entity.posY, entity.posZ, 400);
                         }
                         else {
                             // Update position to mimic enter point

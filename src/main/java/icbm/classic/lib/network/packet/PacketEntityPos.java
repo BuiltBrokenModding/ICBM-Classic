@@ -14,9 +14,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  *
  */
 @Deprecated
-public class PacketEntityPos extends PacketBase<PacketEntityPos>
+public class PacketEntityPos //extends PacketBase<PacketEntityPos>
 {
-    public int entityId;
+    /*public int entityId;
     public int world;
     public double x, y, z;
     public double mx, my, mz;
@@ -94,5 +94,5 @@ public class PacketEntityPos extends PacketBase<PacketEntityPos>
     @Override
     public void handleServerSide(PlayerEntity player)
     {
-    }
+    }*/
 }

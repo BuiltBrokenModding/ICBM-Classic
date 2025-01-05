@@ -197,7 +197,7 @@ public class BlastTNT extends Blast
                 final BlockState blockState = world().getBlockState(blockDestroyedPos);
 
                 ///Generate effect TODO send a single packet with a list of block pos, this will do a 80% reduction in packet byte data
-                PacketSpawnBlockExplosion.sendToAllClients(world(), x(), y(), z(), getBlastRadius(), blockDestroyedPos);
+                //TODO PacketSpawnBlockExplosion.sendToAllClients(world(), x(), y(), z(), getBlastRadius(), blockDestroyedPos);
 
                 //Only edit block if not air
                 if (blockState.getMaterial() != Material.AIR)

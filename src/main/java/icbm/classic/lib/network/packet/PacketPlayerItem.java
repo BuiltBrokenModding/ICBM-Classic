@@ -15,9 +15,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * @since 26/05/14
  */
 @Deprecated
-public class PacketPlayerItem extends PacketBase<PacketPlayerItem>
+public class PacketPlayerItem //extends PacketBase<PacketPlayerItem>
 {
-    public int slotId;
+    /*public int slotId;
     public int id = 0;
 
     public PacketPlayerItem()
@@ -80,5 +80,5 @@ public class PacketPlayerItem extends PacketBase<PacketPlayerItem>
                 ((IPacketIDReceiver) stack.getItem()).read(data(), id, player, this);
             }
         }
-    }
+    }*/
 }
