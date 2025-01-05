@@ -58,7 +58,6 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.command.CommandSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -103,6 +102,13 @@ public class ICBMClassic
         INSTANCE = this;
 
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        // Life cycle
+        modBus.addListener(this::setup);
+        modBus.addListener(this::serverStarting);
+        modBus.addListener(this::serverStopping);
+
+        // Registries
         BlockReg.BLOCKS.register(modBus);
         ItemReg.ITEMS.register(modBus);
         TileReg.TILES.register(modBus);
@@ -153,7 +159,6 @@ public class ICBMClassic
     }*/
 
 
-    @SubscribeEvent
     public void setup(FMLCommonSetupEvent event)
     {
         proxy.preInit();
@@ -303,7 +308,6 @@ public class ICBMClassic
     }
 
 
-    @SubscribeEvent
     public void serverStarting(FMLServerStartingEvent event)
     {
         //Get command manager
@@ -319,7 +323,6 @@ public class ICBMClassic
         WorkerThreadManager.INSTANCE.startThreads();
     }
 
-    @SubscribeEvent
     public void serverStopping(FMLServerStoppingEvent event)
     {
         WorkerThreadManager.INSTANCE.killThreads();
