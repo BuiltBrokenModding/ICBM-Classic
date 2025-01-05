@@ -2,7 +2,6 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.cargo.ItemThrowableProjectile;
 import icbm.classic.content.cluster.bomblet.ItemBombDroplet;
@@ -12,23 +11,28 @@ import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
 import net.minecraft.item.Item;
 import net.minecraft.item.BlockItem;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
  */
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class ItemReg
 {
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<Item>(ForgeRegistries.ITEMS, ICBMConstants.DOMAIN);
 
+    // <editor-fold desc="simple-resources">
     public static final RegistryObject<Item> DUST_POISON = ITEMS.register("dust_poison", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> DUST_SULFUR = ITEMS.register("dust_sulfur", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> CLUMP_SALTPETER = ITEMS.register("clump_saltpeter", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
 
-    // <editor-fold desc="grenades">
+    //TODO OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
+    //TODO OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
+    //TODO OreDictionary.registerOre("dustSulfur", sulfurItem);
+    //TODO OreDictionary.registerOre("dustSaltpeter", saltpeterItem);
+    // </editor-fold>
+
+    // <editor-fold desc="entity-spawner-grenades">
     public static final RegistryObject<ItemGrenade> GRENADE_CONDENSED = ITEMS.register("grenade_condensed", () -> new ItemGrenade(EntityReg.GRENADE_CONDENSED::get, new Item.Properties().maxStackSize(16)));
     public static final RegistryObject<ItemGrenade> GRENADE_SHRAPNEL = ITEMS.register("grenade_shrapnel", () -> new ItemGrenade(EntityReg.GRENADE_SHRAPNEL::get, new Item.Properties().maxStackSize(16)));
     public static final RegistryObject<ItemGrenade> GRENADE_INCENDIARY = ITEMS.register("grenade_incendiary", () -> new ItemGrenade(EntityReg.GRENADE_INCENDIARY::get, new Item.Properties().maxStackSize(16)));
@@ -39,7 +43,7 @@ public class ItemReg
     public static final RegistryObject<ItemGrenade> GRENADE_ATTRACTIVE = ITEMS.register("grenade_attractive", () -> new ItemGrenade(EntityReg.GRENADE_ATTRACTIVE::get, new Item.Properties().maxStackSize(16)));
     // </editor-fold>
 
-    // <editor-fold desc="carts">
+    // <editor-fold desc="entity-spawner-carts">
     public static final RegistryObject<ItemBombCart> CART_CONDENSED = ITEMS.register("cart_explosive_condensed", () -> new ItemBombCart(EntityReg.BOMBCART_CONDENSED::get, new Item.Properties().maxStackSize(3)));
     public static final RegistryObject<ItemBombCart> CART_SHRAPNEL = ITEMS.register("cart_explosive_shrapnel", () -> new ItemBombCart(EntityReg.BOMBCART_SHRAPNEL::get, new Item.Properties().maxStackSize(3)));
     public static final RegistryObject<ItemBombCart> CART_INCENDIARY = ITEMS.register("cart_explosive_incendiary", () -> new ItemBombCart(EntityReg.BOMBCART_INCENDIARY::get, new Item.Properties().maxStackSize(3)));
@@ -65,13 +69,13 @@ public class ItemReg
     public static final RegistryObject<ItemBombCart> CART_REDMATTER = ITEMS.register("cart_explosive_redmatter", () -> new ItemBombCart(EntityReg.BOMBCART_REDMATTER::get, new Item.Properties().maxStackSize(3)));
     // </editor-fold>
 
-    // <editor-fold desc="bomblets">
+    // <editor-fold desc="entity-spawner-bomblets">
     public static final RegistryObject<Item> BOMBLET_EMPTY = ITEMS.register("bomblet_empty", () -> new Item(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed", () -> new ItemBombDroplet(EntityReg.BOMBLET_CONDENSED::get, new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     // TODO add other explosive types
     // </editor-fold>
 
-    // <editor-fold desc="missiles">    
+    // <editor-fold desc="entity-spawner-missiles">
     public static final RegistryObject<Item> MISSILE_SURFACE_TO_AIR = ITEMS.register("missile_surface_to_air", () -> new ItemSurfaceToAirMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> MISSILE_CLUSTER = ITEMS.register("missile_cluster", () -> new ItemClusterMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
 
@@ -100,22 +104,22 @@ public class ItemReg
     public static final RegistryObject<Item> MISSILE_REDMATTER = ITEMS.register("missile_explosive_redmatter", () -> new ItemMissile(EntityReg.MISSILE_REDMATTER::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
-    // <editor-fold desc="cargo">
+    // <editor-fold desc="entity-spawner-cargo">
     public static final RegistryObject<Item> PARACHUTE = ITEMS.register("parachute", () -> new ItemThrowableProjectile(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> BALLON = ITEMS.register("balloon", () -> new ItemThrowableProjectile(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
     // <editor-fold desc="tools">
-    public static final RegistryObject<Item> ANTIDOTE = ITEMS.register("antidote", () -> new ItemAntidote(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> ANTIDOTE = ITEMS.register("antidote_pill", () -> new ItemAntidote(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> DEFUSER = ITEMS.register("defuser_tool", () -> new ItemDefuser(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> RADAR_GUN = ITEMS.register("radar_tool", () -> new ItemRadarGun(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> REMOTE_DETONATOR = ITEMS.register("detonator_remote", () -> new ItemRemoteDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> LASER_DETONATOR = ITEMS.register("detonator_laser", () -> new ItemLaserDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> HELD_LAUNCHER_DIRECT = ITEMS.register("launcher_held_direct", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), false));
-    public static final RegistryObject<Item> HELD_LAUNCHER_BALLISTIC = ITEMS.register("launcher_held_ballistic", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), true));
+    public static final RegistryObject<Item> REMOTE_DETONATOR = ITEMS.register("detonator_remote_tool", () -> new ItemRemoteDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> LASER_DETONATOR = ITEMS.register("detonator_laser_tool", () -> new ItemLaserDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> HELD_LAUNCHER_DIRECT = ITEMS.register("direct_launcher_weapon", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), false));
+    public static final RegistryObject<Item> HELD_LAUNCHER_BALLISTIC = ITEMS.register("ballistic_launcher_weapon", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), true));
     // </editor-fold>
 
-    // <editor-fold desc="block-explosives">
+    // <editor-fold desc="blocks-explosives">
     public static final RegistryObject<Item> EXPLOSIVE_CONDENSED = ITEMS.register("explosive_condensed", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_CONDENSED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> EXPLOSIVE_SHRAPNEL = ITEMS.register("explosive_shrapnel", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_SHRAPNEL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> EXPLOSIVE_INCENDIARY = ITEMS.register("explosive_incendiary", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_INCENDIARY.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
@@ -141,7 +145,7 @@ public class ItemReg
     public static final RegistryObject<Item> EXPLOSIVE_REDMATTER = ITEMS.register("explosive_redmatter", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_REDMATTER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
-    // <editor-fold desc="base-building"> TODO split to another mod, as it doesn't match the core content
+    // <editor-fold desc="blocks-base-building"> TODO split to another mod, as it doesn't match the core content
     public static final RegistryObject<Item> GLASS_REINFORCED = ITEMS.register("glass_reinforced", () -> new BlockItem(BlockReg.GLASS_REINFORCED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     
     public static final RegistryObject<Item> SPIKE_NORMAL = ITEMS.register("spikes_normal", () -> new BlockItem(BlockReg.SPIKE_NORMAL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
@@ -153,7 +157,7 @@ public class ItemReg
     public static final RegistryObject<Item> CONCRETE_REINFORCED = ITEMS.register("concrete_reinforced", () -> new BlockItem(BlockReg.CONCRETE_REINFORCED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
-    // <editor-fold desc="machines">
+    // <editor-fold desc="blocks-machines">
     public static final RegistryObject<Item> EMP_TOWER_BASE = ITEMS.register("emp_tower_base", () -> new BlockItem(BlockReg.EMP_TOWER_BASE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> EMP_TOWER_COIL = ITEMS.register("emp_tower_coil", () -> new BlockItem(BlockReg.EMP_TOWER_COIL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     
@@ -167,13 +171,8 @@ public class ItemReg
     public static final RegistryObject<Item> LAUNCHER_CRUISE = ITEMS.register("launcher_cruise", () -> new BlockItem(BlockReg.LAUNCHER_CRUISE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
-    // <editor-fold desc="world">
+    // <editor-fold desc="blocks-world">
     public static final RegistryObject<Item> RADIOACTIVE_DIRT = ITEMS.register("radioactive_dirt", () -> new BlockItem(BlockReg.RADIOACTIVE_DIRT.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> RADIOACTIVE_STONE = ITEMS.register("radioactive_stone", () -> new BlockItem(BlockReg.RADIOACTIVE_STONE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
-
-    //TODO OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
-    //TODO OreDictionary.registerOre("dustSaltpeter", new ItemStack(ItemReg.itemSaltpeterDust));
-    //TODO OreDictionary.registerOre("dustSulfur", sulfurItem);
-    //TODO OreDictionary.registerOre("dustSaltpeter", saltpeterItem);
 }
