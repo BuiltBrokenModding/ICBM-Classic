@@ -48,9 +48,9 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<Co
         fuelTicks--;
 
         if(hasFuel(entity)) {
-            float f3 = MathHelper.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
-            entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180.0D / Math.PI);
-            entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(entity.motionY, (double) f3) * 180.0D / Math.PI);
+            float f3 = MathHelper.sqrt(entity.getMotion().x * entity.getMotion().x + entity.getMotion().z * entity.getMotion().z);
+            entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(entity.getMotion().x, entity.getMotion().z) * 180.0D / Math.PI);
+            entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(entity.getMotion().y, (double) f3) * 180.0D / Math.PI);
         }
     }
 
@@ -70,7 +70,7 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<Co
     @Override
     public void deserializeNBT(CompoundNBT save)
     {
-        if(save.hasKey("fuel")) {
+        if(save.contains("fuel")) {
             fuelTicks = save.getInt("fuel");
         }
     }
@@ -79,9 +79,9 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<Co
     public <V> V predictPosition(Entity entity, VecBuilderFunc<V> builder, int ticks)
     {
         return builder.apply(
-            entity.posX + entity.motionX * ticks, //TODO add gravity
-            entity.posY + entity.motionY * ticks,
-            entity.posZ + entity.motionZ * ticks
+            entity.posX + entity.getMotion().x * ticks, //TODO add gravity
+            entity.posY + entity.getMotion().y * ticks,
+            entity.posZ + entity.getMotion().z * ticks
         );
     }
 

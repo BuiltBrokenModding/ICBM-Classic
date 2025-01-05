@@ -23,7 +23,7 @@ public class CapabilityEmpMissile implements IEMPReceiver
     @Override
     public float applyEmpAction(World world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
     {
-        if(ConfigEMP.ALLOW_MISSILES && missile.getMissileEntity() != null && missile.getMissileEntity().isEntityAlive())
+        if(ConfigEMP.ALLOW_MISSILES && missile.getMissileEntity() != null && missile.getMissileEntity().isAlive())
         {
             if (doAction)
             {

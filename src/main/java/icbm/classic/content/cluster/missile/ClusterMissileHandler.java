@@ -1,13 +1,18 @@
 package icbm.classic.content.cluster.missile;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.config.util.ItemStackConfigList;
+import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.RegistryObject;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ClusterMissileHandler {
@@ -18,23 +23,40 @@ public final class ClusterMissileHandler {
 
     public static final ItemStackConfigList.IntOut itemSizes = new ItemStackConfigList.IntOut("[Cluster Contents][Item Sizes]", (configList) -> {
 
-        configList.setDefault(ItemReg.itemBalloon.getRegistryName(), 2, 0);
-        configList.setDefault(ItemReg.itemParachute.getRegistryName(), 2, 0);
+        configList.setDefault(ItemReg.BALLON.getId(), 2, 0);
+        configList.setDefault(ItemReg.PARACHUTE.getId(), 2, 0);
 
-        configList.setDefault(ItemReg.itemClusterMissile.getRegistryName(), 20, 0);
-        configList.setDefault(ItemReg.itemExplosiveMissile.getRegistryName(), 20, 0);
-        configList.setDefault(ItemReg.itemSAM.getRegistryName(), 10, 0);
+        configList.setDefault(ItemReg.MISSILE_CLUSTER.getId(), 20, 0);
+        configList.setDefault(ItemReg.MISSILE_SURFACE_TO_AIR.getId(), 10, 0);
 
-        configList.setDefault(ItemReg.itemBombletExplosive.getRegistryName(), 2, 0);
-        for(IExplosiveData data : ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives()) {
-            int size = 2;
-            switch(data.getTier()) {
-                case TWO: size = 5; break;
-                case THREE: size = 10; break;
-                case FOUR: size = 20; break;
-            }
-            configList.setDefaultMeta(new ItemStack(ItemReg.itemBombletExplosive, 1, data.getRegistryID()), size, 1);
-        }
+        configList.setDefault(ItemReg.EXPLOSIVE_CONDENSED.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_SHRAPNEL.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_INCENDIARY.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_DEBILITATION.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_CHEMICAL.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_ANVIL.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_REPULSIVE.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_ATTRACTIVE.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_COLOR.getId(), 10, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_SMOKE.getId(), 10, 0);
+
+        configList.setDefault(ItemReg.EXPLOSIVE_FRAGMENTATION.getId(), 20, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_CONTAGIOUS.getId(), 20, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_SONIC.getId(), 20, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_BREACHING.getId(), 20, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_THERMOBARIC .getId(), 20, 0);
+
+        configList.setDefault(ItemReg.EXPLOSIVE_NUCLEAR.getId(), 30, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_EMP.getId(), 30, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_EXOTHERMIC.getId(), 30, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_ENDOTHERMIC.getId(), 30, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_GRAVITY.getId(), 30, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_ENDER.getId(), 30, 0);
+
+        configList.setDefault(ItemReg.EXPLOSIVE_ANTIMATTER.getId(), 50, 0);
+        configList.setDefault(ItemReg.EXPLOSIVE_REDMATTER.getId(), 50, 0);
+
+        configList.setDefault(ItemReg.BOMBLET_CONDENSED.getId(), 2, 0);
 
 
         configList.load("icbmclassic/missile/cluster/item_ban_allow/list/item_sizes", ConfigMissile.CLUSTER_MISSILE.ITEM_SIZES.ITEMS);

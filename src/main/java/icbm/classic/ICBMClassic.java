@@ -25,8 +25,6 @@ import icbm.classic.content.cluster.bomblet.BombletProjectileData;
 import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.cargo.balloon.BalloonProjectileData;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
-import icbm.classic.content.items.behavior.BombCartDispenseBehavior;
-import icbm.classic.content.items.behavior.GrenadeDispenseBehavior;
 import icbm.classic.lib.buildable.BuildableObjectRegistry;
 import icbm.classic.content.missile.entity.CapabilityMissile;
 import icbm.classic.content.missile.entity.anti.SAMTargetData;
@@ -240,7 +238,6 @@ public class ICBMClassic
 
         // Register defaults
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(BallisticFlightLogicOld.REG_NAME, BallisticFlightLogicOld::new);
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(ArcFlightLogic.REG_NAME, ArcFlightLogic::new);
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(WarmupFlightLogic.REG_NAME, WarmupFlightLogic::new);
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveByFacingLogic.REG_NAME, MoveByFacingLogic::new);
@@ -277,8 +274,9 @@ public class ICBMClassic
 
         // Register defaults
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BombletProjectileData.NAME, BombletProjectileData::new);
-        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, ParachuteProjectileData::new);
-        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BalloonProjectileData.NAME, BalloonProjectileData::new);
+        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, () -> new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_1::get));
+        // TODO ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, () -> new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_2::get));
+        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BalloonProjectileData.NAME, () -> new BalloonProjectileData(EntityReg.CARGO_BALLOON::get));
     }
 
     void handleExRegistry()
@@ -309,13 +307,13 @@ public class ICBMClassic
     public void serverStarting(FMLServerStartingEvent event)
     {
         //Get command manager
-        CommandDispatcher<CommandSource> commandManager = event.getCommandDispatcher();
+        //CommandDispatcher<CommandSource> commandManager = event.getCommandDispatcher();
 
         //Setup commands
-        ICBMCommands.init();
+        //TODO ICBMCommands.init();
 
         //Register main command
-        commandManager.register(new CommandEntryPoint("icbm", ICBMCommands.ICBM_COMMAND));
+        //TODO commandManager.register(new CommandEntryPoint("icbm", ICBMCommands.ICBM_COMMAND));
 
         WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
         WorkerThreadManager.INSTANCE.startThreads();

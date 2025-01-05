@@ -241,12 +241,6 @@ public class EntityGrenade extends Entity
     }
 
     @Override
-    public boolean handleWaterMovement()
-    {
-        return this.world.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.WATER, this);
-    }
-
-    @Override
     public boolean canBeCollidedWith()
     {
         return true;

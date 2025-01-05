@@ -10,6 +10,7 @@ import icbm.classic.lib.transform.RotationHelper;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -165,34 +166,28 @@ public class ActionCluster extends ActionBase {
             null, this.allowPickupItem,
             (newEntity) -> {
                 newEntity.setPosition(getPosition().x + x, getPosition().y+ y, getPosition().z + z);
-
-                newEntity.motionX = mx;
-                newEntity.motionY = my;
-                newEntity.motionZ = mz;
+                newEntity.setMotion(mx, my, mz);
 
                 // set rotation to match motion
-                final float f3 = MathHelper.sqrt(newEntity.motionX * newEntity.motionX + newEntity.motionZ * newEntity.motionZ);
-                newEntity.prevRotationYaw = newEntity.rotationYaw = (float) (Math.atan2(newEntity.motionX, newEntity.motionZ) * 180.0D / Math.PI);
-                newEntity.prevRotationPitch = newEntity.rotationPitch = (float) (Math.atan2(newEntity.motionY, f3) * 180.0D / Math.PI);
+                final float f3 = MathHelper.sqrt(newEntity.getMotion().x * newEntity.getMotion().x + newEntity.getMotion().z * newEntity.getMotion().z);
+                newEntity.prevRotationYaw = newEntity.rotationYaw = (float) (Math.atan2(newEntity.getMotion().x, newEntity.getMotion().z) * 180.0D / Math.PI);
+                newEntity.prevRotationPitch = newEntity.rotationPitch = (float) (Math.atan2(newEntity.getMotion().y, f3) * 180.0D / Math.PI);
             });
 
         // Spawn item to prevent loss
         if(entity == null) {
-            final ItemEntity entityItem = new ItemEntity(getWorld());
+            final ItemEntity entityItem = EntityType.ITEM.create(getWorld());
             entityItem.setPosition(getPosition().x + x, getPosition().y+ y, getPosition().z + z);
             entityItem.setItem(stackToSpawn.copy());
             entityItem.setDefaultPickupDelay();
-
-            entityItem.motionX = mx;
-            entityItem.motionY = my;
-            entityItem.motionZ = mz;
+            entityItem.setMotion(mx, my, mz);
 
             // set rotation to match motion
-            final float f3 = MathHelper.sqrt(entityItem.motionX * entityItem.motionX + entityItem.motionZ * entityItem.motionZ);
-            entityItem.prevRotationYaw = entityItem.rotationYaw = (float) (Math.atan2(entityItem.motionX, entityItem.motionZ) * 180.0D / Math.PI);
-            entityItem.prevRotationPitch = entityItem.rotationPitch = (float) (Math.atan2(entityItem.motionY, f3) * 180.0D / Math.PI);
+            final float f3 = MathHelper.sqrt(entityItem.getMotion().x * entityItem.getMotion().x + entityItem.getMotion().z * entityItem.getMotion().z);
+            entityItem.prevRotationYaw = entityItem.rotationYaw = (float) (Math.atan2(entityItem.getMotion().x, entityItem.getMotion().z) * 180.0D / Math.PI);
+            entityItem.prevRotationPitch = entityItem.rotationPitch = (float) (Math.atan2(entityItem.getMotion().y, f3) * 180.0D / Math.PI);
 
-            return getWorld().spawnEntity(entityItem);
+            return getWorld().addEntity(entityItem);
         }
         return true;
     }

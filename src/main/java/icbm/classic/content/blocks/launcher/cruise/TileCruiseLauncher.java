@@ -343,7 +343,8 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
 
     @Override
     public Object getClientGuiElement(int id, PlayerEntity player) {
-        return new GuiCruiseLauncher(player, this);
+        //return new GuiCruiseLauncher(player, this);
+        return null;
     }
 
 

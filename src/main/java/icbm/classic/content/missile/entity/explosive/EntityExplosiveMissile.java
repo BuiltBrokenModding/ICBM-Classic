@@ -35,7 +35,7 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     private final NonNullSupplier<Float> maxHealth;
     private final LazyOptional<ItemStack> itemstack;
 
-    public EntityExplosiveMissile(EntityType<?> type, World w, IActionData data, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack)
+    public EntityExplosiveMissile(EntityType<EntityExplosiveMissile> type, World w, IActionData data, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack)
     {
         super(type, w);
         this.inAirKillTime = 144000 /* 2 hours */;

@@ -6,8 +6,10 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.item.ItemStack;
 
 public class RenderParachute extends RenderItemImp<EntityParachute> {
-    public RenderParachute(EntityRendererManager renderManagerIn) {
+    private final float renderScale;
+    public RenderParachute(EntityRendererManager renderManagerIn, float renderScale) {
         super(renderManagerIn);
+        this.renderScale = renderScale;
     }
 
     @Override
@@ -18,14 +20,13 @@ public class RenderParachute extends RenderItemImp<EntityParachute> {
 
     @Override
     protected ItemStack getRenderItem(EntityParachute entity) {
-        return entity.getRenderItemStack();
+        return entity.getRenderItemStack().orElse(ItemStack.EMPTY);
     }
 
     @Override
     protected void scale(EntityParachute e, float partialTicks) {
         if(e != null) {
-            final float scale = e.getRenderScale();
-            GlStateManager.scalef(scale, scale, scale);
+            GlStateManager.scalef(renderScale, renderScale, renderScale);
         }
     }
 }

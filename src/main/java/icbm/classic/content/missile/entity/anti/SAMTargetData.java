@@ -123,7 +123,7 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     private boolean isValid(Entity entity) {
         return entity instanceof EntityMissile
             && !(entity instanceof EntitySurfaceToAirMissile)
-            && entity.isEntityAlive();
+            && entity.isAlive();
         //TODO setup a FoF system to prevent targeting friendly missiles
         //TODO link to radar system so we can prioritize targets
         //TODO create missile that can fake out ABs

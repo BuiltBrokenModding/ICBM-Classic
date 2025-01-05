@@ -22,8 +22,7 @@ public class ItemSurfaceToAirMissile extends ItemBase
     @Nullable
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt)
     {
-        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.with("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilitySAMStack());
-        return provider;
+        return new ItemStackCapProvider(stack)
+            .with(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, CapabilitySAMStack::new);
     }
 }

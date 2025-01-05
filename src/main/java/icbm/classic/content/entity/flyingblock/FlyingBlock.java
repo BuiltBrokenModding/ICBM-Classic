@@ -2,6 +2,7 @@ package icbm.classic.content.entity.flyingblock;
 
 import icbm.classic.config.ConfigFlyingBlocks;
 import icbm.classic.config.util.BlockStateConfigList;
+import icbm.classic.content.reg.EntityReg;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
@@ -115,7 +116,7 @@ public class FlyingBlock {
 
         // TODO limit per chunk and per world to help reduce lag
 
-        final EntityFlyingBlock flyingBlock = new EntityFlyingBlock(world);
+        final EntityFlyingBlock flyingBlock = EntityReg.FLYING_BLOCKS.get().create(world);
         flyingBlock.setBlockData(blockCaptureData); //TODO allow mutations of state
         flyingBlock.setPosition(x, y, z);
 

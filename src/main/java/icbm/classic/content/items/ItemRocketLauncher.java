@@ -27,6 +27,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
@@ -113,7 +114,7 @@ public class ItemRocketLauncher extends ItemICBMElectrical {
                                 }
 
                                 // Setup source of missile for later cause by TODO include item used
-                                missile.setMissileSource(new ActionSource(world, missileEntity.getPositionVector(), new EntityCause(player)));
+                                missile.setMissileSource(new ActionSource(DimensionType.getKey(world.getDimension().getType()), missileEntity.getPositionVector(), new EntityCause(player)));
 
                                 // Raytrace to set a default target for air-burst missiles
                                 final double traceDistance = 500;

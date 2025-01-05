@@ -47,7 +47,7 @@ public class ItemClusterMissile extends ItemBase {
             if(parachute.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY).isPresent()) {
                 final IProjectileStack projectileStack = parachute.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY).orElseThrow(IllegalStateException::new);
                 if(projectileStack instanceof ProjectileStack) {
-                    final ParachuteProjectileData projectileData = new ParachuteProjectileData();
+                    final ParachuteProjectileData projectileData = new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_1::get);
                     projectileData.setHeldItem(new ItemStack(Items.COOKIE));
                     ((ProjectileStack) projectileStack).setProjectileData(projectileData);
                 }

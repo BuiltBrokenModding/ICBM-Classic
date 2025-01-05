@@ -82,10 +82,7 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     public boolean processInitialInteract(@Nonnull PlayerEntity player, @Nonnull Hand hand)
     {
         //Allow missile to override interaction
-        if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand))
-        {
-            return true;
-        }
+        //TODO if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand))
         return super.processInitialInteract(player, hand);
     }
 
