@@ -107,8 +107,8 @@ public class ItemReg
 
     // <editor-fold desc="tools">
     public static final RegistryObject<Item> ANTIDOTE = ITEMS.register("antidote", () -> new ItemAntidote(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> DEFUSER = ITEMS.register("defuser", () -> new ItemDefuser(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> RADAR_GUN = ITEMS.register("defuser", () -> new ItemRadarGun(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> DEFUSER = ITEMS.register("defuser_tool", () -> new ItemDefuser(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> RADAR_GUN = ITEMS.register("radar_tool", () -> new ItemRadarGun(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> REMOTE_DETONATOR = ITEMS.register("detonator_remote", () -> new ItemRemoteDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> LASER_DETONATOR = ITEMS.register("detonator_laser", () -> new ItemLaserDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> HELD_LAUNCHER_DIRECT = ITEMS.register("launcher_held_direct", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), false));
