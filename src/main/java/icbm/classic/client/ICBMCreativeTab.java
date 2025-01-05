@@ -12,7 +12,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Prefab creative tab to either create a fast creative tab or reduce code

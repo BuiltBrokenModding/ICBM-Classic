@@ -1,9 +1,6 @@
 package icbm.classic.api.reg;
 
-import icbm.classic.api.EnumTier;
 import icbm.classic.api.actions.IActionData;
-
-import javax.annotation.Nonnull;
 
 /**
  * Stores data about an explosive
