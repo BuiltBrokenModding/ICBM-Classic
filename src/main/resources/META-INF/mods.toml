@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="http://my.issue.tracker/"
+
+[[mods]]
+modId="icbm"
+version="${file.jarVersion}"
+displayName="I.C.B.M - Interconnected Block Missiles"
+#updateJSONURL="http://myurl.me/"
+displayURL="https://github.com/BuiltBrokenModding/ICBM-Classic"
+#logoFile="examplemod.png"
+credits="see Github for contributor list"
+authors="QueenOfMissiles"
+description='''
+Download: https://modrinth.com/mod/icbm or https://www.curseforge.com/minecraft/mc-mods/icbm
+
+I.C.B.M is focused on providing content focused around missiles. From simple explosives all the way up to multiblock launching system.
+'''
+
+[[dependencies.icbm]]
+modId="forge"
+mandatory=true
+versionRange="[28,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.icbm]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.14.4]"
+ordering="NONE"
+side="BOTH"

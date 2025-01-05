@@ -5,7 +5,7 @@ package icbm.classic;
  */
 public final class ICBMConstants
 {
-    public static final String DOMAIN = "icbmclassic";
+    public static final String DOMAIN = "icbm";
     public static final String PREFIX = DOMAIN + ":";
 
     public static final String TEXTURE_DIRECTORY = "textures/";
