@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelRenderer;
@@ -16,10 +17,19 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class TESREmpTower extends TileEntityRenderer<TileEntity>
 {
+
+    public static BlockState COIL;
+    public static BlockState ELECTRIC;
+
     @Override
     @OnlyIn(Dist.CLIENT)
     public void render(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage)
     {
+        if(COIL == null) {
+            COIL = BlockReg.EMP_TOWER_BASE.get().getDefaultState().with(BlockEmpTowerBase.TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.COIL);
+            ELECTRIC = BlockReg.EMP_TOWER_BASE.get().getDefaultState().with(BlockEmpTowerBase.TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.ELECTRIC);
+        }
+
         final BlockRendererDispatcher blockRendererDispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 
 
@@ -53,7 +63,7 @@ public class TESREmpTower extends TileEntityRenderer<TileEntity>
 
         GlStateManager.rotatef(rotation, 0.0F, 1.0F, 0.0F);
         GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-        blockRendererDispatcher.renderBlockBrightness(BlockEmpTowerBase.COIL, 1f);
+        blockRendererDispatcher.renderBlockBrightness(COIL, 1f);
         GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 
 
@@ -71,7 +81,7 @@ public class TESREmpTower extends TileEntityRenderer<TileEntity>
 
             GlStateManager.rotatef(rotation, 0.0F, 1.0F, 0.0F);
             GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
-            renderBlock(blockRendererDispatcher, tile.getWorld(), tile.getPos(), BlockEmpTowerBase.ELECTRIC);
+            renderBlock(blockRendererDispatcher, tile.getWorld(), tile.getPos(), ELECTRIC);
             GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 
             GlStateManager.disableBlend();

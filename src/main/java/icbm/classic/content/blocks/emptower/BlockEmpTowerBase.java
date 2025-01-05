@@ -20,15 +20,10 @@ import javax.annotation.Nullable;
 public class BlockEmpTowerBase extends Block implements ITileEntityProvider
 {
     public static final PropertyTowerStates TOWER_MODELS = new PropertyTowerStates();
-    public static BlockState COIL;
-    public static BlockState ELECTRIC;
 
     public BlockEmpTowerBase(Properties properties)
     {
         super(properties);
-
-        COIL = getDefaultState().with(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.COIL);
-        ELECTRIC = getDefaultState().with(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.ELECTRIC);
     }
 
     @Override
@@ -62,7 +57,7 @@ public class BlockEmpTowerBase extends Block implements ITileEntityProvider
     @Override
     public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer)
     {
-        if(state == ELECTRIC) {
+        if(state.has(TOWER_MODELS) && state.get(TOWER_MODELS) == PropertyTowerStates.EnumTowerTypes.ELECTRIC) {
             return BlockRenderLayer.TRANSLUCENT == layer;
         }
         return BlockRenderLayer.SOLID == layer;
