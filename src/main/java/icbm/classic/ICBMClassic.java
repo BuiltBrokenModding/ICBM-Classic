@@ -289,7 +289,6 @@ public class ICBMClassic
         ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
 
         //Fire registry events for content types
-        MinecraftForge.EVENT_BUS.post(new ExplosiveContentRegistryEvent(explosiveRegistry));
 
         //Lock content types, done to prevent errors with adding content
         explosiveRegistry.lockNewContentTypes();
@@ -298,7 +297,6 @@ public class ICBMClassic
         ExplosiveInit.init();
 
         //Fire registry event for explosives
-        MinecraftForge.EVENT_BUS.post(new ExplosiveRegistryEvent(explosiveRegistry));
         explosiveRegistry.lockNewExplosives();
 
         //Lock all registry, done to prevent errors in data generation for renders and content
