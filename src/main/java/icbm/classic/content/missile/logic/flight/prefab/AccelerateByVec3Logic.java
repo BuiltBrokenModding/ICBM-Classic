@@ -40,9 +40,11 @@ public abstract class AccelerateByVec3Logic extends FlightLogic {
         super.onEntityTick(entity, missile, ticksInAir);
         if(isValid() && !isDone()) {
             // Move missile
-            entity.motionX += direction.x * acceleration;
-            entity.motionY += direction.y * acceleration;
-            entity.motionZ += direction.z * acceleration;
+            entity.addVelocity(
+                direction.x * acceleration,
+                direction.y * acceleration,
+                direction.z * acceleration
+            );
 
             // Track acceleration added
             velocityAdded += acceleration;

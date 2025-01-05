@@ -53,9 +53,9 @@ public class MoveByVec3Logic extends AccelerateByVec3Logic {
         // Measured movement in direction, technically can run forever if something stops movement
         else
         {
-            distance -= getDirection().x * entity.motionX;
-            distance -= getDirection().y * entity.motionY;
-            distance -= getDirection().z * entity.motionZ;
+            distance -= getDirection().x * entity.getMotion().x;
+            distance -= getDirection().y * entity.getMotion().y;
+            distance -= getDirection().z * entity.getMotion().z;
         }
     }
 

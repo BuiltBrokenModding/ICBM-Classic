@@ -75,7 +75,7 @@ public class ClientReg {
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, RenderExplosion::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class,
             (rm) -> new RenderAsItem<EntityGrenade>(rm, EntityGrenade::renderItemStack).setBillboard(true));
-        RenderingRegistry.registerEntityRenderingHandler(EntityParachute.class, RenderParachute::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityParachute.class, (r) -> new RenderParachute(r,1));
         RenderingRegistry.registerEntityRenderingHandler(EntityBalloon.class,
             (rm) -> new RenderAsItem<EntityBalloon>(rm, (e) -> e.getRenderStack().orElseThrow(IllegalStateException::new)));
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, RenderLightBeam::new);

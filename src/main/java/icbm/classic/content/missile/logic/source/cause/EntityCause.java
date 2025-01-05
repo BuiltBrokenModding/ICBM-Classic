@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class EntityCause extends ActionCause implements ICausedByEntity {
 
     public EntityCause(Entity source) {
         entity = source;
-        name = source.getName();
+        name = source.getName().getFormattedText(); //TODO consider a better option
         id = source.getUniqueID();
         isPlayer = source instanceof PlayerEntity;
     }

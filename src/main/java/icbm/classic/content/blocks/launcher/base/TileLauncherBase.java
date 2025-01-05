@@ -14,6 +14,7 @@ import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.reg.EntityReg;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
@@ -126,8 +127,8 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
-    public TileLauncherBase(TileEntityType<TileLauncherBase> type) {
-        super(type);
+    public TileLauncherBase() {
+        super(TileReg.LAUNCHER_BASE.get());
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {

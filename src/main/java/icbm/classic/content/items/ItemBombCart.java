@@ -2,7 +2,6 @@ package icbm.classic.content.items;
 
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.entity.EntityBombCart;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;

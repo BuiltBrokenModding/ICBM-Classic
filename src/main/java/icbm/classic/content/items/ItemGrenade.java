@@ -5,7 +5,6 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityGrenade;
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
 import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

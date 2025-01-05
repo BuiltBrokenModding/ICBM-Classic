@@ -73,10 +73,10 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
 
 
         //Check for EMP support
-        if (itemStack.hasCapability(CapabilityEMP.EMP, null))
+        if (itemStack.getCapability(CapabilityEMP.EMP, null).isPresent())
         {
             //Get EMP handler
-            IEMPReceiver cap = itemStack.getCapability(CapabilityEMP.EMP, null);
+            IEMPReceiver cap = itemStack.getCapability(CapabilityEMP.EMP, null).orElseThrow(IllegalStateException::new);
             if (cap != null)
             {
                 //Apply effect
@@ -89,7 +89,7 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
             EnergySystem.getSystem(itemStack, null).setEnergy(itemStack, null, 0, false);
         }
 
-        if (doInventory && itemStack.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        if (doInventory && itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent())
         {
             if (container instanceof Entity)
             {
@@ -120,9 +120,9 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ENTITY_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigEMP.ALLOW_ENTITY_INVENTORY && entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent())
             {
-                IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(IllegalStateException::new);
 
                 //Currently only support IItemHandlerModifiable due to
                 //  contract on IItemHandler preventing modification of returned getStack()
@@ -153,9 +153,9 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_TILE_INVENTORY && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigEMP.ALLOW_TILE_INVENTORY && entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent())
             {
-                IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                IItemHandler handler = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(IllegalStateException::new);
 
                 //Currently only support IItemHandlerModifiable due to
                 //  contract on IItemHandler preventing modification of returned getStack()
@@ -188,9 +188,9 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent())
             {
-                IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(IllegalStateException::new);
 
                 //Currently only support IItemHandlerModifiable due to
                 //  contract on IItemHandler preventing modification of returned getStack()
@@ -223,9 +223,9 @@ public abstract class CapabilityEmpInventory<H extends Object> implements IEMPRe
         @Override
         protected IItemHandlerModifiable getCapability()
         {
-            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+            if (ConfigEMP.ALLOW_ITEM_INVENTORY && item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent())
             {
-                IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                IItemHandler handler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(IllegalStateException::new);
 
                 //Currently only support IItemHandlerModifiable due to
                 //  contract on IItemHandler preventing modification of returned getStack()

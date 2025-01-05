@@ -37,7 +37,7 @@ public class BallisticTargetingData extends BasicTargetData {
     @Override
     public CompoundNBT serializeNBT() {
         final CompoundNBT saveData = super.serializeNBT();
-        saveData.setDouble(NBT_IMPACT_HEIGHT, impactHeightOffset);
+        saveData.putDouble(NBT_IMPACT_HEIGHT, impactHeightOffset);
         return saveData;
     }
 

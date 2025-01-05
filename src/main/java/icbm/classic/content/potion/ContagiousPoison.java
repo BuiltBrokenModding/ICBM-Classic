@@ -3,6 +3,7 @@ package icbm.classic.content.potion;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * @deprecated remove at some point and apply potion effects directly
@@ -19,7 +20,7 @@ public class ContagiousPoison extends Poison
     }
 
     @Override
-    protected void doPoisonEntity(Pos emitPosition, LivingEntity entity, int amplifier)
+    protected void doPoisonEntity(Vec3d emitPosition, LivingEntity entity, int amplifier)
     {
         if (this.isContagious)
         {

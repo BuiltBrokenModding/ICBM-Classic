@@ -5,9 +5,11 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.missile.ConfigMissile;
+import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.NBTConstants;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.ChunkPos;
@@ -81,7 +83,7 @@ public class MissileTrackerWorld extends WorldSavedData
             missileList.add(mtd);
 
             //Destroys the entity and marks it for removal from world
-            missile.setDead();
+            missile.remove();
 
             //Mark that we need to save
             this.markDirty();
@@ -161,27 +163,33 @@ public class MissileTrackerWorld extends WorldSavedData
 
     private void spawnMissileOnDestination(final ServerWorld world, MissileTrackerData mtd)
     {
+        if(mtd.entityType == null) {
+            return;
+        }
         //Create entity
-        EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
+        Entity missile = mtd.entityType.create(world);
 
         //Set data
-        missile.readEntityFromNBT(mtd.missileData);
+        missile.read(mtd.missileData);
         missile.posY = ConfigMissile.SIMULATION_ENTER_HEIGHT;
         missile.posX = mtd.targetPos.x(); //TODO calculate arc position so we don't come in on top of the target
         missile.posZ = mtd.targetPos.z();
         missile.setMotion(0, -ConfigMissile.SIMULATION_ENTER_SPEED, 0); //TODO get speed it would have been at the given time
-        missile.rotateTowardsMotion(1);
 
-        // Change over to dead aim if we have no custom flight system
-        if(missile.getMissileCapability().getFlightLogic() == null) {
-            missile.getMissileCapability().setFlightLogic(new DeadFlightLogic(100));
+        if(missile instanceof EntityMissile) {
+            ((EntityMissile)missile).rotateTowardsMotion(1);
+
+            // Change over to dead aim if we have no custom flight system
+            if ( ((EntityMissile)missile).getMissileCapability().getFlightLogic() == null) {
+                ((EntityMissile)missile).getMissileCapability().setFlightLogic(new DeadFlightLogic(100));
+            }
+
+            //Trigger launch event
+            ((EntityMissile)missile).getMissileCapability().launch();
         }
 
-        //Trigger launch event
-        missile.getMissileCapability().launch();
-
         //Spawn entity
-        missile.world().spawnEntity(missile);
+        missile.world.addEntity(missile);
 
         if(ConfigDebug.DEBUG_MISSILE_TRACKER)
             ICBMClassic.logger().info("MissileTracker[{}]: Missile spawned by missile tracker: {}", missile.world.getDimension().toString(), missile);

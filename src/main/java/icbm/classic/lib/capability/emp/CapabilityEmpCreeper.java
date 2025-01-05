@@ -9,6 +9,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +21,8 @@ import javax.annotation.Nullable;
 public class CapabilityEmpCreeper implements IEMPReceiver, ICapabilityProvider
 {
     public final CreeperEntity creeper;
+
+    private final LazyOptional<CapabilityEmpCreeper> lazyOptional = LazyOptional.of(() -> this);
 
     public CapabilityEmpCreeper(CreeperEntity creeper)
     {
@@ -36,17 +39,12 @@ public class CapabilityEmpCreeper implements IEMPReceiver, ICapabilityProvider
         }
         return power;
     }
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing)
-    {
-        return capability == CapabilityEMP.EMP;
-    }
 
     @Nullable
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
     {
-        return capability == CapabilityEMP.EMP ? (T) this : null;
+        return capability == CapabilityEMP.EMP ? lazyOptional.cast() : LazyOptional.empty();
     }
 
 }

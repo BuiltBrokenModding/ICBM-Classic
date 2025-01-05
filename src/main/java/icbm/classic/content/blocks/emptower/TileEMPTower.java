@@ -14,6 +14,7 @@ import icbm.classic.content.actions.emp.ActionDataEmpArea;
 import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.emptower.gui.GuiEMPTower;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.actions.PotentialActionKnown;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
 import icbm.classic.lib.data.IMachineInfo;
@@ -97,8 +98,8 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
-    public TileEMPTower(TileEntityType<?> type) {
-        super(type);
+    public TileEMPTower() {
+        super(TileReg.EMP_TOWER_BASE.get());
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {

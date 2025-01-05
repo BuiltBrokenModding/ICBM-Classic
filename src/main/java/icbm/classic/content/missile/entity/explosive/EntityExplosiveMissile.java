@@ -73,10 +73,10 @@ public class EntityExplosiveMissile extends EntityMissile<EntityExplosiveMissile
     public boolean processInitialInteract(@Nonnull PlayerEntity player, @Nonnull Hand hand)
     {
         //Allow missile to override interaction
-        if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand))
-        {
-            return true;
-        }
+        //if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand)) TODO
+        //{
+        //    return true;
+        //}
         return super.processInitialInteract(player, hand);
     }
 

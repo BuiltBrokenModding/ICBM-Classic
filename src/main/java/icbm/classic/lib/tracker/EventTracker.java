@@ -119,7 +119,7 @@ public class EventTracker {
         }
         if(!good) {
             final String msg = String.format("EventTracker(%s): Ignoring event due to containing editable fields. Supplying said fields could result in listeners incorrectly editing the game state", type.getName());
-            ICBMClassic.logger().error(msg, new RuntimeException("Dev Bug, likely caused by domain '" + type.getName().getResourceDomain() + "' but may be another mod using the domain incorrectly"));
+            ICBMClassic.logger().error(msg, new RuntimeException("Dev Bug, likely caused by domain '" + type.getName().getNamespace() + "' but may be another mod using the domain incorrectly"));
         }
         return good;
     }

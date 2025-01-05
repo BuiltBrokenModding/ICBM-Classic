@@ -32,6 +32,6 @@ public class CapabilityEmpKill<E extends Entity> implements IEMPReceiver
 
     protected void setDeadEmp(IAction emp_blast, float power)
     {
-        entity.setDead();
+        entity.remove();
     }
 }

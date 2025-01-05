@@ -96,9 +96,9 @@ public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, I
     @Override
     public CompoundNBT serializeNBT() {
         final CompoundNBT saveData = new CompoundNBT();
-        saveData.setDouble("x", position.x);
-        saveData.setDouble("y", position.y);
-        saveData.setDouble("z", position.z);
+        saveData.putDouble("x", position.x);
+        saveData.putDouble("y", position.y);
+        saveData.putDouble("z", position.z);
         saveData.putInt("firingDelay", firingDelay);
         return saveData;
     }

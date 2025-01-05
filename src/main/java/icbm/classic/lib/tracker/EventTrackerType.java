@@ -165,7 +165,7 @@ public class EventTrackerType {
         }
 
         private ResourceLocation suffix(ResourceLocation prefix, String suffix) {
-            return new ResourceLocation(prefix.getResourceDomain(), prefix.getResourcePath() + "." + suffix);
+            return new ResourceLocation(prefix.getNamespace(), prefix.getPath() + "." + suffix);
         }
 
         public Builder listen(ResourceLocation name, IEventTrackerListener listener) {

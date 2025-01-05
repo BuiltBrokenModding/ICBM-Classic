@@ -19,6 +19,7 @@ import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
@@ -85,8 +86,8 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
-    public TileLauncherScreen(TileEntityType<?> type) {
-        super(type);
+    public TileLauncherScreen() {
+        super(TileReg.LAUNCHER_SCREEN.get());
         tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {
             playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchScreen));

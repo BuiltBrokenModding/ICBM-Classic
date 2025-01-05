@@ -56,9 +56,7 @@ public class DirectFlightLogic extends DeadFlightLogic
     public void start(Entity entity, IMissile missile)
     {
         //Set motion
-        entity.motionX = motionX;
-        entity.motionY = motionY;
-        entity.motionZ = motionZ;
+        entity.setMotion(motionX, motionY, motionZ);
 
         //Update rotation
         float f3 = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);

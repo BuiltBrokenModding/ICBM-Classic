@@ -53,9 +53,9 @@ public class MoveByFacingLogic extends AccelerateByFacingLogic {
         // Measured movement in direction, technically can run forever if something stops movement
         else
         {
-            distance -= getDirection().getFrontOffsetX() * entity.motionX;
-            distance -= getDirection().getFrontOffsetY() * entity.motionY;
-            distance -= getDirection().getFrontOffsetZ() * entity.motionZ;
+            distance -= getDirection().getXOffset() * entity.getMotion().x;
+            distance -= getDirection().getYOffset() * entity.getMotion().y;
+            distance -= getDirection().getZOffset() * entity.getMotion().z;
         }
     }
 

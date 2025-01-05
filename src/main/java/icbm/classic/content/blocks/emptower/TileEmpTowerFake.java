@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.emptower;
 
+import icbm.classic.content.reg.TileReg;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 
@@ -7,8 +8,8 @@ public class TileEmpTowerFake extends TileEntity {
 
     private TileEMPTower host;
 
-    public TileEmpTowerFake(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public TileEmpTowerFake() {
+        super(TileReg.EMP_TOWER_COIL.get());
     }
 
     public void setHost(TileEMPTower tower) {

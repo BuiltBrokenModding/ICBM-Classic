@@ -39,9 +39,11 @@ public abstract class AccelerateByFacingLogic extends FlightLogic {
         super.onEntityTick(entity, missile, ticksInAir);
         if(isValid() && !isDone()) {
             // Move missile
-            entity.motionX += direction.getFrontOffsetX() * acceleration;
-            entity.motionY += direction.getFrontOffsetY() * acceleration;
-            entity.motionZ += direction.getFrontOffsetZ() * acceleration;
+            entity.addVelocity(
+                direction.getXOffset() * acceleration,
+            direction.getYOffset() * acceleration,
+                direction.getZOffset() * acceleration
+            );
 
             // Track acceleration added
             velocityAdded += acceleration;
