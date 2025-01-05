@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
  */
 public class TileLauncherScreen extends TileMachine implements ILauncherComponent, IMachineInfo, IPlayerUsing, IGuiTile
 {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherscreen");
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_screen");
 
     /** Target position of the launcher */
     private Vec3d _targetPos = Vec3d.ZERO;

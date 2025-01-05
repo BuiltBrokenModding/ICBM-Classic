@@ -8,7 +8,6 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigRadar;
 import icbm.classic.content.blocks.radarstation.data.RadarRenderData;
 import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;
-import icbm.classic.content.blocks.radarstation.gui.GuiRadarStation;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.data.IMachineInfo;
@@ -32,25 +31,21 @@ import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,7 +56,7 @@ import java.util.function.BiConsumer;
 
 public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiTile, IPlayerUsing, INamedContainerProvider
 {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "radarstation");
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "radar_screen");
 
 
     public static final ITextComponent TRANSLATION_GUI_NAME = new TranslationTextComponent("gui.icbmclassic:radar.name");
@@ -119,7 +114,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     private int firingCooldown = 0;
 
     public TileRadarStation() {
-        super(TileReg.RADAR_STATION.get());
+        super(TileReg.RADAR_SCREEN.get());
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20, true, (t) -> {

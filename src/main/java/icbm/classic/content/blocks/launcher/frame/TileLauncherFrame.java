@@ -1,17 +1,20 @@
 package icbm.classic.content.blocks.launcher.frame;
 
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.reg.TileReg;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
 public class TileLauncherFrame extends TileEntity implements ILauncherComponent {
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_frame");
 
     private final LauncherNode launcherNode = new LauncherNode(this, false);
 

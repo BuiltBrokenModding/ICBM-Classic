@@ -64,7 +64,7 @@ import java.util.function.BiConsumer;
  */
 public class TileLauncherBase extends TileMachine implements ILauncherComponent, IMachineInfo, IGuiTile, IPlayerUsing
 {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherbase");
+    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_base");
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
