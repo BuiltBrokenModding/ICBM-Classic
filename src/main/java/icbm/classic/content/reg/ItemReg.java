@@ -24,6 +24,7 @@ public class ItemReg
     // <editor-fold desc="simple-resources">
     public static final RegistryObject<Item> DUST_POISON = ITEMS.register("dust_poison", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> DUST_SULFUR = ITEMS.register("dust_sulfur", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> DUST_SALTPETER = ITEMS.register("dust_saltpeter", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> CLUMP_SALTPETER = ITEMS.register("clump_saltpeter", () -> new Item(new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
 
     //TODO OreDictionary.registerOre("dustSulfur", new ItemStack(ItemReg.itemSulfurDust));
@@ -111,12 +112,12 @@ public class ItemReg
 
     // <editor-fold desc="tools">
     public static final RegistryObject<Item> ANTIDOTE = ITEMS.register("antidote_pill", () -> new ItemAntidote(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> DEFUSER = ITEMS.register("defuser_tool", () -> new ItemDefuser(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> RADAR_GUN = ITEMS.register("radar_tool", () -> new ItemRadarGun(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> REMOTE_DETONATOR = ITEMS.register("detonator_remote_tool", () -> new ItemRemoteDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> LASER_DETONATOR = ITEMS.register("detonator_laser_tool", () -> new ItemLaserDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> HELD_LAUNCHER_DIRECT = ITEMS.register("direct_launcher_weapon", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), false));
-    public static final RegistryObject<Item> HELD_LAUNCHER_BALLISTIC = ITEMS.register("ballistic_launcher_weapon", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), true));
+    public static final RegistryObject<Item> DEFUSER = ITEMS.register("tool_defuser", () -> new ItemDefuser(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> RADAR_GUN = ITEMS.register("tool_position_laser", () -> new ItemRadarGun(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> REMOTE_DETONATOR = ITEMS.register("tool_detonator_remote", () -> new ItemRemoteDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> LASER_DETONATOR = ITEMS.register("tool_detonator_laser", () -> new ItemLaserDetonator(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> HELD_LAUNCHER_DIRECT = ITEMS.register("launcher_held_direct", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), false));
+    public static final RegistryObject<Item> HELD_LAUNCHER_BALLISTIC = ITEMS.register("launcher_held_ballistic", () -> new ItemRocketLauncher(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB), true));
     // </editor-fold>
 
     // <editor-fold desc="blocks-explosives">

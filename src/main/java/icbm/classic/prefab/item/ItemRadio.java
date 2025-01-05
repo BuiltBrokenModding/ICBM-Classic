@@ -14,11 +14,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 @Deprecated /** @deprecated replace with capability */
 public class ItemRadio extends ItemBase {
+
+    private static final String MESSAGE_FREQUENCY_SET = "item.icbm.radio.frequency.set";
 
     public ItemRadio(Properties p_i48487_1_) {
         super(p_i48487_1_);
@@ -35,7 +38,7 @@ public class ItemRadio extends ItemBase {
                 if(radio instanceof IRadioChannelAccess) {
                     final String channel = ((IRadioChannelAccess) radio).getChannel();
                     setRadioChannel(heldItem, channel);
-                    context.getPlayer().sendMessage(new StringTextComponent(LanguageUtility.getLocal("chat.launcher.toolFrequencySet").replace("%s", channel)));
+                    context.getPlayer().sendMessage(new TranslationTextComponent(MESSAGE_FREQUENCY_SET, channel));
                 }
             }
             return ActionResultType.SUCCESS;

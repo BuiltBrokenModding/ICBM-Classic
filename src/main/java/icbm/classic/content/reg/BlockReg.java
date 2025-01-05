@@ -46,7 +46,7 @@ public class BlockReg {
     public static final RegistryObject<Block> EMP_TOWER_BASE = BLOCKS.register("emp_tower_base", () -> new BlockEmpTowerBase(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
     public static final RegistryObject<Block> EMP_TOWER_COIL = BLOCKS.register("emp_tower_coil", () -> new BlockEmpTowerCoil(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
 
-    public static final RegistryObject<Block> RADAR_SCREEN = BLOCKS.register("radar_screen", () -> new BlockRadarStation(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+    public static final RegistryObject<Block> RADAR_SCREEN = BLOCKS.register(BlockRadarStation.REGISTRY_KEY.getPath(), () -> new BlockRadarStation(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
 
     public static final RegistryObject<Block> LAUNCHER_FRAME = BLOCKS.register("launcher_frame", () -> new BlockLaunchFrame(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
     public static final RegistryObject<Block> LAUNCHER_CONNECTOR = BLOCKS.register("launcher_connector", () -> new BlockLaunchConnector(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));

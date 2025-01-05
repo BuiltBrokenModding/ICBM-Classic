@@ -80,10 +80,6 @@ public class ItemDefuser extends ItemICBMElectrical
             this.discharge(itemStack, ENERGY_COST, true);
             return true;
         }
-        else
-        {
-            player.sendMessage(new StringTextComponent(LanguageUtility.getLocal("message.defuser.nopower")));
-        }
 
         return false;
     }

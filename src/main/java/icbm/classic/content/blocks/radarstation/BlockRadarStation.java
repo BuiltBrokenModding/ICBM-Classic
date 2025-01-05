@@ -1,8 +1,7 @@
 package icbm.classic.content.blocks.radarstation;
 
-import icbm.classic.ICBMClassic;
+import icbm.classic.ICBMConstants;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -15,8 +14,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
@@ -32,6 +33,10 @@ public class BlockRadarStation extends Block {
     public static final BooleanProperty REDSTONE_PROPERTY = BooleanProperty.create("redstone");
     public static final EnumProperty<EnumRadarState> RADAR_STATE = EnumProperty.create("type", EnumRadarState.class);
     public static final EnumProperty<Direction> ROTATION_PROP = BlockStateProperties.FACING;
+
+    public static final ResourceLocation REGISTRY_KEY = new ResourceLocation(ICBMConstants.DOMAIN, "radar_screen");
+    public static final ITextComponent REDSTONE_ON_MESSAGE = new TranslationTextComponent("block.icbm.radar.screen.redstone.on");
+    public static final ITextComponent REDSTONE_OFF_MESSAGE = new TranslationTextComponent("block.icbm.radar.screen.redstone.off");
 
     public BlockRadarStation(Properties properties) {
         super(properties);
@@ -88,14 +93,14 @@ public class BlockRadarStation extends Block {
                 if (player.getHeldItem(hand).getItem() == Items.REDSTONE) //TODO move to UI
                 {
                     ((TileRadarStation) tile).setOutputRedstone(!((TileRadarStation) tile).isOutputRedstone());
-                    player.sendMessage(new TranslationTextComponent(((TileRadarStation) tile).isOutputRedstone() ? "message.radar.redstone.on" : "message.radar.redstone.off"));
+                    player.sendMessage(((TileRadarStation) tile).isOutputRedstone() ? REDSTONE_ON_MESSAGE : REDSTONE_OFF_MESSAGE);
                 } else if (player instanceof ServerPlayerEntity) {
                     NetworkHooks.openGui((ServerPlayerEntity) player, (TileRadarStation)tile, pos);
                     //https://github.com/Up-Mods/Cammies-Wearable-Backpacks/blob/1.20.1/NeoForge/src/main/java/dev/cammiescorner/camsbackpacks/neoforge/services/NFMenuHelper.java
                     //player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
                 }
             } else {
-                player.sendMessage(new StringTextComponent("\u00a7cUnexpected error: Couldn't access radar station tile"));
+                player.sendMessage(new StringTextComponent("\u00a7cUnexpected error: Couldn't access radar station tile")); //TODO move to generic error that is translated
             }
         }
         return true;
