@@ -55,9 +55,11 @@ public class ItemStackCapProvider implements ICapabilityProvider, INBTSerializab
         for (Map.Entry<Capability, LazyOptional<Object>> entry : capTypeToCap.entrySet())
         {
             entry.getValue().ifPresent((value) -> {
+                if(value instanceof INBTSerializable) {
                 final INBT nbt = ((INBTSerializable) value).serializeNBT();
                 if(!(nbt instanceof CompoundNBT) || !((CompoundNBT) nbt).isEmpty()) {
                     tag.put(entry.getKey().getName(), nbt);
+                }
                 }
             });
         }
@@ -70,7 +72,7 @@ public class ItemStackCapProvider implements ICapabilityProvider, INBTSerializab
         for (Map.Entry<Capability, LazyOptional<Object>> entry : capTypeToCap.entrySet())
         {
             entry.getValue().ifPresent((value) -> {
-                if(nbt.contains(entry.getKey().getName())) {
+                if(entry.getValue() instanceof INBTSerializable && nbt.contains(entry.getKey().getName())) {
                     final INBT save = nbt.get(entry.getKey().getName());
                     if(!(save instanceof CompoundNBT) || !((CompoundNBT) save).isEmpty()) {
                         ((INBTSerializable) entry.getValue()).deserializeNBT(save);

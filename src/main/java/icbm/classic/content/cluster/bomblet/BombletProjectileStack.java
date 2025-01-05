@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 @Value
 public class BombletProjectileStack implements IProjectileStack<EntityBombDroplet> {
 
-    private final NonNullSupplier<EntityType<EntityBombDroplet>> entityType;
+    NonNullSupplier<EntityType<EntityBombDroplet>> entityType;
 
     @Override
     public IProjectileData<EntityBombDroplet> getProjectileData() {
