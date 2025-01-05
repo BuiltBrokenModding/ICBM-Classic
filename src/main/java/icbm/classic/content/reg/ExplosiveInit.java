@@ -19,7 +19,6 @@ import icbm.classic.content.blast.gas.BlastContagious;
 import icbm.classic.content.blast.redmatter.ActionSpawnRedmatter;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
-import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
@@ -142,7 +141,7 @@ public class ExplosiveInit
                     .setBlastWorld(w).setBlastPosition(x, y, z)
         );
 
-        ICBMExplosives.REDMATTER = newEx("redMatter", (w, x, y, z, s) -> new ActionSpawnRedmatter(w, new Vec3d(x, y, z), s, ICBMExplosives.REDMATTER));
+        ICBMExplosives.REDMATTER = newEx("redmatter", (w, x, y, z, s) -> new ActionSpawnRedmatter(w, new Vec3d(x, y, z), s, ICBMExplosives.REDMATTER));
 
         //=================== No content, only blast
 
