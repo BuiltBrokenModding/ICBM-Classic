@@ -43,7 +43,7 @@ public class WarmupFlightLogic extends FlightLogic {
         super.onEntityTick(entity, missile, ticksInAir);
         if (--timer > 0) {
             // Generate engine smoke to simulate a rocket engine starting but forces are not high enough to move up yet
-            ICBMClassic.proxy.spawnPadSmoke(entity, this, ticksInAir);
+            //TODO ICBMClassic.proxy.spawnPadSmoke(entity, this, ticksInAir);
         }
     }
 

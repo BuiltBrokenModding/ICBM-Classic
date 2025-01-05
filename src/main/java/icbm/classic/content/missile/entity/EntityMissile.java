@@ -110,7 +110,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
                 logic.onEntityTick(this, missileCapability, ticksInAir);
 
                 if(logic.shouldRunEngineEffects(this)) {
-                    ICBMClassic.proxy.spawnMissileSmoke(this, logic, ticksInAir);
+                    //TODO ICBMClassic.proxy.spawnMissileSmoke(this, logic, ticksInAir);
                     ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
                 }
             });

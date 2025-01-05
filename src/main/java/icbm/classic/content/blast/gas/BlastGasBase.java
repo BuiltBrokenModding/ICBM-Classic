@@ -288,7 +288,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
     protected void spawnGasParticles(final Vec3i pos)
     {
-        ICBMClassic.proxy.spawnAirParticle(world,
+        /*ICBMClassic.proxy.spawnAirParticle(world,
                 pos.getX(),
                 pos.getY(),
                 pos.getZ(),
@@ -298,7 +298,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
                 getParticleColorRed(pos),
                 getParticleColorGreen(pos),
                 getParticleColorBlue(pos),
-                7.0F, duration);
+                7.0F, duration);*/
     }
 
     protected float getParticleColorRed(final Vec3i pos)

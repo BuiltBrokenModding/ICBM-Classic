@@ -82,7 +82,7 @@ public class ICBMClassic
     public static ICBMClassic INSTANCE;
 
     //@SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.CommonProxy")
-    public static CommonProxy proxy;
+    //public static CommonProxy proxy;
 
     public static final int MAP_HEIGHT = 255;
 
@@ -161,7 +161,6 @@ public class ICBMClassic
 
     public void setup(FMLCommonSetupEvent event)
     {
-        proxy.preInit();
         EnergySystem.register(new EnergySystemFE());
 
         //Network packets
@@ -185,7 +184,6 @@ public class ICBMClassic
         handleExRegistry();
         handleProjectileDataRegistry();
 
-        proxy.init();
         packetHandler.init();
         CREATIVE_TAB.init();
         ProjectileBlockInteraction.register();
