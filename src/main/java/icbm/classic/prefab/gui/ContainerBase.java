@@ -3,9 +3,12 @@ package icbm.classic.prefab.gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
 
 public class ContainerBase<H extends Object> extends Container
 {
@@ -15,26 +18,16 @@ public class ContainerBase<H extends Object> extends Container
     protected PlayerEntity player;
     protected H host;
 
-    public ContainerBase(IInventory inventory)
+    public ContainerBase(@Nullable ContainerType<?> type, int id, IInventory inventory)
     {
+        super(type, id);
         this.inventory = inventory;
         this.slotCount = inventory.getSizeInventory();
     }
 
-    @Deprecated
-    public ContainerBase(PlayerEntity player, IInventory inventory)
+    public ContainerBase(@Nullable ContainerType<?> type, int id, PlayerEntity player, H node)
     {
-        this(inventory);
-
-        this.player = player;
-        if (inventory instanceof IPlayerUsing)
-        {
-            ((IPlayerUsing) inventory).getPlayersUsing().add(player);
-        }
-    }
-
-    public ContainerBase(PlayerEntity player, H node)
-    {
+        super(type, id);
         if (node instanceof IInventory)
         {
             inventory = (IInventory) node;
@@ -74,14 +67,14 @@ public class ContainerBase<H extends Object> extends Container
         {
             for (int slot = 0; slot < 9; ++slot)
             {
-                this.addSlotToContainer(new net.minecraft.inventory.container.Slot(player.inventory, slot + row * 9 + 9, slot * 18 + x, row * 18 + y));
+                this.addSlot(new net.minecraft.inventory.container.Slot(player.inventory, slot + row * 9 + 9, slot * 18 + x, row * 18 + y));
             }
         }
 
         //Hot bar
         for (int slot = 0; slot < 9; ++slot)
         {
-            this.addSlotToContainer(new Slot(player.inventory, slot, slot * 18 + x, 58 + y));
+            this.addSlot(new Slot(player.inventory, slot, slot * 18 + x, 58 + y));
         }
     }
 
@@ -93,7 +86,7 @@ public class ContainerBase<H extends Object> extends Container
         }
         else if(this.host instanceof TileEntity) {
             final BlockPos pos = ((TileEntity) this.host).getPos();
-            return entityplayer.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5) <= 4.0;
+            return Math.sqrt(entityplayer.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ()+ 0.5)) <= 4.0;
         }
         return true;
     }

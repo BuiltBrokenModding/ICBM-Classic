@@ -33,7 +33,7 @@ public class BlastContagious extends BlastGasBase
     @Override
     protected boolean canGasEffect(LivingEntity entity)
     {
-        return super.canGasEffect(entity) && !entity.isEntityInvulnerable(CONTAGIOUS_DAMAGE);
+        return super.canGasEffect(entity) && !entity.isInvulnerableTo(CONTAGIOUS_DAMAGE);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlastContagious extends BlastGasBase
     @Override
     protected void applyEffect(final LivingEntity entity, final int hitCount)
     {
-        ICBMClassic.contagiousPotion.poisonEntity(location.toPos(), entity, 3);
+        ICBMClassic.contagiousPotion.poisonEntity(getPosition(), entity, 3);
 
         //Apply damage to non-mutated entities if toxin level is high enough
         if (!BlastMutation.applyMutationEffect(entity) && hitCount > toxicityBuildup)

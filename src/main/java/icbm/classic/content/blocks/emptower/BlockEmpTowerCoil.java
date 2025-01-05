@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.emptower;
 
+import icbm.classic.content.reg.TileReg;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ContainerBlock;
@@ -34,6 +35,6 @@ public class BlockEmpTowerCoil extends ContainerBlock
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn)
     {
-        return new TileEmpTowerFake();
+        return TileReg.EMP_TOWER_COIL.get().create();
     }
 }

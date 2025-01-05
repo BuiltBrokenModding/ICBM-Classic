@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -65,88 +66,18 @@ public abstract class Poison
      * @param amplifier
      * @param emitPosition
      */
-    public void poisonEntity(Pos emitPosition, LivingEntity entity, int amplifier)
+    public void poisonEntity(Vec3d emitPosition, LivingEntity entity, int amplifier)
     {
-        if (!isEntityProtected(emitPosition, entity, amplifier))
+        if (!(entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()))
         {
             doPoisonEntity(emitPosition, entity, amplifier);
         }
     }
 
-    public void poisonEntity(Pos emitPosition, LivingEntity entity)
+    public void poisonEntity(Vec3d emitPosition, LivingEntity entity)
     {
         this.poisonEntity(emitPosition, entity, 0);
     }
 
-    public boolean isEntityProtected(Pos emitPosition, LivingEntity entity, int amplifier)
-    {
-        if(entity instanceof PlayerEntity && ((PlayerEntity) entity).capabilities.isCreativeMode)
-        {
-            return true;
-        }
-        /* EnumSet<ArmorType> armorWorn = EnumSet.noneOf(ArmorType.class);
-
-        if (entity instanceof EntityPlayer)
-        {
-            EntityPlayer entityPlayer = (EntityPlayer) entity;
-
-            for (int i = 0; i < entityPlayer.inventory.armorInventory.length; i++)
-            {
-                if (entityPlayer.inventory.armorInventory[i] != null)
-                {
-                    if (entityPlayer.inventory.armorInventory[i].getItem() instanceof IAntiPoisonArmor)
-                    {
-                        IAntiPoisonArmor armor = (IAntiPoisonArmor) entityPlayer.inventory.armorInventory[i].getItem();
-
-                        if (armor.isProtectedFromPoison(entityPlayer.inventory.armorInventory[i], entity, this.getName()))
-                        {
-                            armorWorn.add(ArmorType.values()[armor.getArmorType() % ArmorType.values().length]);
-                            // TODO: Consider putting this in another method.
-                            armor.onProtectFromPoison(entityPlayer.inventory.armorInventory[i], entity, this.getName());
-                        }
-                    }
-                }
-            }
-        }
-
-        return armorWorn.containsAll(this.armorRequired);
-         */
-        return false;
-    }
-
-    public int getAntiPoisonBlockCount(World world, Pos startingPosition, Pos endingPosition)
-    {
-        /* Pos delta = endingPosition.clone().subtract(startingPosition).normalize();
-        Pos targetPosition = startingPosition.clone();
-        double totalDistance = startingPosition.distance(endingPosition);
-
-        int count = 0;
-
-        if (totalDistance > 1)
-        {
-            while (targetPosition.distance(endingPosition) <= totalDistance)
-            {
-                int block = targetPosition.getBlockID(world);
-
-                if (block > 0)
-                {
-                    if (Block.blocksList[block] instanceof IAntiPoisonBlock)
-                    {
-                        if (((IAntiPoisonBlock) Block.blocksList[block]).isPoisonPrevention(world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), this.getName()))
-                        {
-                            count++;
-                        }
-                    }
-                }
-
-                targetPosition.add(delta);
-            }
-        }
-
-        return count;
-        */
-        return 0;
-    }
-
-    protected abstract void doPoisonEntity(Pos emitPosition, LivingEntity entity, int amplifier);
+    protected abstract void doPoisonEntity(Vec3d emitPosition, LivingEntity entity, int amplifier);
 }

@@ -30,7 +30,7 @@ public class BlastChemical extends BlastGasBase
     @Override
     protected boolean canGasEffect(LivingEntity entity)
     {
-        return super.canGasEffect(entity) && !entity.isEntityInvulnerable(CHEMICAL_DAMAGE);
+        return super.canGasEffect(entity) && !entity.isInvulnerableTo(CHEMICAL_DAMAGE);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BlastChemical extends BlastGasBase
     @Override
     protected void applyEffect(final LivingEntity entity, final int hitCount)
     {
-        ICBMClassic.chemicalPotion.poisonEntity(location.toPos(), entity);
+        ICBMClassic.chemicalPotion.poisonEntity(getPosition(), entity);
         if (hitCount > toxicityBuildup)
         {
             // TODO https://builtbroken.codecks.io/decks/14-icbm-backlog/card/1aq-rework-gas-weapons

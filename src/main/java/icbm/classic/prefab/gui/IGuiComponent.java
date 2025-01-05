@@ -48,27 +48,4 @@ public interface IGuiComponent {
      */default void drawBackgroundLayer(float f, int mouseX, int mouseY) {
 
     }
-
-
-    /**
-     * Called when a key is pressed
-     *
-     * @param key character
-     * @param keyId id
-     * @return true if consumed to prevent other interaction from firing
-     */
-    default boolean onKeyTyped(char key, int keyId) {
-        return false;
-    }
-
-    /**
-     * Called when mouse is clicked
-     *
-     * @param mouseX position
-     * @param mouseY position
-     * @param mouseButton pressed
-     */
-    default void onMouseClick(int mouseX, int mouseY, int mouseButton) {
-
-    }
 }

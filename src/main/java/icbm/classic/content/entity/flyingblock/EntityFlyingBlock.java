@@ -19,6 +19,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -148,8 +149,8 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         //Grace period to get away from the ground
         if(ticksInAir < 5) return;
 
-        if(impactLocation.getType() == RayTraceResult.Type.BLOCK) {
-            this.placeBlockIntoWorld(new BlockPos(impactLocation.getHitVec()), impactLocation);
+        if(impactLocation.getType() == RayTraceResult.Type.BLOCK && impactLocation instanceof BlockRayTraceResult) {
+            this.placeBlockIntoWorld(new BlockPos(impactLocation.getHitVec()), (BlockRayTraceResult)impactLocation);
         }
         else {
             // TODO spawn fragments based on block in some cases (wood material -> wood fragments)
@@ -158,7 +159,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         }
     }
 
-    public void placeBlockIntoWorld(BlockPos pos, RayTraceResult hit)
+    public void placeBlockIntoWorld(BlockPos pos, BlockRayTraceResult hit)
     {
         this.remove();
 
@@ -171,7 +172,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         }
     }
 
-    protected boolean tryPlacement(BlockPos pos, RayTraceResult hit) {
+    protected boolean tryPlacement(BlockPos pos, BlockRayTraceResult hit) {
 
         // Attempt to place using item, as it will better handle unique rules
         final ItemStack sourceStack = this.blockData.getSourceStack();
@@ -183,7 +184,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
             //TODO pull entityYaw to get placement direction. This way furnace places facing the same way as it renders.
             final ActionResultType result =  sourceStack.getItem()
-                .onItemUse(player, world, pos, Hand.MAIN_HAND, hit.sideHit, (float)hit.hitVec.x, (float)hit.hitVec.y, (float)hit.hitVec.z);
+                .onItemUse(new ItemUseContext(player, Hand.MAIN_HAND, hit));
 
             // cleanup fake
             player.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
@@ -195,7 +196,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
         // Backup plan if we can't place via item, this will break in some cases TODO implement a config to disable blocks or change placement rules
         final BlockState blockState = this.getBlockData().getBlockState();
-        if (this.world.mayPlace(blockState.getBlock(), pos, true, Direction.UP, this)) {
+        if (blockState.isValidPosition(world, pos)) {
 
             if (!world.setBlockState(pos, blockState, 11)) return false;
 

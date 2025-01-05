@@ -3,9 +3,12 @@ package icbm.classic.content.blocks.emptower.gui;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
+
+import javax.annotation.Nullable;
 
 /**
  *
@@ -13,11 +16,11 @@ import net.minecraftforge.items.SlotItemHandler;
  */
 public class ContainerEMPTower extends ContainerBase<TileEMPTower>
 {
-    public ContainerEMPTower(PlayerEntity player, TileEMPTower tileEMPTower)
+    public ContainerEMPTower(@Nullable ContainerType<?> type, int id, PlayerEntity player, TileEMPTower tileEMPTower)
     {
-        super(player, tileEMPTower);
+        super(type, id, player, tileEMPTower);
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEMPTower.inventory, 0, 141, 47));
+        this.addSlot(new SlotItemHandler(tileEMPTower.inventory, 0, 141, 47));
         addPlayerInventory(player, 7, 84);
     }
 

@@ -28,9 +28,6 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
     protected ArrayList<IGuiComponent> components = new ArrayList();
 
 
-    /** Debug toogle to render text for the ID and inventory ID for a slot */
-    public boolean renderSlotDebugIDs = false;
-
     public GuiContainerBase(T container, PlayerInventory inv, ITextComponent titleIn)
     {
         super(container, inv, titleIn);
@@ -42,7 +39,6 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
     public void init()
     {
         super.init();
-        this.buttonList.clear();
         this.components.clear();
     }
 
@@ -60,7 +56,7 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
             addComponent((IGuiComponent) button);
         }
         else {
-            buttonList.add(button);
+            buttons.add(button);
         }
         return button;
     }
@@ -77,7 +73,7 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
 
     protected <T extends IGuiComponent> T addComponent(T field) {
         if(field instanceof Button) {
-            buttonList.add((Button) field);
+            buttons.add((Button) field);
         }
         components.add(field);
         field.onAddedToHost(this);
@@ -85,15 +81,15 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
     }
 
     @Override
-    public void onGuiClosed()
+    public void onClose()
     {
-        Keyboard.enableRepeatEvents(false);
-        super.onGuiClosed();
+        super.onClose();
+        //Keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         components.forEach(IGuiComponent::onUpdate);
     }
 
@@ -135,61 +131,24 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    public void render(int mouseX, int mouseY, float partialTicks)
     {
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
         renderHoveredToolTip(mouseX, mouseY); //TODO consider render tooltips in this step
         components.forEach(component -> component.draw(mouseX, mouseY, partialTicks));
     }
 
     @Override
-    protected void keyTyped(char c, int id) throws IOException
-    {
-        //Key for debug render
-        if (id == Keyboard.KEY_INSERT)
-        {
-            renderSlotDebugIDs = !renderSlotDebugIDs;
-        }
-        else
-        {
-            boolean f = components.stream().anyMatch(component -> component.onKeyTyped(c, id));
-            if (!f)
-            {
-                super.keyTyped(c, id);
-            }
-        }
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
-        drawDefaultBackground();
+        //drawDefaultBackground();
 
-        this.mc.renderEngine.bindTexture(this.getBackground());
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.getMinecraft().textureManager.bindTexture(this.getBackground());
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
         components.forEach(component -> component.drawBackgroundLayer(partialTicks, mouseX, mouseY));
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        components.forEach(component -> {
-            if(!(component instanceof Button)) {
-                component.onMouseClick(mouseX, mouseY, mouseButton);
-            }
-        });
-    }
-
-    @Override
-    protected void actionPerformed(Button button) throws IOException
-    {
-        if(button instanceof GuiButtonBase) {
-            ((GuiButtonBase) button).triggerAction();
-        }
     }
 
     //TODO update and docs
@@ -198,14 +157,14 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
         if (toolTips != null)
         {
             GlStateManager.disableRescaleNormal();
-            GlStateManager.disableDepth();
+            GlStateManager.disableDepthTest();
 
             int textMaxWidth = 0;
 
             // Render all my lines
             for (String line : toolTips)
             {
-                final int lineWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(line);
+                final int lineWidth = this.font.getStringWidth(line);
 
                 // Tack longest line
                 if (lineWidth > textMaxWidth)
@@ -229,7 +188,7 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
                 backgroundY = this.height - var9 - this.guiTop - 6;
             }
 
-            this.zLevel = 300;
+            this.blitOffset = 300;
             int var10 = -267386864;
             this.blit(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
             this.blit(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
@@ -246,13 +205,13 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
             // Draw text shadows
             for (String line : toolTips)
             {
-                Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line, backgroundX, backgroundY, -1);
+                this.font.drawStringWithShadow(line, backgroundX, backgroundY, -1);
                 backgroundY += 10;
             }
 
-            this.zLevel = 0;
+            this.blitOffset = 0;
 
-            GlStateManager.enableDepth();
+            GlStateManager.enableDepthTest();
             GlStateManager.enableRescaleNormal();
         }
     }

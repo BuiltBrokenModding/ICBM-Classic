@@ -1,25 +1,16 @@
 package icbm.classic.content.blocks.explosive;
 
-import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveStatic;
-import icbm.classic.prefab.item.ItemBlockAbstract;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-
-import javax.annotation.Nullable;
 
 public class ItemBlockExplosive extends BlockItem
 {
-    public ItemBlockExplosive(Block block)
+    public ItemBlockExplosive(Block block, Properties properties)
     {
-        super(block, new Properties().maxStackSize(64));
+        super(block, properties);
     }
 
-    @Override
+   /* @Override TODO implement capability for providing action data
     @Nullable
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt)
     {
@@ -28,5 +19,5 @@ public class ItemBlockExplosive extends BlockItem
             explosiveData = ((BlockExplosive) getBlock()).explosiveData;
         }
         return new CapabilityExplosiveStatic(explosiveData, () -> stack);
-    }
+    }*/
 }

@@ -42,4 +42,7 @@ public final class ActionFields {
 
     /** Entity save data */
     public static ActionField<CompoundNBT, CompoundNBT> ENTITY_DATA;
+
+    /** Delay in ticks before triggering action */
+    public static ActionField<Integer, IntNBT> DELAY_TICKS;
 }

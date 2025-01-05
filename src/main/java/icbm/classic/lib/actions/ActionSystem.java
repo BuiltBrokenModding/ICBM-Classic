@@ -2,6 +2,7 @@ package icbm.classic.lib.actions;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.IPotentialAction;
 import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.api.actions.conditions.ICondition;
@@ -17,12 +18,15 @@ import icbm.classic.content.actions.conditionals.ConditionTargetDistance;
 import icbm.classic.content.actions.conditionals.ConditionalImpact;
 import icbm.classic.content.actions.emp.ActionDataEmpArea;
 import icbm.classic.content.actions.entity.ActionSpawnEntity;
+import icbm.classic.content.blocks.explosive.BlockExplosive;
+import icbm.classic.content.blocks.explosive.ExplosiveEntityActionData;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.blocks.launcher.status.LauncherStatus;
 import icbm.classic.content.cluster.action.ActionDataCluster;
 import icbm.classic.content.missile.logic.source.cause.CausedByBlock;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.source.cause.RedstoneCause;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.actions.conditionals.timer.TimerCondition;
 import icbm.classic.lib.actions.conditionals.timer.TimerTickingStatus;
 import icbm.classic.lib.actions.listners.ActionListenerHandler;
@@ -35,6 +39,8 @@ import icbm.classic.lib.saving.nodes.SaveNodeResourceLocation;
 import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.FloatNBT;
@@ -42,10 +48,38 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ActionSystem {
     public static final ResourceLocation ACTION_ENTITY_SPAWN = new ResourceLocation(ICBMConstants.DOMAIN, "entity.spawn");
+
+    //TODO make registry public static DeferredRegister<IActionData> ACTION_DATA;
+
+    public static final IActionData SPAWN_EXPLOSIVE_CONDENSED = new ExplosiveEntityActionData("condensed", EntityReg.BLOCK_CONDENSED::get);
+    public static final IActionData SPAWN_EXPLOSIVE_SHRAPNEL = new ExplosiveEntityActionData("shrapnel", EntityReg.BLOCK_SHRAPNEL::get);
+    public static final IActionData SPAWN_EXPLOSIVE_INCENDIARY = new ExplosiveEntityActionData("incendiary", EntityReg.BLOCK_INCENDIARY::get);
+    public static final IActionData SPAWN_EXPLOSIVE_DEBILITATION = new ExplosiveEntityActionData("debilitation", EntityReg.BLOCK_DEBILITATION::get);
+    public static final IActionData SPAWN_EXPLOSIVE_CHEMICAL = new ExplosiveEntityActionData("chemical", EntityReg.BLOCK_CHEMICAL::get);
+    public static final IActionData SPAWN_EXPLOSIVE_ANVIL = new ExplosiveEntityActionData("anvil", EntityReg.BLOCK_ANVIL::get);
+    public static final IActionData SPAWN_EXPLOSIVE_REPULSIVE = new ExplosiveEntityActionData("repulsive", EntityReg.BLOCK_REPULSIVE::get);
+    public static final IActionData SPAWN_EXPLOSIVE_ATTRACTIVE = new ExplosiveEntityActionData("attractive", EntityReg.BLOCK_ATTRACTIVE::get);
+    public static final IActionData SPAWN_EXPLOSIVE_COLOR = new ExplosiveEntityActionData("color", EntityReg.BLOCK_COLOR::get);
+    public static final IActionData SPAWN_EXPLOSIVE_SMOKE = new ExplosiveEntityActionData("smoke", EntityReg.BLOCK_SMOKE::get);
+    public static final IActionData SPAWN_EXPLOSIVE_FRAGMENTATION = new ExplosiveEntityActionData("fragmentation", EntityReg.BLOCK_FRAGMENTATION::get);
+    public static final IActionData SPAWN_EXPLOSIVE_CONTAGIOUS = new ExplosiveEntityActionData("contagious", EntityReg.BLOCK_CONTAGIOUS::get);
+    public static final IActionData SPAWN_EXPLOSIVE_SONIC = new ExplosiveEntityActionData("sonic", EntityReg.BLOCK_SONIC::get);
+    public static final IActionData SPAWN_EXPLOSIVE_THERMOBARIC = new ExplosiveEntityActionData("thermobaric", EntityReg.BLOCK_THERMOBARIC::get);
+    public static final IActionData SPAWN_EXPLOSIVE_NUCLEAR = new ExplosiveEntityActionData("nuclear", EntityReg.BLOCK_NUCLEAR::get);
+    public static final IActionData SPAWN_EXPLOSIVE_EMP = new ExplosiveEntityActionData("emp", EntityReg.BLOCK_EMP::get);
+    public static final IActionData SPAWN_EXPLOSIVE_EXOTHERMIC = new ExplosiveEntityActionData("exothermic", EntityReg.BLOCK_EXOTHERMIC::get);
+    public static final IActionData SPAWN_EXPLOSIVE_ENDOTHERMIC = new ExplosiveEntityActionData("endothermic", EntityReg.BLOCK_ENDOTHERMIC::get);
+    public static final IActionData SPAWN_EXPLOSIVE_GRAVITY = new ExplosiveEntityActionData("gravity", EntityReg.BLOCK_GRAVITY::get);
+    public static final IActionData SPAWN_EXPLOSIVE_ENDER = new ExplosiveEntityActionData("ender", EntityReg.BLOCK_ENDER::get);
+    public static final IActionData SPAWN_EXPLOSIVE_ANTIMATTER = new ExplosiveEntityActionData("antimatter", EntityReg.BLOCK_ANTIMATTER::get);
+    public static final IActionData SPAWN_EXPLOSIVE_REDMATTER = new ExplosiveEntityActionData("redmatter", EntityReg.BLOCK_REDMATTER::get);
 
     public static void setup()
     {
@@ -110,6 +144,30 @@ public final class ActionSystem {
 
         // Register defaults
         new ActionDataEmpArea().register();
+
+        SPAWN_EXPLOSIVE_CONDENSED.register();
+        SPAWN_EXPLOSIVE_SHRAPNEL.register();
+        SPAWN_EXPLOSIVE_INCENDIARY .register();
+        SPAWN_EXPLOSIVE_DEBILITATION.register();
+        SPAWN_EXPLOSIVE_CHEMICAL.register();
+        SPAWN_EXPLOSIVE_ANVIL.register();
+        SPAWN_EXPLOSIVE_REPULSIVE.register();
+        SPAWN_EXPLOSIVE_ATTRACTIVE.register();
+        SPAWN_EXPLOSIVE_COLOR.register();
+        SPAWN_EXPLOSIVE_SMOKE.register();
+        SPAWN_EXPLOSIVE_FRAGMENTATION.register();
+        SPAWN_EXPLOSIVE_CONTAGIOUS.register();
+        SPAWN_EXPLOSIVE_SONIC.register();
+        SPAWN_EXPLOSIVE_THERMOBARIC.register();
+        SPAWN_EXPLOSIVE_NUCLEAR.register();
+        SPAWN_EXPLOSIVE_EMP.register();
+        SPAWN_EXPLOSIVE_EXOTHERMIC.register();
+        SPAWN_EXPLOSIVE_ENDOTHERMIC.register();
+        SPAWN_EXPLOSIVE_GRAVITY .register();
+        SPAWN_EXPLOSIVE_ENDER.register();
+        SPAWN_EXPLOSIVE_ANTIMATTER.register();
+        SPAWN_EXPLOSIVE_REDMATTER.register();
+
         ICBMClassicAPI.ACTION_REGISTRY.register(ActionDataCluster.REG_NAME, ActionDataCluster::new);
         ICBMClassicAPI.ACTION_REGISTRY.register(ACTION_ENTITY_SPAWN,
             () -> new ActionDataGeneric(ACTION_ENTITY_SPAWN,

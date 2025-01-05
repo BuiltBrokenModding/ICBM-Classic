@@ -113,6 +113,7 @@ public class ActionSpawnEntity extends ActionBase {
         if (key == ActionFields.ENTITY_DATA) {
             this.entityData = (CompoundNBT) value;
         }
+        //TODO add function supplier to store then set on action to the entity BiConsumer<Entity, VALUE>
     }
 
     @Override

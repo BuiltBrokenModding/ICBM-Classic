@@ -16,6 +16,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.shapes.VoxelShape;
 
 import java.util.*;
 
@@ -58,7 +59,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         if (callCount == 0 && !this.playShortSoundFX)
         {
             //TODO look into different sounds per type
-            ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.DEBILITATION.play(world, this.x(), this.y(), this.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
 
         //Do gas effect
@@ -76,8 +77,8 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
                 //Max bounds
                 final AxisAlignedBB bounds = new AxisAlignedBB(
-                        location.x() - radius, location.y() - radius, location.z() - radius,
-                        location.x() + radius, location.y() + radius, location.z() + radius);
+                        x() - radius, y() - radius, z() - radius,
+                        x() + radius, y() + radius, z() + radius);
 
                 final List<LivingEntity> entityList = world()
                         .getEntitiesWithinAABB(LivingEntity.class, bounds, this::canGasEffect);
@@ -145,7 +146,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     protected boolean canGasEffect(LivingEntity entity)
     {
         //Ignore dead things
-        if (entity.isEntityAlive())
+        if (entity.isAlive())
         {
             //Always ignore non-gameplay characters
             if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative())
@@ -165,7 +166,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     {
         if (this.playShortSoundFX)
         {
-            ICBMSounds.GAS_LEAK.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D,
+            ICBMSounds.GAS_LEAK.play(world, x() + 0.5D, y() + 0.5D, z() + 0.5D,
                     4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F), true);
         }
     }
@@ -250,16 +251,18 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     private boolean isValidPath(final BlockPos pos, final Direction direction)
     {
         final BlockState blockState = world.getBlockState(pos);
-        final AxisAlignedBB aabb = blockState.getCollisionBoundingBox(world, pos);
-        if (aabb == null) // if there is no bounding box, its pass through, so its a valid path
+        final VoxelShape voxelShape = blockState.getCollisionShape(world, pos);
+        if (voxelShape.isEmpty()) // if there is no bounding box, its pass through, so its a valid path
         {
             return true;
         }
 
-        // whether or not the respective axes are completely stretched (they span form one side of the block to another)
-        boolean xFull = aabb.minX == 0 && aabb.maxX == 1;
-        boolean yFull = aabb.minY == 0 && aabb.maxY == 1;
-        boolean zFull = aabb.minZ == 0 && aabb.maxZ == 1;
+        //TODO find a way to better detect using some outline calculation
+
+        // whether the respective axes are completely stretched (they span form one side of the block to another)
+        boolean xFull = voxelShape.getStart(Direction.Axis.X) <= 0.001 && voxelShape.getEnd(Direction.Axis.X) >= 0.999;
+        boolean yFull = voxelShape.getStart(Direction.Axis.Y) <= 0.001 && voxelShape.getEnd(Direction.Axis.Y) >= 0.999;
+        boolean zFull = voxelShape.getStart(Direction.Axis.Z) <= 0.001 && voxelShape.getEnd(Direction.Axis.Z) >= 0.999;
 
         boolean isImpassable = false;
         if (direction == Direction.UP || direction == Direction.DOWN)
@@ -280,7 +283,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
     private boolean isInRange(final Vec3i pos, final int radiusSq)
     {
-        return (int) Math.floor(pos.distanceSq(xi(), yi(), zi())) <= radiusSq;
+        return (int) Math.floor(pos.distanceSq(xi(), yi(), zi(), true)) <= radiusSq;
     }
 
     protected void spawnGasParticles(final Vec3i pos)
@@ -326,6 +329,6 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     {
         super.save(nbt);
         nbt.putInt(NBTConstants.DURATION, this.duration);
-        nbt.setBoolean(NBTConstants.PLAY_SHORT_SOUND_FX, this.playShortSoundFX);
+        nbt.putBoolean(NBTConstants.PLAY_SHORT_SOUND_FX, this.playShortSoundFX);
     }
 }

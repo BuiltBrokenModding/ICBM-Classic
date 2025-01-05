@@ -12,6 +12,7 @@ import icbm.classic.api.actions.status.ActionStatusTypes;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.CausedByBlock;
+import icbm.classic.lib.actions.fields.ActionFieldProvider;
 import icbm.classic.lib.actions.status.ActionResponses;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.tile.ITick;
@@ -28,6 +29,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Pre-built action for general purpose implementation where all components are known.
@@ -102,7 +104,7 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
         }
 
         final IActionSource actionSource = new ActionSource(DimensionType.getKey(world.getDimension().getType()), new Vec3d(x, y, z), causeToUse);
-        return ICBMClassicAPI.ACTION_LISTENER.runAction(actionData.create(world, x, y, z, actionSource, this.fieldProvider));
+        return ICBMClassicAPI.ACTION_LISTENER.runAction(actionData.create(world, x, y, z, actionSource, Optional.ofNullable(this.fieldProvider).map(ActionFieldProvider::new).get()));
     }
 
     @Override

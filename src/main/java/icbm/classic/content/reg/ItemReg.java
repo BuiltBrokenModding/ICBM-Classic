@@ -3,6 +3,7 @@ package icbm.classic.content.reg;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.refs.ICBMExplosives;
+import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.cargo.ItemThrowableProjectile;
 import icbm.classic.content.cluster.bomblet.ItemBombDroplet;
 import icbm.classic.content.cluster.missile.ItemClusterMissile;
@@ -115,29 +116,29 @@ public class ItemReg
     // </editor-fold>
 
     // <editor-fold desc="block-explosives">
-    public static final RegistryObject<Item> EXPLOSIVE_CONDENSED = ITEMS.register("explosive_condensed", () -> new BlockItem(BlockReg.EXPLOSIVE_CONDENSED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_SHRAPNEL = ITEMS.register("explosive_shrapnel", () -> new BlockItem(BlockReg.EXPLOSIVE_SHRAPNEL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_INCENDIARY = ITEMS.register("explosive_incendiary", () -> new BlockItem(BlockReg.EXPLOSIVE_INCENDIARY.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_DEBILITATION = ITEMS.register("explosive_debilitation", () -> new BlockItem(BlockReg.EXPLOSIVE_DEBILITATION.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_CHEMICAL = ITEMS.register("explosive_chemical", () -> new BlockItem(BlockReg.EXPLOSIVE_CHEMICAL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_ANVIL = ITEMS.register("explosive_anvil", () -> new BlockItem(BlockReg.EXPLOSIVE_ANVIL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_REPULSIVE = ITEMS.register("explosive_repulsive", () -> new BlockItem(BlockReg.EXPLOSIVE_REPULSIVE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_ATTRACTIVE = ITEMS.register("explosive_attractive", () -> new BlockItem(BlockReg.EXPLOSIVE_ATTRACTIVE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_COLOR = ITEMS.register("explosive_color", () -> new BlockItem(BlockReg.EXPLOSIVE_COLOR.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_SMOKE = ITEMS.register("explosive_smoke", () -> new BlockItem(BlockReg.EXPLOSIVE_SMOKE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_FRAGMENTATION = ITEMS.register("explosive_fragmentation", () -> new BlockItem(BlockReg.EXPLOSIVE_FRAGMENTATION.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_CONTAGIOUS = ITEMS.register("explosive_contagious", () -> new BlockItem(BlockReg.EXPLOSIVE_CONTAGIOUS.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_SONIC = ITEMS.register("explosive_sonic", () -> new BlockItem(BlockReg.EXPLOSIVE_SONIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_BREACHING = ITEMS.register("explosive_breaching", () -> new BlockItem(BlockReg.EXPLOSIVE_BREACHING.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_THERMOBARIC = ITEMS.register("explosive_thermobaric", () -> new BlockItem(BlockReg.EXPLOSIVE_THERMOBARIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_NUCLEAR = ITEMS.register("explosive_nuclear", () -> new BlockItem(BlockReg.EXPLOSIVE_NUCLEAR.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_EMP = ITEMS.register("explosive_emp", () -> new BlockItem(BlockReg.EXPLOSIVE_EMP.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_EXOTHERMIC = ITEMS.register("explosive_exothermic", () -> new BlockItem(BlockReg.EXPLOSIVE_EXOTHERMIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_ENDOTHERMIC = ITEMS.register("explosive_endothermic", () -> new BlockItem(BlockReg.EXPLOSIVE_ENDOTHERMIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_GRAVITY = ITEMS.register("explosive_gravity", () -> new BlockItem(BlockReg.EXPLOSIVE_GRAVITY.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_ENDER = ITEMS.register("explosive_ender", () -> new BlockItem(BlockReg.EXPLOSIVE_ENDER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_ANTIMATTER = ITEMS.register("explosive_antimatter", () -> new BlockItem(BlockReg.EXPLOSIVE_ANTIMATTER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> EXPLOSIVE_REDMATTER = ITEMS.register("explosive_redmatter", () -> new BlockItem(BlockReg.EXPLOSIVE_REDMATTER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_CONDENSED = ITEMS.register("explosive_condensed", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_CONDENSED.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_SHRAPNEL = ITEMS.register("explosive_shrapnel", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_SHRAPNEL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_INCENDIARY = ITEMS.register("explosive_incendiary", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_INCENDIARY.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_DEBILITATION = ITEMS.register("explosive_debilitation", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_DEBILITATION.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_CHEMICAL = ITEMS.register("explosive_chemical", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_CHEMICAL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_ANVIL = ITEMS.register("explosive_anvil", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_ANVIL.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_REPULSIVE = ITEMS.register("explosive_repulsive", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_REPULSIVE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_ATTRACTIVE = ITEMS.register("explosive_attractive", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_ATTRACTIVE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_COLOR = ITEMS.register("explosive_color", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_COLOR.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_SMOKE = ITEMS.register("explosive_smoke", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_SMOKE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_FRAGMENTATION = ITEMS.register("explosive_fragmentation", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_FRAGMENTATION.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_CONTAGIOUS = ITEMS.register("explosive_contagious", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_CONTAGIOUS.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_SONIC = ITEMS.register("explosive_sonic", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_SONIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_BREACHING = ITEMS.register("explosive_breaching", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_BREACHING.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_THERMOBARIC = ITEMS.register("explosive_thermobaric", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_THERMOBARIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_NUCLEAR = ITEMS.register("explosive_nuclear", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_NUCLEAR.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_EMP = ITEMS.register("explosive_emp", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_EMP.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_EXOTHERMIC = ITEMS.register("explosive_exothermic", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_EXOTHERMIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_ENDOTHERMIC = ITEMS.register("explosive_endothermic", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_ENDOTHERMIC.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_GRAVITY = ITEMS.register("explosive_gravity", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_GRAVITY.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_ENDER = ITEMS.register("explosive_ender", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_ENDER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_ANTIMATTER = ITEMS.register("explosive_antimatter", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_ANTIMATTER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> EXPLOSIVE_REDMATTER = ITEMS.register("explosive_redmatter", () -> new ItemBlockExplosive(BlockReg.EXPLOSIVE_REDMATTER.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     // </editor-fold>
 
     // <editor-fold desc="base-building"> TODO split to another mod, as it doesn't match the core content

@@ -30,13 +30,13 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
 
     public static final ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ender");
 
-    private Integer dim;
+    private ResourceLocation dim;
     private Vec3d pos;
 
     private String posTooltip;
     private String dimTooltip;
 
-    public EnderBlastCustomization(Integer dim, Vec3d pos) {
+    public EnderBlastCustomization(ResourceLocation dim, Vec3d pos) {
         this.dim = dim;
         this.pos = pos;
     }
@@ -48,7 +48,7 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
         this.pos = pos;
     }
 
-    public void setDim(Integer dim) {
+    public void setDim(ResourceLocation dim) {
         if(!Objects.equals(dim, this.dim)) {
             dimTooltip = null;
         }
@@ -65,8 +65,7 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
         }
         if(dim != null) {
             if(dimTooltip == null) {
-                final String worldName = Optional.ofNullable(DimensionManager.getWorld(dim)).map(World::getWorldInfo).map(WorldInfo::getWorldName).orElse("???");
-                dimTooltip = LanguageUtility.buildToolTipString(new TranslationTextComponent("explosive.icbmclassic:ender.world", dim, worldName));
+                dimTooltip = LanguageUtility.buildToolTipString(new TranslationTextComponent("explosive.icbmclassic:ender.world", dim));
             }
             collector.accept(dimTooltip);
         }
@@ -104,6 +103,6 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
     private static final NbtSaveHandler<EnderBlastCustomization> SAVE_LOGIC = new NbtSaveHandler<EnderBlastCustomization>()
         .mainRoot()
         /* */.nodeVec3d("pos", EnderBlastCustomization::getPos, EnderBlastCustomization::setPos)
-        /* */.nodeInteger("dim", EnderBlastCustomization::getDim, EnderBlastCustomization::setDim)
+        /* */.nodeResourceLocation("dim", EnderBlastCustomization::getDim, EnderBlastCustomization::setDim)
         .base();
 }

@@ -4,6 +4,9 @@ import icbm.classic.client.ICBMSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 public class BlastFire extends Blast
@@ -37,20 +40,26 @@ public class BlastFire extends Blast
                             zStep /= diagonalDistance;
 
                             float energy = radius * (0.7F + world().rand.nextFloat() * 0.6F);
-                            double posX = location.x();
-                            double posY = location.y();
-                            double posZ = location.z();
+                            double posX = x();
+                            double posY = y();
+                            double posZ = z();
 
                             for (float stepAmount = 0.3F; energy > 0.0F; energy -= stepAmount * 0.75F)
                             {
                                 BlockPos targetPosition = new BlockPos(posX, posY, posZ);
-                                double distanceFromCenter = location.distance(targetPosition);
+
+                                final double delta_x = xi() - targetPosition.getX();
+                                final double delta_y = yi() - targetPosition.getY();
+                                final double delta_z = zi() - targetPosition.getZ();
+
+                                final double distanceFromCenter = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
+
                                 BlockState blockState = world().getBlockState(targetPosition);
                                 Block block = blockState.getBlock();
 
                                 if (!block.isAir(blockState, world, targetPosition))
                                 {
-                                    energy -= (block.getExplosionResistance(world(), targetPosition, this.exploder, this) + 0.3F) * stepAmount;
+                                    energy -= (block.getExplosionResistance(blockState, world(), targetPosition, this.exploder, this) + 0.3F) * stepAmount;
                                 }
 
                                 if (energy > 0.0F)
@@ -60,15 +69,15 @@ public class BlastFire extends Blast
 
                                     if (chance > distanceFromCenter * 0.55)
                                     {
-                                        boolean canReplace = block.isReplaceable(world(), targetPosition) || block.isAir(blockState, world(), targetPosition);
+                                        boolean canReplace = blockState.isReplaceable(new DirectionalPlaceContext(world, pos, Direction.DOWN, ItemStack.EMPTY, Direction.UP)) || block.isAir(blockState, world(), targetPosition);
 
-                                        if (canReplace && net.minecraft.block.Blocks.FIRE.canPlaceBlockAt(world(), targetPosition))
+                                        if (canReplace && Blocks.FIRE.isValidPosition(blockState, world(), targetPosition))
                                         {
                                             world.setBlockState(targetPosition, Blocks.FIRE.getDefaultState(), 3);
                                         }
                                         else if (block == Blocks.ICE)
                                         {
-                                            world.setBlockToAir(targetPosition);
+                                            world.removeBlock(targetPosition, false);
                                         }
                                     }
                                 }
@@ -83,7 +92,7 @@ public class BlastFire extends Blast
             }
         }
 
-        ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+        ICBMSounds.EXPLOSION_FIRE.play(world, x() + 0.5D, y() + 0.5D, z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
         return true;
     }
 }

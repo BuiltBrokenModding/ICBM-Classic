@@ -1,7 +1,9 @@
 package icbm.classic.content.reg;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.refs.ICBMExplosives;
+import icbm.classic.content.actions.entity.ActionSpawnEntity;
 import icbm.classic.content.blocks.*;
 import icbm.classic.content.blocks.emptower.BlockEmpTowerBase;
 import icbm.classic.content.blocks.emptower.BlockEmpTowerCoil;
@@ -13,6 +15,8 @@ import icbm.classic.content.blocks.launcher.frame.BlockLaunchFrame;
 import icbm.classic.content.blocks.launcher.screen.BlockLaunchScreen;
 import icbm.classic.content.blocks.radarstation.BlockRadarStation;
 import icbm.classic.content.radioactive.BlockRadioactive;
+import icbm.classic.lib.actions.ActionDataGeneric;
+import icbm.classic.lib.actions.ActionSystem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
@@ -47,33 +51,36 @@ public class BlockReg {
     public static final RegistryObject<Block> LAUNCHER_FRAME = BLOCKS.register("launcher_frame", BlockLaunchFrame::new);
     public static final RegistryObject<Block> LAUNCHER_CONNECTOR = BLOCKS.register("launcher_connector", BlockLaunchConnector::new);
     public static final RegistryObject<Block> LAUNCHER_BASE = BLOCKS.register("launcher_base", BlockLauncherBase::new);
-    public static final RegistryObject<Block> LAUNCHER_SCREEN = BLOCKS.register("launcher_screen", BlockLaunchScreen::new);
+    public static final RegistryObject<Block> LAUNCHER_SCREEN = BLOCKS.register("launcher_screen", () -> new BlockLaunchScreen(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
     public static final RegistryObject<Block> LAUNCHER_CRUISE = BLOCKS.register("launcher_cruise", BlockCruiseLauncher::new);
 
     public static final RegistryObject<Block> RADIOACTIVE_DIRT = BLOCKS.register("radioactive_dirt", () -> new BlockRadioactive(Block.Properties.from(Blocks.DIRT)));
     public static final RegistryObject<Block> RADIOACTIVE_STONE = BLOCKS.register("radioactive_stone", () -> new BlockRadioactive(Block.Properties.from(Blocks.STONE)));
 
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_CONDENSED = BLOCKS.register("explosive_condensed", () -> new BlockExplosive(ICBMExplosives.CONDENSED));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_SHRAPNEL = BLOCKS.register("explosive_shrapnel", () -> new BlockExplosive(ICBMExplosives.SHRAPNEL));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_INCENDIARY = BLOCKS.register("explosive_incendiary", () -> new BlockExplosive(ICBMExplosives.INCENDIARY));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_DEBILITATION = BLOCKS.register("explosive_debilitation", () -> new BlockExplosive(ICBMExplosives.DEBILITATION));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_CHEMICAL = BLOCKS.register("explosive_chemical", () -> new BlockExplosive(ICBMExplosives.CHEMICAL));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ANVIL = BLOCKS.register("explosive_anvil", () -> new BlockExplosive(ICBMExplosives.ANVIL));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_REPULSIVE = BLOCKS.register("explosive_repulsive", () -> new BlockExplosive(ICBMExplosives.REPULSIVE));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ATTRACTIVE = BLOCKS.register("explosive_attractive", () -> new BlockExplosive(ICBMExplosives.ATTRACTIVE));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_COLOR = BLOCKS.register("explosive_color", () -> new BlockExplosive(ICBMExplosives.COLOR));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_SMOKE = BLOCKS.register("explosive_smoke", () -> new BlockExplosive(ICBMExplosives.SMOKE));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_FRAGMENTATION = BLOCKS.register("explosive_fragmentation", () -> new BlockExplosive(ICBMExplosives.FRAGMENTATION));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_CONTAGIOUS = BLOCKS.register("explosive_contagious", () -> new BlockExplosive(ICBMExplosives.CONTAGIOUS));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_SONIC = BLOCKS.register("explosive_sonic", () -> new BlockExplosive(ICBMExplosives.SONIC));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_BREACHING = BLOCKS.register("explosive_breaching", () -> new BlockExplosive(ICBMExplosives.BREACHING));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_THERMOBARIC = BLOCKS.register("explosive_thermobaric", () -> new BlockExplosive(ICBMExplosives.THERMOBARIC));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_NUCLEAR = BLOCKS.register("explosive_nuclear", () -> new BlockExplosive(ICBMExplosives.NUCLEAR));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_EMP = BLOCKS.register("explosive_emp", () -> new BlockExplosive(ICBMExplosives.EMP));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_EXOTHERMIC = BLOCKS.register("explosive_exothermic", () -> new BlockExplosive(ICBMExplosives.EXOTHERMIC));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ENDOTHERMIC = BLOCKS.register("explosive_endothermic", () -> new BlockExplosive(ICBMExplosives.ENDOTHERMIC));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_GRAVITY = BLOCKS.register("explosive_gravity", () -> new BlockExplosive(ICBMExplosives.GRAVITY));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ENDER = BLOCKS.register("explosive_ender", () -> new BlockExplosive(ICBMExplosives.ENDER));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ANTIMATTER = BLOCKS.register("explosive_antimatter", () -> new BlockExplosive(ICBMExplosives.ANTIMATTER));
-    public static final RegistryObject<BlockExplosive> EXPLOSIVE_REDMATTER = BLOCKS.register("explosive_redmatter", () -> new BlockExplosive(ICBMExplosives.REDMATTER));
+    // Entity explosive blocks
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_CONDENSED = BLOCKS.register("explosive_condensed", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_CONDENSED, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_SHRAPNEL = BLOCKS.register("explosive_shrapnel", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_SHRAPNEL, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_INCENDIARY = BLOCKS.register("explosive_incendiary", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_INCENDIARY, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_DEBILITATION = BLOCKS.register("explosive_debilitation", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_DEBILITATION, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_CHEMICAL = BLOCKS.register("explosive_chemical", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_CHEMICAL, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ANVIL = BLOCKS.register("explosive_anvil", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_ANVIL, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_REPULSIVE = BLOCKS.register("explosive_repulsive", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_REPULSIVE, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ATTRACTIVE = BLOCKS.register("explosive_attractive", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_ATTRACTIVE, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_COLOR = BLOCKS.register("explosive_color", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_COLOR, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_SMOKE = BLOCKS.register("explosive_smoke", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_SMOKE, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_FRAGMENTATION = BLOCKS.register("explosive_fragmentation", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_FRAGMENTATION, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_CONTAGIOUS = BLOCKS.register("explosive_contagious", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_CONTAGIOUS, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_SONIC = BLOCKS.register("explosive_sonic", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_SONIC, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_THERMOBARIC = BLOCKS.register("explosive_thermobaric", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_THERMOBARIC, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_NUCLEAR = BLOCKS.register("explosive_nuclear", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_NUCLEAR, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_EMP = BLOCKS.register("explosive_emp", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_EMP, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_EXOTHERMIC = BLOCKS.register("explosive_exothermic", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_EXOTHERMIC, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ENDOTHERMIC = BLOCKS.register("explosive_endothermic", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_ENDOTHERMIC, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_GRAVITY = BLOCKS.register("explosive_gravity", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_GRAVITY, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ENDER = BLOCKS.register("explosive_ender", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_ENDER, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_ANTIMATTER = BLOCKS.register("explosive_antimatter", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_ANTIMATTER, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_REDMATTER = BLOCKS.register("explosive_redmatter", () -> new BlockExplosive(ActionSystem.SPAWN_EXPLOSIVE_REDMATTER, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
+
+    // Non-Entity explosive blocks
+    public static final RegistryObject<BlockExplosive> EXPLOSIVE_BREACHING = BLOCKS.register("explosive_breaching", () -> new BlockExplosive(ICBMExplosives.BREACHING, Block.Properties.create(Material.TNT).hardnessAndResistance(2)));
 }

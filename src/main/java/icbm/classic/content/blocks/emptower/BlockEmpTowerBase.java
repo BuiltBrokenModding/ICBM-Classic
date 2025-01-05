@@ -1,5 +1,6 @@
 package icbm.classic.content.blocks.emptower;
 
+import icbm.classic.content.reg.TileReg;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,6 +72,6 @@ public class BlockEmpTowerBase extends Block implements ITileEntityProvider
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn)
     {
-        return new TileEMPTower();
+        return TileReg.EMP_TOWER_BASE.get().create();
     }
 }

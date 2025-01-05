@@ -1,52 +1,37 @@
 package icbm.classic.content.blocks.explosive;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.actions.IActionData;
-import icbm.classic.api.actions.cause.IActionSource;
+import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.api.actions.data.ActionFields;
-import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.missile.logic.source.ActionSource;
+import icbm.classic.content.missile.logic.source.cause.EntityCause;
+import icbm.classic.lib.actions.PotentialAction;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
-import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
-import icbm.classic.lib.transform.vector.Pos;
-import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.*;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 
 public class BlockExplosive extends Block
 {
     public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
-    public final IExplosiveData explosiveData;
+    public final IActionData action;
 
-    public BlockExplosive(IExplosiveData explosiveData)
+    public BlockExplosive(IActionData action, Block.Properties properties)
     {
-        super(Block.Properties.create(Material.TNT).hardnessAndResistance(2));
-        this.explosiveData = explosiveData;
+        super(properties);
+        this.action = action;
     }
 
     @Override
@@ -72,7 +57,7 @@ public class BlockExplosive extends Block
 
     @Override
     public void catchFire(BlockState state, World world, BlockPos pos, @Nullable net.minecraft.util.Direction face, @Nullable LivingEntity igniter) {
-        explode(world, pos, igniter);
+        this.doAction(world, pos, igniter != null ? new EntityCause(igniter): null); //TODO note was with fire as well
     }
 
     @Override
@@ -93,37 +78,21 @@ public class BlockExplosive extends Block
         }
     }
 
+    @Override
     public void onExplosionDestroy(World worldIn, BlockPos pos, Explosion explosionIn) {
         if (!worldIn.isRemote) {
-            TNTEntity tntentity = new TNTEntity(worldIn, (double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F), explosionIn.getExplosivePlacedBy());
-            tntentity.setFuse((short)(worldIn.rand.nextInt(tntentity.getFuse() / 4) + tntentity.getFuse() / 8));
-            worldIn.addEntity(tntentity);
+           this.doAction(worldIn, pos, null); //TODO add cause by explosion
         }
     }
 
-    public void explode(World world, BlockPos pos, LivingEntity causedBy)
-    {
-        if (!world.isRemote)
-        {
+    public void doAction(World world, BlockPos pos, @Nullable IActionCause cause) {
+        if (!world.isRemote) {
             final BlockState state = world.getBlockState(pos);
-            if(explosiveData == ICBMExplosives.BREACHING) {
-                final IActionSource source = new ActionSource(world, new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), null);
-                final Direction direction = state.get(FACING).getOpposite();
-                explosiveData
-                    .create(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, source, new ActionFieldProvider().field(ActionFields.HOST_DIRECTION, () -> direction))
-                    .doAction();
-            }
-            else {
+            final Direction direction = state.get(FACING).getOpposite();
 
-                EntityExplosive entityExplosive = new EntityExplosive(world, new Pos(pos).add(0.5), state.get(FACING), new ItemStack(this));
-                //TODO check for tick rate, trigger directly if tick is less than 3
-
-                //if (setFire) { TODO is this used?
-                //    entityExplosive.setFire(100);
-                //}
-
-                world.addEntity(entityExplosive);
-            }
+            final PotentialAction potentialAction = new PotentialAction();
+            potentialAction.withProvider(new ActionFieldProvider().field(ActionFields.HOST_DIRECTION, () -> direction));
+            potentialAction.doAction(world, pos, cause);
         }
     }
 

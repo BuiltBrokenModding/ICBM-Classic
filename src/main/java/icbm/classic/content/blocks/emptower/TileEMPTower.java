@@ -13,6 +13,7 @@ import icbm.classic.config.machines.ConfigEmpTower;
 import icbm.classic.content.actions.emp.ActionDataEmpArea;
 import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
 import icbm.classic.content.blocks.emptower.gui.GuiEMPTower;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.actions.PotentialActionKnown;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
 import icbm.classic.lib.data.IMachineInfo;
@@ -33,6 +34,7 @@ import icbm.classic.prefab.tile.TileMachine;
 import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -95,8 +97,8 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
-    public TileEMPTower() {
-        super();
+    public TileEMPTower(TileEntityType<?> type) {
+        super(type);
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {
@@ -152,7 +154,7 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
         //Find tower blocks TODO find a better solution
         subBlocks.clear();
         BlockPos above = getPos().up();
-        while(world.getBlockState(above).getBlock() == getBlockType()) {
+        while(world.getBlockState(above).getBlock() == BlockReg.EMP_TOWER_COIL.get()) {
             final TileEntity tile = world.getTileEntity(above);
             if(tile instanceof TileEmpTowerFake) {
                 ((TileEmpTowerFake) tile).setHost(this);
