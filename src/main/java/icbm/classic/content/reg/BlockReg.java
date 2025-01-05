@@ -43,16 +43,16 @@ public class BlockReg {
         Block.Properties.create(Material.ROCK).hardnessAndResistance(10, 280))
     );
 
-    public static final RegistryObject<Block> EMP_TOWER_BASE = BLOCKS.register("emp_tower_base", BlockEmpTowerBase::new);
-    public static final RegistryObject<Block> EMP_TOWER_COIL = BLOCKS.register("emp_tower_coil", BlockEmpTowerCoil::new);
+    public static final RegistryObject<Block> EMP_TOWER_BASE = BLOCKS.register("emp_tower_base", () -> new BlockEmpTowerBase(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+    public static final RegistryObject<Block> EMP_TOWER_COIL = BLOCKS.register("emp_tower_coil", () -> new BlockEmpTowerCoil(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
 
-    public static final RegistryObject<Block> RADAR_SCREEN = BLOCKS.register("radar_screen", BlockRadarStation::new);
+    public static final RegistryObject<Block> RADAR_SCREEN = BLOCKS.register("radar_screen", () -> new BlockRadarStation(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
 
-    public static final RegistryObject<Block> LAUNCHER_FRAME = BLOCKS.register("launcher_frame", BlockLaunchFrame::new);
-    public static final RegistryObject<Block> LAUNCHER_CONNECTOR = BLOCKS.register("launcher_connector", BlockLaunchConnector::new);
-    public static final RegistryObject<Block> LAUNCHER_BASE = BLOCKS.register("launcher_base", BlockLauncherBase::new);
+    public static final RegistryObject<Block> LAUNCHER_FRAME = BLOCKS.register("launcher_frame", () -> new BlockLaunchFrame(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+    public static final RegistryObject<Block> LAUNCHER_CONNECTOR = BLOCKS.register("launcher_connector", () -> new BlockLaunchConnector(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+    public static final RegistryObject<Block> LAUNCHER_BASE = BLOCKS.register("launcher_base", () -> new BlockLauncherBase(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
     public static final RegistryObject<Block> LAUNCHER_SCREEN = BLOCKS.register("launcher_screen", () -> new BlockLaunchScreen(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
-    public static final RegistryObject<Block> LAUNCHER_CRUISE = BLOCKS.register("launcher_cruise", BlockCruiseLauncher::new);
+    public static final RegistryObject<Block> LAUNCHER_CRUISE = BLOCKS.register("launcher_cruise", () -> new BlockCruiseLauncher(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
 
     public static final RegistryObject<Block> RADIOACTIVE_DIRT = BLOCKS.register("radioactive_dirt", () -> new BlockRadioactive(Block.Properties.from(Blocks.DIRT)));
     public static final RegistryObject<Block> RADIOACTIVE_STONE = BLOCKS.register("radioactive_stone", () -> new BlockRadioactive(Block.Properties.from(Blocks.STONE)));

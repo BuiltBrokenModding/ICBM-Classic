@@ -37,9 +37,9 @@ public class BlockLaunchConnector extends Block
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty WEST = BooleanProperty.create("west");
 
-    public BlockLaunchConnector()
+    public BlockLaunchConnector(Properties properties)
     {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+        super(properties);
     }
 
     @Override

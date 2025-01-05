@@ -39,7 +39,7 @@ public class PacketLambdaEntity<TARGET> {
     private int dimensionId;
     private int entityId;
     
-    private List<Consumer<ByteBuf>> writers;
+    private List<Consumer<PacketBuffer>> writers;
     private List<Consumer<TARGET>> setters;
     public PacketLambdaEntity(PacketCodex<Entity, TARGET> codex, Entity entity, TARGET target) {
         this.codex = codex;

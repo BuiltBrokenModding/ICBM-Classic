@@ -33,8 +33,8 @@ public class BlockRadarStation extends Block {
     public static final EnumProperty<EnumRadarState> RADAR_STATE = EnumProperty.create("type", EnumRadarState.class);
     public static final EnumProperty<Direction> ROTATION_PROP = BlockStateProperties.FACING;
 
-    public BlockRadarStation() {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+    public BlockRadarStation(Properties properties) {
+        super(properties);
     }
 
     @Override

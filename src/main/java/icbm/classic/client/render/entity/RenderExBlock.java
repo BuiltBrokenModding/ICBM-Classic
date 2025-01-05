@@ -1,20 +1,12 @@
 package icbm.classic.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import icbm.classic.content.blocks.explosive.BlockExplosive;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityExplosive;
-import icbm.classic.content.reg.BlockReg;
-import icbm.classic.prefab.tile.BlockICBM;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;

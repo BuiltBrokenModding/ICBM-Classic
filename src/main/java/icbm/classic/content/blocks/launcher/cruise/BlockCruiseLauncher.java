@@ -26,9 +26,9 @@ import javax.annotation.Nullable;
  */
 public class BlockCruiseLauncher extends Block
 {
-    public BlockCruiseLauncher()
+    public BlockCruiseLauncher(Properties properties)
     {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+        super(properties);
         //TODO set voxel shape
     }
 

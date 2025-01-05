@@ -23,9 +23,9 @@ public class BlockEmpTowerBase extends Block implements ITileEntityProvider
     public static BlockState COIL;
     public static BlockState ELECTRIC;
 
-    public BlockEmpTowerBase()
+    public BlockEmpTowerBase(Properties properties)
     {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+        super(properties);
 
         COIL = getDefaultState().with(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.COIL);
         ELECTRIC = getDefaultState().with(TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.ELECTRIC);

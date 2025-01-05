@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
 
 public class BlockEmpTowerCoil extends ContainerBlock
 {
-    public BlockEmpTowerCoil()
+    public BlockEmpTowerCoil(Properties properties)
     {
-        super(Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+        super(properties);
     }
 
 

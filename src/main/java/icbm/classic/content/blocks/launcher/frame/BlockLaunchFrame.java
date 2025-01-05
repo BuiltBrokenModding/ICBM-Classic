@@ -3,7 +3,6 @@ package icbm.classic.content.blocks.launcher.frame;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.prefab.tile.BlockICBM;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,19 +20,17 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
-public class BlockLaunchFrame extends BlockICBM {
+public class BlockLaunchFrame extends Block {
     public static final EnumProperty<EnumFrameState> FRAME_STATE = EnumProperty.create("type", EnumFrameState.class);
 
-    public BlockLaunchFrame() {
-        super("launcherframe");
+    public BlockLaunchFrame(Properties properties) {
+        super(properties);
         this.setDefaultState(this.getDefaultState().with(FRAME_STATE, EnumFrameState.MIDDLE));
     }
 

@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.base;
 import icbm.classic.ICBMClassic;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.InventoryUtility;
 import net.minecraft.block.Block;
 import net.minecraft.block.ContainerBlock;
@@ -39,9 +40,9 @@ public class BlockLauncherBase extends ContainerBlock
 {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
 
-    public BlockLauncherBase()
+    public BlockLauncherBase(Properties properties)
     {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(10, 10));
+        super(properties);
     }
 
     @Override
@@ -116,7 +117,7 @@ public class BlockLauncherBase extends ContainerBlock
     @Override
     public TileEntity createNewTileEntity(IBlockReader reader)
     {
-        return new TileLauncherBase();
+        return TileReg.LAUNCHER_BASE.get().create();
     }
 
 

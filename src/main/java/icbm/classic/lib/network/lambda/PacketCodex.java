@@ -1,8 +1,6 @@
 package icbm.classic.lib.network.lambda;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.network.IPacket;
-import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +10,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.logging.log4j.util.TriConsumer;
 
@@ -99,11 +97,11 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeInt(Function<TARGET, Integer> getter, BiConsumer<TARGET, Integer> setter) {
-        return node(Integer.class, false, getter, setter, ByteBuf::writeInt, ByteBuf::readInt);
+        return node(Integer.class, false, getter, setter, PacketBuffer::writeInt, PacketBuffer::readInt);
     }
 
     public PacketCodex<RAW, TARGET> nodeByte(Function<TARGET, Byte> getter, BiConsumer<TARGET, Byte> setter) {
-        entries.add(new PacketCodexEntry<TARGET, Byte>(Byte.class, false, getter, setter, ByteBuf::writeByte, ByteBuf::readByte));
+        entries.add(new PacketCodexEntry<TARGET, Byte>(Byte.class, false, getter, setter, PacketBuffer::writeByte, PacketBuffer::readByte));
         return this;
     }
 
@@ -119,11 +117,11 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeDouble(Function<TARGET, Double> getter, BiConsumer<TARGET, Double> setter) {
-        return node(Double.class, false, getter, setter, ByteBuf::writeDouble, ByteBuf::readDouble);
+        return node(Double.class, false, getter, setter, PacketBuffer::writeDouble, PacketBuffer::readDouble);
     }
 
     public PacketCodex<RAW, TARGET> nodeFloat(Function<TARGET, Float> getter, BiConsumer<TARGET, Float> setter) {
-        return node(Float.class, false, getter, setter, ByteBuf::writeFloat, ByteBuf::readFloat);
+        return node(Float.class, false, getter, setter, PacketBuffer::writeFloat, PacketBuffer::readFloat);
     }
 
     public PacketCodex<RAW, TARGET> nodeString(Function<TARGET, String> getter, BiConsumer<TARGET, String> setter) {
@@ -142,7 +140,7 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeItemStack(Function<TARGET, ItemStack> getter, BiConsumer<TARGET, ItemStack> setter) {
-        return node(ItemStack.class, false, getter, setter, ByteBufUtils::writeItemStack, ByteBufUtils::readItemStack);
+        return node(ItemStack.class, false, getter, setter, PacketBuffer::writeItemStack, PacketBuffer::readItemStack);
     }
 
     public PacketCodex<RAW, TARGET> nodeVec3d(Function<TARGET, Vec3d> getter, BiConsumer<TARGET, Vec3d> setter) {
@@ -158,22 +156,22 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeNbtCompound(Function<TARGET, CompoundNBT> getter, BiConsumer<TARGET, CompoundNBT> setter) {
-        return node(CompoundNBT.class, false, getter, setter, ByteBufUtils::writeTag, ByteBufUtils::readTag);
+        return node(CompoundNBT.class, false, getter, setter, PacketBuffer::writeCompoundTag, PacketBuffer::readCompoundTag);
     }
 
     public PacketCodex<RAW, TARGET> nodeBoolean(Function<TARGET, Boolean> getter, BiConsumer<TARGET, Boolean> setter) {
-        return node(Boolean.class, false, getter, setter, ByteBuf::writeBoolean, ByteBuf::readBoolean);
+        return node(Boolean.class, false, getter, setter, PacketBuffer::writeBoolean, PacketBuffer::readBoolean);
     }
 
     public PacketCodex<RAW, TARGET> toggleBoolean(Function<TARGET, Boolean> getter, BiConsumer<TARGET, Boolean> setter) {
         return nodeBoolean(getter, (t, b) -> setter.accept(t, !b));
     }
 
-    public <DATA> PacketCodex<RAW, TARGET> node(Class<DATA> clazz, boolean isArray, Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<ByteBuf, DATA> encoder, Function<ByteBuf, DATA> decoder) {
+    public <DATA> PacketCodex<RAW, TARGET> node(Class<DATA> clazz, boolean isArray, Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<PacketBuffer, DATA> encoder, Function<PacketBuffer, DATA> decoder) {
         return node(new PacketCodexEntry<>(clazz, isArray, getter, setter, encoder, decoder));
     }
 
-    public <DATA> PacketCodex<RAW, TARGET> node(Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<ByteBuf, DATA> encoder, Function<ByteBuf, DATA> decoder) {
+    public <DATA> PacketCodex<RAW, TARGET> node(Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<PacketBuffer, DATA> encoder, Function<PacketBuffer, DATA> decoder) {
         return node(new PacketCodexEntry<>(null, false, getter, setter, encoder, decoder));
     }
 
@@ -191,12 +189,12 @@ public abstract class PacketCodex<RAW, TARGET> {
      * @param target to encode
      * @return list of consumers to run for each field
      */
-    public List<Consumer<ByteBuf>> encodeAsWriters(TARGET target) {
+    public List<Consumer<PacketBuffer>> encodeAsWriters(TARGET target) {
         return getEntries().stream()
             .map(entry -> {
                 final Object o = entry.getGetter().apply(target);
-                final BiConsumer<ByteBuf, Object> encoder = (BiConsumer<ByteBuf, Object>) entry.getEncoder();
-                return (Consumer<ByteBuf>) (byteBuf) -> encoder.accept(byteBuf, o);
+                final BiConsumer<PacketBuffer, Object> encoder = (BiConsumer<PacketBuffer, Object>) entry.getEncoder();
+                return (Consumer<PacketBuffer>) (byteBuf) -> encoder.accept(byteBuf, o);
             })
             .collect(Collectors.toList());
     }
@@ -207,10 +205,10 @@ public abstract class PacketCodex<RAW, TARGET> {
      * @param byteBuf
      * @return
      */
-    public List<Consumer<TARGET>> decodeAsSetters(ByteBuf byteBuf) {
+    public List<Consumer<TARGET>> decodeAsSetters(PacketBuffer byteBuf) {
         return getEntries().stream()
             .map(entry -> {
-                final Function<ByteBuf, Object> decoder = (Function<ByteBuf, Object>) entry.getDecoder();
+                final Function<PacketBuffer, Object> decoder = (Function<PacketBuffer, Object>) entry.getDecoder();
                 final Object data = decoder.apply(byteBuf);
                 final BiConsumer<TARGET, Object> setter = (BiConsumer<TARGET, Object>) entry.getSetter();
                 return (Consumer<TARGET>) (target) -> setter.accept(target, data);
