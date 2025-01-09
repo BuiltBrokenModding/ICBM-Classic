@@ -3,7 +3,6 @@ package icbm.classic.prefab.gui.button;
 import icbm.classic.lib.data.FaceRotations;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;

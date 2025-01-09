@@ -12,7 +12,6 @@ import icbm.classic.lib.thread.WorkerThreadManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
 
 import java.util.ArrayList;
 import java.util.HashSet;

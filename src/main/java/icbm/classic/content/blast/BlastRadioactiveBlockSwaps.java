@@ -1,6 +1,5 @@
 package icbm.classic.content.blast;
 
-import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.blast.threaded.BlastThreaded;
 import icbm.classic.content.radioactive.RadioactiveHandler;
 import net.minecraft.block.BlockState;

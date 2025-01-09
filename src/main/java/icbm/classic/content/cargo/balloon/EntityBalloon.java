@@ -1,11 +1,8 @@
 package icbm.classic.content.cargo.balloon;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.data.LazyBuilder;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -19,11 +16,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nonnull;
-import java.util.function.Supplier;
 
 /**
  * Entity that acts as a slow falling seat for other entities to use. Mimics a balloon in concept but

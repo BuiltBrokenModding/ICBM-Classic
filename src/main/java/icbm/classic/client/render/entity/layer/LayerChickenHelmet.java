@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMConstants;
 import icbm.classic.client.models.ModelChickenHelmet;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
-import net.minecraft.client.renderer.entity.ChickenRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.model.ChickenModel;

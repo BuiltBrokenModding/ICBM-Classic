@@ -4,8 +4,9 @@ import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.data.ActionField;
 import icbm.classic.api.actions.data.IActionFieldProvider;
 import icbm.classic.api.actions.data.IActionFieldReceiver;
-import net.minecraft.nbt.*;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.HashMap;

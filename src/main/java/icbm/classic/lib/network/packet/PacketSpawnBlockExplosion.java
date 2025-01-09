@@ -1,16 +1,5 @@
 package icbm.classic.lib.network.packet;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.lib.network.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 public class PacketSpawnBlockExplosion //implements IPacket<PacketSpawnBlockExplosion>
 {
     /*

@@ -1,8 +1,5 @@
 package icbm.classic.config.machines;
 
-import icbm.classic.ICBMConstants;
-
-
 /**
  * Settings class for various configuration settings.
  *

@@ -18,7 +18,6 @@ import icbm.classic.content.actions.conditionals.ConditionTargetDistance;
 import icbm.classic.content.actions.conditionals.ConditionalImpact;
 import icbm.classic.content.actions.emp.ActionDataEmpArea;
 import icbm.classic.content.actions.entity.ActionSpawnEntity;
-import icbm.classic.content.blocks.explosive.BlockExplosive;
 import icbm.classic.content.blocks.explosive.ExplosiveEntityActionData;
 import icbm.classic.content.blocks.launcher.screen.BlockScreenCause;
 import icbm.classic.content.blocks.launcher.status.LauncherStatus;
@@ -39,8 +38,6 @@ import icbm.classic.lib.saving.nodes.SaveNodeResourceLocation;
 import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.FloatNBT;
@@ -48,9 +45,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ActionSystem {

@@ -1,8 +1,5 @@
 package icbm.classic.config.missile;
 
-import icbm.classic.ICBMConstants;
-
-
 /**
  * Configs for Missiles
  *

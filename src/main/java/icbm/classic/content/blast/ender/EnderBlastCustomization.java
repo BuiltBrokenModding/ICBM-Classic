@@ -14,14 +14,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Data

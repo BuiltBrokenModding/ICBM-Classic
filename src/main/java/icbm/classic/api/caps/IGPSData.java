@@ -3,13 +3,9 @@ package icbm.classic.api.caps;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * Capability used to access GPS data from an item

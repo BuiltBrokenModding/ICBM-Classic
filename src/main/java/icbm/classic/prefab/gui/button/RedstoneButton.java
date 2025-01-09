@@ -1,8 +1,8 @@
 package icbm.classic.prefab.gui.button;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import java.util.function.Supplier;
 

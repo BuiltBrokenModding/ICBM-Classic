@@ -4,7 +4,6 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 
 import java.util.ArrayList;

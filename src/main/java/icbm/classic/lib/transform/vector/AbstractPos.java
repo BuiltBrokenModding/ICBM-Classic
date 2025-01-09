@@ -3,22 +3,16 @@ package icbm.classic.lib.transform.vector;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
 import com.builtbroken.jlib.data.vector.Pos3D;
-import icbm.classic.ICBMClassic;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-
-import java.util.List;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 /**
  * Abstract version of Pos3D for interaction with the minecraft world

@@ -6,7 +6,8 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/4/19.

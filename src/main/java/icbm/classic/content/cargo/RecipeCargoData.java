@@ -1,25 +1,5 @@
 package icbm.classic.content.cargo;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.missiles.projectile.IProjectileStack;
-import icbm.classic.content.reg.ItemReg;
-import icbm.classic.lib.projectile.ProjectileStack;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
-import java.util.function.Supplier;
-
-
 /**
  * Recipe for adding cargo to cargo projectile item
  */

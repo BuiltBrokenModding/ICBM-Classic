@@ -1,30 +1,20 @@
 package icbm.classic.lib.network.netty;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.data.IWorldPosition;
-import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
 import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
-import icbm.classic.lib.network.packet.PacketEntityPos;
-import icbm.classic.lib.network.packet.PacketPlayerItem;
-import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
-import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-
-import java.util.EnumMap;
 
 /**
  * @author tgame14

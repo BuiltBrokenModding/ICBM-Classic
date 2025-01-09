@@ -6,7 +6,6 @@ import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.lib.buildable.BuildableObject;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;

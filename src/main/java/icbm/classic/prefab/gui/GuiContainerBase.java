@@ -4,9 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.prefab.gui.button.GuiButtonBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 

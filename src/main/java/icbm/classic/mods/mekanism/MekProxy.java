@@ -1,7 +1,6 @@
 package icbm.classic.mods.mekanism;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.network.packet.PacketEntityPos;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
@@ -15,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Method;

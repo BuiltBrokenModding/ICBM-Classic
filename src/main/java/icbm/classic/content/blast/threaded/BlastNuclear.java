@@ -6,11 +6,9 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.BlastMutation;
 import icbm.classic.content.blast.BlastRadioactiveBlockSwaps;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.Objects;
 import java.util.function.Consumer;

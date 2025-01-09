@@ -1,8 +1,5 @@
 package icbm.classic.config;
 
-import icbm.classic.ICBMConstants;
-
-
 /**
  * Client only settings
  */

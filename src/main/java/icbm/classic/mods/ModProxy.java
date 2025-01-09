@@ -1,7 +1,5 @@
 package icbm.classic.mods;
 
-import net.minecraft.tileentity.TileEntity;
-
 /**
  *
  * Created by Dark(DarkGuardsman, Robin) on 5/22/2018.

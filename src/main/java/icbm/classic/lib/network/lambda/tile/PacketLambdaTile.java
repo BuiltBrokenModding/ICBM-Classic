@@ -1,12 +1,10 @@
 package icbm.classic.lib.network.lambda.tile;
 
-import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.PacketEvents;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
 import icbm.classic.lib.tracker.EventTrackerHelpers;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;

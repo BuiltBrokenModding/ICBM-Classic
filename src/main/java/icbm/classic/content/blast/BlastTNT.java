@@ -1,14 +1,11 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.lib.network.packet.PacketSpawnBlockExplosion;
-import icbm.classic.lib.transform.region.Cube;
-import icbm.classic.lib.transform.vector.Pos;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,7 +16,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;

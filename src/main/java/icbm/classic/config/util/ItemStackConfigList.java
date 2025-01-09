@@ -1,13 +1,11 @@
 package icbm.classic.config.util;
 
 
-
 import icbm.classic.lib.ForgeRegistryHelpers;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;

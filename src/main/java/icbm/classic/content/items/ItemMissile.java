@@ -1,8 +1,6 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.capability.missile.CapabilityMissileStack;
 import icbm.classic.prefab.item.ItemBase;

@@ -5,8 +5,6 @@ import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.function.Supplier;

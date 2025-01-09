@@ -1,6 +1,5 @@
 package icbm.classic.content.blast.gas;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.Blast;

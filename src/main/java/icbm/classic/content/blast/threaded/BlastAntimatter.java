@@ -8,10 +8,10 @@ import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.transform.BlockEditHandler;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 

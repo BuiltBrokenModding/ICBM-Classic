@@ -1,26 +1,16 @@
 package icbm.classic.content.items;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.item.ItemBase;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.item.UseAction;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.NonNullSupplier;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class ItemGrenade extends ItemBase
 {

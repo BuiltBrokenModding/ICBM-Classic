@@ -1,10 +1,10 @@
 package icbm.classic.prefab.gui.components;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.gui.screen.Screen;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 

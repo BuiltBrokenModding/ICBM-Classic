@@ -1,17 +1,5 @@
 package icbm.classic.lib.network.packet;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.lib.network.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 public class PacketSpawnAirParticle //implements IPacket<PacketSpawnAirParticle>
 {
     /*

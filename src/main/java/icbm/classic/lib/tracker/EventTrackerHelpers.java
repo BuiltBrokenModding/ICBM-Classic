@@ -3,7 +3,6 @@ package icbm.classic.lib.tracker;
 import icbm.classic.ICBMConstants;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.storage.WorldInfo;
 
 import java.util.Optional;

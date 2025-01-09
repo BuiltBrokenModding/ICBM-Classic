@@ -1,15 +1,5 @@
 package icbm.classic.lib.network.packet;
 
-import icbm.classic.lib.network.IPacketIDReceiver;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 /**
  * @author tgame14
  * @since 26/05/14

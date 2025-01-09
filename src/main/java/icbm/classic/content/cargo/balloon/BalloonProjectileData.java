@@ -3,8 +3,6 @@ package icbm.classic.content.cargo.balloon;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.cargo.CargoProjectileData;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.ToString;
 import lombok.Value;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;

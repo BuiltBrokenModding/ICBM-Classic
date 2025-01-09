@@ -1,10 +1,8 @@
 package icbm.classic.config.util;
 
-import com.google.common.collect.ImmutableMap;
 import icbm.classic.lib.ForgeRegistryHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;

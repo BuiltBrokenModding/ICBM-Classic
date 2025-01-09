@@ -8,7 +8,6 @@ import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.actions.ActionDataBase;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
 import net.minecraft.util.ResourceLocation;

@@ -14,13 +14,13 @@ import icbm.classic.content.blast.BlastTNT.PushType;
 import icbm.classic.content.blast.ender.BlastEnder;
 import icbm.classic.content.blast.gas.BlastChemical;
 import icbm.classic.content.blast.gas.BlastColor;
-import icbm.classic.content.blast.gas.BlastDebilitation;
 import icbm.classic.content.blast.gas.BlastContagious;
+import icbm.classic.content.blast.gas.BlastDebilitation;
 import icbm.classic.content.blast.redmatter.ActionSpawnRedmatter;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.*;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
 /**

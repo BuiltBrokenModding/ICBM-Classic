@@ -1,7 +1,7 @@
 package icbm.classic.content.cargo.parachute;
 
-import icbm.classic.client.render.entity.item.RenderItemImp;
 import com.mojang.blaze3d.platform.GlStateManager;
+import icbm.classic.client.render.entity.item.RenderItemImp;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.item.ItemStack;
 

@@ -1,6 +1,5 @@
 package icbm.classic.lib.network.lambda;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Data;
 import net.minecraft.network.PacketBuffer;
 

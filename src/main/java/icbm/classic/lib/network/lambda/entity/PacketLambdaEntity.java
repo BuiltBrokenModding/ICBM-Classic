@@ -1,19 +1,14 @@
 package icbm.classic.lib.network.lambda.entity;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
-import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;

@@ -1,12 +1,12 @@
 package icbm.classic.content.blast.redmatter.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.colors.ColorB;
 import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.client.renderer.BufferBuilder;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.EntityRenderer;

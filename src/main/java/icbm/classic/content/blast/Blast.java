@@ -10,7 +10,6 @@ import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadExplosion;
-import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.actions.WorkTickingActionHandler;

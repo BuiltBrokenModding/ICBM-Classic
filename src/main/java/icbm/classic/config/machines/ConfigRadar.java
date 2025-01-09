@@ -1,8 +1,5 @@
 package icbm.classic.config.machines;
 
-import icbm.classic.ICBMConstants;
-
-
 //@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/radar")
 //@Config.LangKey("config.icbmclassic:radar.title")
 public class ConfigRadar

@@ -1,6 +1,5 @@
 package icbm.classic.config.blast;
 
-import icbm.classic.ICBMConstants;
 import icbm.classic.config.blast.types.*;
 
 

@@ -1,8 +1,5 @@
 package icbm.classic.lib;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -10,11 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Series of helper classes for dealing with any kind of inventory

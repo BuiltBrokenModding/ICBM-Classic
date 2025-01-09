@@ -1,29 +1,19 @@
 package icbm.classic.content.cargo.parachute;
 
 import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
-import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.projectile.EntityProjectile;
-import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-
-import javax.annotation.Nonnull;
 
 /**
  * Entity that acts as a slow falling seat for other entities to use

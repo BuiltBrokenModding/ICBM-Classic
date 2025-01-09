@@ -5,7 +5,6 @@ import icbm.classic.api.reg.obj.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import lombok.Getter;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 
 import javax.annotation.Nonnull;
