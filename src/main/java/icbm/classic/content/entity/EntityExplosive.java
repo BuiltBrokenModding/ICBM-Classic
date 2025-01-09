@@ -7,7 +7,6 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.actions.PotentialAction;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
 import icbm.classic.lib.capability.emp.CapabilityEmpKill;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -57,19 +56,6 @@ public class EntityExplosive extends Entity implements IEntityAdditionalSpawnDat
 
     public BlockState getBlockRender() {
         return defaultState.orElseGet(Blocks.TNT::getDefaultState);
-    }
-
-    public void setPosAndFace(Pos position, Direction orientation) {
-        this.setPosition(position.x(), position.y(), position.z());
-        float randomImpulse = (float) (Math.random() * Math.PI * 2.0D);
-        this.setMotion(
-            -(float) Math.sin(randomImpulse) * 0.02F,
-            0.20000000298023224D,
-            -((float) Math.cos(randomImpulse)) * 0.02F
-        );
-        this.prevPosX = position.x();
-        this.prevPosY = position.y();
-        this.prevPosZ = position.z();
     }
 
     /**

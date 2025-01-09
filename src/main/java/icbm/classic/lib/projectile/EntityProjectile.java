@@ -7,7 +7,6 @@ import icbm.classic.api.missiles.IMissileAiming;
 import icbm.classic.api.missiles.projectile.IProjectileThrowable;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.prefab.entity.EntityICBM;
@@ -75,7 +74,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * zombies don't auto go to players. Instead, they can move towards the firing
      * location. Think of it like moving towards the sound of the weapon.
      */
-    public Pos sourceOfProjectile;
+    public Vec3d sourceOfProjectile;
 
     //Settings
     @Setter
@@ -135,7 +134,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     @Deprecated
     public PROJECTILE init(LivingEntity shooter, LivingEntity target, float multiplier, float random) {
         this.shootingEntity = shooter;
-        this.sourceOfProjectile = new Pos(shooter);
+        this.sourceOfProjectile = shooter.getPositionVector();
 
         this.posY = shooter.posY + (double) shooter.getEyeHeight() - 0.10000000149011612D;
         double deltaX = target.posX - shooter.posX;
@@ -160,7 +159,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
     @Deprecated
     public PROJECTILE init(double x, double y, double z, float yaw, float pitch, float multiplier, float distanceScale) {
-        this.sourceOfProjectile = new Pos(x, y, z);
+        this.sourceOfProjectile = new Vec3d(x, y, z);
         this.setLocationAndAngles(x, y, z, yaw, pitch);
 
         //TODO figure out why we are updating position by rotation after spawning

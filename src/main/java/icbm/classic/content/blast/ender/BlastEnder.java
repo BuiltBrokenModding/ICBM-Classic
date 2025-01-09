@@ -3,7 +3,6 @@ package icbm.classic.content.blast.ender;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.content.blast.Blast;
-import icbm.classic.lib.transform.vector.Pos;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.Entity;
@@ -103,7 +102,8 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
 
                 entity.addVelocity(0, 0, -(r - zDifference) * Math.abs(zDifference) * 0.0006);
 
-                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(getPosition().x, getPosition().y, getPosition().z) < 4)
+                //TODO optimize to not use an object for distance check
+                if (new Vec3d(entity.posX, entity.posY, entity.posZ).distanceTo(getPosition()) < 4) //TODO magic number
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {

@@ -4,7 +4,6 @@ import icbm.classic.api.reg.obj.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -155,12 +154,6 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, Compoun
     public NbtSaveRoot<SaveObject> nodeVec3d(final String name, Function<SaveObject, Vec3d> save, BiConsumer<SaveObject, Vec3d> load)
     {
         return node(new SaveNodeVec3d<SaveObject>(name, save, load));
-    }
-
-    @Deprecated
-    public NbtSaveRoot<SaveObject> nodePos(final String name, Function<SaveObject, Pos> save, BiConsumer<SaveObject, Pos> load)
-    {
-        return node(new SaveNodePos<SaveObject>(name, save, load));
     }
 
     @Deprecated
