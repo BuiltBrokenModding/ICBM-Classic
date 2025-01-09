@@ -38,7 +38,7 @@ public class ItemDefuser extends ItemICBMElectrical
     {
         if (this.getEnergy(itemStack) >= ENERGY_COST)
         {
-            if (entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null).isPresent())
+            /*if (entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null).isPresent())
             {
                 if (!entity.world.isRemote)
                 {
@@ -52,7 +52,7 @@ public class ItemDefuser extends ItemICBMElectrical
                     entity.remove();
                 }
             }
-            else if (entity instanceof TNTEntity)
+            else*/ if (entity instanceof TNTEntity)
             {
                 if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity)))
                 {

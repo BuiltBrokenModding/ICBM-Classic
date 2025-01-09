@@ -21,15 +21,4 @@ public interface IExplosive
      */
     @Nonnull
     IExplosiveData getExplosiveData();
-
-    /**
-     * Called when the explosive is defused
-     *
-     * @deprecated will be moved to it's own capability down the road
-     */
-    @Deprecated
-    default void onDefuse() //TODO add args on who defused and how
-    {
-
-    }
 }
