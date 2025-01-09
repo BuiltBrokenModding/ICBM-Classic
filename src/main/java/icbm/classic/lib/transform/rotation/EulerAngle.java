@@ -17,7 +17,7 @@ import net.minecraft.util.Direction;
  * <p>
  * Original version by Calclavia
  */
-public class EulerAngle implements Cloneable, ITransform, IRotation
+public class EulerAngle implements Cloneable, ITransform
 {
     protected double yaw = 0;
     protected double pitch = 0;
@@ -486,7 +486,6 @@ public class EulerAngle implements Cloneable, ITransform, IRotation
 
     /**
      * @param data
-     * @Deprecated {@link #writeBytes(ByteBuf)}
      */
     @Deprecated
     public void writeByteBuf(ByteBuf data)
