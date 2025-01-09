@@ -36,7 +36,6 @@ import icbm.classic.lib.actions.ActionSystem;
 import icbm.classic.lib.buildable.BuildableObjectRegistry;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
-import icbm.classic.lib.capability.ex.CapabilityExplosive;
 import icbm.classic.lib.capability.gps.CapabilityGPSData;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.capability.launcher.CapabilityMissileLauncher;
@@ -203,7 +202,6 @@ public class ICBMClassic
     void registerCapabilities() {
         CapabilityEMP.register();
         CapabilityMissile.register();
-        CapabilityExplosive.register();
         CapabilityBlast.register();
         CapabilityBlastVelocity.register();
         CapabilityMissileHolder.register();

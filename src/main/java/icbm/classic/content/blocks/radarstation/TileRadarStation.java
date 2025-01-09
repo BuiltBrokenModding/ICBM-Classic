@@ -274,8 +274,8 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
             // Ignore SAM missiles
             && !(entity instanceof EntitySurfaceToAirMissile)
             // Track explosive missiles (using caps to allow other mods to interact more easily)
-            && entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY).isPresent()
-            && entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY).isPresent(); //TODO recode to use a radar classification system
+            && entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY).isPresent();
+            //&& entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY).isPresent(); //TODO recode to use a radar classification system
     }
 
     /**

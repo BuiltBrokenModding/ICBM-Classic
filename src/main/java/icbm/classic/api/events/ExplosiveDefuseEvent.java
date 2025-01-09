@@ -1,7 +1,5 @@
 package icbm.classic.api.events;
 
-
-import icbm.classic.api.caps.IExplosive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.eventbus.api.Cancelable;
@@ -24,23 +22,6 @@ public class ExplosiveDefuseEvent extends Event
     {
         this.player = player;
         this.entityToDefuse = entityToDefuse;
-    }
-
-    /**
-     * Called when a player leftclicks an ICBM explosive.
-     * Cancel to not defuse the explosive.
-     */
-    @Cancelable
-    public static class ICBMExplosive extends ExplosiveDefuseEvent
-    {
-        public final IExplosive explosive;
-
-        public ICBMExplosive(PlayerEntity player, Entity entityToDefuse, IExplosive explosive)
-        {
-            super(player, entityToDefuse);
-
-            this.explosive = explosive;
-        }
     }
 
     /**

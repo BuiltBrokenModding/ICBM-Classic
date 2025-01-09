@@ -7,7 +7,6 @@ import icbm.classic.api.actions.conditions.ICondition;
 import icbm.classic.api.actions.listener.IActionListenerHandler;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.explosion.IBlast;
@@ -113,11 +112,6 @@ public final class ICBMClassicAPI
      */
     @Deprecated
     public static IExplosiveRegistry EXPLOSIVE_REGISTRY;
-
-
-    @Deprecated
-    @CapabilityInject(IExplosive.class)
-    public static Capability<IExplosive> EXPLOSIVE_CAPABILITY = null;
 
     /** Only applies to ItemStack */
     @Deprecated

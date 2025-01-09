@@ -2,7 +2,6 @@ package icbm.classic.content.blast.redmatter.logic;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.IBlastIgnore;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
@@ -15,8 +14,6 @@ import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.entity.flyingblock.BlockCaptureData;
 import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
-import icbm.classic.content.missile.logic.source.ActionSource;
-import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.CalculationHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -26,7 +23,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.Collections;
@@ -444,21 +440,32 @@ public class RedmatterLogic {
 
                 //TODO fire an event when combined (non-cancelable to allow acting on combined result)
                 entity.remove();
-            } else if (entity instanceof EntityExplosion && ((EntityExplosion) entity).getBlast() instanceof IBlast) {
+            }
+            //TODO why are we clearing explosion instances?
+            else if (entity instanceof EntityExplosion && ((EntityExplosion) entity).getBlast() instanceof IBlast) {
                 ((IBlast) ((EntityExplosion) entity).getBlast()).clearBlast();
-            } else if (entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY).isPresent()) {
+            }
+
+            // Trigger explosive entities
+            /*else if (entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY).isPresent()) {
                 final IExplosive explosive = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY).orElseThrow(IllegalStateException::new);
                 ActionSource actionSource = new ActionSource(DimensionType.getKey(entity.world.getDimension().getType()), new Vec3d(entity.posX, entity.posY, entity.posZ), new EntityCause(this.host)); //TODO provide additional cause information related to what created the redmatter
                 explosive.getExplosiveData().create(entity.world, entity.posX, entity.posY, entity.posZ, actionSource, null).doAction();
                 entity.remove();
-            } else if (entity instanceof LivingEntity) {
+            } */
+
+            // Attack living entities
+            else if (entity instanceof LivingEntity) {
                 entity.attackEntityFrom(new DamageSourceRedmatter(this), ConfigBlast.redmatter.damage);
-            } else {
+            }
+
+            // Remove misc entities
+            else {
                 //Kill entity in the center of the ball
                 entity.remove();
                 if (entity instanceof EntityFlyingBlock) {
                     if (host.getBlastSize() < host.getBlastMaxSize()) {
-                        host.setBlastSize(host.getBlastSize() + 0.05f); //TODO magic number and config
+                        host.setBlastSize(host.getBlastSize() + 0.05f); //TODO magic number and config per block
                     }
                 }
             }

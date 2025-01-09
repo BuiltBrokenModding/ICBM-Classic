@@ -1,7 +1,5 @@
 package icbm.classic.content.items;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.events.ExplosiveDefuseEvent;
 import icbm.classic.content.entity.EntityBombCart;
 import icbm.classic.prefab.item.ItemICBMElectrical;
