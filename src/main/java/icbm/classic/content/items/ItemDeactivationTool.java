@@ -10,12 +10,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 
-//Explosive Defuser
-public class ItemDefuser extends ItemICBMElectrical
+/**
+ * Used to remove dangerous entities/blocks
+ */
+public class ItemDeactivationTool extends ItemICBMElectrical
 {
     private static final int ENERGY_COST = 2000;
 
-    public ItemDefuser(Properties properties) {
+    public ItemDeactivationTool(Properties properties) {
         super(properties);
     }
 

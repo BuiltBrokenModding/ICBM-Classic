@@ -39,16 +39,16 @@ public class EntityBombCart extends TNTMinecartEntity
     }
 
     @Override
-    public void killMinecart(DamageSource par1DamageSource)
+    public void killMinecart(DamageSource damageSource)
     {
         if (!world.isRemote)
         {
             this.remove();
-            double d0 = this.getMotion().x * this.getMotion().x + this.getMotion().z * this.getMotion().z;
+            double railVelocitySq = this.getMotion().x * this.getMotion().x + this.getMotion().z * this.getMotion().z;
 
-            if (par1DamageSource.isFireDamage() || par1DamageSource.isExplosion() || d0 >= 0.009999999776482582D)
+            if (damageSource.isFireDamage() || damageSource.isExplosion() || railVelocitySq >= 0.009999999776482582D)
             {
-                this.explodeCart(d0);
+                this.explodeCart(railVelocitySq);
             }
             else {
                 this.entityDropItem(getCartItem(), 0.0F);
