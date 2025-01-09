@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
 
-import java.util.*;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

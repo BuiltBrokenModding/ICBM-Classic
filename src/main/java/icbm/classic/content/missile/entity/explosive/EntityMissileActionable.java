@@ -1,6 +1,5 @@
 package icbm.classic.content.missile.entity.explosive;
 
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.data.ActionFields;
 import icbm.classic.api.actions.status.ActionStatusTypes;

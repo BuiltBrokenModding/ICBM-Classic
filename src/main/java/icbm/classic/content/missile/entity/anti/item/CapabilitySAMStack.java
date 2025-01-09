@@ -3,7 +3,6 @@ package icbm.classic.content.missile.entity.anti.item;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
-import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.reg.EntityReg;
 import net.minecraft.world.World;
 

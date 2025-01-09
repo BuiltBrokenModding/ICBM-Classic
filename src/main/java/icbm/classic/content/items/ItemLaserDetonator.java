@@ -1,11 +1,9 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.events.LaserRemoteTriggerEvent;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
-import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.radio.messages.TriggerActionTargetMessage;
 import icbm.classic.prefab.FakeRadioSender;
@@ -23,8 +21,6 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 
 /**

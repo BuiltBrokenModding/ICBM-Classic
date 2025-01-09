@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 @Data

@@ -1,22 +1,5 @@
 package icbm.classic.content.cluster.missile;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.config.missile.ConfigMissile;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * Recipe for adding cargo to cargo projectile item
  */

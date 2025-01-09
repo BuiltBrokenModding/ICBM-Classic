@@ -8,7 +8,6 @@ import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.gui.ContainerCruiseLauncher;
-import icbm.classic.content.blocks.launcher.cruise.gui.GuiCruiseLauncher;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;

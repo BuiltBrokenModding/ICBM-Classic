@@ -1,18 +1,11 @@
 package icbm.classic.content.cluster.missile;
 
-import icbm.classic.ICBMClassic;
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.config.util.ItemStackConfigList;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.ItemReg;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.RegistryObject;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ClusterMissileHandler {

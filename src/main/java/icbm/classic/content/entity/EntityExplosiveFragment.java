@@ -4,7 +4,6 @@ import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.lib.projectile.EntityProjectile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;

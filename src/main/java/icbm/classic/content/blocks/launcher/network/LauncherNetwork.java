@@ -1,9 +1,9 @@
 package icbm.classic.content.blocks.launcher.network;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import lombok.Getter;
 import net.minecraft.util.Direction;

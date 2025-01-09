@@ -1,6 +1,5 @@
 package icbm.classic.content.items;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.api.events.RemoteTriggerEvent;
 import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.radio.messages.TriggerActionMessage;

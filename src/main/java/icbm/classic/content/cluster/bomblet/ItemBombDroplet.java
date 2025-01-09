@@ -1,7 +1,6 @@
 package icbm.classic.content.cluster.bomblet;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.actions.IActionData;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.entity.EntityType;

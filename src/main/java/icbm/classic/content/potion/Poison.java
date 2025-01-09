@@ -2,11 +2,9 @@ package icbm.classic.content.potion;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 import java.util.HashMap;
 

@@ -3,7 +3,6 @@ package icbm.classic.content.blocks.emptower;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.TileReg;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 public class TileEmpTowerFake extends TileEntity {

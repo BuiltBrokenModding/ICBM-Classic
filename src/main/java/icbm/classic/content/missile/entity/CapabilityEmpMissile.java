@@ -2,7 +2,6 @@ package icbm.classic.content.missile.entity;
 
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.config.ConfigEMP;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;

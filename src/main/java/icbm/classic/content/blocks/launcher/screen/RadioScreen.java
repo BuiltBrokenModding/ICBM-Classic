@@ -6,7 +6,6 @@ import icbm.classic.api.radio.IRadioSender;
 import icbm.classic.api.radio.messages.ITargetMessage;
 import icbm.classic.api.radio.messages.ITriggerActionMessage;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.lib.radio.messages.TextMessage;

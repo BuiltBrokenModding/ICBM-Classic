@@ -1,7 +1,6 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;

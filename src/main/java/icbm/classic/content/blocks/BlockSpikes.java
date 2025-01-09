@@ -1,8 +1,5 @@
 package icbm.classic.content.blocks;
 
-import com.google.common.collect.Lists;
-import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigMain;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -11,9 +8,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.Effects;
 import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.*;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;

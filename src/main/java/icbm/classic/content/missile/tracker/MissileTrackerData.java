@@ -1,6 +1,5 @@
 package icbm.classic.content.missile.tracker;
 
-import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.NBTConstants;

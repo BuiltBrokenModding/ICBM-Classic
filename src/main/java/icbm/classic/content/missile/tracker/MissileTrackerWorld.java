@@ -2,7 +2,6 @@ package icbm.classic.content.missile.tracker;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.events.MissileChunkEvent;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
@@ -14,10 +13,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.server.Ticket;
 import net.minecraft.world.server.TicketType;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Level;
 
 import java.util.Iterator;

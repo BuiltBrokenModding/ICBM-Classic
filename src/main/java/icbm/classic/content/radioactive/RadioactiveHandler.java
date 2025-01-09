@@ -4,8 +4,8 @@ import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.config.util.BlockStateConfigList;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
