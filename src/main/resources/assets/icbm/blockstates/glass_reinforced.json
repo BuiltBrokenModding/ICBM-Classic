@@ -1,7 +1,7 @@
 {
   "variants": {
     "normal": {
-      "model": "icbm:glass_reinforced"
+      "model": "icbm:block/glass_reinforced"
     }
   }
 }
