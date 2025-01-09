@@ -1,8 +1,6 @@
 package icbm.classic.lib.transform.rotation;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.jlib.data.vector.ITransform;
-import icbm.classic.lib.transform.vector.Pos;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,7 +9,7 @@ import java.math.RoundingMode;
  *
  * Created by Dark(DarkGuardsman, Robin) on 2/9/2018.
  */
-public class Quaternion implements ITransform
+public class Quaternion
 {
     double x = 1D;
     double y = 0D;
@@ -129,16 +127,6 @@ public class Quaternion implements ITransform
     public Quaternion clone()
     {
         return new Quaternion(this);
-    }
-
-    @Override
-    public Pos transform(IPos3D vector)
-    {
-        double d = -x * vector.x() - y * vector.y() - z * vector.z();
-        double d1 = w * vector.x() + y * vector.z() - z * vector.y();
-        double d2 = w * vector.y() - x * vector.z() + z * vector.x();
-        double d3 = w * vector.z() + x * vector.y() - y * vector.x();
-        return new Pos(d1 * w - d * x - d2 * z + d3 * y, d2 * w - d * y + d1 * z - d3 * x, d3 * w - d * z - d1 * y + d2 * x);
     }
 
     @Override

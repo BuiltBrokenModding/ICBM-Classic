@@ -1,9 +1,6 @@
 package icbm.classic.lib.transform.rotation;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.jlib.data.vector.ITransform;
 import icbm.classic.lib.NBTConstants;
-import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -17,7 +14,7 @@ import net.minecraft.util.Direction;
  * <p>
  * Original version by Calclavia
  */
-public class EulerAngle implements Cloneable, ITransform
+public class EulerAngle implements Cloneable
 {
     protected double yaw = 0;
     protected double pitch = 0;
@@ -405,22 +402,6 @@ public class EulerAngle implements Cloneable, ITransform
 
     private static double delta(final double a, final double b) {
         return Math.abs(((a + 360) % 360) - ((b + 360) % 360)); //TODO check performance
-    }
-
-    @Override
-    public IPos3D transform(IPos3D vector)
-    {
-        return new Pos(vector).transform(toQuaternion());
-    }
-
-    /**
-     * Converts object to {@link Pos}
-     *
-     * @return new {@link Pos}
-     */
-    public Pos toPos()
-    {
-        return new Pos(x(), y(), z());
     }
 
     public double x()

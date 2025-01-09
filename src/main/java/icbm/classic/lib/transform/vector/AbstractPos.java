@@ -1,7 +1,6 @@
 package icbm.classic.lib.transform.vector;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import com.builtbroken.jlib.data.vector.ITransform;
 import com.builtbroken.jlib.data.vector.Pos3D;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.rotation.EulerAngle;
@@ -48,15 +47,6 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
     public EulerAngle toEulerAngle()
     {
         return new EulerAngle(Math.toDegrees(Math.atan2(x(), z())), Math.toDegrees(-Math.atan2(y(), Math.hypot(z(), x()))));
-    }
-
-    public IPos3D transform(ITransform transformer)
-    {
-        if (this instanceof IPos3D)
-        {
-            return transformer.transform((IPos3D) this);
-        }
-        return null;
     }
 
     //=========================
