@@ -30,26 +30,6 @@ public abstract class AbstractPos<R extends AbstractPos> extends Pos3D<R> implem
     }
 
     //=========================
-    //========Converters=======
-    //=========================
-
-    @Deprecated
-    public EulerAngle toEulerAngle(IPos3D target)
-    {
-        return sub(target).toEulerAngle();
-    }
-
-    public EulerAngle toEulerAngle(Vec3d target)
-    {
-        return sub(target).toEulerAngle();
-    }
-
-    public EulerAngle toEulerAngle()
-    {
-        return new EulerAngle(Math.toDegrees(Math.atan2(x(), z())), Math.toDegrees(-Math.atan2(y(), Math.hypot(z(), x()))));
-    }
-
-    //=========================
     //======Math Operators=====
     //=========================
 

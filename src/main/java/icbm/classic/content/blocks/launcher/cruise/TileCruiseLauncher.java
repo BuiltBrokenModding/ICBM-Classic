@@ -26,7 +26,6 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.tile.TickAction;
 import icbm.classic.lib.tile.TickDoOnce;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import icbm.classic.lib.transform.vector.Pos;
 import icbm.classic.prefab.gui.IPlayerUsing;
 import icbm.classic.prefab.inventory.InventorySlot;
 import icbm.classic.prefab.inventory.InventoryWithSlots;
@@ -71,6 +70,7 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
     private static final double ROTATION_SPEED = 10.0;
 
     public static final double MISSILE__HOLDER_Y = 2.0;
+    public static final double MIN_DISTANCE_CHECK = 20; //TODO config
 
     /**
      * Target position of the launcher
@@ -129,6 +129,9 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
     @Getter
     private final List<PlayerEntity> playersUsing = new LinkedList<>();
 
+    @Getter
+    private Vec3d launcherCenter = Vec3d.ZERO;
+
     public TileCruiseLauncher() {
         super(TileReg.LAUNCHER_CRUISE.get());
         tickActions.add(descriptionPacketSender);
@@ -137,6 +140,16 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
             playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerCruiseLauncher));
         }));
         tickActions.add(inventory);
+    }
+
+    @Override
+    public void setPos(BlockPos posIn) {
+       super.setPos(posIn);
+       launcherCenter= new Vec3d(
+           this.getPos().getX() + 0.5,
+           this.getPos().getY() + MISSILE__HOLDER_Y,
+           this.getPos().getZ() + 0.5
+       );
     }
 
     @Override
@@ -266,8 +279,12 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
     protected void updateAimAngle() {
         if (hasTarget()) {
             final Vec3d aimPoint = getTarget();
-            final Pos center = new Pos(this).add(0.5, MISSILE__HOLDER_Y, 0.5);
-            aim.set(center.toEulerAngle(aimPoint).clampTo360());
+
+            final double deltaX = this.launcherCenter.x - aimPoint.x;
+            final double deltaY = this.launcherCenter.y - aimPoint.y;
+            final double deltaZ = this.launcherCenter.z - aimPoint.z;
+
+            aim.set(new EulerAngle(Math.toDegrees(Math.atan2(deltaX, deltaZ)), Math.toDegrees(-Math.atan2(deltaY, Math.hypot(deltaZ, deltaX)))).clampTo360());
             aim.setYaw(EulerAngle.clampPos360(aim.yaw()));
         } else {
             aim.set(0, 0, 0);
@@ -326,7 +343,12 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
 
     // Is the target too close?
     public boolean isTooClose(Vec3d target) {
-        return new Pos(getPos()).add(0.5).distance(target) < 20; //TODO remove pos usage
+        double distance = Math.sqrt(
+            Math.pow(target.x - getPos().getX() + 0.5, 2)
+                + Math.pow(target.y - getPos().getY() + 0.5, 2)
+                + Math.pow(target.z - getPos().getZ() + 0.5, 2)
+        );
+        return distance < MIN_DISTANCE_CHECK;
     }
 
     @Override
