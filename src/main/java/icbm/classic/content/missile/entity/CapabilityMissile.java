@@ -84,7 +84,7 @@ public class CapabilityMissile implements IMissile, INBTSerializable<CompoundNBT
 
     protected void triggerFlightLogic() {
         if(flightLogic != null) {
-            flightLogic.calculateFlightPath(world(), x(), y(), z(), getTargetData()); //TODO show in launcher screen with predicted path and time
+            flightLogic.calculateFlightPath(getMissileEntity().world, getMissileEntity().posX, getMissileEntity().posY, getMissileEntity().posZ, getTargetData()); //TODO show in launcher screen with predicted path and time
             flightLogic.start(missile, this);
         }
     }
@@ -123,8 +123,8 @@ public class CapabilityMissile implements IMissile, INBTSerializable<CompoundNBT
         RadarRegistry.add(this.missile); //TODO replace with capability and have radar system listen for entity spawn event
 
         //Play audio
-        ICBMSounds.MISSILE_LAUNCH.play(world(), x(), y(), z(),
-            1F, (1.0F + CalculationHelpers.randFloatRange(world().rand, 0.2F)) * 0.7F, true);
+        ICBMSounds.MISSILE_LAUNCH.play(getMissileEntity().world, getMissileEntity().posX, getMissileEntity().posY, getMissileEntity().posZ,
+            1F, (1.0F + CalculationHelpers.randFloatRange(getMissileEntity().world.rand, 0.2F)) * 0.7F, true);
 
 
         if (ConfigDebug.DEBUG_MISSILE_LAUNCHES)
@@ -138,30 +138,6 @@ public class CapabilityMissile implements IMissile, INBTSerializable<CompoundNBT
                 )
             );
         }
-    }
-
-    @Override
-    public World world()
-    {
-        return missile != null ? missile.world : null;
-    }
-
-    @Override
-    public double z()
-    {
-        return missile != null ? missile.posZ : 0;
-    }
-
-    @Override
-    public double x()
-    {
-        return missile != null ? missile.posX : 0;
-    }
-
-    @Override
-    public double y()
-    {
-        return missile != null ? missile.posY : 0;
     }
 
     public static void register()

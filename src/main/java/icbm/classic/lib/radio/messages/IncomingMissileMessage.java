@@ -28,10 +28,10 @@ public class IncomingMissileMessage implements IIncomingMissileMessage {
                 final double mag = Math.sqrt(tX * tX + tY * tY + tZ * tZ); //TODO remove need for sqrt
 
                 if(mag < velocity * time || time == maxTime) {
-                    return missile.getVec3d();
+                    return missile.getMissileEntity().getPositionVector();
                 }
             }
-            return missile.getVec3d();
+            return missile.getMissileEntity().getPositionVector();
         }
         return null;
     }
@@ -39,7 +39,7 @@ public class IncomingMissileMessage implements IIncomingMissileMessage {
     @Override
     public Vec3d getTarget() {
         if(missile != null) {
-            return missile.getVec3d();
+            return missile.getMissileEntity().getPositionVector();
         }
         return null;
     }

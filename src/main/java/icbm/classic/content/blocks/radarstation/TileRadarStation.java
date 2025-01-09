@@ -292,7 +292,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         }
         //TODO rewrite this as a 2D without objects for less memory waste
 
-        Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
+        Vec3d mpos = new Vec3d(missile.getMissileEntity().posX,missile.getMissileEntity().posY, missile.getMissileEntity().posZ);    // missile position
         Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
 
         double nextDistance = mpos.add(missile.getMissileEntity().getMotion().x, missile.getMissileEntity().getMotion().y, missile.getMissileEntity().getMotion().z).distanceTo(rpos);   // next distance from missile to radar

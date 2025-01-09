@@ -38,7 +38,7 @@ public class RadarRenderData {
         addDot(this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5 - this.host.getTriggerRange(), RadarDotType.MARKER);
 
         this.host.getDetectedThreats().forEach((entity) ->  addDot(entity.posX, entity.posZ, RadarDotType.HOSTILE));
-        this.host.getIncomingThreats().forEach((entity) ->  addDot(entity.x(), entity.z(), RadarDotType.INCOMING));
+        this.host.getIncomingThreats().forEach((entity) ->  addDot(entity.getMissileEntity().posX, entity.getMissileEntity().posZ, RadarDotType.INCOMING));
     }
 
     public void addDot(double ex, double ez, RadarDotType type) {

@@ -2,7 +2,6 @@ package icbm.classic.api.missiles;
 
 
 import icbm.classic.api.actions.cause.IActionSource;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import net.minecraft.entity.Entity;
@@ -12,7 +11,7 @@ import net.minecraft.entity.Entity;
  *
  * @author DarkGuardsman
  */
-public interface IMissile extends IWorldPosition // TODO add registry and require each missile (ex combinations included) to have a key
+public interface IMissile // TODO add registry and require each missile (ex combinations included) to have a key
 {
     /**
      * The amount of ticks this missile has been flying for. Returns -1 if the missile is not
