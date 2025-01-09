@@ -19,7 +19,7 @@ import net.minecraft.world.World;
  * Base entity class to be shared by most entities
  * Created by Robin on 1/24/2015.
  */
-public abstract class EntityICBM extends Entity implements IWorldPosition
+public abstract class EntityICBM extends Entity
 {
     /** Does the entity have HP to take damage. */
     protected boolean hasHealth = false;
@@ -151,28 +151,4 @@ public abstract class EntityICBM extends Entity implements IWorldPosition
         /* */.nodeFloat("health", EntityICBM::getHealth, EntityICBM::setHealth)
         /* */.nodeFloat("health_max", EntityICBM::getMaxHealth, EntityICBM::setMaxHealth)
         .base();
-
-    @Override
-    public World world()
-    {
-        return world;
-    }
-
-    @Override
-    public double x()
-    {
-        return posX;
-    }
-
-    @Override
-    public double y()
-    {
-        return posY;
-    }
-
-    @Override
-    public double z()
-    {
-        return posZ;
-    }
 }

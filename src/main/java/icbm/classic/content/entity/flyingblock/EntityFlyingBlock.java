@@ -5,7 +5,6 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigFlyingBlocks;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,9 +14,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,14 +22,16 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 
 import javax.annotation.Nonnull;
@@ -135,7 +133,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
     @Override
     protected void destroy() {
-        this.placeBlockIntoWorld(this.getPos(), new BlockRayTraceResult(this.getPositionVector(), Direction.UP, getPosition(), false));
+        this.placeBlockIntoWorld(this.getPosition(), new BlockRayTraceResult(this.getPositionVector(), Direction.UP, getPosition(), false));
         this.remove();
     }
 
@@ -163,12 +161,9 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     {
         this.remove();
 
-        if (!this.world.isRemote)
+        if (!world.isRemote && !tryPlacement(pos, hit))
         {
-            if (isServer() && !tryPlacement(pos, hit))
-            {
-                dropSourceStack(getBlockData().getSourceStack());
-            }
+            dropSourceStack(getBlockData().getSourceStack());
         }
     }
 
@@ -235,7 +230,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
             final ItemEntity entityItem = new ItemEntity(world, posX, posY, posZ);
             entityItem.setItem(itemStack);
             if(!world.addEntity(entityItem)) {
-                ICBMClassic.logger().error("EntityFlyingBlock: Failed to drop source stack '{}' at dim[{}] pos[{}]", itemStack, this.world.getDimension().getType(), this.getPos());
+                ICBMClassic.logger().error("EntityFlyingBlock: Failed to drop source stack '{}' at dim[{}] pos[{}]", itemStack, this.world.getDimension().getType(), this.getPosition());
             }
         }
     }

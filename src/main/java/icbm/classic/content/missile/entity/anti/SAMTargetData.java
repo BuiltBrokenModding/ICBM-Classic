@@ -5,13 +5,10 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.config.missile.ConfigSAMMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.radar.RadarEntity;
 import icbm.classic.lib.radar.RadarRegistry;
-import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -69,7 +66,7 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     }
 
     private void seekByRadar() {
-        final List<RadarEntity> entries = RadarRegistry.getRadarMapForWorld(host.world).getRadarObjects(host.x(), host.y(), ConfigMissile.SAM_MISSILE.TARGET_RANGE);
+        final List<RadarEntity> entries = RadarRegistry.getRadarMapForWorld(host.world).getRadarObjects(host.posX, host.posY, ConfigMissile.SAM_MISSILE.TARGET_RANGE);
         final List<Entity> valid = entries.stream().filter(RadarEntity::isValid).map(e -> e.entity).filter(this::isValid).collect(Collectors.toList());
 
         //Sort so we get more priority targets
@@ -105,18 +102,18 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     }
 
     private List<Entity> getValidTargets() {
-        return host.world()
+        return host.world
             .getEntitiesWithinAABB(EntityMissile.class, targetArea(), this::isValid);
     }
 
     private AxisAlignedBB targetArea() {
         return new AxisAlignedBB(
-            host.x() - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
-            host.y() - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
-            host.z() - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
-            host.x() + ConfigMissile.SAM_MISSILE.TARGET_RANGE,
-            host.y() + ConfigMissile.SAM_MISSILE.TARGET_RANGE,
-            host.z() + ConfigMissile.SAM_MISSILE.TARGET_RANGE
+            host.posX - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
+            host.posY - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
+            host.posZ - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
+            host.posX + ConfigMissile.SAM_MISSILE.TARGET_RANGE,
+            host.posY + ConfigMissile.SAM_MISSILE.TARGET_RANGE,
+            host.posZ + ConfigMissile.SAM_MISSILE.TARGET_RANGE
         );
     }
 

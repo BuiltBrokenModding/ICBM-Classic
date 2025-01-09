@@ -100,7 +100,7 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
         super.tick();
 
         // Balloon pop chance
-        if(isServer() && liftTicks <= 0 && world.rand.nextFloat() <= BREAK_CHANCE) {
+        if(!world.isRemote && liftTicks <= 0 && world.rand.nextFloat() <= BREAK_CHANCE) {
             releaseCargoAndDespawn();
         }
     }

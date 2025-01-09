@@ -309,7 +309,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      */
     protected void checkInGround() {
         //Check if in ground TODO do we need to run this every tick?
-        final BlockPos tilePos = inGroundData != null ? inGroundData.getPos() : this.getPos();
+        final BlockPos tilePos = inGroundData != null ? inGroundData.getPos() : this.getPosition();
         final BlockState state = this.world.getBlockState(tilePos);
         final InGroundData prevInGround = this.inGroundData;
 
@@ -547,7 +547,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     }
 
     protected void updateMotion() {
-        if (!freezeMotion && isServer()) {
+        if (!freezeMotion && !world.isRemote) {
             //Update motion
             this.posX += this.getMotion().x;
             this.posY += this.getMotion().y;

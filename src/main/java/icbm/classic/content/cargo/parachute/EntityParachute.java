@@ -141,7 +141,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
         this.removePassengers();
         this.remove(); //TODO have parachute drift away and then despawn with particles
 
-        if(isServer() && this.dropItemStack.isPresent()) {
+        if(!world.isRemote && this.dropItemStack.isPresent()) {
             final ItemEntity entityitem = new ItemEntity(this.world, this.posX, this.posY, this.posZ, this.dropItemStack.orElseThrow(IllegalStateException::new).copy());
             entityitem.setDefaultPickupDelay();
             world.addEntity(entityitem);

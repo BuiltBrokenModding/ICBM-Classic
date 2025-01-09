@@ -17,10 +17,10 @@ import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
 import icbm.classic.lib.network.lambda.entity.PacketCodexEntity;
+import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
-import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.entity.Entity;
@@ -30,8 +30,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.*;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -287,10 +288,10 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
         final String formatString = "Missile[%s] (%sx, %sy, %sz, %sd) impacted at (%s, %s, %s)";
         final String formattedMessage = String.format(formatString,
             this.getEntityId(),
-            xi(),
-            yi(),
-            zi(),
-            world().getDimension().getType().getId(),
+            posX,
+            posY,
+            posZ,
+            world.getDimension().getType().getId(),
             impactLocation.x,
             impactLocation.y,
             impactLocation.z
