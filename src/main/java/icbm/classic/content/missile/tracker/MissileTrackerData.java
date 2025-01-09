@@ -3,9 +3,11 @@ package icbm.classic.content.missile.tracker;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Stores missile simulation Data
@@ -18,7 +20,7 @@ public class MissileTrackerData
     public int preLoadChunkTimer;   //Seconds before the missiles spawns in the loaded chunk
 
     public int ticksLeftToTarget;   //Seconds left before the missile reaches the target area (1 Tick = 1 Second)
-    public Pos targetPos;           //Target coordinates
+    public Vec3d targetPos;           //Target coordinates
 
     public EntityType<?> entityType;
     public CompoundNBT missileData;  //Additional missile data
@@ -26,7 +28,7 @@ public class MissileTrackerData
     //Constructors
     public MissileTrackerData(EntityExplosiveMissile missile)
     {
-        targetPos = new Pos(missile.getMissileCapability().getTargetData().getPosition()); //TODO switch to storing targeting data
+        targetPos = missile.getMissileCapability().getTargetData().getPosition(); //TODO switch to storing targeting data
         missileData = new CompoundNBT();
         entityType = missile.getType();
         missile.writeWithoutTypeId(missileData);
@@ -43,7 +45,7 @@ public class MissileTrackerData
     {
         entityType = EntityType.byKey(nbt.getString("entity_type")).orElse(EntityReg.MISSILE_CONDENSED.get()); //TODO handle better
         ticksLeftToTarget = nbt.getInt(NBTConstants.TICKS);
-        targetPos = new Pos(nbt.getCompound(NBTConstants.TARGET));
+        targetPos = SaveNodeVec3d.load(nbt.getCompound(NBTConstants.TARGET));
 
         missileData = nbt.getCompound(NBTConstants.DATA);
     }
@@ -52,7 +54,7 @@ public class MissileTrackerData
     {
         nbt.putString("entity_type", entityType.getRegistryName().toString());
         nbt.putInt(NBTConstants.TICKS, ticksLeftToTarget);
-        nbt.put(NBTConstants.TARGET, targetPos.writeNBT(new CompoundNBT()));
+        nbt.put(NBTConstants.TARGET, SaveNodeVec3d.save(targetPos));
         nbt.put(NBTConstants.DATA, missileData);
         return nbt;
     }

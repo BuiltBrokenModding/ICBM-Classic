@@ -105,19 +105,19 @@ public class MissileTrackerWorld extends WorldSavedData
                 if (missile.ticksLeftToTarget <= 0) //If missile is at the target location
                 {
 
-                    ChunkPos currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, (int) missile.targetPos.z() >> 4);
+                    ChunkPos currentLoadedChunk = new ChunkPos((int) Math.floor(missile.targetPos.x) >> 4, (int) Math.floor(missile.targetPos.z) >> 4);
                     world.getChunkProvider().func_217228_a(MISSILE_ENTER_WORLD, currentLoadedChunk, world.getDimension().getType().getId(), 0);
 
-                    currentLoadedChunk = new ChunkPos(1 + ((int) missile.targetPos.x() >> 4), (int) missile.targetPos.z() >> 4);
+                    currentLoadedChunk = new ChunkPos(1 + ((int) Math.floor(missile.targetPos.x) >> 4), (int) Math.floor(missile.targetPos.z) >> 4);
                     world.getChunkProvider().func_217228_a(MISSILE_ENTER_WORLD, currentLoadedChunk, world.getDimension().getType().getId(), 0);
 
-                    currentLoadedChunk = new ChunkPos(-1 + ((int) missile.targetPos.x() >> 4), (int) missile.targetPos.z() >> 4);
+                    currentLoadedChunk = new ChunkPos(-1 + ((int) Math.floor(missile.targetPos.x) >> 4), (int) Math.floor(missile.targetPos.z) >> 4);
                     world.getChunkProvider().func_217228_a(MISSILE_ENTER_WORLD, currentLoadedChunk, world.getDimension().getType().getId(), 0);
 
-                    currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, 1 + ((int) missile.targetPos.z() >> 4));
+                    currentLoadedChunk = new ChunkPos((int) Math.floor(missile.targetPos.x) >> 4, 1 + ((int) Math.floor(missile.targetPos.z) >> 4));
                     world.getChunkProvider().func_217228_a(MISSILE_ENTER_WORLD, currentLoadedChunk, world.getDimension().getType().getId(), 0);
 
-                    currentLoadedChunk = new ChunkPos((int) missile.targetPos.x() >> 4, -1 + ((int) missile.targetPos.z() >> 4));
+                    currentLoadedChunk = new ChunkPos((int) Math.floor(missile.targetPos.x) >> 4, -1 + ((int) Math.floor(missile.targetPos.z) >> 4));
                     world.getChunkProvider().func_217228_a(MISSILE_ENTER_WORLD, currentLoadedChunk, world.getDimension().getType().getId(), 0);
 
                     missile.preLoadChunkTimer = 0;
@@ -168,9 +168,7 @@ public class MissileTrackerWorld extends WorldSavedData
 
         //Set data
         missile.read(mtd.missileData);
-        missile.posY = ConfigMissile.SIMULATION_ENTER_HEIGHT;
-        missile.posX = mtd.targetPos.x(); //TODO calculate arc position so we don't come in on top of the target
-        missile.posZ = mtd.targetPos.z();
+        missile.setPosition(mtd.targetPos.x, ConfigMissile.SIMULATION_ENTER_HEIGHT, mtd.targetPos.z); //TODO calculate arc position so we don't come in on top of the target
         missile.setMotion(0, -ConfigMissile.SIMULATION_ENTER_SPEED, 0); //TODO get speed it would have been at the given time
 
         if(missile instanceof EntityMissile) {
