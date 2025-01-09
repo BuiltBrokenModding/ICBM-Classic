@@ -1,16 +1,11 @@
 package icbm.classic.client;
 
-import icbm.classic.CommonProxy;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
-import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
 import icbm.classic.config.ConfigClient;
 import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.entity.ChickenRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -21,19 +16,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.Random;
 
 @OnlyIn(Dist.CLIENT)
-public class ClientProxy extends CommonProxy
+public class ClientProxy
 {
-    @Override
-    public void init()
-    {
-        super.init();
-        final EntityRenderer<ChickenEntity> render = Minecraft.getInstance().getRenderManager().getRenderer(ChickenEntity.class);
-        if(render instanceof ChickenRenderer) {
-            ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer)render));
-        }
-    }
 
-    @Override
+
+
     public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         if (world != null)
@@ -48,7 +35,7 @@ public class ClientProxy extends CommonProxy
         }
     }
 
-    @Override
+
     public void spawnAirParticle(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         if (world != null)
@@ -62,7 +49,7 @@ public class ClientProxy extends CommonProxy
         }
     }
 
-    @Override
+
     public void spawnExplosionParticles(final World world, final double sourceX, final double sourceY, final double sourceZ, final double blastScale, final BlockPos blockPos)
     {
         //Random position near destroyed block
@@ -96,7 +83,7 @@ public class ClientProxy extends CommonProxy
         world.addParticle(ParticleTypes.SMOKE, particleX, particleY, particleZ, particleMX, particleMY, particleMZ);
     }
 
-    @Override
+
     public void spawnMissileSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir)
     {
         if (entity.world.isRemote && ConfigClient.MISSILE_ENGINE_SMOKE)
@@ -127,7 +114,7 @@ public class ClientProxy extends CommonProxy
         }
     }
 
-    @Override
+
     public void spawnPadSmoke(Entity entity, IMissileFlightLogic flightLogic, int ticksInAir)
     {
         if(ConfigClient.MISSILE_LAUNCH_SMOKE) {

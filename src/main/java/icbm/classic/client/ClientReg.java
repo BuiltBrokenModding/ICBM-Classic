@@ -3,6 +3,7 @@ package icbm.classic.client;
 import icbm.classic.ICBMConstants;
 import icbm.classic.client.render.entity.*;
 import icbm.classic.client.render.entity.item.RenderAsItem;
+import icbm.classic.client.render.entity.layer.LayerChickenHelmet;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREmpTower;
@@ -24,6 +25,10 @@ import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.ChickenRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IEnviromentBlockReader;
@@ -62,6 +67,15 @@ public class ClientReg {
             }
         }
         return 0;
+    }
+
+    //TODO wire to correct stage
+    public void init()
+    {
+        final EntityRenderer<ChickenEntity> render = Minecraft.getInstance().getRenderManager().getRenderer(ChickenEntity.class);
+        if(render instanceof ChickenRenderer) {
+            ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer)render));
+        }
     }
 
     @SubscribeEvent
