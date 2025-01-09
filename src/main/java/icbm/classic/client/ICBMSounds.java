@@ -1,6 +1,5 @@
 package icbm.classic.client;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMConstants;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -96,11 +95,6 @@ public enum ICBMSounds
     public void play(World world, double x, double y, double z, float volume, float pitch, boolean distanceDelay)
     {
         world.playSound(null, x, y, z, getSound(), category, volume, pitch);
-    }
-
-    public void play(World world, IPos3D pos, float volume, float pitch, boolean distanceDelay)
-    {
-        world.playSound(null, pos.x(), pos.y(), pos.z(), getSound(), category, volume, pitch);
     }
 
     @SubscribeEvent
