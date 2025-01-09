@@ -1,8 +1,6 @@
 package icbm.classic.lib.network.netty;
 
-import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
 import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -89,16 +87,6 @@ public class PacketManager
     public <MSG> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
     {
         HANDLER.send(PacketDistributor.NEAR.with(() -> point), message);
-    }
-
-    public <MSG> void sendToAllAround(MSG message, IWorldPosition point, double range)
-    {
-        sendToAllAround(message, point.world(), point.x(), point.y(), point.z(), range);
-    }
-
-    public <MSG> void sendToAllAround(MSG message, World world, IPos3D point, double range)
-    {
-        sendToAllAround(message, world, point.x(), point.y(), point.z(), range);
     }
 
     public <MSG> void sendToAllAround(MSG message, TileEntity tile)
