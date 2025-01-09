@@ -1,7 +1,5 @@
 package icbm.classic.lib.transform.rotation;
 
-import com.builtbroken.jlib.data.network.IByteBufReader;
-import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.ITransform;
 import icbm.classic.lib.NBTConstants;
@@ -19,7 +17,7 @@ import net.minecraft.util.Direction;
  * <p>
  * Original version by Calclavia
  */
-public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteBufReader, IRotation
+public class EulerAngle implements Cloneable, ITransform, IRotation
 {
     protected double yaw = 0;
     protected double pitch = 0;
@@ -498,31 +496,12 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
         data.writeDouble(roll);
     }
 
-
-    @Override
-    public ByteBuf writeBytes(ByteBuf data)
-    {
-        data.writeDouble(yaw);
-        data.writeDouble(pitch);
-        data.writeDouble(roll);
-        return data;
-    }
-
     @Deprecated
     public void readByteBuf(ByteBuf data)
     {
         yaw = data.readDouble();
         pitch = data.readDouble();
         roll = data.readDouble();
-    }
-
-    @Override
-    public EulerAngle readBytes(ByteBuf data)
-    {
-        yaw = data.readDouble();
-        pitch = data.readDouble();
-        roll = data.readDouble();
-        return this;
     }
 
     public CompoundNBT writeNBT(CompoundNBT nbt)

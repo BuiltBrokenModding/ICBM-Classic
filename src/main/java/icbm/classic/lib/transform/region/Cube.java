@@ -1,10 +1,8 @@
 package icbm.classic.lib.transform.region;
 
-import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.vector.Pos;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -20,7 +18,7 @@ import java.util.List;
 /**
  * Created by Robin on 2/16/2015.
  */
-public class Cube extends Shape3D implements Cloneable, IByteBufWriter
+public class Cube extends Shape3D implements Cloneable
 {
     public static final Cube EMPTY = new Cube().disableEdits();
     public static final Cube FULL = new Cube(0, 0, 0, 1, 1, 1).disableEdits();
@@ -69,19 +67,6 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     {
         canEdit = false;
         return this;
-    }
-
-    @Override
-    public ByteBuf writeBytes(ByteBuf buf)
-    {
-        buf.writeDouble(pointOne != null ? pointOne.x() : 0);
-        buf.writeDouble(pointOne != null ? pointOne.y() : -1);
-        buf.writeDouble(pointOne != null ? pointOne.z() : 0);
-
-        buf.writeDouble(pointTwo != null ? pointTwo.x() : 0);
-        buf.writeDouble(pointTwo != null ? pointTwo.y() : -1);
-        buf.writeDouble(pointTwo != null ? pointTwo.z() : 0);
-        return buf;
     }
 
     //////////////////////

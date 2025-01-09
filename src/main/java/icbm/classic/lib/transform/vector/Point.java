@@ -1,6 +1,5 @@
 package icbm.classic.lib.transform.vector;
 
-import com.builtbroken.jlib.data.network.IByteBufWriter;
 import com.builtbroken.jlib.data.vector.IPos2D;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import com.builtbroken.jlib.data.vector.Pos2D;
@@ -13,7 +12,7 @@ import net.minecraft.nbt.CompoundNBT;
  * <p>
  * Created by Robin on 1/11/2015.
  */
-public class Point extends Pos2D<Point> implements IByteBufWriter, IPos2D
+public class Point extends Pos2D<Point> implements IPos2D
 {
     public static final Point ZERO = new Point(0, 0);
     public static final Point UP = new Point(0, 1);
@@ -61,14 +60,6 @@ public class Point extends Pos2D<Point> implements IByteBufWriter, IPos2D
         nbt.putDouble(NBTConstants.X, x());
         nbt.putDouble(NBTConstants.Y, y());
         return nbt;
-    }
-
-    @Override
-    public ByteBuf writeBytes(ByteBuf data)
-    {
-        data.writeDouble(x());
-        data.writeDouble(y());
-        return data;
     }
 
 
