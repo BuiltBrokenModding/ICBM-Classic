@@ -419,40 +419,6 @@ public class EulerAngle implements Cloneable
         return Math.sin(-Math.cos(yaw_radian()) * Math.cos(pitch_radian()));
     }
 
-    /**
-     * Converts object to new {@link Quaternion}
-     *
-     * @return new {@link Quaternion}
-     */
-    public Quaternion toQuaternion()
-    {
-        // Assuming the angles are in radians.
-        double c1 = Math.cos(Math.toRadians(yaw) / 2);
-        double s1 = Math.sin(Math.toRadians(yaw) / 2);
-        double c2 = Math.cos(Math.toRadians(pitch) / 2);
-        double s2 = Math.sin(Math.toRadians(pitch) / 2);
-        double c3 = Math.cos(Math.toRadians(roll) / 2);
-        double s3 = Math.sin(Math.toRadians(roll) / 2);
-        double c1c2 = c1 * c2;
-        double s1s2 = s1 * s2;
-        double w = c1c2 * c3 - s1s2 * s3;
-        double x = c1c2 * s3 + s1s2 * c3;
-        double y = s1 * c2 * c3 + c1 * s2 * s3;
-        double z = c1 * s2 * c3 - s1 * c2 * s3;
-        return new Quaternion(w, x, y, z);
-    }
-
-    /**
-     * Converts object into an array of doubles(yaw, pitch, roll).
-     * More or less legacy code...
-     *
-     * @return 3 size array
-     */
-    public double[] toArray()
-    {
-        return new double[]{yaw, pitch, roll};
-    }
-
     @Override
     public EulerAngle clone()
     {
