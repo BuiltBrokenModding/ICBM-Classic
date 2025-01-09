@@ -20,10 +20,8 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.api.radio.IRadio;
-import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
@@ -115,21 +113,6 @@ public final class ICBMClassicAPI
      */
     @Deprecated
     public static IExplosiveRegistry EXPLOSIVE_REGISTRY;
-
-    /** Registry for explosive customizations
-     * @deprecated replaced with {@link icbm.classic.api.actions.data.IActionFieldProvider}
-     * */
-    @Deprecated
-    public static IBuilderRegistry<IExplosiveCustomization> EXPLOSIVE_CUSTOMIZATION_REGISTRY;
-
-    @Deprecated
-    public static final ResourceLocation EX_MISSILE = new ResourceLocation(ID, "missile");
-    @Deprecated
-    public static final ResourceLocation EX_GRENADE = new ResourceLocation(ID, "grenade");
-    @Deprecated
-    public static final ResourceLocation EX_BLOCK = new ResourceLocation(ID, "block");
-    @Deprecated
-    public static final ResourceLocation EX_MINECART = new ResourceLocation(ID, "minecart");
 
 
     @Deprecated

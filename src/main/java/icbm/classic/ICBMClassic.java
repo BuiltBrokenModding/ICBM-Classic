@@ -3,8 +3,6 @@ package icbm.classic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import icbm.classic.api.reg.IExplosiveCustomization;
-import icbm.classic.api.reg.events.ExplosiveCustomizationRegistryEvent;
 import icbm.classic.api.reg.events.MissileFlightLogicRegistryEvent;
 import icbm.classic.api.reg.events.MissileTargetRegistryEvent;
 import icbm.classic.api.reg.events.ProjectileDataRegistryEvent;
@@ -12,7 +10,6 @@ import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
-import icbm.classic.content.blast.ender.EnderBlastCustomization;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
@@ -180,7 +177,6 @@ public class ICBMClassic
         handleMissileTargetRegistry();
         handleMissileFlightRegistry();
         ActionSystem.setup();
-        handleExplosiveCustomizationRegistry();
         handleExRegistry();
         handleProjectileDataRegistry();
 
@@ -255,20 +251,6 @@ public class ICBMClassic
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry)ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY).lock();
-    }
-
-    void handleExplosiveCustomizationRegistry()
-    {
-        ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY =  new BuildableObjectRegistry<IExplosiveCustomization>("EXPLOSIVE_CUSTOMIZATION");
-
-        // Register defaults
-        ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.register(EnderBlastCustomization.NAME, EnderBlastCustomization::new);
-
-        //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ExplosiveCustomizationRegistryEvent(ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY));
-
-        //Lock to prevent late registry
-        ((BuildableObjectRegistry) ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY).lock();
     }
 
     void handleProjectileDataRegistry()

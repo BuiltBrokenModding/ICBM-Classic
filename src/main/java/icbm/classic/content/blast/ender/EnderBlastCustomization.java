@@ -1,11 +1,8 @@
 package icbm.classic.content.blast.ender;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.explosion.IBlast;
-import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
@@ -22,7 +19,7 @@ import java.util.function.Consumer;
 
 @Data
 @NoArgsConstructor
-public class EnderBlastCustomization implements IExplosiveCustomization, INBTSerializable<CompoundNBT> {
+public class EnderBlastCustomization implements INBTSerializable<CompoundNBT> {
 
     public static final ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ender");
 
@@ -51,7 +48,6 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
         this.dim = dim;
     }
 
-    @Override
     public void collectCustomizationInformation(Consumer<String> collector) {
         if(pos != null) {
             if(posTooltip == null) {
@@ -67,19 +63,6 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
         }
     }
 
-    @Nonnull
-    @Override
-    public ResourceLocation getRegistryKey() {
-        return NAME;
-    }
-
-    @Nonnull
-    @Override
-    public IBuilderRegistry<IExplosiveCustomization> getRegistry() {
-        return ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY;
-    }
-
-    @Override
     public void apply(IExplosiveData explosiveData, IBlast blast) {
         if(blast instanceof BlastEnder) {
             ((BlastEnder) blast).setTeleportTarget(pos);

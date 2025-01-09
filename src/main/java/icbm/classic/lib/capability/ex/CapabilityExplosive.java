@@ -1,11 +1,8 @@
 package icbm.classic.lib.capability.ex;
 
 import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.refs.ICBMExplosives;
-import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -28,23 +25,6 @@ public class CapabilityExplosive implements IExplosive
     public IExplosiveData getExplosiveData()
     {
         return ICBMExplosives.CONDENSED;
-    }
-
-    @Override
-    public void applyCustomizations(IBlast blast) {
-
-    }
-
-    @Override
-    public void addCustomization(IExplosiveCustomization customization) {
-
-    }
-
-    @Nullable
-    @Override
-    public ItemStack toStack()
-    {
-        return null;
     }
 
     public static void register()
