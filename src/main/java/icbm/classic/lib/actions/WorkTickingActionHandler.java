@@ -3,7 +3,6 @@ package icbm.classic.lib.actions;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.content.blast.Blast;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;

@@ -1,28 +1,12 @@
 package icbm.classic;
 
-import com.google.gson.*;
-
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.caps.IExplosive;
-import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import org.junit.jupiter.api.Assertions;
-import org.opentest4j.AssertionFailedError;
 
-import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public abstract class TestBase {
 

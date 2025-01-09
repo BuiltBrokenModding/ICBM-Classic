@@ -3,7 +3,6 @@ package icbm.classic.lib.radar;
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;

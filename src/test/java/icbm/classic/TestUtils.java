@@ -1,11 +1,5 @@
 package icbm.classic;
 
-import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
-import org.junit.jupiter.api.Assertions;
-
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/20/2020.
  */

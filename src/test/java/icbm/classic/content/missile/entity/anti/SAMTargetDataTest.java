@@ -8,8 +8,6 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.world.World;
 import org.junit.jupiter.api.*;*/
 
-import java.util.function.Function;
-
 public class SAMTargetDataTest {
 
    /* static TestManager testManager = new TestManager("radarScanLogic", Assertions::fail);

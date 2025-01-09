@@ -2,13 +2,13 @@ package icbm.classic.client;
 
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.config.ConfigClient;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,12 +21,12 @@ public class ClientProxy
 
 
 
-    public void spawnSmoke(World world, Pos position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
+    public void spawnSmoke(World world, Vec3d position, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
         if (world != null)
         {
 
-            Particle particle = Minecraft.getInstance().particles.addParticle(ParticleTypes.SMOKE, position.x(), position.y(), position.z(), v, v1, v2);
+            Particle particle = Minecraft.getInstance().particles.addParticle(ParticleTypes.SMOKE, position.x, position.y, position.z, v, v1, v2);
             particle.setMaxAge(ticksToLive);
 
             float colorVariant = (float) (Math.random() * 0.90000001192092896D);
@@ -88,28 +88,43 @@ public class ClientProxy
     {
         if (entity.world.isRemote && ConfigClient.MISSILE_ENGINE_SMOKE)
         {
-            Pos position = new Pos(entity);
-            // The distance of the smoke relative
-            // to the missile.
-            double distance = -1.2f;
-            // The delta Y of the smoke.
-            double y = Math.sin(Math.toRadians(entity.rotationPitch)) * distance;
-            // The horizontal distance of the
-            // smoke.
-            double dH = Math.cos(Math.toRadians(entity.rotationPitch)) * distance;
-            // The delta X and Z.
+            final double smokeVelocityScale = 0.5f;
+            final double smokeRandomPercent = 0.025;
+            final double distance = -1.2f;
+            final int particleLifeSpan = 100;
+
+            final float particleScale =(int) Math.max(1d, 6d * (1 / (1 + entity.posY / 100)));
+
+            final double dH = Math.cos(Math.toRadians(entity.rotationPitch)) * distance;
+
             double x = Math.sin(Math.toRadians(entity.rotationYaw)) * dH;
+            double y = Math.sin(Math.toRadians(entity.rotationPitch)) * distance;
             double z = Math.cos(Math.toRadians(entity.rotationYaw)) * dH;
-            position = position.add(x, y, z);
 
             for (int i = 0; i < 10; i++)
             {
                 spawnAirParticle(entity.world,
-                    position.x(), position.y(), position.z(),
-                    -entity.getMotion().x * 0.5, -entity.getMotion().y * 0.5, -entity.getMotion().z * 0.5,
-                    flightLogic.engineSmokeRed(entity), flightLogic.engineSmokeGreen(entity), flightLogic.engineSmokeBlue(entity),
-                    (int) Math.max(1d, 6d * (1 / (1 + entity.posY / 100))), 100);
-                position.multiply(1 - 0.025 * Math.random(), 1 - 0.025 * Math.random(), 1 - 0.025 * Math.random());
+
+                    // Position
+                    entity.posX + x,
+                    entity.posY + y,
+                    entity.posZ + z,
+
+                    // Motion inverse of missile path
+                    -entity.getMotion().x * smokeVelocityScale,
+                    -entity.getMotion().y * smokeVelocityScale,
+                    -entity.getMotion().z * smokeVelocityScale,
+
+                    // Color
+                    flightLogic.engineSmokeRed(entity),
+                    flightLogic.engineSmokeGreen(entity),
+                    flightLogic.engineSmokeBlue(entity),
+
+                    particleScale, particleLifeSpan);
+
+                x *= 1 - smokeRandomPercent * Math.random();
+                y *= 1 - smokeRandomPercent * Math.random();
+                z *= 1 - smokeRandomPercent * Math.random();
             }
         }
     }

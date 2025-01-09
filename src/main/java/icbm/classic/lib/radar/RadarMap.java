@@ -2,8 +2,6 @@ package icbm.classic.lib.radar;
 
 import icbm.classic.ICBMClassic;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.IChunk;
 

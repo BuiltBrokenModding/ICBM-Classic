@@ -4,7 +4,6 @@ import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
-import icbm.classic.lib.transform.vector.Pos;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.Vec3d;
