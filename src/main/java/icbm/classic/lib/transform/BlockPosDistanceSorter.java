@@ -1,5 +1,6 @@
 package icbm.classic.lib.transform;
 
+import lombok.Value;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Comparator;
@@ -8,13 +9,14 @@ import java.util.Comparator;
  *
  * Created by Dark(DarkGuardsman, Robin) on 10/8/2018.
  */
-public class PosDistanceSorter implements Comparator<BlockPos>
+@Value
+public class BlockPosDistanceSorter implements Comparator<BlockPos>
 {
-    final BlockPos center;
-    final boolean sortY;
-    final Sort method;
+    BlockPos center;
+    boolean sortY;
+    Sort method;
 
-    public PosDistanceSorter(BlockPos center, boolean sortY, Sort method)
+    public BlockPosDistanceSorter(BlockPos center, boolean sortY, Sort method)
     {
         this.center = center;
         this.sortY = sortY;

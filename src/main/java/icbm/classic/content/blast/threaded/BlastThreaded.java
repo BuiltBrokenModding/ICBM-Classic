@@ -5,7 +5,7 @@ import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.transform.BlockEditHandler;
-import icbm.classic.lib.transform.PosDistanceSorter;
+import icbm.classic.lib.transform.BlockPosDistanceSorter;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
@@ -44,7 +44,7 @@ public abstract class BlastThreaded extends Blast
      */
     protected Comparator<BlockPos> buildSorter()
     {
-        return new PosDistanceSorter(new BlockPos(getPosition()), false, PosDistanceSorter.Sort.SQ);
+        return new BlockPosDistanceSorter(new BlockPos(getPosition()), false, BlockPosDistanceSorter.Sort.SQ);
     }
 
     protected void onPostThreadJoinWorld()
