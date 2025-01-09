@@ -30,7 +30,7 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
     @Override
     public boolean doExplode(int callCount) //TODO break into smaller methods
     {
-        if (this.world().isRemote)
+        if (this.getWorld().isRemote)
         {
             int r = (int) (this.getBlastRadius() - ((double) this.callCount / (double) this.duration) * this.getBlastRadius());
 
@@ -40,17 +40,17 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                 {
                     for (int y = -r; y < r; y++)
                     {
-                        final BlockPos targetPosition = getPos().add(x, y, z);
-                        double distance = targetPosition.distanceSq(getPos());
+                        final BlockPos targetPosition = new BlockPos(getPosition().add(x, y, z));
+                        double distance = targetPosition.distanceSq(new BlockPos(getPosition()));
 
                         if (distance < r && distance > r - 1)
                         {
-                            if (!world().isAirBlock(targetPosition))
+                            if (!getWorld().isAirBlock(targetPosition))
                             {
                                 continue;
                             }
 
-                            if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.01))
+                            if (this.getWorld().rand.nextFloat() < Math.max(0.001 * r, 0.01))
                             {
                                 float velX = (float) ((targetPosition.getX() - pos.getX()) * 0.6); //TODO use blast double positions
                                 float velY = (float) ((targetPosition.getY() - pos.getY()) * 0.6);
@@ -66,9 +66,9 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
 
         int radius = (int) this.getBlastRadius();
         AxisAlignedBB bounds = new AxisAlignedBB(
-            x() - radius, y() - radius, z() - radius,
-            x() + radius, y() + radius, z() + radius);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
+            getPosition().x - radius, getPosition().y - radius, getPosition().z - radius,
+            getPosition().x + radius, getPosition().y + radius, getPosition().z + radius);
+        List<Entity> allEntities = getWorld().getEntitiesWithinAABB(Entity.class, bounds);
         boolean explosionCreated = false;
 
         for (Entity entity : allEntities)
@@ -76,9 +76,9 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
             if (entity != this.controller)
             {
 
-                double xDifference = entity.posX - x();
-                double yDifference = entity.posY - y();
-                double zDifference = entity.posZ - z();
+                double xDifference = entity.posX - getPosition().x;
+                double yDifference = entity.posY - getPosition().y;
+                double zDifference = entity.posZ - getPosition().z;
 
                 int r = (int) this.getBlastRadius();
                 if (xDifference < 0)
@@ -89,7 +89,7 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                 entity.addVelocity(-(r - xDifference) * Math.abs(xDifference) * 0.0006, 0, 0);
 
                 r = (int) this.getBlastRadius();
-                if (entity.posY > y())
+                if (entity.posY > getPosition().y)
                 {
                     r = (int) -this.getBlastRadius();
                 }
@@ -103,11 +103,11 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
 
                 entity.addVelocity(0, 0, -(r - zDifference) * Math.abs(zDifference) * 0.0006);
 
-                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(x(), y(), z()) < 4)
+                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(getPosition().x, getPosition().y, getPosition().z) < 4)
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {
-                        world().addParticle(ParticleTypes.EXPLOSION_EMITTER, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
+                        getWorld().addParticle(ParticleTypes.EXPLOSION_EMITTER, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
                         explosionCreated = true;
                     }
 
@@ -117,8 +117,8 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                         if (this.teleportTarget == null)
                         {
                             int checkY = (int) Math.floor(this.controller.posY);
-                            int checkX = this.world().rand.nextInt(300) - 150 + (int) this.controller.posX;
-                            int checkZ = this.world().rand.nextInt(300) - 150 + (int) this.controller.posZ;
+                            int checkX = getWorld().rand.nextInt(300) - 150 + (int) this.controller.posX;
+                            int checkZ = getWorld().rand.nextInt(300) - 150 + (int) this.controller.posZ;
 
                             //Look for space with air gap
                             BlockPos pos;
@@ -129,12 +129,12 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                                 pos2 = pos.up();
                                 checkY++;
                             }
-                            while (this.world().isAirBlock(pos) && !this.world().isAirBlock(pos2) && checkY < 254);
+                            while (getWorld().isAirBlock(pos) && !getWorld().isAirBlock(pos2) && checkY < 254);
 
                             this.teleportTarget = new Vec3d(checkX + 0.5, checkY + 0.5, checkZ + 0.5);
                         }
 
-                        this.world().playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                        getWorld().playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                         if (entity instanceof ServerPlayerEntity)
                         {
@@ -153,7 +153,7 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
             }
         }
 
-        this.world().playSound(null, this.x(), this.y(), this.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F);
+        getWorld().playSound(null, getPosition().x, getPosition().y, getPosition().z, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, getWorld().rand.nextFloat() * 0.4F + 0.8F);
 
         return this.callCount > this.duration;
     }
@@ -163,13 +163,13 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
     {
         super.onBlastCompleted();
 
-        if (!this.world().isRemote)
+        if (!this.getWorld().isRemote)
         {
             for (int i = 0; i < 8; i++) //TODO check for safe location to spawn
             {
-                EndermanEntity enderman = EntityType.ENDERMAN.create(this.world());
-                enderman.setPosition(this.x(), this.y(), this.z());
-                this.world().addEntity(enderman);
+                EndermanEntity enderman = EntityType.ENDERMAN.create(this.getWorld());
+                enderman.setPosition(getPosition().x, getPosition().y, getPosition().z);
+                getWorld().addEntity(enderman);
             }
         }
     }

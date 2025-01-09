@@ -16,7 +16,7 @@ public class BlastShrapnel extends Blast {
 
     @Override
     public boolean doExplode(int callCount) {
-        if (!world().isRemote) {
+        if (!getWorld().isRemote) {
             float rotationStep = 360 / this.getBlastRadius();
 
             // TODO add logic to detect when rotation is blocked by ground and to avoid spawning fragments
@@ -29,7 +29,7 @@ public class BlastShrapnel extends Blast {
                     final Entity fragment = projectile.apply(world);
 
                     float rotationPitch = 0.0F + rotationStep * pitchIndex;
-                    fragment.setLocationAndAngles(x(), Math.floor(y()) + 1.5, z(), rotationYaw, rotationPitch); //TODO fix y-pos to not offset by 1.5
+                    fragment.setLocationAndAngles(getPosition().x, Math.floor(getPosition().y) + 1.5, getPosition().z, rotationYaw, rotationPitch); //TODO fix y-pos to not offset by 1.5
                     fragment.posX -= (MathHelper.cos(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);
                     fragment.posY -= 0.10000000149011612D; //TODO figure out why magic number
                     fragment.posZ -= (MathHelper.sin(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);
@@ -43,12 +43,12 @@ public class BlastShrapnel extends Blast {
 
                     if (fragment instanceof IProjectile) {
                         ((IProjectile) fragment).shoot(
-                            fragment.getMotion().x * world().rand.nextFloat(),
-                            fragment.getMotion().y * world().rand.nextFloat(),
-                            fragment.getMotion().z * world().rand.nextFloat(),
-                            0.5f + (0.7f * world().rand.nextFloat()), 1.0F);
+                            fragment.getMotion().x * getWorld().rand.nextFloat(),
+                            fragment.getMotion().y * getWorld().rand.nextFloat(),
+                            fragment.getMotion().z * getWorld().rand.nextFloat(),
+                            0.5f + (0.7f * getWorld().rand.nextFloat()), 1.0F);
                     }
-                    world().addEntity(fragment);
+                    getWorld().addEntity(fragment);
 
                 }
             }

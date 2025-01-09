@@ -59,7 +59,7 @@ public class BlastBreach extends BlastTNT
             super.calculateDamage();
         }
         //TODO add some smoke and block particles for wow effect of a breaching a building
-        else if (!this.world().isRemote)
+        else if (!this.getWorld().isRemote)
         {
             if(direction == null) {
                 //Guess direction from entity rotation
@@ -96,9 +96,9 @@ public class BlastBreach extends BlastTNT
                     //Loop depth
                     for (int depthIndex = 0; depthIndex < this.depth && energyRemaining > 0; depthIndex++)
                     {
-                        int x = this.xi() + direction.getXOffset() * depthIndex;
-                        int y = this.yi() + direction.getYOffset() * depthIndex;
-                        int z = this.zi() + direction.getZOffset() * depthIndex;
+                        int x = (int)Math.floor(this.getPosition().x) + direction.getXOffset() * depthIndex;
+                        int y = (int)Math.floor(this.getPosition().y) + direction.getYOffset() * depthIndex;
+                        int z = (int)Math.floor(this.getPosition().z) + direction.getZOffset() * depthIndex;
 
                         if (direction == Direction.DOWN || direction == Direction.UP)
                         {
@@ -125,7 +125,7 @@ public class BlastBreach extends BlastTNT
                         final BlockState state = world.getBlockState(pos);
                         final Block block = state.getBlock();
 
-                        if (!block.isAir(state, world(), pos))
+                        if (!block.isAir(state, getWorld(), pos))
                         {
                             // Stop at unbreakable
                             if(block.getBlockHardness(state, world, pos) < 0) {
@@ -143,7 +143,7 @@ public class BlastBreach extends BlastTNT
                             //R = unbreakable(6M) -> fuck that
 
 
-                            final float cost = block.getExplosionResistance(state, world(), pos, this.exploder, this);
+                            final float cost = block.getExplosionResistance(state, getWorld(), pos, this.exploder, this);
                             if (cost < energyRemaining)
                             {
                                 energyRemaining -= cost;
@@ -160,7 +160,9 @@ public class BlastBreach extends BlastTNT
             }
 
             //Play some audio
-            this.world().playSound(null, x(), y(), z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.getWorld().playSound(null,
+                getPosition().x, getPosition().y, getPosition().z,
+                SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 }

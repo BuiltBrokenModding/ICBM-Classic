@@ -18,7 +18,7 @@ public class BlastFire extends Blast
     @Override
     public boolean doExplode(int callCount)
     {
-        if (!this.world().isRemote)
+        if (!this.getWorld().isRemote)
         {
             int radius = (int) this.getBlastRadius();
 
@@ -39,27 +39,27 @@ public class BlastFire extends Blast
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
 
-                            float energy = radius * (0.7F + world().rand.nextFloat() * 0.6F);
-                            double posX = x();
-                            double posY = y();
-                            double posZ = z();
+                            float energy = radius * (0.7F + getWorld().rand.nextFloat() * 0.6F);
+                            double posX = getPosition().x;
+                            double posY = getPosition().y;
+                            double posZ = getPosition().z;
 
                             for (float stepAmount = 0.3F; energy > 0.0F; energy -= stepAmount * 0.75F)
                             {
                                 BlockPos targetPosition = new BlockPos(posX, posY, posZ);
 
-                                final double delta_x = xi() - targetPosition.getX();
-                                final double delta_y = yi() - targetPosition.getY();
-                                final double delta_z = zi() - targetPosition.getZ();
+                                final double delta_x = getPosition().x - targetPosition.getX();
+                                final double delta_y = getPosition().y - targetPosition.getY();
+                                final double delta_z = getPosition().z - targetPosition.getZ();
 
                                 final double distanceFromCenter = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
 
-                                BlockState blockState = world().getBlockState(targetPosition);
+                                BlockState blockState = getWorld().getBlockState(targetPosition);
                                 Block block = blockState.getBlock();
 
                                 if (!block.isAir(blockState, world, targetPosition))
                                 {
-                                    energy -= (block.getExplosionResistance(blockState, world(), targetPosition, this.exploder, this) + 0.3F) * stepAmount;
+                                    energy -= (block.getExplosionResistance(blockState, getWorld(), targetPosition, this.exploder, this) + 0.3F) * stepAmount;
                                 }
 
                                 if (energy > 0.0F)
@@ -69,9 +69,9 @@ public class BlastFire extends Blast
 
                                     if (chance > distanceFromCenter * 0.55)
                                     {
-                                        boolean canReplace = blockState.isReplaceable(new DirectionalPlaceContext(world, pos, Direction.DOWN, ItemStack.EMPTY, Direction.UP)) || block.isAir(blockState, world(), targetPosition);
+                                        boolean canReplace = blockState.isReplaceable(new DirectionalPlaceContext(world, pos, Direction.DOWN, ItemStack.EMPTY, Direction.UP)) || block.isAir(blockState, getWorld(), targetPosition);
 
-                                        if (canReplace && Blocks.FIRE.isValidPosition(blockState, world(), targetPosition))
+                                        if (canReplace && Blocks.FIRE.isValidPosition(blockState, getWorld(), targetPosition))
                                         {
                                             world.setBlockState(targetPosition, Blocks.FIRE.getDefaultState(), 3);
                                         }
@@ -92,7 +92,9 @@ public class BlastFire extends Blast
             }
         }
 
-        ICBMSounds.EXPLOSION_FIRE.play(world, x() + 0.5D, y() + 0.5D, z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+        ICBMSounds.EXPLOSION_FIRE.play(world,
+            getPosition().x + 0.5D, getPosition().y + 0.5D, getPosition().z + 0.5D,
+            4.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F) * 1F, true);
         return true;
     }
 }

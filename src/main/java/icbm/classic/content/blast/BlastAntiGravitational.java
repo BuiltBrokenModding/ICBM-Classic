@@ -25,7 +25,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
 
     @Override
     public boolean setupBlast() {
-        if (!this.world().isRemote) {
+        if (!this.getWorld().isRemote) {
             this.thread = new ThreadSmallExplosion(this, (int) this.getBlastRadius(), this.exploder);
             this.thread.start();
         }
@@ -37,7 +37,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
     @Override
     public boolean doRun(int loops, Consumer<BlockPos> edits) {
         BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
-            edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
+            edits.accept(new BlockPos(getPosition().x + x, getPosition().y + y, getPosition().z + z));
         });
         return false;
     }
@@ -45,7 +45,7 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
     @Override
     public boolean doExplode(int callCount)
     {
-        if (world() != null && !this.world().isRemote) {
+        if (getWorld() != null && !getWorld().isRemote) {
             if (this.thread != null)
             {
                 if (this.thread.isComplete) {
@@ -65,21 +65,21 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
                         final BlockPos targetPosition = results.get(searchIndex);
 
                         if (FlyingBlock.spawnFlyingBlock(world, targetPosition, (entity) -> {
-                            entity.yawChange = 50 * world().rand.nextFloat();
-                            entity.pitchChange = 100 * world().rand.nextFloat();
+                            entity.yawChange = 50 * getWorld().rand.nextFloat();
+                            entity.pitchChange = 100 * getWorld().rand.nextFloat();
 
 
-                            double deltaX = targetPosition.getX() - this.x();
-                            double deltaZ = targetPosition.getZ() - this.z();
+                            double deltaX = targetPosition.getX() - getPosition().x;
+                            double deltaZ = targetPosition.getZ() - getPosition().z;
                             double mag = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
 
                             deltaX /= mag;
                             deltaZ /= mag;
 
                             entity.addVelocity(
-                                deltaX * (1 - world().rand.nextFloat()),
-                                Math.max(1 * world().rand.nextFloat(), 1),
-                                deltaZ * (1 - world().rand.nextFloat())
+                                deltaX * (1 - getWorld().rand.nextFloat()),
+                                Math.max(1 * getWorld().rand.nextFloat(), 1),
+                                deltaZ * (1 - getWorld().rand.nextFloat())
                             );
 
 
@@ -105,11 +105,13 @@ public class BlastAntiGravitational extends BlastThreaded implements IBlastTicka
 
         int radius = (int) this.getBlastRadius();
         final int affectHeight = Math.max(radius, 100); //TODO config affect height
-        AxisAlignedBB bounds = new AxisAlignedBB(x() - radius, y() - radius, z() - radius, x() + radius, y() + affectHeight, z() + radius);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
+        AxisAlignedBB bounds = new AxisAlignedBB(
+            getPosition().x - radius, getPosition().y - radius, getPosition().z - radius,
+            getPosition().x + radius, getPosition().y + affectHeight, getPosition().z + radius);
+        List<Entity> allEntities = getWorld().getEntitiesWithinAABB(Entity.class, bounds);
 
         for (Entity entity : allEntities) {
-            if (entity.posY < affectHeight + y()) {
+            if (entity.posY < affectHeight + getPosition().y) {
                 if (entity.getMotion().y < 0.4) {
                     entity.addVelocity(0, 0.1f, 0);
                 }

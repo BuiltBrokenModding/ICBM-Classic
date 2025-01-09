@@ -39,7 +39,7 @@ public abstract class BlastBase implements IBlastInit
     @Override
     public IActionStatus doAction()
     {
-        final World world = world();
+        final World world = getWorld();
         if (world != null)
         {
             if(!world.isRemote)
@@ -74,12 +74,9 @@ public abstract class BlastBase implements IBlastInit
         return explosiveData;
     }
 
-
-    //<editor-fold desc="pos-data">
     @Override
-    public World world()
-    {
-        return world;
+    public Vec3d getPosition() {
+        return new Vec3d(x, y, z);
     }
 
     @Override
@@ -87,28 +84,6 @@ public abstract class BlastBase implements IBlastInit
         return world;
     }
 
-    @Override
-    public double z()
-    {
-        return z;
-    }
-
-    @Override
-    public double x()
-    {
-        return x;
-    }
-
-    @Override
-    public double y()
-    {
-        return y;
-    }
-
-    @Override
-    public Vec3d getPosition() {
-        return new Vec3d(x, y, z);
-    }
     //</editor-fold>
 
     //<editor-fold desc="blast-init">

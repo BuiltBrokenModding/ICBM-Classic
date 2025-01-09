@@ -4,6 +4,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.transform.vector.Pos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.world.WorldEvent;
@@ -42,7 +43,7 @@ public class WorkTickingActionHandler //TODO create interface that is related to
         {
             final DimensionType dim = event.getWorld().getDimension().getType();
             activeBlasts.stream()
-                    .filter(blast -> !blast.hasWorld() || blast.world().getDimension().getType() == dim)
+                    .filter(blast -> blast.getWorld() == null || blast.getWorld().getDimension().getType() == dim)
                     .forEach(IBlast::clearBlast);
         }
     }
@@ -59,12 +60,12 @@ public class WorkTickingActionHandler //TODO create interface that is related to
      */
     public static int removeNear(World world, double x, double y, double z, double range)
     {
-        final Pos pos = new Pos(x, y, z);
+        final Vec3d pos = new Vec3d(x, y, z);
 
         //Collect blasts marked for removal
         final List<IBlast> toRemove = WorkTickingActionHandler.activeBlasts.stream()
-                .filter(blast -> blast.world() == world)
-                .filter(blast -> range < 0 || range > 0 && range > pos.distance(blast))
+                .filter(blast -> blast.getWorld() == world)
+                .filter(blast -> range < 0 || range > 0 && range > Math.sqrt(pos.squareDistanceTo(blast.getPosition())))
                 .collect(Collectors.toList());
 
         //Do removals

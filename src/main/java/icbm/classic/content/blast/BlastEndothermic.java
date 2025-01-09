@@ -34,9 +34,9 @@ public class BlastEndothermic extends BlastBeam
         final double radiusDecay = Math.max(1, radius * 0.3); //TODO config
         for (BlockPos targetPosition : edits)
         {
-            final double delta_x = xi() - targetPosition.getX();
-            final double delta_y = yi() - targetPosition.getY();
-            final double delta_z = zi() - targetPosition.getZ();
+            final double delta_x = getPosition().x - targetPosition.getX();
+            final double delta_y = getPosition().y - targetPosition.getY();
+            final double delta_z = getPosition().z - targetPosition.getZ();
 
             final double distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
             final double distanceScale = 1 - (distance / radius);
@@ -49,7 +49,7 @@ public class BlastEndothermic extends BlastBeam
                 //Turn fluids and liquid like blocks to air
                 if (blockState.getMaterial() == Material.WATER)
                 {
-                    this.world().setBlockState(targetPosition, net.minecraft.block.Blocks.ICE.getDefaultState(), 3);
+                    this.getWorld().setBlockState(targetPosition, net.minecraft.block.Blocks.ICE.getDefaultState(), 3);
                 }
 
                 else if (blockState.getBlock() == net.minecraft.block.Blocks.FIRE)
@@ -85,11 +85,11 @@ public class BlastEndothermic extends BlastBeam
                 {
                     if (world.rand.nextBoolean())
                     {
-                        this.world().setBlockState(targetPosition, net.minecraft.block.Blocks.ICE.getDefaultState(), 3);
+                        this.getWorld().setBlockState(targetPosition, net.minecraft.block.Blocks.ICE.getDefaultState(), 3);
                     }
                     else
                     {
-                        this.world().setBlockState(targetPosition, net.minecraft.block.Blocks.SNOW.getDefaultState(), 3);
+                        this.getWorld().setBlockState(targetPosition, net.minecraft.block.Blocks.SNOW.getDefaultState(), 3);
                     }
                 }
 
@@ -128,9 +128,9 @@ public class BlastEndothermic extends BlastBeam
         super.onBlastCompleted();
 
         //Freeze all nearby entities.
-        final List<MobEntity> livingEntities = world().getEntitiesWithinAABB(MobEntity.class, new AxisAlignedBB(
-            x() - getBlastRadius(), y() - getBlastRadius(), z() - getBlastRadius(),
-            x() + getBlastRadius(), y() + getBlastRadius(), z() + getBlastRadius()));
+        final List<MobEntity> livingEntities = getWorld().getEntitiesWithinAABB(MobEntity.class, new AxisAlignedBB(
+            getPosition().x - getBlastRadius(), getPosition().y - getBlastRadius(), getPosition().z - getBlastRadius(),
+            getPosition().x + getBlastRadius(), getPosition().y + getBlastRadius(), getPosition().z + getBlastRadius()));
 
         if (livingEntities != null && !livingEntities.isEmpty())
         {
@@ -145,9 +145,9 @@ public class BlastEndothermic extends BlastBeam
         }
 
         //Change to time
-        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE))
+        if (ConfigBlast.ALLOW_DAY_NIGHT && getWorld().getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE))
         {
-            this.world().setDayTime(1200);
+            this.getWorld().setDayTime(1200);
         }
     }
 }

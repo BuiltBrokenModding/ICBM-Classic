@@ -27,7 +27,7 @@ public class BlastAntimatter extends BlastThreaded
     public boolean setupBlast()
     {
         super.setupBlast();
-        ICBMSounds.ANTIMATTER.play(world, this.x(), this.y(), this.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
+        ICBMSounds.ANTIMATTER.play(world, getPosition().x, getPosition().y, getPosition().z, 7F, (float) (this.getWorld().rand.nextFloat() * 0.1 + 0.9F), true);
         return this.doDamageEntities(this.getBlastRadius() * 2, ConfigBlast.antimatter.damage); //TODO config for radius
     }
 
@@ -51,7 +51,7 @@ public class BlastAntimatter extends BlastThreaded
         BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) -> {
             if (shouldEditPos(x, y, z))
             {
-                edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z));
+                edits.accept(new BlockPos(getPosition().x + x, getPosition().y + y, getPosition().z + z));
             }
         });
         time = System.currentTimeMillis() - time;
@@ -139,7 +139,7 @@ public class BlastAntimatter extends BlastThreaded
         if (delta < featherEdge)
         {
             final double p2 = 1 - (delta / (double) featherEdge);
-            return world().rand.nextFloat() > p2;
+            return getWorld().rand.nextFloat() > p2;
         }
         return true;
     }

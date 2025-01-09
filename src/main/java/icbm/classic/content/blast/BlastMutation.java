@@ -19,12 +19,12 @@ public class BlastMutation extends Blast
     @Override
     public boolean doExplode(int callCount)
     {
-        if (!this.world().isRemote)
+        if (!this.getWorld().isRemote)
         {
             final AxisAlignedBB bounds = new AxisAlignedBB(
-                x() - this.getBlastRadius(), y() - this.getBlastRadius(), z() - this.getBlastRadius(),
-                x() + this.getBlastRadius(), y() + this.getBlastRadius(), z() + this.getBlastRadius());
-            final List<MobEntity> entitiesNearby = world().getEntitiesWithinAABB(MobEntity.class, bounds);
+                getPosition().x - this.getBlastRadius(), getPosition().y - this.getBlastRadius(), getPosition().z - this.getBlastRadius(),
+                getPosition().x + this.getBlastRadius(), getPosition().y + this.getBlastRadius(), getPosition().z + this.getBlastRadius());
+            final List<MobEntity> entitiesNearby = getWorld().getEntitiesWithinAABB(MobEntity.class, bounds);
 
             for (MobEntity entity : entitiesNearby)
             {

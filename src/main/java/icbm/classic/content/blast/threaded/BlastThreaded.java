@@ -44,7 +44,7 @@ public abstract class BlastThreaded extends Blast
      */
     protected Comparator<BlockPos> buildSorter()
     {
-        return new PosDistanceSorter(getPos(), false, PosDistanceSorter.Sort.SQ);
+        return new PosDistanceSorter(new BlockPos(getPosition()), false, PosDistanceSorter.Sort.SQ);
     }
 
     protected void onPostThreadJoinWorld()
@@ -108,10 +108,10 @@ public abstract class BlastThreaded extends Blast
 
     public void destroyBlock(BlockPos pos)
     {
-        final BlockState state = this.world().getBlockState(pos);
-        if (!state.getBlock().isAir(state, world(), pos))
+        final BlockState state = this.getWorld().getBlockState(pos);
+        if (!state.getBlock().isAir(state, getWorld(), pos))
         {
-            state.getBlock().onBlockExploded(state, this.world(), pos, this);
+            state.getBlock().onBlockExploded(state, this.getWorld(), pos, this);
         }
     }
 

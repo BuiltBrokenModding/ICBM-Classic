@@ -61,9 +61,9 @@ public class BlastNuclear extends BlastThreaded {
                 dz = sin(pitch) * sin(yaw) * 0.5;
 
                 //Reset position to current
-                x = this.x();
-                y = this.y();
-                z = this.z();
+                x = this.getPosition().x;
+                y = this.getPosition().y;
+                z = this.getPosition().z;
 
                 BlockPos prevPos = null;
 
@@ -183,14 +183,14 @@ public class BlastNuclear extends BlastThreaded {
     @Override
     public void onBlastCompleted() {
         super.onBlastCompleted();
-        if (world() != null && !world().isRemote) {
+        if (getWorld() != null && !getWorld().isRemote) {
             try {
                 //Attack entities with concussion wave
                 this.doDamageEntities((float)ConfigBlast.nuclear.entityDamageScale, (float) (this.energy * ConfigBlast.nuclear.entityDamageMultiplier));
 
                 //Place radioactive blocks
                 new BlastRadioactiveBlockSwaps()
-                    .setBlastWorld(world())
+                    .setBlastWorld(getWorld())
                     .setBlastSource(this.exploder)
                     .setBlastPosition(x, y, z)
                     .setBlastSize((float)ConfigBlast.nuclear.rotScale)
@@ -198,7 +198,7 @@ public class BlastNuclear extends BlastThreaded {
                     .buildBlast().doAction();
 
                 new BlastMutation()
-                    .setBlastWorld(world())
+                    .setBlastWorld(getWorld())
                     .setBlastSource(this.exploder)
                     .setBlastPosition(x, y, z)
                     .setBlastSize((float)ConfigBlast.nuclear.mutationScale)
@@ -211,7 +211,7 @@ public class BlastNuclear extends BlastThreaded {
                 // TODO have radioactive dust fall from sky in a radius around the blast
 
                 //Play audio
-                ICBMSounds.EXPLOSION.play(world, x, y, z, 10.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+                ICBMSounds.EXPLOSION.play(world, x, y, z, 10.0F, (1.0F + (this.getWorld().rand.nextFloat() - this.getWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
 
             } catch (Exception e) {
                 String msg = String.format("BlastNuclear#doPostExplode() ->  Unexpected error while running post detonation code " +
@@ -219,7 +219,7 @@ public class BlastNuclear extends BlastThreaded {
                         "\nThread = %s" +
                         "\nSize = %s" +
                         "\nPos = %s",
-                    world, getThread(), size, getVec3d());
+                    world, getThread(), size, getPosition());
                 ICBMClassic.logger().error(msg, e);
             }
         }

@@ -75,10 +75,10 @@ public class BlastTNT extends Blast
     {
         calculateDamage(); //TODO add listener(s) to control block break and placement
 
-        this.world().playSound(null,
-            this.x(), this.y(), this.z(),
+        this.getWorld().playSound(null,
+            getPosition().x, getPosition().y, getPosition().z,
             SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS,
-            4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F
+            4.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F) * 0.7F
         );
 
         //TODO collect entities before applying effects, this way event can override
@@ -107,7 +107,7 @@ public class BlastTNT extends Blast
         //TODO fix, alg seems to be making non-semetric shapes in harder blocks.
         //      TnT vanilla will do 3x3
         //      Condensed will do a 2x4 shaft with a few offshoots but doesn't scale correctly
-        if (!this.world().isRemote)
+        if (!getWorld().isRemote)
         {
             for (int xs = 0; xs < this.raysPerAxis; ++xs)
             {
@@ -132,12 +132,12 @@ public class BlastTNT extends Blast
                             zStep /= diagonalDistance;
 
                             //Get energy
-                            float radialEnergy = this.getBlastRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
+                            float radialEnergy = this.getBlastRadius() * (0.7F + getWorld().rand.nextFloat() * 0.6F);
 
                             //Get starting point for ray
-                            double x = this.x();
-                            double y = this.y();
-                            double z = this.z();
+                            double x = getPosition().x;
+                            double y = getPosition().y;
+                            double z = getPosition().z;
 
                             for (float step = 0.3F; radialEnergy > 0.0F; radialEnergy -= step * 0.75F)
                             {
@@ -155,7 +155,7 @@ public class BlastTNT extends Blast
                                 if (blockState.getMaterial() != Material.AIR)
                                 {
                                     //Decrease energy based on resistance
-                                    radialEnergy -= (block.getExplosionResistance(blockState, world(), blockPos, this.exploder, this) + 0.3F) * step;
+                                    radialEnergy -= (block.getExplosionResistance(blockState, getWorld(), blockPos, this.exploder, this) + 0.3F) * step;
 
                                     //Track blocks to destroy
                                     if (radialEnergy > 0.0F)
@@ -185,12 +185,12 @@ public class BlastTNT extends Blast
      */
     protected void doDestroyBlocks() //TODO convert to change action
     {
-        if (!this.world().isRemote)
+        if (!getWorld().isRemote)
         {
             for (BlockPos blockDestroyedPos : getAffectedBlockPositions()) //TODO convert block positions to block edits to track prev and current blocks
             {
                 //Get block
-                final BlockState blockState = world().getBlockState(blockDestroyedPos);
+                final BlockState blockState = getWorld().getBlockState(blockDestroyedPos);
 
                 ///Generate effect TODO send a single packet with a list of block pos, this will do a 80% reduction in packet byte data
                 //TODO PacketSpawnBlockExplosion.sendToAllClients(world(), x(), y(), z(), getBlastRadius(), blockDestroyedPos);
@@ -213,7 +213,7 @@ public class BlastTNT extends Blast
                         }
 
                         //Break block
-                        blockState.getBlock().onBlockExploded(blockState, this.world(), blockDestroyedPos, this);
+                        blockState.getBlock().onBlockExploded(blockState, getWorld(), blockDestroyedPos, this);
                     }
                     catch (Exception e)
                     {
@@ -227,19 +227,19 @@ public class BlastTNT extends Blast
     public void pushEntities(float radius, float force, PushType type) //TODO convert to delay action
     {
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
-            x() - radius - 1, y() - radius - 1, z() - radius - 1,
-            x() + radius + 1, y() + radius + 1, z() + radius + 1));
+            getPosition().x - radius - 1, getPosition().y - radius - 1, getPosition().z - radius - 1,
+            getPosition().x + radius + 1, getPosition().y + radius + 1, getPosition().z + radius + 1));
 
         for (Entity entity : entities)
         {
-            double distanceScale = Math.sqrt(entity.getDistanceSq(x(), y(), z())) / radius;
+            double distanceScale = Math.sqrt(entity.getDistanceSq(getPosition().x, getPosition().y, getPosition().z)) / radius;
 
             if (distanceScale <= 1.0D)
             {
                 //Get delta
-                double xDifference = entity.posX - x();
-                double yDifference = entity.posY - y();
-                double zDifference = entity.posZ - z();
+                double xDifference = entity.posX - getPosition().x;
+                double yDifference = entity.posY - getPosition().y;
+                double zDifference = entity.posZ - getPosition().z;
 
                 //Get magnitude
                 double mag = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);

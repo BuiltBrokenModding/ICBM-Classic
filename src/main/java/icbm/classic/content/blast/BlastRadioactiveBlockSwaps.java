@@ -17,7 +17,7 @@ public class BlastRadioactiveBlockSwaps extends BlastThreaded
     public boolean doRun(int loops, Consumer<BlockPos> edits)
     {
         BlastHelpers.forEachPosInRadius(this.getBlastRadius(), (x, y, z) ->
-        edits.accept(new BlockPos(xi() + x, yi() + y, zi() + z)));
+        edits.accept(new BlockPos(getPosition().x + x, getPosition().y + y, getPosition().z + z)));
         //TODO implement raytrace to reduce impact of effects behind protective shielding
         //TODO only contaminate top few layers of earth
         return false;

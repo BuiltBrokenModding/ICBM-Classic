@@ -113,7 +113,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     {
         try
         {
-            if (!this.world().isRemote)
+            if (!this.getWorld().isRemote)
             {
                 //Forge event, allows for interaction and canceling the explosion
                 if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(world, this))
@@ -127,7 +127,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 //Start explosion
                 if (this instanceof IBlastTickable)
                 {
-                    if (!this.world().addEntity(EntityReg.TICKING_EXPLOSION.get().create(world)))
+                    if (!this.getWorld().addEntity(EntityReg.TICKING_EXPLOSION.get().create(world)))
                     {
                         isAlive = false;
                         return ActionResponses.ENTITY_SPAWN_FAILED;
@@ -337,7 +337,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     }
 
     protected List<Entity> getEntities(double radius) {
-        return world().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
+        return getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(
             x - radius,
             y - radius,
             z - radius,
@@ -357,7 +357,7 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     }
 
     protected boolean  doDamageEntities(List<Entity> entities, float radius, float power, boolean destroyItem) {
-        final Vec3d center = this.getVec3d();
+        final Vec3d center = this.getPosition();
         for (Entity entity : entities) {
             if (this.onDamageEntity(entity)) {
                 continue;
@@ -475,32 +475,8 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
     }
 
     @Override
-    public World world()
-    {
-        return world;
-    }
-
-    @Override
     public World getWorld() {
         return world;
-    }
-
-    @Override
-    public double x()
-    {
-        return x;
-    }
-
-    @Override
-    public double y()
-    {
-        return y;
-    }
-
-    @Override
-    public double z()
-    {
-        return z;
     }
 
     @Override

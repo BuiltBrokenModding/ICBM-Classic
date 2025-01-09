@@ -31,9 +31,9 @@ public class BlastExothermic extends BlastBeam
         final double radiusEnsured = Math.max(1, radius * 0.1); //TODO config
         for (BlockPos targetPosition : edits)
         {
-            final double delta_x = xi() - targetPosition.getX();
-            final double delta_y = yi() - targetPosition.getY();
-            final double delta_z = zi() - targetPosition.getZ();
+            final double delta_x = getPosition().x - targetPosition.getX();
+            final double delta_y = getPosition().y - targetPosition.getY();
+            final double delta_z = getPosition().z - targetPosition.getZ();
 
             final double distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
             final double distanceScale = 1 - (distance / radius);
@@ -44,7 +44,7 @@ public class BlastExothermic extends BlastBeam
             //Turn fluids and liquid like blocks to air
             if (blockState.getMaterial() == Material.WATER || block == Blocks.ICE)
             {
-                this.world().removeBlock(targetPosition, false);
+                this.getWorld().removeBlock(targetPosition, false);
             }
 
             //Closer to center the better the chance of spawning blocks
@@ -56,13 +56,13 @@ public class BlastExothermic extends BlastBeam
                         || blockState.getMaterial() == Material.PLANTS)
                 {
                     if (!blockState.isReplaceable(new DirectionalPlaceContext(world, pos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
-                        || Blocks.FIRE.isValidPosition(blockState, world(), targetPosition))
+                        || Blocks.FIRE.isValidPosition(blockState, getWorld(), targetPosition))
                     {
-                        this.world().removeBlock(targetPosition, false);
+                        this.getWorld().removeBlock(targetPosition, false);
                     }
                     else
                     {
-                        this.world().setBlockState(targetPosition, net.minecraft.block.Blocks.FIRE.getDefaultState());
+                        this.getWorld().setBlockState(targetPosition, net.minecraft.block.Blocks.FIRE.getDefaultState());
                     }
                 }
 
@@ -70,17 +70,17 @@ public class BlastExothermic extends BlastBeam
                 else if (blockState.getMaterial() == Material.ROCK)
                 {
                     //Small chance to turn to lava
-                    if (this.world().rand.nextFloat() > 0.9) //TODO add config
+                    if (this.getWorld().rand.nextFloat() > 0.9) //TODO add config
                     {
-                        this.world().setBlockState(targetPosition, Blocks.LAVA.getDefaultState(), 3);
+                        this.getWorld().setBlockState(targetPosition, Blocks.LAVA.getDefaultState(), 3);
                     }
                     //Coin flip to turn to magma
-                    else if (this.world().rand.nextBoolean()) //TODO add config
+                    else if (this.getWorld().rand.nextBoolean()) //TODO add config
                     {
-                        this.world().setBlockState(targetPosition.down(), Blocks.MAGMA_BLOCK.getDefaultState(), 3);
+                        this.getWorld().setBlockState(targetPosition.down(), Blocks.MAGMA_BLOCK.getDefaultState(), 3);
                     }
                     //Coin flip to turn to netherrack
-                    else if (this.world().rand.nextBoolean() || distance <= radiusEnsured) //TODO add config
+                    else if (this.getWorld().rand.nextBoolean() || distance <= radiusEnsured) //TODO add config
                     {
                         placeNetherrack(world, targetPosition);
                     }
@@ -89,9 +89,9 @@ public class BlastExothermic extends BlastBeam
                 //Sand replacement
                 else if (blockState.getMaterial() == Material.SAND)
                 {
-                    if (this.world().rand.nextBoolean()) //TODO add config
+                    if (this.getWorld().rand.nextBoolean()) //TODO add config
                     {
-                        this.world().setBlockState(targetPosition.down(), Blocks.SOUL_SAND.getDefaultState(), 3);
+                        this.getWorld().setBlockState(targetPosition.down(), Blocks.SOUL_SAND.getDefaultState(), 3);
                     }
                     else
                     {
@@ -145,9 +145,9 @@ public class BlastExothermic extends BlastBeam
         super.onBlastCompleted();
 
         //Change time of day
-        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE))
+        if (ConfigBlast.ALLOW_DAY_NIGHT && getWorld().getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE))
         {
-            this.world().setDayTime(18_000);
+            this.getWorld().setDayTime(18_000);
         }
     }
 }

@@ -1,11 +1,8 @@
 package icbm.classic.api.explosion;
 
 import icbm.classic.api.actions.IAction;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.reg.IExplosiveData;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +16,7 @@ import javax.annotation.Nullable;
  * This will be a world-edit action and might use tags like projectile system does to selectively detection blast themed actions.
  */
 @Deprecated
-public interface IBlast extends IWorldPosition, IAction
+public interface IBlast extends IAction
 {
     /**
      * Gets the radius/size of the effect of the blast.
@@ -87,12 +84,4 @@ public interface IBlast extends IWorldPosition, IAction
      * should only be used by server utilities and commands.
      */
     void clearBlast();
-
-    default World getWorld() {
-        return world();
-    }
-
-    default Vec3d getPosition() {
-        return getVec3d();
-    }
 }

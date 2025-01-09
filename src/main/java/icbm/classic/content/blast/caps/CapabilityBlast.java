@@ -7,6 +7,7 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.BlastStatus;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -20,30 +21,6 @@ import javax.annotation.Nullable;
  */
 public class CapabilityBlast implements IBlast
 {
-    @Override
-    public double x()
-    {
-        return 0;
-    }
-
-    @Override
-    public double y()
-    {
-        return 0;
-    }
-
-    @Override
-    public double z()
-    {
-        return 0;
-    }
-
-    @Override
-    public World world()
-    {
-        return null;
-    }
-
     @Nonnull
     @Override
     public IActionStatus doAction()
@@ -60,6 +37,16 @@ public class CapabilityBlast implements IBlast
     @Nonnull
     @Override
     public IExplosiveData getActionData() {
+        return null;
+    }
+
+    @Override
+    public World getWorld() {
+        return null;
+    }
+
+    @Override
+    public Vec3d getPosition() {
         return null;
     }
 

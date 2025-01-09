@@ -65,6 +65,16 @@ public class BlastRedmatterWrapper implements IBlast
     }
 
     @Override
+    public World getWorld() {
+        return host.world;
+    }
+
+    @Override
+    public Vec3d getPosition() {
+        return host.getPositionVector();
+    }
+
+    @Override
     @Nullable
     public Entity getEntity()
     {
@@ -76,32 +86,6 @@ public class BlastRedmatterWrapper implements IBlast
     public Entity getBlastSource()
     {
         return host;
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="position-data">
-    @Override
-    public World world()
-    {
-        return host.world;
-    }
-
-    @Override
-    public double z()
-    {
-        return host.posZ;
-    }
-
-    @Override
-    public double x()
-    {
-        return host.posX;
-    }
-
-    @Override
-    public double y()
-    {
-        return host.posY;
     }
     //</editor-fold>
 }

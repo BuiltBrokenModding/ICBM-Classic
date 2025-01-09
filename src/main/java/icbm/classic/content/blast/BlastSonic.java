@@ -38,7 +38,9 @@ public class BlastSonic extends Blast implements IBlastTickable
         //TODO remove thread
         createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), getBlastRadius() * 2, this.exploder));
 
-        ICBMSounds.SONICWAVE.play(world, x(), y(), z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.SONICWAVE.play(world,
+            getPosition().x, getPosition().y, getPosition().z,
+            4.0F, (1.0F + (this.getWorld().rand.nextFloat() - this.getWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     @Override
@@ -62,9 +64,9 @@ public class BlastSonic extends Blast implements IBlastTickable
                     {
                         final BlockPos targetPosition = it.next();
 
-                        final double deltaX = targetPosition.getX() - x();
-                        final double deltaY = targetPosition.getY() - y();
-                        final double deltaZ = targetPosition.getZ() - z();
+                        final double deltaX = targetPosition.getX() - getPosition().x;
+                        final double deltaY = targetPosition.getY() - getPosition().y;
+                        final double deltaZ = targetPosition.getZ() - getPosition().z;
                         final double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 
                         //Only act on blocks inside the current radius TODO scale radius separate from ticks so we can control block creation
@@ -86,10 +88,10 @@ public class BlastSonic extends Blast implements IBlastTickable
                                     ((BlockExplosive) block).doAction(world, targetPosition, null); //TODO add cause
                                 }
 
-                                if(this.world().rand.nextFloat() < 0.1) {  //TODO add config for chance, increase chance if we fail to spawn a block
+                                if(this.getWorld().rand.nextFloat() < 0.1) {  //TODO add config for chance, increase chance if we fail to spawn a block
                                     FlyingBlock.spawnFlyingBlock(world, targetPosition, null, null);
                                 }
-                                this.world().removeBlock(targetPosition, false);
+                                this.getWorld().removeBlock(targetPosition, false);
                             }
                         }
                     }
@@ -113,18 +115,18 @@ public class BlastSonic extends Blast implements IBlastTickable
 
         final int entityEffectRadius = 2 * this.callCount; //TODO scale to radius
         final AxisAlignedBB bounds = new AxisAlignedBB(
-                x() - entityEffectRadius, y() - entityEffectRadius, z() - entityEffectRadius,
-                x() + entityEffectRadius, y() + entityEffectRadius, z() + entityEffectRadius);
+            getPosition().x - entityEffectRadius, getPosition().y - entityEffectRadius, getPosition().z - entityEffectRadius,
+            getPosition().x + entityEffectRadius, getPosition().y + entityEffectRadius, getPosition().z + entityEffectRadius);
 
-        final List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
+        final List<Entity> allEntities = this.getWorld().getEntitiesWithinAABB(Entity.class, bounds);
         for (Entity entity : allEntities)
         {
             if (!(entity instanceof PlayerEntity) || !((PlayerEntity) entity).isCreative())
             {
                 //Get difference
-                double xDelta = entity.posX - x();
-                double yDelta = entity.posY - y();
-                double zDelta = entity.posZ - z();
+                double xDelta = entity.posX - getPosition().x;
+                double yDelta = entity.posY - getPosition().y;
+                double zDelta = entity.posZ - getPosition().z;
 
                 //Normalize
                 float distance = MathHelper.sqrt(xDelta * xDelta + yDelta * yDelta + zDelta * zDelta);
@@ -139,9 +141,9 @@ public class BlastSonic extends Blast implements IBlastTickable
                 zDelta *= scale;
 
                 entity.addVelocity(
-                    xDelta * this.world().rand.nextFloat() * 0.2,
-                    Math.abs(yDelta * this.world().rand.nextFloat()) * 1,
-                    zDelta * this.world().rand.nextFloat() * 0.2
+                    xDelta * this.getWorld().rand.nextFloat() * 0.2,
+                    Math.abs(yDelta * this.getWorld().rand.nextFloat()) * 1,
+                    zDelta * this.getWorld().rand.nextFloat() * 0.2
                 );
             }
         }

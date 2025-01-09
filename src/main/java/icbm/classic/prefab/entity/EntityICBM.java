@@ -1,6 +1,5 @@
 package icbm.classic.prefab.entity;
 
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

@@ -58,7 +58,9 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         if (callCount == 0 && !this.playShortSoundFX)
         {
             //TODO look into different sounds per type
-            ICBMSounds.DEBILITATION.play(world, this.x(), this.y(), this.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.DEBILITATION.play(world,
+                getPosition().x, getPosition().y, getPosition().z,
+                4.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
 
         //Do gas effect
@@ -76,10 +78,10 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
                 //Max bounds
                 final AxisAlignedBB bounds = new AxisAlignedBB(
-                        x() - radius, y() - radius, z() - radius,
-                        x() + radius, y() + radius, z() + radius);
+                    getPosition().x - radius, getPosition().y - radius, getPosition().z - radius,
+                    getPosition().x + radius, getPosition().y + radius, getPosition().z + radius);
 
-                final List<LivingEntity> entityList = world()
+                final List<LivingEntity> entityList = getWorld()
                         .getEntitiesWithinAABB(LivingEntity.class, bounds, this::canGasEffect);
 
                 //Loop all entities
@@ -165,8 +167,8 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     {
         if (this.playShortSoundFX)
         {
-            ICBMSounds.GAS_LEAK.play(world, x() + 0.5D, y() + 0.5D, z() + 0.5D,
-                    4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F), true);
+            ICBMSounds.GAS_LEAK.play(world, getPosition().x + 0.5D, getPosition().y + 0.5D, getPosition().z + 0.5D,
+                    4.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F), true);
         }
     }
 
@@ -187,8 +189,8 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         //Init path data
         if (affectedBlocks.isEmpty())
         {
-            affectedBlocks.add(getPos());
-            edgeBlocks.add(getPos());
+            affectedBlocks.add(new BlockPos(getPosition()));
+            edgeBlocks.add(new BlockPos(getPosition()));
         }
 
         if (edgeBlocks.isEmpty())
@@ -282,7 +284,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
     private boolean isInRange(final Vec3i pos, final int radiusSq)
     {
-        return (int) Math.floor(pos.distanceSq(xi(), yi(), zi(), true)) <= radiusSq;
+        return (int) Math.floor(pos.distanceSq(Math.floor(getPosition().x), Math.floor(getPosition().y), Math.floor(getPosition().z), true)) <= radiusSq;
     }
 
     protected void spawnGasParticles(final Vec3i pos)

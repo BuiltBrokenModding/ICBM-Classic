@@ -1,7 +1,6 @@
 package icbm.classic.lib.transform.vector;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -59,11 +58,6 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
     }
 
     public Pos(IPos3D vec)
-    {
-        this(vec.x(), vec.y(), vec.z());
-    }
-
-    public Pos(IWorldPosition vec)
     {
         this(vec.x(), vec.y(), vec.z());
     }
