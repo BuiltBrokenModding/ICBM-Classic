@@ -2,8 +2,8 @@ package icbm.classic.lib.radar;
 
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;
@@ -112,24 +112,22 @@ public final class RadarRegistry
      *
      * @param world to check
      * @param x center
-     * @param y center
      * @param z center
      * @param distance in x & z axis
      * @return list, never null
      */
-    public static List<Entity> getAllLivingObjectsWithin(World world, double x, double y, double z, double distance)
+    public static List<Entity> getAllLivingObjectsWithin(World world, double x, double z, double distance)
     {
-        return getAllLivingObjectsWithin(world, new Cube(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance));
+        return getAllLivingObjectsWithin(world, x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance);
     }
 
     /**
      * Grabs all living radar objects within range
      *
      * @param world
-     * @param cube  - area to search for contacts
      * @return list, never null
      */
-    public static List<Entity> getAllLivingObjectsWithin(World world, Cube cube)
+    public static List<Entity> getAllLivingObjectsWithin(World world, double minX, double  minY, double  minZ, double  maxX, double  maxY, double  maxZ)
     {
         // TODO recode to take filter as input to reduce output list
         // TODO recode to use a consumer pattern, if so ignore filter and let consumer be the filter
@@ -140,7 +138,7 @@ public final class RadarRegistry
             final RadarMap map = getRadarMapForWorld(world);
             if (map != null)
             {
-                final List<RadarEntity> objects = map.getRadarObjects(cube, true);
+                final List<RadarEntity> objects = map.getRadarObjects(minX, minY, minZ, maxX, maxY, maxZ, true);
                 for (RadarEntity object : objects)
                 {
                     if (object != null && object.isValid())

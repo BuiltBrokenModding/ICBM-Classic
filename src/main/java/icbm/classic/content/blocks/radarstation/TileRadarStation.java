@@ -215,7 +215,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         this.descriptionPacketSender.doNext();
         this.radarRenderData.clear();
 
-        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, Math.min(detectionRange, ConfigRadar.MAX_RANGE));
+        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, getPos().getX() + 0.5, getPos().getZ() + 0.5, Math.min(detectionRange, ConfigRadar.MAX_RANGE));
 
         // Loop list of contacts to ID threats
         for (Entity entity : entities)

@@ -1,8 +1,9 @@
 package icbm.classic.lib.radar;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.lib.transform.region.Cube;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.IChunk;
 
@@ -227,7 +228,7 @@ public class RadarMap
      */
     public List<RadarEntity> getRadarObjects(double x, double z, double distance)
     {
-        return getRadarObjects(new Cube(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance).cropToWorld(), true);
+        return getRadarObjects(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance, true);
     }
 
     protected List<RadarEntity> getEntitiesInChunk(int chunkX, int chunkZ)
@@ -260,15 +261,15 @@ public class RadarMap
      * @param exact - match exact cube size, overrides approximation
      * @return list of entries
      */
-    public List<RadarEntity> getRadarObjects(Cube cube, boolean exact)
+    public List<RadarEntity> getRadarObjects(double  minX, double  minY, double  minZ, double  maxX, double  maxY, double  maxZ, boolean exact)
     {
         final List<RadarEntity> list = new ArrayList();
-        for (int chunkX = (cube.min().xi() >> 4) - 1; chunkX <= (cube.max().xi() >> 4) + 1; chunkX++)
+        for (int chunkX = ((int)Math.floor(minX) >> 4) - 1; chunkX <= ((int)Math.floor(maxX) >> 4) + 1; chunkX++)
         {
-            for (int chunkZ = (cube.min().zi() >> 4) - 1; chunkZ <= (cube.max().zi() >> 4) + 1; chunkZ++)
+            for (int chunkZ = ((int)Math.floor(minZ) >> 4) - 1; chunkZ <= ((int)Math.floor(maxZ) >> 4) + 1; chunkZ++)
             {
                 collectEntitiesInChunk(chunkX, chunkZ, (entity) -> {
-                    if (!exact || exact && cube.isWithin(entity.x(), entity.y(), entity.z()))
+                    if (!exact || exact && entity.x() >= minX && entity.x() <= maxX && entity.y() >= minY && entity.y() <= maxY && entity.z() >= minZ && entity.z() <= maxZ)
                     {
                         list.add(entity);
                     }
