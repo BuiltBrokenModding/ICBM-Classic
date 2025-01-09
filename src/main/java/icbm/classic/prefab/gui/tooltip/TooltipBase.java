@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui.tooltip;
 
-import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import lombok.Getter;
@@ -11,12 +10,10 @@ import net.minecraft.util.text.ITextComponent;
  */
 public abstract class TooltipBase implements IToolTip, IGuiComponent {
 
-    /**
-     * Bound box, relative to top-left of the container
-     */
-    @Getter
-    private final Rectangle bounds;
-
+    int x;
+    int y;
+    int width;
+    int height;
     /**
      * Delay in seconds to wait to show tooltip
      */
@@ -36,7 +33,10 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
     private float hoveringTicks = 0;
 
     public TooltipBase(int x, int y, int width, int height) {
-        this.bounds = new Rectangle(x, y, x + width, y + height);
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     public TooltipBase withDelay(float delay) {
@@ -63,7 +63,10 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
 
     @Override
     public boolean isWithin(int x, int y) {
-        return bounds.isWithin(x - container.getGuiLeft(), y - container.getGuiTop());
+        return x - container.getGuiLeft() >= this.x
+            && x - container.getGuiLeft() < this.x + this.width
+            && y - container.getGuiTop() >= this.y
+            && y - container.getGuiTop() < this.y + this.height;
     }
 
     @Override

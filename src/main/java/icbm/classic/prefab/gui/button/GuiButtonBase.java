@@ -1,6 +1,5 @@
 package icbm.classic.prefab.gui.button;
 
-import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
@@ -13,14 +12,12 @@ public class GuiButtonBase<B extends GuiButtonBase> extends AbstractButton imple
 
     private ActionTrigger action;
 
-    private final Rectangle bounds;
     private Supplier<ITextComponent> tooltip;
 
     private GuiContainerBase container;
 
     public GuiButtonBase(int x, int y, int widthIn, int heightIn, String buttonText) {
         super(x, y, widthIn, heightIn, buttonText);
-        bounds = new Rectangle(x, y, x + widthIn, y + heightIn);
     }
 
     @Override
@@ -47,7 +44,7 @@ public class GuiButtonBase<B extends GuiButtonBase> extends AbstractButton imple
 
     @Override
     public boolean isWithin(int x, int y) {
-        return bounds.isWithin(x, y);
+        return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
     }
 
     @Override

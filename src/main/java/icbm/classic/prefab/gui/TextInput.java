@@ -2,7 +2,6 @@ package icbm.classic.prefab.gui;
 
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.colors.ColorHelper;
-import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.textbox.GuiTextFieldBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import lombok.Setter;
@@ -42,12 +41,8 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
 
     private String previousText;
 
-    @Deprecated
-    private final Rectangle boundBox;
-
     public TextInput(FontRenderer fontrendererObj, int x, int y, int width, int height) {
         super(fontrendererObj, x, y, width, height);
-        boundBox = new Rectangle(x, y, x + width + 1, y + height + 1); //TODO replace with internal check using data stored
     }
 
     public static TextInput<Vec3d> vec3dField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
@@ -167,8 +162,11 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     }*/
 
     @Override
-    public boolean isWithin(int cursorX, int cursorY) {
-        return boundBox.isWithin(cursorX - container.getGuiLeft(), cursorY - container.getGuiTop());
+    public boolean isWithin(int x, int y) {
+        return x - container.getGuiLeft() >= this.x
+            && x - container.getGuiLeft() < this.x + this.width
+            && y - container.getGuiTop() >= this.y
+            && y - container.getGuiTop() < this.y + this.height;
     }
 
     @Override
