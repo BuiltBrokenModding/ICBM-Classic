@@ -1,6 +1,5 @@
 package icbm.classic.lib.radar;
 
-import icbm.classic.api.data.IWorldPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -12,9 +11,9 @@ import net.minecraft.world.World;
  *
  * Created by Dark(DarkGuardsman, Robin) on 3/5/2016.
  */
-public class RadarEntity implements IWorldPosition
+public class RadarEntity
 {
-    public Entity entity;
+    public final Entity entity;
 
     public RadarEntity(Entity referent)
     {
@@ -26,25 +25,21 @@ public class RadarEntity implements IWorldPosition
         return entity != null && entity.isAlive() && entity.world != null;
     }
 
-    @Override
     public World world()
     {
         return entity != null ? entity.world : null;
     }
 
-    @Override
     public double x()
     {
         return entity != null ? entity.posX : 0;
     }
 
-    @Override
     public double y()
     {
         return entity != null ? entity.posY : 0;
     }
 
-    @Override
     public double z()
     {
         return entity != null ? entity.posZ : 0;

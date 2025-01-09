@@ -268,7 +268,7 @@ public class RadarMap
             for (int chunkZ = (cube.min().zi() >> 4) - 1; chunkZ <= (cube.max().zi() >> 4) + 1; chunkZ++)
             {
                 collectEntitiesInChunk(chunkX, chunkZ, (entity) -> {
-                    if (exact || exact && cube != null && cube.isWithin(entity))
+                    if (!exact || exact && cube.isWithin(entity.x(), entity.y(), entity.z()))
                     {
                         list.add(entity);
                     }
