@@ -21,6 +21,10 @@ public class BlockStateGenerator extends BlockStateProvider {
         simpleModel(BlockReg.CONCRETE_NORMAL.get());
         simpleModel(BlockReg.CONCRETE_COMPACT.get());
         simpleModel(BlockReg.CONCRETE_REINFORCED.get());
+
+        simpleModel(BlockReg.SPIKE_NORMAL.get());
+        simpleModel(BlockReg.SPIKE_FIRE.get());
+        simpleModel(BlockReg.SPIKE_POISON.get());
     }
 
     private void simpleModel(Block block) {
