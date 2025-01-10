@@ -52,10 +52,15 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.tracker.EventTracker;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
+import icbm.datagen.BlockStateGenerator;
+import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -103,12 +108,22 @@ public class ICBMClassic
         modBus.addListener(this::setup);
         modBus.addListener(this::serverStarting);
         modBus.addListener(this::serverStopping);
+        modBus.addListener(this::registerDatagen);
 
         // Registries
         BlockReg.BLOCKS.register(modBus);
         ItemReg.ITEMS.register(modBus);
         TileReg.TILES.register(modBus);
         EntityReg.ENTITIES.register(modBus);
+
+
+        //TODO ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    // TODO split to a seperate datagen module
+    private void registerDatagen(final GatherDataEvent event) {
+        final DataGenerator gen = event.getGenerator();
+        gen.addProvider(new BlockStateGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
     }
 
     /*@SubscribeEvent TODO likely moved to JSON
