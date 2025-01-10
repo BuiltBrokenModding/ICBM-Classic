@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "minecraft:block/radioactive_stone"
+      "model": "icbm:block/radioactive_stone"
     }
   }
 }
