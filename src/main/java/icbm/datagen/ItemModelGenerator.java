@@ -86,6 +86,11 @@ public class ItemModelGenerator extends ItemModelProvider {
         this.singleLayerItem(item, texture(name(item)));
     }
 
+    private void heldItem(RegistryObject<? extends Item> item, ResourceLocation texture) {
+        this.withExistingParent(name(item), "item/handheld")
+            .texture("layer0", texture);
+    }
+
     private void singleLayerItem(RegistryObject<? extends Item> item, ResourceLocation texture) {
         this.withExistingParent(name(item), "item/generated")
             .texture("layer0", texture);
