@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbm:items/antidote"
+    "layer0": "icbm:items/antidote_pill"
   }
 }

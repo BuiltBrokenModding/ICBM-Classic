@@ -1,0 +1,39 @@
+package icbm.datagen;
+
+import icbm.classic.ICBMConstants;
+import icbm.classic.content.reg.ItemReg;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.generators.ExistingFileHelper;
+import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.fml.RegistryObject;
+
+public class ItemModelGenerator extends ItemModelProvider {
+    public ItemModelGenerator(DataGenerator generator, String modid, ExistingFileHelper existingFileHelper) {
+        super(generator, modid, existingFileHelper);
+    }
+
+    @Override
+    protected void registerModels() {
+        basicItem(ItemReg.ANTIDOTE_PILL);
+    }
+
+    private void basicItem(RegistryObject<? extends Item> item) {
+        this.withExistingParent(item.getId().getPath(), "item/generated")
+            .texture("layer0", texture(item.getId().getPath()));
+    }
+
+    private String name(RegistryObject<? extends Item> item) {
+        return item.getId().getPath();
+    }
+
+    private ResourceLocation texture(String path) {
+        return new ResourceLocation(ICBMConstants.DOMAIN, "items/" + path);
+    }
+
+    @Override
+    public String getName() {
+        return "ICBM Item Models";
+    }
+}

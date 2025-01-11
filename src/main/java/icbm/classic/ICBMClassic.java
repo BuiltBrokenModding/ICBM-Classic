@@ -54,6 +54,7 @@ import icbm.classic.lib.tracker.EventTracker;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.datagen.BlockModelGenerator;
 import icbm.datagen.BlockStateGenerator;
+import icbm.datagen.ItemModelGenerator;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -122,10 +123,12 @@ public class ICBMClassic
     }
 
     // TODO split to a seperate datagen module
+    // TODO find a way to run this headless as a gradle pre-build step to avoid forgetting to run on changes
     private void registerDatagen(final GatherDataEvent event) {
         final DataGenerator gen = event.getGenerator();
         gen.addProvider(new BlockStateGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
         gen.addProvider(new BlockModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
+        gen.addProvider(new ItemModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
     }
 
     /*@SubscribeEvent TODO likely moved to JSON

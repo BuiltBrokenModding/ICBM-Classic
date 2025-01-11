@@ -149,10 +149,6 @@ public class BlockModelGenerator extends BlockModelProvider {
         return block.getId().getPath();
     }
 
-    private ResourceLocation texture(RegistryObject<? extends Block> block, String path) {
-        return new ResourceLocation(block.getId().getNamespace(), "blocks/" + path);
-    }
-
     private ResourceLocation texture(String path) {
         return new ResourceLocation(ICBMConstants.DOMAIN, "blocks/" + path);
     }
