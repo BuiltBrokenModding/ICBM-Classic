@@ -316,98 +316,98 @@ public final class EntityReg {
     // <editor-fold desc="bomb carts">
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_CONDENSED = bombcart(
         "minecraft_explosive_condensed", ICBMExplosives.CONDENSED,
-        () -> new ItemStack(ItemReg.CART_CONDENSED.get()), () -> BlockReg.EXPLOSIVE_CONDENSED.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_CONDENSED.get()), () -> BlockReg.EXPLOSIVE_CONDENSED.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_SHRAPNEL = bombcart(
         "minecraft_explosive_shrapnel", ICBMExplosives.SHRAPNEL,
-        () -> new ItemStack(ItemReg.CART_SHRAPNEL.get()), () -> BlockReg.EXPLOSIVE_SHRAPNEL.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_SHRAPNEL.get()), () -> BlockReg.EXPLOSIVE_SHRAPNEL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_INCENDIARY = bombcart(
         "minecraft_explosive_incendiary", ICBMExplosives.INCENDIARY,
-        () -> new ItemStack(ItemReg.CART_INCENDIARY.get()), () -> BlockReg.EXPLOSIVE_INCENDIARY.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_INCENDIARY.get()), () -> BlockReg.EXPLOSIVE_INCENDIARY.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_DEBILITATION = bombcart(
         "minecraft_explosive_debilitation", ICBMExplosives.DEBILITATION,
-        () -> new ItemStack(ItemReg.CART_DEBILITATION.get()), () -> BlockReg.EXPLOSIVE_DEBILITATION.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_DEBILITATION.get()), () -> BlockReg.EXPLOSIVE_DEBILITATION.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_CHEMICAL = bombcart(
         "minecraft_explosive_chemical", ICBMExplosives.CHEMICAL,
-        () -> new ItemStack(ItemReg.CART_CHEMICAL.get()), () -> BlockReg.EXPLOSIVE_CHEMICAL.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_CHEMICAL.get()), () -> BlockReg.EXPLOSIVE_CHEMICAL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ANVIL = bombcart(
         "minecraft_explosive_anvil", ICBMExplosives.ANVIL,
-        () -> new ItemStack(ItemReg.CART_ANVIL.get()), () -> BlockReg.EXPLOSIVE_ANVIL.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_ANVIL.get()), () -> BlockReg.EXPLOSIVE_ANVIL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_REPULSIVE = bombcart(
         "minecraft_explosive_repulsive", ICBMExplosives.REPULSIVE,
-        () -> new ItemStack(ItemReg.CART_REPULSIVE.get()), () -> BlockReg.EXPLOSIVE_REPULSIVE.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_REPULSIVE.get()), () -> BlockReg.EXPLOSIVE_REPULSIVE.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ATTRACTIVE = bombcart(
         "minecraft_explosive_attractive", ICBMExplosives.ATTRACTIVE,
-        () -> new ItemStack(ItemReg.CART_ATTRACTIVE.get()), () -> BlockReg.EXPLOSIVE_ATTRACTIVE.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_ATTRACTIVE.get()), () -> BlockReg.EXPLOSIVE_ATTRACTIVE.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_COLOR = bombcart(
         "minecraft_explosive_color", ICBMExplosives.COLOR,
-        () -> new ItemStack(ItemReg.CART_COLOR.get()), () -> BlockReg.EXPLOSIVE_COLOR.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_COLOR.get()), () -> BlockReg.EXPLOSIVE_COLOR.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_SMOKE = bombcart(
         "minecraft_explosive_smoke", ICBMExplosives.SMOKE,
-        () -> new ItemStack(ItemReg.CART_SMOKE.get()), () -> BlockReg.EXPLOSIVE_SMOKE.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_SMOKE.get()), () -> BlockReg.EXPLOSIVE_SMOKE.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_FRAGMENTATION = bombcart(
         "minecraft_explosive_fragmentation", ICBMExplosives.FRAGMENTATION,
-        () -> new ItemStack(ItemReg.CART_FRAGMENTATION.get()), () -> BlockReg.EXPLOSIVE_FRAGMENTATION.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_FRAGMENTATION.get()), () -> BlockReg.EXPLOSIVE_FRAGMENTATION.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_CONTAGIOUS = bombcart(
         "minecraft_explosive_contagious", ICBMExplosives.CONTAGIOUS,
-        () -> new ItemStack(ItemReg.CART_CONTAGIOUS.get()), () -> BlockReg.EXPLOSIVE_CONTAGIOUS.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_CONTAGIOUS.get()), () -> BlockReg.EXPLOSIVE_CONTAGIOUS.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_SONIC = bombcart(
         "minecraft_explosive_sonic", ICBMExplosives.SONIC,
-        () -> new ItemStack(ItemReg.CART_SONIC.get()), () -> BlockReg.EXPLOSIVE_SONIC.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_SONIC.get()), () -> BlockReg.EXPLOSIVE_SONIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_BREACHING = bombcart(
         "minecraft_explosive_breaching", ICBMExplosives.BREACHING,
-        () -> new ItemStack(ItemReg.CART_BREACHING.get()), () -> BlockReg.EXPLOSIVE_BREACHING.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_BREACHING.get()), () -> BlockReg.EXPLOSIVE_BREACHING.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_THERMOBARIC = bombcart(
         "minecraft_explosive_thermobaric", ICBMExplosives.THERMOBARIC,
-        () -> new ItemStack(ItemReg.CART_THERMOBARIC.get()), () -> BlockReg.EXPLOSIVE_THERMOBARIC.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_THERMOBARIC.get()), () -> BlockReg.EXPLOSIVE_THERMOBARIC.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_NUCLEAR = bombcart(
         "minecraft_explosive_nuclear", ICBMExplosives.NUCLEAR,
-        () -> new ItemStack(ItemReg.CART_NUCLEAR.get()), () -> BlockReg.EXPLOSIVE_NUCLEAR.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_NUCLEAR.get()), () -> BlockReg.EXPLOSIVE_NUCLEAR.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_EMP = bombcart(
         "minecraft_explosive_emp", ICBMExplosives.EMP,
-        () -> new ItemStack(ItemReg.CART_EMP.get()), () -> BlockReg.EXPLOSIVE_EMP.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_EMP.get()), () -> BlockReg.EXPLOSIVE_EMP.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_EXOTHERMIC = bombcart(
         "minecraft_explosive_exothermic", ICBMExplosives.EXOTHERMIC,
-        () -> new ItemStack(ItemReg.CART_EXOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_EXOTHERMIC.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_EXOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_EXOTHERMIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ENDOTHERMIC = bombcart(
         "minecraft_explosive_endothermic", ICBMExplosives.ENDOTHERMIC,
-        () -> new ItemStack(ItemReg.CART_ENDOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_ENDOTHERMIC.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_ENDOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_ENDOTHERMIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_GRAVITY = bombcart(
         "minecraft_explosive_gravity", ICBMExplosives.GRAVITY,
-        () -> new ItemStack(ItemReg.CART_GRAVITY.get()), () -> BlockReg.EXPLOSIVE_GRAVITY.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_GRAVITY.get()), () -> BlockReg.EXPLOSIVE_GRAVITY.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ENDER = bombcart(
         "minecraft_explosive_ender", ICBMExplosives.ENDER,
-        () -> new ItemStack(ItemReg.CART_ENDER.get()), () -> BlockReg.EXPLOSIVE_ENDER.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_ENDER.get()), () -> BlockReg.EXPLOSIVE_ENDER.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ANTIMATTER = bombcart(
         "minecraft_explosive_antimatter", ICBMExplosives.ANTIMATTER,
-        () -> new ItemStack(ItemReg.CART_ANTIMATTER.get()), () -> BlockReg.EXPLOSIVE_ANTIMATTER.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_ANTIMATTER.get()), () -> BlockReg.EXPLOSIVE_ANTIMATTER.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_REDMATTER = bombcart(
         "minecraft_explosive_redmatter", ICBMExplosives.REDMATTER,
-        () -> new ItemStack(ItemReg.CART_REDMATTER.get()), () -> BlockReg.EXPLOSIVE_REDMATTER.get().getDefaultState());
+        () -> new ItemStack(ItemReg .MINECART_REDMATTER.get()), () -> BlockReg.EXPLOSIVE_REDMATTER.get().getDefaultState());
     // </editor-fold>
 
     // <editor-fold desc="droplet">

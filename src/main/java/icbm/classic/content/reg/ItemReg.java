@@ -76,117 +76,117 @@ public class ItemReg {
     // </editor-fold>
 
     // <editor-fold desc="entity-spawner-carts">
-    public static final RegistryObject<ItemBombCart> CART_CONDENSED = ITEMS.register("cart_explosive_condensed",
+    public static final RegistryObject<ItemBombCart> MINECART_CONDENSED = ITEMS.register("minecart_explosive_condensed",
         () -> new ItemBombCart(EntityReg.BOMBCART_CONDENSED::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_SHRAPNEL = ITEMS.register("cart_explosive_shrapnel",
+    public static final RegistryObject<ItemBombCart> MINECART_SHRAPNEL = ITEMS.register("minecart_explosive_shrapnel",
         () -> new ItemBombCart(EntityReg.BOMBCART_SHRAPNEL::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_INCENDIARY = ITEMS.register("cart_explosive_incendiary",
+    public static final RegistryObject<ItemBombCart> MINECART_INCENDIARY = ITEMS.register("minecart_explosive_incendiary",
         () -> new ItemBombCart(EntityReg.BOMBCART_INCENDIARY::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_DEBILITATION = ITEMS.register("cart_explosive_debilitation",
+    public static final RegistryObject<ItemBombCart> MINECART_DEBILITATION = ITEMS.register("minecart_explosive_debilitation",
         () -> new ItemBombCart(EntityReg.BOMBCART_DEBILITATION::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_CHEMICAL = ITEMS.register("cart_explosive_chemical",
+    public static final RegistryObject<ItemBombCart> MINECART_CHEMICAL = ITEMS.register("minecart_explosive_chemical",
         () -> new ItemBombCart(EntityReg.BOMBCART_CHEMICAL::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_ANVIL = ITEMS.register("cart_explosive_anvil",
+    public static final RegistryObject<ItemBombCart> MINECART_ANVIL = ITEMS.register("minecart_explosive_anvil",
         () -> new ItemBombCart(EntityReg.BOMBCART_ANVIL::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_REPULSIVE = ITEMS.register("cart_explosive_repulsive",
+    public static final RegistryObject<ItemBombCart> MINECART_REPULSIVE = ITEMS.register("minecart_explosive_repulsive",
         () -> new ItemBombCart(EntityReg.BOMBCART_REPULSIVE::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_ATTRACTIVE = ITEMS.register("cart_explosive_attractive",
+    public static final RegistryObject<ItemBombCart> MINECART_ATTRACTIVE = ITEMS.register("minecart_explosive_attractive",
         () -> new ItemBombCart(EntityReg.BOMBCART_ATTRACTIVE::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_COLOR = ITEMS.register("cart_explosive_color",
+    public static final RegistryObject<ItemBombCart> MINECART_COLOR = ITEMS.register("minecart_explosive_color",
         () -> new ItemBombCart(EntityReg.BOMBCART_COLOR::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_SMOKE = ITEMS.register("cart_explosive_smoke",
+    public static final RegistryObject<ItemBombCart> MINECART_SMOKE = ITEMS.register("minecart_explosive_smoke",
         () -> new ItemBombCart(EntityReg.BOMBCART_SMOKE::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_FRAGMENTATION = ITEMS.register("cart_explosive_fragmentation",
+    public static final RegistryObject<ItemBombCart> MINECART_FRAGMENTATION = ITEMS.register("minecart_explosive_fragmentation",
         () -> new ItemBombCart(EntityReg.BOMBCART_FRAGMENTATION::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_CONTAGIOUS = ITEMS.register("cart_explosive_contagious",
+    public static final RegistryObject<ItemBombCart> MINECART_CONTAGIOUS = ITEMS.register("minecart_explosive_contagious",
         () -> new ItemBombCart(EntityReg.BOMBCART_CONTAGIOUS::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_SONIC = ITEMS.register("cart_explosive_sonic",
+    public static final RegistryObject<ItemBombCart> MINECART_SONIC = ITEMS.register("minecart_explosive_sonic",
         () -> new ItemBombCart(EntityReg.BOMBCART_SONIC::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_BREACHING = ITEMS.register("cart_explosive_breaching",
+    public static final RegistryObject<ItemBombCart> MINECART_BREACHING = ITEMS.register("minecart_explosive_breaching",
         () -> new ItemBombCart(EntityReg.BOMBCART_BREACHING::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_THERMOBARIC = ITEMS.register("cart_explosive_thermobaric",
+    public static final RegistryObject<ItemBombCart> MINECART_THERMOBARIC = ITEMS.register("minecart_explosive_thermobaric",
         () -> new ItemBombCart(EntityReg.BOMBCART_THERMOBARIC::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_NUCLEAR = ITEMS.register("cart_explosive_nuclear",
+    public static final RegistryObject<ItemBombCart> MINECART_NUCLEAR = ITEMS.register("minecart_explosive_nuclear",
         () -> new ItemBombCart(EntityReg.BOMBCART_NUCLEAR::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_EMP = ITEMS.register("cart_explosive_emp",
+    public static final RegistryObject<ItemBombCart> MINECART_EMP = ITEMS.register("minecart_explosive_emp",
         () -> new ItemBombCart(EntityReg.BOMBCART_EMP::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_EXOTHERMIC = ITEMS.register("cart_explosive_exothermic",
+    public static final RegistryObject<ItemBombCart> MINECART_EXOTHERMIC = ITEMS.register("minecart_explosive_exothermic",
         () -> new ItemBombCart(EntityReg.BOMBCART_EXOTHERMIC::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_ENDOTHERMIC = ITEMS.register("cart_explosive_endothermic",
+    public static final RegistryObject<ItemBombCart> MINECART_ENDOTHERMIC = ITEMS.register("minecart_explosive_endothermic",
         () -> new ItemBombCart(EntityReg.BOMBCART_ENDOTHERMIC::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_GRAVITY = ITEMS.register("cart_explosive_gravity",
+    public static final RegistryObject<ItemBombCart> MINECART_GRAVITY = ITEMS.register("minecart_explosive_gravity",
         () -> new ItemBombCart(EntityReg.BOMBCART_GRAVITY::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_ENDER = ITEMS.register("cart_explosive_ender",
+    public static final RegistryObject<ItemBombCart> MINECART_ENDER = ITEMS.register("minecart_explosive_ender",
         () -> new ItemBombCart(EntityReg.BOMBCART_ENDER::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_ANTIMATTER = ITEMS.register("cart_explosive_antimatter",
+    public static final RegistryObject<ItemBombCart> MINECART_ANTIMATTER = ITEMS.register("minecart_explosive_antimatter",
         () -> new ItemBombCart(EntityReg.BOMBCART_ANTIMATTER::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
     );
-    public static final RegistryObject<ItemBombCart> CART_REDMATTER = ITEMS.register("cart_explosive_redmatter",
+    public static final RegistryObject<ItemBombCart> MINECART_REDMATTER = ITEMS.register("minecart_explosive_redmatter",
         () -> new ItemBombCart(EntityReg.BOMBCART_REDMATTER::get, new Item.Properties()
             .maxStackSize(3)
             .group(ICBMClassic.CREATIVE_TAB))
