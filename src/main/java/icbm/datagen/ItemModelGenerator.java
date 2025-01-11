@@ -56,8 +56,8 @@ public class ItemModelGenerator extends ItemModelProvider {
         singleLayerItem(ItemReg.MINECART_ANTIMATTER, "icbm:items/explosive_minecart");
         singleLayerItem(ItemReg.MINECART_REDMATTER, "icbm:items/explosive_minecart");
 
-        this.withExistingParent(name(ItemReg.BOMBLET_EMPTY), "icbm:item/bomblet");
-        this.withExistingParent(name(ItemReg.BOMBLET_CONDENSED), "icbm:item/bomblet");
+        this.withExistingParent(name(ItemReg.BOMBLET_EMPTY), "icbm:item/base/bomblet");
+        this.withExistingParent(name(ItemReg.BOMBLET_CONDENSED), "icbm:item/base/bomblet");
 
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
     }
@@ -77,7 +77,7 @@ public class ItemModelGenerator extends ItemModelProvider {
     }
 
     private void grenade(RegistryObject<? extends Item> item) {
-        this.withExistingParent(name(item), "icbm:item/grenade")
+        this.withExistingParent(name(item), "icbm:item/base/grenade")
             .texture("layer0", texture("grenade" + "/" + name(item).replace("grenade" + "_", "")));
     }
 
