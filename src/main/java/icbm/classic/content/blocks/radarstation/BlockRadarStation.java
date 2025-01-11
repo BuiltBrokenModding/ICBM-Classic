@@ -6,15 +6,14 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Items;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -30,8 +29,8 @@ import javax.annotation.Nullable;
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
 public class BlockRadarStation extends Block {
-    public static final BooleanProperty REDSTONE_PROPERTY = BooleanProperty.create("redstone");
-    public static final EnumProperty<EnumRadarState> RADAR_STATE = EnumProperty.create("type", EnumRadarState.class);
+    public static final BooleanProperty REDSTONE_PROPERTY = BooleanProperty.create("redstone_enabled");
+    public static final EnumProperty<RadarState> RADAR_STATE = EnumProperty.create("status", RadarState.class);
 
     public static final ResourceLocation REGISTRY_KEY = new ResourceLocation(ICBMConstants.DOMAIN, "radar_screen");
     public static final ITextComponent REDSTONE_ON_MESSAGE = new TranslationTextComponent("block.icbm.radar.screen.redstone.on");
@@ -39,6 +38,22 @@ public class BlockRadarStation extends Block {
 
     public BlockRadarStation(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rot) {
+        return state.with(BlockStateProperties.FACING, rot.rotate(state.get(BlockStateProperties.FACING)));
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        return state.rotate(mirrorIn.toRotation(state.get(BlockStateProperties.FACING)));
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext context)
+    {
+        return getDefaultState().with(BlockStateProperties.FACING, context.getFace());
     }
 
     @Override

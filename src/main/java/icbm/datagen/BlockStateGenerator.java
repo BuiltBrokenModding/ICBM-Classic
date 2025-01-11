@@ -3,7 +3,7 @@ package icbm.datagen;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.connector.BlockLaunchConnector;
 import icbm.classic.content.blocks.radarstation.BlockRadarStation;
-import icbm.classic.content.blocks.radarstation.EnumRadarState;
+import icbm.classic.content.blocks.radarstation.RadarState;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
@@ -59,7 +59,7 @@ public class BlockStateGenerator extends BlockStateProvider {
 
         facingAlignedModel(BlockReg.EXPLOSIVE_BREACHING.get());
 
-        //radarModel();
+        radarModel();
         noVariantModel(BlockReg.EMP_TOWER_BASE.get());
         noVariantModel(BlockReg.EMP_TOWER_COIL.get());
 
@@ -91,8 +91,10 @@ public class BlockStateGenerator extends BlockStateProvider {
         getVariantBuilder(BlockReg.RADAR_SCREEN.get())
             .forAllStates(state -> {
                 final Direction dir = state.get(BlockStateProperties.FACING);
-                final EnumRadarState radarState = state.get(BlockRadarStation.RADAR_STATE);
-                final ResourceLocation model = new ResourceLocation(ICBMConstants.DOMAIN, "block/" + BlockReg.RADAR_SCREEN.getId().getPath() + "_" + radarState.getName().toLowerCase());
+                final RadarState radarState = state.get(BlockRadarStation.RADAR_STATE);
+                final ResourceLocation model = new ResourceLocation(ICBMConstants.DOMAIN,
+                    "block/" + BlockReg.RADAR_SCREEN.getId().getPath() + "/" + radarState.getName().toLowerCase()
+                );
                 return ConfiguredModel.builder()
                     .modelFile(new ModelFile.UncheckedModelFile(model))
                     .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)

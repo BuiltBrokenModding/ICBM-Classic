@@ -103,8 +103,8 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     @Getter
     private final RadioRadar radio = new RadioRadar(this);
 
-    private EnumRadarState radarVisualState = EnumRadarState.OFF;
-    private EnumRadarState preRadarVisualState = EnumRadarState.OFF;
+    private RadarState radarVisualState = RadarState.OFF;
+    private RadarState preRadarVisualState = RadarState.OFF;
 
     private final TickDoOnce descriptionPacketSender = new TickDoOnce((t) -> PACKET_DESCRIPTION.sendToAllAround(this));
 
@@ -301,22 +301,22 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
     }
 
-    public EnumRadarState getRadarState() {
+    public RadarState getRadarState() {
 
         if(isClient()) {
             return radarVisualState;
         }
 
         if(!this.energyStorage.consumePower(getEnergyCost(), false)) {
-            return EnumRadarState.OFF;
+            return RadarState.OFF;
         }
         else if(this.incomingThreats.size() > 0) {
-            return EnumRadarState.DANGER;
+            return RadarState.DANGER;
         }
         else  if(this.detectedThreats.size() > 0) {
-            return EnumRadarState.WARNING;
+            return RadarState.WARNING;
         }
-        return EnumRadarState.ON;
+        return RadarState.ON;
     }
 
     public int getStrongRedstonePower(Direction side)
@@ -403,7 +403,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
 
     public static final PacketCodexTile<TileRadarStation, TileRadarStation> PACKET_DESCRIPTION = (PacketCodexTile<TileRadarStation, TileRadarStation>) new PacketCodexTile<TileRadarStation, TileRadarStation>(REGISTRY_NAME, "description")
         .fromServer()
-        .nodeEnum(EnumRadarState.class, (t) -> t.radarVisualState, (t, e) -> t.radarVisualState = e);
+        .nodeEnum(RadarState.class, (t) -> t.radarVisualState, (t, e) -> t.radarVisualState = e);
 
     public static final PacketCodex<TileRadarStation, IRadioChannelAccess> PACKET_RADIO_HZ = GeneralCodexs.radioChannel(REGISTRY_NAME, (tile) -> tile.radio);
     public static final PacketCodex<TileRadarStation, Radio> PACKET_RADIO_DISABLE = GeneralCodexs.radioToggleDisable(REGISTRY_NAME, (tile) -> tile.radio);

@@ -2,11 +2,10 @@ package icbm.datagen;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.connector.BlockLaunchConnector;
+import icbm.classic.content.blocks.radarstation.RadarState;
 import icbm.classic.content.reg.BlockReg;
-import icbm.classic.content.reg.ItemReg;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.state.BooleanProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ExistingFileHelper;
@@ -151,11 +150,6 @@ public class BlockModelGenerator extends BlockModelProvider {
             texture("explosive/breaching_top")
         );
 
-        orientable(name(BlockReg.RADAR_SCREEN),
-            texture("machine_green"),
-            texture("screen/radar"),
-            texture("machine_green")
-        );
         cubeBottomTop(name(BlockReg.LAUNCHER_BASE),
             texture("silo_pad/side"),
             texture("silo_pad/bottom"),
@@ -198,6 +192,13 @@ public class BlockModelGenerator extends BlockModelProvider {
             }
         }
 
+        for(RadarState radarState: RadarState.values()) {
+            cubeBottomTop("block/" + name(BlockReg.RADAR_SCREEN) + "/" + radarState.getName().toLowerCase(),
+                texture("machine_green"),
+                texture("machine_green"),
+                texture("screen/radar_"+ radarState.getName().toLowerCase())
+            );
+        }
     }
 
     private String name(RegistryObject<? extends Block> block) {

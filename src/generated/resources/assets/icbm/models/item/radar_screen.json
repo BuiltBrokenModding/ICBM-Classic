@@ -3,7 +3,7 @@
   "textures": {
     "down": "icbm:blocks/machine_green",
     "up": "icbm:blocks/machine_green",
-    "north": "icbm:blocks/screen/radar",
+    "north": "icbm:blocks/screen/radar_on",
     "south": "icbm:blocks/machine_green",
     "east": "icbm:blocks/machine_green",
     "west": "icbm:blocks/machine_green"

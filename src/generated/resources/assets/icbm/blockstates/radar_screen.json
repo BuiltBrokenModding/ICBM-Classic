@@ -1,0 +1,212 @@
+{
+  "variants": {
+    "facing=down,redstone_enabled=false,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=false,status=on": {
+      "model": "icbm:block/radar_screen/on"
+    },
+    "facing=north,redstone_enabled=false,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=false,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=false,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=false,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=true,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=true,status=on": {
+      "model": "icbm:block/radar_screen/on"
+    },
+    "facing=north,redstone_enabled=true,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=true,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=true,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=true,status=on": {
+      "model": "icbm:block/radar_screen/on",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=false,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=false,status=off": {
+      "model": "icbm:block/radar_screen/off"
+    },
+    "facing=north,redstone_enabled=false,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=false,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=false,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=false,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=true,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=true,status=off": {
+      "model": "icbm:block/radar_screen/off"
+    },
+    "facing=north,redstone_enabled=true,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=true,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=true,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=true,status=off": {
+      "model": "icbm:block/radar_screen/off",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=false,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=false,status=warning": {
+      "model": "icbm:block/radar_screen/warning"
+    },
+    "facing=north,redstone_enabled=false,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=false,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=false,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=false,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=true,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=true,status=warning": {
+      "model": "icbm:block/radar_screen/warning"
+    },
+    "facing=north,redstone_enabled=true,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=true,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=true,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=true,status=warning": {
+      "model": "icbm:block/radar_screen/warning",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=false,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=false,status=danger": {
+      "model": "icbm:block/radar_screen/danger"
+    },
+    "facing=north,redstone_enabled=false,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=false,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=false,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=false,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90,
+      "y": 90
+    },
+    "facing=down,redstone_enabled=true,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 180
+    },
+    "facing=up,redstone_enabled=true,status=danger": {
+      "model": "icbm:block/radar_screen/danger"
+    },
+    "facing=north,redstone_enabled=true,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90
+    },
+    "facing=south,redstone_enabled=true,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,redstone_enabled=true,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,redstone_enabled=true,status=danger": {
+      "model": "icbm:block/radar_screen/danger",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

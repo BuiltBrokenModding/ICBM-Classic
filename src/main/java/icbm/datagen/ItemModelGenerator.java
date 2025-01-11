@@ -102,7 +102,7 @@ public class ItemModelGenerator extends ItemModelProvider {
             name(ItemReg.RADAR_SCREEN),
             textureBlock("machine_green"),
             textureBlock("machine_green"),
-            textureBlock("screen/radar"),
+            textureBlock("screen/radar_on"),
             textureBlock("machine_green"),
             textureBlock("machine_green"),
             textureBlock("machine_green")

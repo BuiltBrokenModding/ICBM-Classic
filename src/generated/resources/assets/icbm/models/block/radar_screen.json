@@ -1,8 +1,0 @@
-{
-  "parent": "block/orientable",
-  "textures": {
-    "side": "icbm:blocks/machine_green",
-    "front": "icbm:blocks/screen/radar",
-    "top": "icbm:blocks/machine_green"
-  }
-}

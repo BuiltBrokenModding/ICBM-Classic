@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "side": "icbm:blocks/machine_green",
+    "bottom": "icbm:blocks/machine_green",
+    "top": "icbm:blocks/screen/radar_danger"
+  }
+}
