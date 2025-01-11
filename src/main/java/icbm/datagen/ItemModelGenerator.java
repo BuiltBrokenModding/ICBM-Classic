@@ -1,6 +1,8 @@
 package icbm.datagen;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
@@ -30,13 +32,46 @@ public class ItemModelGenerator extends ItemModelProvider {
         grenade(ItemReg.GRENADE_REPULSIVE);
         grenade(ItemReg.GRENADE_ATTRACTIVE);
 
+        singleLayerItem(ItemReg.MINECART_CONDENSED, "icbm:items/explosive_minecart"); //TODO unique texture per cart
+        singleLayerItem(ItemReg.MINECART_SHRAPNEL, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_INCENDIARY, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_DEBILITATION, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_CHEMICAL, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_ANVIL, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_REPULSIVE, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_ATTRACTIVE, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_COLOR, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_SMOKE, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_FRAGMENTATION, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_CONTAGIOUS, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_SONIC, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_BREACHING, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_THERMOBARIC, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_NUCLEAR, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_EMP, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_EXOTHERMIC, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_ENDOTHERMIC, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_GRAVITY, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_ENDER, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_ANTIMATTER, "icbm:items/explosive_minecart");
+        singleLayerItem(ItemReg.MINECART_REDMATTER, "icbm:items/explosive_minecart");
+
 
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
     }
 
     private void singleLayerItem(RegistryObject<? extends Item> item) {
+        this.singleLayerItem(item, texture(name(item)));
+    }
+
+    private void singleLayerItem(RegistryObject<? extends Item> item, ResourceLocation texture) {
         this.withExistingParent(name(item), "item/generated")
-            .texture("layer0", texture(name(item)));
+            .texture("layer0", texture);
+    }
+
+    private void singleLayerItem(RegistryObject<? extends Item> item, String texture) {
+        this.withExistingParent(name(item), "item/generated")
+            .texture("layer0", texture);
     }
 
     private void grenade(RegistryObject<? extends Item> item) {
