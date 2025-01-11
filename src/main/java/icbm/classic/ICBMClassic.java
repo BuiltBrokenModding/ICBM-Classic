@@ -52,6 +52,7 @@ import icbm.classic.lib.radio.RadioRegistry;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.tracker.EventTracker;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
+import icbm.datagen.BlockModelGenerator;
 import icbm.datagen.BlockStateGenerator;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.MinecraftForge;
@@ -124,6 +125,7 @@ public class ICBMClassic
     private void registerDatagen(final GatherDataEvent event) {
         final DataGenerator gen = event.getGenerator();
         gen.addProvider(new BlockStateGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
+        gen.addProvider(new BlockModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
     }
 
     /*@SubscribeEvent TODO likely moved to JSON

@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "icbm:blocks/concrete"
+    "all": "icbm:blocks/concrete_normal"
   }
 }
