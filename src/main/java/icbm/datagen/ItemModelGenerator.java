@@ -1,7 +1,10 @@
 package icbm.datagen;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.items.ItemBombCart;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.content.reg.EntityReg;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.data.DataGenerator;
@@ -64,6 +67,33 @@ public class ItemModelGenerator extends ItemModelProvider {
         singleLayerItem(ItemReg.BALLON);
 
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
+        
+        //-------------------------------------------
+
+        block(ItemReg.EXPLOSIVE_CONDENSED);
+        block(ItemReg.EXPLOSIVE_SHRAPNEL);
+        block(ItemReg.EXPLOSIVE_INCENDIARY);
+        block(ItemReg.EXPLOSIVE_DEBILITATION);
+        block(ItemReg.EXPLOSIVE_CHEMICAL);
+        block(ItemReg.EXPLOSIVE_ANVIL);
+        block(ItemReg.EXPLOSIVE_REPULSIVE);
+        block(ItemReg.EXPLOSIVE_ATTRACTIVE);
+        block(ItemReg.EXPLOSIVE_COLOR);
+        block(ItemReg.EXPLOSIVE_SMOKE);
+        block(ItemReg.EXPLOSIVE_FRAGMENTATION);
+        block(ItemReg.EXPLOSIVE_CONTAGIOUS);
+        block(ItemReg.EXPLOSIVE_SONIC);
+        block(ItemReg.EXPLOSIVE_BREACHING);
+        block(ItemReg.EXPLOSIVE_THERMOBARIC);
+        block(ItemReg.EXPLOSIVE_NUCLEAR);
+        block(ItemReg.EXPLOSIVE_EMP);
+        block(ItemReg.EXPLOSIVE_EXOTHERMIC);
+        block(ItemReg.EXPLOSIVE_ENDOTHERMIC);
+        block(ItemReg.EXPLOSIVE_GRAVITY);
+        block(ItemReg.EXPLOSIVE_ENDER);
+        block(ItemReg.EXPLOSIVE_ANTIMATTER);
+        block(ItemReg.EXPLOSIVE_REDMATTER);
+
 
         block(ItemReg.RADIOACTIVE_DIRT);
         block(ItemReg.RADIOACTIVE_STONE);
