@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "icbm:block/launcher_cruise"
+    },
+    "facing=south": {
+      "model": "icbm:block/launcher_cruise",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "icbm:block/launcher_cruise",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "icbm:block/launcher_cruise",
+      "y": 90
+    }
+  }
+}

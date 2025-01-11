@@ -69,7 +69,11 @@ public class BlockStateGenerator extends BlockStateProvider {
 
         directionalBlock(BlockReg.LAUNCHER_BASE.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_BASE.get())));
         directionalBlock(BlockReg.LAUNCHER_SCREEN.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_SCREEN.get())));
+        launcherConnector();
+        horizontalFacingModel(BlockReg.LAUNCHER_CRUISE.get());
+    }
 
+    private void launcherConnector() {
         getVariantBuilder(BlockReg.LAUNCHER_CONNECTOR.get())
             .forAllStates(state -> {
 
@@ -83,8 +87,6 @@ public class BlockStateGenerator extends BlockStateProvider {
                 );
                 return ConfiguredModel.builder().modelFile(new ModelFile.UncheckedModelFile(model)).build();
             });
-        //block(ItemReg.LAUNCHER_CRUISE);
-
     }
 
     private void radarModel() {

@@ -8,7 +8,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -32,6 +35,16 @@ public class BlockCruiseLauncher extends Block
     }
 
     @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(BlockStateProperties.HORIZONTAL_FACING);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+        return this.getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, context.getPlacementHorizontalFacing());
+    }
+
+    @Override
     public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side)
     {
         return true;
@@ -40,7 +53,7 @@ public class BlockCruiseLauncher extends Block
     @Override
     public BlockRenderType getRenderType(BlockState state)
     {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+        return BlockRenderType.MODEL;
     }
 
     @Nullable
