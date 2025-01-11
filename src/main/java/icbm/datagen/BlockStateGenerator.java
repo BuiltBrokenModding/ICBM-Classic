@@ -55,9 +55,9 @@ public class BlockStateGenerator extends BlockStateProvider {
 
         facingAlignedModel(BlockReg.EXPLOSIVE_BREACHING.get());
 
-        //block(ItemReg.EMP_TOWER_BASE);
-        //block(ItemReg.EMP_TOWER_COIL);
         //block(ItemReg.RADAR_SCREEN);
+        noVariantModel(BlockReg.EMP_TOWER_BASE.get());
+        noVariantModel(BlockReg.EMP_TOWER_COIL.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME_BASE.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME_TOP.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME.get());

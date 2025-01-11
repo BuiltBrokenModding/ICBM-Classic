@@ -30,24 +30,33 @@ import net.minecraft.client.renderer.entity.ChickenRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import javax.annotation.Nullable;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
  */
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN, value = Dist.CLIENT)
 public class ClientReg {
-    @SubscribeEvent
+
+    public static void clientSetup(final FMLClientSetupEvent event) {
+        final EntityRenderer<ChickenEntity> render = Minecraft.getInstance().getRenderManager().getRenderer(ChickenEntity.class);
+        if(render instanceof ChickenRenderer) {
+            ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer)render));
+        }
+    }
+
     public static void registerBlockColor(ColorHandlerEvent.Block event) {
         event.getBlockColors().register(ClientReg::colorColoring, BlockReg.EMP_TOWER_BASE.get(), BlockReg.EMP_TOWER_COIL.get());
     }
@@ -69,17 +78,15 @@ public class ClientReg {
         return 0;
     }
 
-    //TODO wire to correct stage
-    public void init()
-    {
-        final EntityRenderer<ChickenEntity> render = Minecraft.getInstance().getRenderManager().getRenderer(ChickenEntity.class);
-        if(render instanceof ChickenRenderer) {
-            ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer)render));
-        }
-    }
-
-    @SubscribeEvent
     public static void registerAllModels(ModelRegistryEvent event) {
+
+        // Models needed for block entity renders
+        ModelLoader.addSpecialModel(new ResourceLocation(ICBMConstants.DOMAIN, "block/emp_tower/coil"));
+        ModelLoader.addSpecialModel(new ResourceLocation(ICBMConstants.DOMAIN, "block/emp_tower/electric"));
+
+        // Models needed for entity renders
+        ModelLoader.addSpecialModel(new ResourceLocation(ICBMConstants.DOMAIN, "entity/entity_balloon"));
+
         //---------------------------------------
         //Entity renders
         //---------------------------------------

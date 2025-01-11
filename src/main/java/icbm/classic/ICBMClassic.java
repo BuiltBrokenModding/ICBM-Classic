@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.reg.events.MissileFlightLogicRegistryEvent;
 import icbm.classic.api.reg.events.MissileTargetRegistryEvent;
 import icbm.classic.api.reg.events.ProjectileDataRegistryEvent;
+import icbm.classic.client.ClientReg;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
@@ -111,6 +112,10 @@ public class ICBMClassic
         modBus.addListener(this::serverStarting);
         modBus.addListener(this::serverStopping);
         modBus.addListener(this::registerDatagen);
+
+        modBus.addListener(ClientReg::clientSetup);
+        modBus.addListener(ClientReg::registerAllModels);
+        modBus.addListener(ClientReg::registerBlockColor);
 
         // Registries
         BlockReg.BLOCKS.register(modBus);

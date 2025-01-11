@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,21 +19,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class TESREmpTower extends TileEntityRenderer<TileEntity>
 {
-
-    public static BlockState COIL;
-    public static BlockState ELECTRIC;
-
     @Override
     @OnlyIn(Dist.CLIENT)
     public void render(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage)
     {
-        if(COIL == null) {
-            COIL = BlockReg.EMP_TOWER_BASE.get().getDefaultState().with(BlockEmpTowerBase.TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.COIL);
-            ELECTRIC = BlockReg.EMP_TOWER_BASE.get().getDefaultState().with(BlockEmpTowerBase.TOWER_MODELS, PropertyTowerStates.EnumTowerTypes.ELECTRIC);
-        }
-
         final BlockRendererDispatcher blockRendererDispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
 
+        final IBakedModel coilModel = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(ICBMConstants.DOMAIN, "block/emp_tower/coil"));
+        final IBakedModel electricModel = Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(ICBMConstants.DOMAIN, "block/emp_tower/electric"));
 
         float rotation = 0;
         float prevRotation = 0;
@@ -63,7 +58,7 @@ public class TESREmpTower extends TileEntityRenderer<TileEntity>
 
         GlStateManager.rotatef(rotation, 0.0F, 1.0F, 0.0F);
         GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-        blockRendererDispatcher.renderBlockBrightness(COIL, 1f);
+        blockRendererDispatcher.getBlockModelRenderer().renderModelBrightness(coilModel, tile.getBlockState(), 1F, true); //TODO maybe get world brightness?
         GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 
 
@@ -81,7 +76,7 @@ public class TESREmpTower extends TileEntityRenderer<TileEntity>
 
             GlStateManager.rotatef(rotation, 0.0F, 1.0F, 0.0F);
             GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
-            renderBlock(blockRendererDispatcher, tile.getWorld(), tile.getPos(), ELECTRIC);
+            renderBlock(blockRendererDispatcher, electricModel, tile.getWorld(), tile.getPos(), tile.getBlockState());
             GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 
             GlStateManager.disableBlend();
@@ -91,9 +86,8 @@ public class TESREmpTower extends TileEntityRenderer<TileEntity>
         }
     }
 
-    private void renderBlock(BlockRendererDispatcher blockRendererDispatcher, World world, BlockPos pos, BlockState state) {
+    private void renderBlock(BlockRendererDispatcher blockRendererDispatcher, IBakedModel model, World world, BlockPos pos, BlockState state) {
         final BlockModelRenderer blockModelRenderer = blockRendererDispatcher.getBlockModelRenderer();
-        final IBakedModel model = blockRendererDispatcher.getModelForState(state);
         final float brightness = 1f;
 
         int i = blockModelRenderer.blockColors.getColor(state, world, pos, 0);

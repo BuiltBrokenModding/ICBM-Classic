@@ -98,8 +98,6 @@ public class ItemModelGenerator extends ItemModelProvider {
         block(ItemReg.SPIKE_FIRE);
         block(ItemReg.SPIKE_POISON);
 
-        block(ItemReg.EMP_TOWER_BASE);
-        block(ItemReg.EMP_TOWER_COIL);
         block(ItemReg.RADAR_SCREEN);
         block(ItemReg.LAUNCHER_FRAME_BASE);
         block(ItemReg.LAUNCHER_FRAME_TOP);

@@ -17,17 +17,10 @@ public class BlockEmpTowerCoil extends ContainerBlock
         super(properties);
     }
 
-
     @Override
     public BlockRenderType getRenderType(BlockState state)
     {
         return BlockRenderType.MODEL;
-    }
-
-    @Override
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer)
-    {
-        return false;
     }
 
     @Nullable
