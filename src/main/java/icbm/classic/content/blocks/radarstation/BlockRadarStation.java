@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 public class BlockRadarStation extends Block {
     public static final BooleanProperty REDSTONE_PROPERTY = BooleanProperty.create("redstone");
     public static final EnumProperty<EnumRadarState> RADAR_STATE = EnumProperty.create("type", EnumRadarState.class);
-    public static final EnumProperty<Direction> ROTATION_PROP = BlockStateProperties.FACING;
 
     public static final ResourceLocation REGISTRY_KEY = new ResourceLocation(ICBMConstants.DOMAIN, "radar_screen");
     public static final ITextComponent REDSTONE_ON_MESSAGE = new TranslationTextComponent("block.icbm.radar.screen.redstone.on");
@@ -53,7 +52,7 @@ public class BlockRadarStation extends Block {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(ROTATION_PROP, REDSTONE_PROPERTY, RADAR_STATE);
+        builder.add(BlockStateProperties.FACING, REDSTONE_PROPERTY, RADAR_STATE);
     }
 
     @Override

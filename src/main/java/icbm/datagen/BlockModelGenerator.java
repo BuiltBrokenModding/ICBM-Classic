@@ -160,10 +160,10 @@ public class BlockModelGenerator extends BlockModelProvider {
             texture("silo_pad/top")
         );
         cubeAll(name(BlockReg.LAUNCHER_CONNECTOR), texture("silo_connector/disconnected"));
-        orientable(name(BlockReg.LAUNCHER_SCREEN),
+        cubeBottomTop(name(BlockReg.LAUNCHER_SCREEN),
             texture("machine_green"),
-            texture("screen/silo"),
-            texture("machine_green")
+            texture("machine_green"),
+            texture("screen/silo")
         );
 
     }

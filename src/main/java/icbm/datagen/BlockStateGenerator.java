@@ -1,5 +1,8 @@
 package icbm.datagen;
 
+import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.radarstation.BlockRadarStation;
+import icbm.classic.content.blocks.radarstation.EnumRadarState;
 import icbm.classic.content.reg.BlockReg;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
@@ -55,19 +58,34 @@ public class BlockStateGenerator extends BlockStateProvider {
 
         facingAlignedModel(BlockReg.EXPLOSIVE_BREACHING.get());
 
-        //block(ItemReg.RADAR_SCREEN);
+        //radarModel();
         noVariantModel(BlockReg.EMP_TOWER_BASE.get());
         noVariantModel(BlockReg.EMP_TOWER_COIL.get());
+
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME_BASE.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME_TOP.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME.get());
 
         directionalBlock(BlockReg.LAUNCHER_BASE.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_BASE.get())));
+        directionalBlock(BlockReg.LAUNCHER_SCREEN.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_SCREEN.get())));
 
         //block(ItemReg.LAUNCHER_CONNECTOR);
-        //block(ItemReg.LAUNCHER_SCREEN);
         //block(ItemReg.LAUNCHER_CRUISE);
 
+    }
+
+    private void radarModel() {
+        getVariantBuilder(BlockReg.RADAR_SCREEN.get())
+            .forAllStates(state -> {
+                final Direction dir = state.get(BlockStateProperties.FACING);
+                final EnumRadarState radarState = state.get(BlockRadarStation.RADAR_STATE);
+                final ResourceLocation model = new ResourceLocation(ICBMConstants.DOMAIN, "block/" + BlockReg.RADAR_SCREEN.getId().getPath() + "_" + radarState.getName().toLowerCase());
+                return ConfiguredModel.builder()
+                    .modelFile(new ModelFile.UncheckedModelFile(model))
+                    .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
+                    .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.getHorizontalAngle()) + 180) % 360)
+                    .build();
+            });
     }
 
     private void noVariantModel(Block block) {
