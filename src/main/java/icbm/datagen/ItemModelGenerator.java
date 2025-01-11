@@ -56,6 +56,8 @@ public class ItemModelGenerator extends ItemModelProvider {
         singleLayerItem(ItemReg.MINECART_ANTIMATTER, "icbm:items/explosive_minecart");
         singleLayerItem(ItemReg.MINECART_REDMATTER, "icbm:items/explosive_minecart");
 
+        this.withExistingParent(name(ItemReg.BOMBLET_EMPTY), "icbm:item/bomblet");
+        this.withExistingParent(name(ItemReg.BOMBLET_CONDENSED), "icbm:item/bomblet");
 
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
     }

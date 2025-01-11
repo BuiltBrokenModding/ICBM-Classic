@@ -60,6 +60,8 @@ b2ada6e634398bedf828eacd6cfd49f6d44ffc1a assets\icbm\models\block\explosive_smok
 1470f5cc3ca9e7e04ef1df1adaaad111c525e17e assets\icbm\models\block\radioactive_dirt.json
 fcb8e778742140c4416d76a802df520745bb0883 assets\icbm\models\block\radioactive_stone.json
 6b20f8d990fbc65c9ebde3b54c471b88f4380b6e assets\icbm\models\item\antidote_pill.json
+8b7cb3bca85fdda80bed1014dd660eaa618e4cac assets\icbm\models\item\bomblet_empty.json
+8b7cb3bca85fdda80bed1014dd660eaa618e4cac assets\icbm\models\item\bomblet_explosive_condensed.json
 ba612671d4fb11192bdb6eae4359486aaea084b8 assets\icbm\models\item\clump_saltpeter.json
 727c9f0a6c2397cfe25f53ff3f1e52ad2ac5bbfd assets\icbm\models\item\dust_poison.json
 9b1a9dc2acc7432fbabd6b6a3e6c37e7c038b19c assets\icbm\models\item\dust_saltpeter.json

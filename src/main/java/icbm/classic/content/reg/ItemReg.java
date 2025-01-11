@@ -194,8 +194,14 @@ public class ItemReg {
     // </editor-fold>
 
     // <editor-fold desc="entity-spawner-bomblets">
-    public static final RegistryObject<Item> BOMBLET_EMPTY = ITEMS.register("bomblet_empty", () -> new Item(new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
-    public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed", () -> new ItemBombDroplet(EntityReg.BOMBLET_CONDENSED::get, new Item.Properties().maxStackSize(16).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> BOMBLET_EMPTY = ITEMS.register("bomblet_empty",
+        () -> new Item(new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> BOMBLET_CONDENSED = ITEMS.register("bomblet_explosive_condensed",
+        () -> new ItemBombDroplet(EntityReg.BOMBLET_CONDENSED::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB)));
     // TODO add other explosive types
     // </editor-fold>
 
