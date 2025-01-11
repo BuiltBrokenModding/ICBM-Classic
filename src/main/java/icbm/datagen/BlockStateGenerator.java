@@ -61,7 +61,9 @@ public class BlockStateGenerator extends BlockStateProvider {
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME_BASE.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME_TOP.get());
         horizontalFacingModel(BlockReg.LAUNCHER_FRAME.get());
-        //block(ItemReg.LAUNCHER_BASE);
+
+        directionalBlock(BlockReg.LAUNCHER_BASE.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_BASE.get())));
+
         //block(ItemReg.LAUNCHER_CONNECTOR);
         //block(ItemReg.LAUNCHER_SCREEN);
         //block(ItemReg.LAUNCHER_CRUISE);

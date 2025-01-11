@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "icbm:block/launcher_base",
+      "x": 180
+    },
+    "facing=up": {
+      "model": "icbm:block/launcher_base"
+    },
+    "facing=north": {
+      "model": "icbm:block/launcher_base",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "icbm:block/launcher_base",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "icbm:block/launcher_base",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east": {
+      "model": "icbm:block/launcher_base",
+      "x": 90,
+      "y": 90
+    }
+  }
+}
