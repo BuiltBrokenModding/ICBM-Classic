@@ -2,6 +2,7 @@ package icbm.datagen;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.ItemReg;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
@@ -147,6 +148,24 @@ public class BlockModelGenerator extends BlockModelProvider {
              texture("explosive/bottom_2"),
              texture("explosive/breaching_top")
          );
+
+        orientable(name(BlockReg.RADAR_SCREEN),
+            texture("machine_green"),
+            texture("screen/radar"),
+            texture("machine_green")
+        );
+        cubeBottomTop(name(BlockReg.LAUNCHER_BASE),
+            texture("silo_pad/side"),
+            texture("silo_pad/bottom"),
+            texture("silo_pad/top")
+        );
+        cubeAll(name(BlockReg.LAUNCHER_CONNECTOR), texture("silo_connector/disconnected"));
+        orientable(name(BlockReg.LAUNCHER_SCREEN),
+            texture("machine_green"),
+            texture("screen/silo"),
+            texture("machine_green")
+        );
+
     }
 
     private String name(RegistryObject<? extends Block> block) {

@@ -1,11 +1,6 @@
 package icbm.datagen;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
-import icbm.classic.content.items.ItemBombCart;
-import icbm.classic.content.reg.BlockReg;
-import icbm.classic.content.reg.EntityReg;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
@@ -94,10 +89,6 @@ public class ItemModelGenerator extends ItemModelProvider {
         block(ItemReg.EXPLOSIVE_ANTIMATTER);
         block(ItemReg.EXPLOSIVE_REDMATTER);
 
-
-        block(ItemReg.RADIOACTIVE_DIRT);
-        block(ItemReg.RADIOACTIVE_STONE);
-
         block(ItemReg.CONCRETE_NORMAL);
         block(ItemReg.CONCRETE_COMPACT);
         block(ItemReg.CONCRETE_REINFORCED);
@@ -106,10 +97,28 @@ public class ItemModelGenerator extends ItemModelProvider {
         block(ItemReg.SPIKE_NORMAL);
         block(ItemReg.SPIKE_FIRE);
         block(ItemReg.SPIKE_POISON);
+
+        block(ItemReg.EMP_TOWER_BASE);
+        block(ItemReg.EMP_TOWER_COIL);
+        block(ItemReg.RADAR_SCREEN);
+        block(ItemReg.LAUNCHER_FRAME_BASE);
+        block(ItemReg.LAUNCHER_FRAME_TOP);
+        block(ItemReg.LAUNCHER_FRAME);
+        block(ItemReg.LAUNCHER_BASE);
+        block(ItemReg.LAUNCHER_CONNECTOR);
+        block(ItemReg.LAUNCHER_SCREEN);
+        block(ItemReg.LAUNCHER_CRUISE);
+
+        block(ItemReg.RADIOACTIVE_DIRT);
+        block(ItemReg.RADIOACTIVE_STONE);
     }
 
     private void block(RegistryObject<? extends Item> item) {
-        this.getBuilder(name(item)).parent(new ModelFile.UncheckedModelFile("icbm:block/" + name(item)));
+        this.block(item, name(item));
+    }
+
+    private void block(RegistryObject<? extends Item> item, String model) {
+        this.getBuilder(name(item)).parent(new ModelFile.UncheckedModelFile("icbm:block/" + model));
     }
 
     private void singleLayerItem(RegistryObject<? extends Item> item) {

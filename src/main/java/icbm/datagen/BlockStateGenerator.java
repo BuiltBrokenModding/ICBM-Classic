@@ -55,6 +55,17 @@ public class BlockStateGenerator extends BlockStateProvider {
 
         facingAlignedModel(BlockReg.EXPLOSIVE_BREACHING.get());
 
+        //block(ItemReg.EMP_TOWER_BASE);
+        //block(ItemReg.EMP_TOWER_COIL);
+        //block(ItemReg.RADAR_SCREEN);
+        horizontalFacingModel(BlockReg.LAUNCHER_FRAME_BASE.get());
+        horizontalFacingModel(BlockReg.LAUNCHER_FRAME_TOP.get());
+        horizontalFacingModel(BlockReg.LAUNCHER_FRAME.get());
+        //block(ItemReg.LAUNCHER_BASE);
+        //block(ItemReg.LAUNCHER_CONNECTOR);
+        //block(ItemReg.LAUNCHER_SCREEN);
+        //block(ItemReg.LAUNCHER_CRUISE);
+
     }
 
     private void noVariantModel(Block block) {
@@ -65,6 +76,16 @@ public class BlockStateGenerator extends BlockStateProvider {
     private void facingAlignedModel(Block block) {
         getVariantBuilder(block).forAllStates(state -> {
             final Direction facing = state.get(BlockStateProperties.FACING);
+            return ConfiguredModel.builder().modelFile(new ModelFile.UncheckedModelFile(modelPath(block)))
+                .rotationX(facing.getYOffset() * 180)
+                .rotationY(((int) facing.getHorizontalAngle() + 180) % 360)
+                .build();
+        });
+    }
+
+    private void horizontalFacingModel(Block block) {
+        getVariantBuilder(block).forAllStates(state -> {
+            final Direction facing = state.get(BlockStateProperties.HORIZONTAL_FACING);
             return ConfiguredModel.builder().modelFile(new ModelFile.UncheckedModelFile(modelPath(block)))
                 .rotationX(facing.getYOffset() * 180)
                 .rotationY(((int) facing.getHorizontalAngle() + 180) % 360)

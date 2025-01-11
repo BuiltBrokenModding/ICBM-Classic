@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "icbm:block/launcher_frame"
+    },
+    "facing=south": {
+      "model": "icbm:block/launcher_frame",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "icbm:block/launcher_frame",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "icbm:block/launcher_frame",
+      "y": 90
+    }
+  }
+}

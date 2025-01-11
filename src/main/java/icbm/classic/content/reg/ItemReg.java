@@ -293,7 +293,11 @@ public class ItemReg {
 
     public static final RegistryObject<Item> RADAR_SCREEN = ITEMS.register("radar_screen", () -> new BlockItem(BlockReg.RADAR_SCREEN.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
 
+    public static final RegistryObject<Item> LAUNCHER_FRAME_BASE = ITEMS.register("launcher_frame_base", () -> new BlockItem(BlockReg.LAUNCHER_FRAME_BASE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> LAUNCHER_FRAME_TOP = ITEMS.register("launcher_frame_top", () -> new BlockItem(BlockReg.LAUNCHER_FRAME_TOP.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> LAUNCHER_FRAME = ITEMS.register("launcher_frame", () -> new BlockItem(BlockReg.LAUNCHER_FRAME.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
+
+
     public static final RegistryObject<Item> LAUNCHER_BASE = ITEMS.register("launcher_base", () -> new BlockItem(BlockReg.LAUNCHER_BASE.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> LAUNCHER_CONNECTOR = ITEMS.register("launcher_connector", () -> new BlockItem(BlockReg.LAUNCHER_CONNECTOR.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> LAUNCHER_SCREEN = ITEMS.register("launcher_screen", () -> new BlockItem(BlockReg.LAUNCHER_SCREEN.get(), new Item.Properties().group(ICBMClassic.CREATIVE_TAB)));

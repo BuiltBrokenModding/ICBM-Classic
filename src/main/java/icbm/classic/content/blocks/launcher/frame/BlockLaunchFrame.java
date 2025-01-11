@@ -12,6 +12,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Items;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
@@ -28,40 +29,18 @@ import javax.annotation.Nullable;
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
 public class BlockLaunchFrame extends Block {
-    public static final EnumProperty<EnumFrameState> FRAME_STATE = EnumProperty.create("type", EnumFrameState.class);
-
     public BlockLaunchFrame(Properties properties) {
         super(properties);
-        this.setDefaultState(this.getDefaultState().with(FRAME_STATE, EnumFrameState.MIDDLE));
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(FRAME_STATE);
+        builder.add(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return this.getDefaultState().with(FRAME_STATE, EnumFrameState.MIDDLE); //TODO detect connections
-    }
-
-    @Override
-    public BlockState getExtendedState(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        final boolean frameAbove = isConnection(worldIn, pos.offset(Direction.UP));
-        final boolean frameUnder = isConnection(worldIn, pos.offset(Direction.DOWN));
-        if (frameAbove && frameUnder) {
-            return state.with(FRAME_STATE, EnumFrameState.MIDDLE);
-        } else if (frameUnder) {
-            return state.with(FRAME_STATE, EnumFrameState.TOP);
-        } else if (frameAbove) {
-            return state.with(FRAME_STATE, EnumFrameState.BOTTOM);
-        }
-        return state.with(FRAME_STATE, EnumFrameState.MIDDLE);
-    }
-
-    private boolean isConnection(IBlockReader worldIn, BlockPos pos) {
-        final BlockState state = worldIn.getBlockState(pos);
-        return state.getBlock() == this || state.getBlock() == BlockReg.LAUNCHER_SCREEN.get();
+        return this.getDefaultState().with(BlockStateProperties.HORIZONTAL_FACING, context.getPlacementHorizontalFacing());
     }
 
     @Override

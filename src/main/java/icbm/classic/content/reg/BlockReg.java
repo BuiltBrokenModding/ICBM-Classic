@@ -46,6 +46,9 @@ public class BlockReg {
     public static final RegistryObject<Block> RADAR_SCREEN = BLOCKS.register(BlockRadarStation.REGISTRY_KEY.getPath(), () -> new BlockRadarStation(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
 
     public static final RegistryObject<Block> LAUNCHER_FRAME = BLOCKS.register("launcher_frame", () -> new BlockLaunchFrame(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+    public static final RegistryObject<Block> LAUNCHER_FRAME_TOP = BLOCKS.register("launcher_frame_top", () -> new BlockLaunchFrame(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+    public static final RegistryObject<Block> LAUNCHER_FRAME_BASE = BLOCKS.register("launcher_frame_base", () -> new BlockLaunchFrame(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
+
     public static final RegistryObject<Block> LAUNCHER_CONNECTOR = BLOCKS.register("launcher_connector", () -> new BlockLaunchConnector(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
     public static final RegistryObject<Block> LAUNCHER_BASE = BLOCKS.register("launcher_base", () -> new BlockLauncherBase(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
     public static final RegistryObject<Block> LAUNCHER_SCREEN = BLOCKS.register("launcher_screen", () -> new BlockLaunchScreen(Block.Properties.create(Material.IRON).hardnessAndResistance(10)));
