@@ -38,7 +38,7 @@ public class BlockLauncherBase extends ContainerBlock
 
     public BlockLauncherBase(Properties properties)
     {
-        super(properties);
+        super(properties.variableOpacity());
     }
 
     @Override
@@ -57,9 +57,7 @@ public class BlockLauncherBase extends ContainerBlock
     }
 
     @Deprecated
-    public boolean isOpaqueCube(BlockState state)
-    {
-        // Needed to prevent render lighting issues for missiles
+    public boolean isSolid(BlockState state) {
         return false;
     }
 
