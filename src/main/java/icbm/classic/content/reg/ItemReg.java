@@ -34,14 +34,46 @@ public class ItemReg
     // </editor-fold>
 
     // <editor-fold desc="entity-spawner-grenades">
-    public static final RegistryObject<ItemGrenade> GRENADE_CONDENSED = ITEMS.register("grenade_condensed", () -> new ItemGrenade(EntityReg.GRENADE_CONDENSED::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_SHRAPNEL = ITEMS.register("grenade_shrapnel", () -> new ItemGrenade(EntityReg.GRENADE_SHRAPNEL::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_INCENDIARY = ITEMS.register("grenade_incendiary", () -> new ItemGrenade(EntityReg.GRENADE_INCENDIARY::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_DEBILITATION = ITEMS.register("grenade_debilitation", () -> new ItemGrenade(EntityReg.GRENADE_DEBILITATION::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_CHEMICAL = ITEMS.register("grenade_chemical", () -> new ItemGrenade(EntityReg.GRENADE_CHEMICAL::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_ANVIL = ITEMS.register("grenade_anvil", () -> new ItemGrenade(EntityReg.GRENADE_ANVIL::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_REPULSIVE = ITEMS.register("grenade_repulsive", () -> new ItemGrenade(EntityReg.GRENADE_REPULSIVE::get, new Item.Properties().maxStackSize(16)));
-    public static final RegistryObject<ItemGrenade> GRENADE_ATTRACTIVE = ITEMS.register("grenade_attractive", () -> new ItemGrenade(EntityReg.GRENADE_ATTRACTIVE::get, new Item.Properties().maxStackSize(16)));
+    public static final RegistryObject<ItemGrenade> GRENADE_CONDENSED = ITEMS.register("grenade_condensed",
+        () -> new ItemGrenade(EntityReg.GRENADE_CONDENSED::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_SHRAPNEL = ITEMS.register("grenade_shrapnel",
+        () -> new ItemGrenade(EntityReg.GRENADE_SHRAPNEL::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_INCENDIARY = ITEMS.register("grenade_incendiary",
+        () -> new ItemGrenade(EntityReg.GRENADE_INCENDIARY::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_DEBILITATION = ITEMS.register("grenade_debilitation",
+        () -> new ItemGrenade(EntityReg.GRENADE_DEBILITATION::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_CHEMICAL = ITEMS.register("grenade_chemical",
+        () -> new ItemGrenade(EntityReg.GRENADE_CHEMICAL::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_ANVIL = ITEMS.register("grenade_anvil",
+        () -> new ItemGrenade(EntityReg.GRENADE_ANVIL::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_REPULSIVE = ITEMS.register("grenade_repulsive",
+        () -> new ItemGrenade(EntityReg.GRENADE_REPULSIVE::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
+    public static final RegistryObject<ItemGrenade> GRENADE_ATTRACTIVE = ITEMS.register("grenade_attractive",
+        () -> new ItemGrenade(EntityReg.GRENADE_ATTRACTIVE::get, new Item.Properties()
+            .maxStackSize(16)
+            .group(ICBMClassic.CREATIVE_TAB))
+    );
     // </editor-fold>
 
     // <editor-fold desc="entity-spawner-carts">
