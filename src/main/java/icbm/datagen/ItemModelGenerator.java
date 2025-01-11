@@ -60,6 +60,9 @@ public class ItemModelGenerator extends ItemModelProvider {
         this.withExistingParent(name(ItemReg.BOMBLET_EMPTY), "icbm:item/base/bomblet");
         this.withExistingParent(name(ItemReg.BOMBLET_CONDENSED), "icbm:item/base/bomblet");
 
+        singleLayerItem(ItemReg.PARACHUTE);
+        singleLayerItem(ItemReg.BALLON);
+
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
 
         block(ItemReg.RADIOACTIVE_DIRT);

@@ -63,6 +63,7 @@ b6722e1012ec04b3f995e1671df5b1c4a5c13eed assets\icbm\models\block\spikes_fire.js
 59da1b413399ba464b4705112b4b829cddcef079 assets\icbm\models\block\spikes_normal.json
 ce23378492a2d71a27ef835e8d45c5ae56847899 assets\icbm\models\block\spikes_poison.json
 6b20f8d990fbc65c9ebde3b54c471b88f4380b6e assets\icbm\models\item\antidote_pill.json
+7aa3602e22e7129b6776dfa01a68a3a30b8121ab assets\icbm\models\item\balloon.json
 21a62e5eb90ff870d6190df3c2b11048824a4dd8 assets\icbm\models\item\bomblet_empty.json
 21a62e5eb90ff870d6190df3c2b11048824a4dd8 assets\icbm\models\item\bomblet_explosive_condensed.json
 ba612671d4fb11192bdb6eae4359486aaea084b8 assets\icbm\models\item\clump_saltpeter.json
@@ -104,6 +105,7 @@ fd8453f7f369da40a4c1d524645f1c93bf058679 assets\icbm\models\item\grenade_repulsi
 77ae89e8fbee99f614cca5675c4b2b362f457a04 assets\icbm\models\item\minecart_explosive_smoke.json
 77ae89e8fbee99f614cca5675c4b2b362f457a04 assets\icbm\models\item\minecart_explosive_sonic.json
 77ae89e8fbee99f614cca5675c4b2b362f457a04 assets\icbm\models\item\minecart_explosive_thermobaric.json
+bc14298f448219a88f19d12deeaf845fed5a24e0 assets\icbm\models\item\parachute.json
 f21352dd44db485c7544cf3cbc8b7c08ada7b3cc assets\icbm\models\item\radioactive_dirt.json
 8248d91ea2ecbc879dc67e37c5cd755ca4ef2779 assets\icbm\models\item\radioactive_stone.json
 2ab2e139ee2ae7da47f98187eb3a6f21a454ac18 assets\icbm\models\item\spikes_fire.json
