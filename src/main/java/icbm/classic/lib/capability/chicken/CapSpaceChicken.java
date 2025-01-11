@@ -52,14 +52,14 @@ public class CapSpaceChicken implements ICapabilityProvider, INBTSerializable<By
         return false;
     }
 
-    @SubscribeEvent
+    //TODO @SubscribeEvent
     public static void attachCap(AttachCapabilitiesEvent<Entity> event) {
        if(event.getObject() instanceof ChickenEntity) {
            event.addCapability(CHICKEN_CAP, new CapSpaceChicken((ChickenEntity) event.getObject()));
        }
     }
 
-    @SubscribeEvent
+    //TODO @SubscribeEvent
     public static void createEntityEvent(EntityEvent.EntityConstructing event) {
         if(event.getEntity() instanceof ChickenEntity) {
             event.getEntity().getDataManager().register(SPACE, false);
