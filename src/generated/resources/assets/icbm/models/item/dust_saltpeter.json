@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "icbm:items/poison_powder"
+    "layer0": "icbm:items/dust_saltpeter"
   }
 }

@@ -1,5 +1,6 @@
 package icbm.datagen;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.reg.ItemReg;
 import net.minecraft.data.DataGenerator;
@@ -16,6 +17,11 @@ public class ItemModelGenerator extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
+        singleLayerItem(ItemReg.DUST_POISON);
+        singleLayerItem(ItemReg.DUST_SULFUR);
+        singleLayerItem(ItemReg.DUST_SALTPETER);
+        singleLayerItem(ItemReg.CLUMP_SALTPETER);
+        
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
     }
 
