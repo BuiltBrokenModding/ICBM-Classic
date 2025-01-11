@@ -1,5 +1,5 @@
 {
-  "parent": "icbm:item/grenades/grenade",
+  "parent": "icbm:item/grenade",
   "textures": {
     "layer0": "icbm:items/grenade/shrapnel"
   }

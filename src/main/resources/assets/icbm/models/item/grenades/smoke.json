@@ -1,6 +1,0 @@
-{
-  "parent": "icbm:item/grenades/grenade",
-  "textures": {
-    "layer0": "icbm:items/grenade/smoke"
-  }
-}
