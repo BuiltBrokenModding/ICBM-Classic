@@ -1,0 +1,29 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "icbm:block/explosive_incendiary",
+      "x": -180,
+      "y": 90
+    },
+    "facing=up": {
+      "model": "icbm:block/explosive_incendiary",
+      "x": 180,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "icbm:block/explosive_incendiary"
+    },
+    "facing=south": {
+      "model": "icbm:block/explosive_incendiary",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "icbm:block/explosive_incendiary",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "icbm:block/explosive_incendiary",
+      "y": 90
+    }
+  }
+}

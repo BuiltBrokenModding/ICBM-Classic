@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "side": "icbm:blocks/explosive/condensed_side",
+    "bottom": "icbm:blocks/explosive/bottom_1",
+    "top": "icbm:blocks/explosive/condensed_top"
+  }
+}

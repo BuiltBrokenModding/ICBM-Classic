@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "side": "icbm:blocks/explosive/antimatter",
+    "bottom": "icbm:blocks/explosive/redmatter_bottom",
+    "top": "icbm:blocks/explosive/antimatter"
+  }
+}

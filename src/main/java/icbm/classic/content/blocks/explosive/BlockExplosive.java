@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
@@ -33,7 +34,6 @@ import javax.annotation.Nullable;
 
 public class BlockExplosive extends Block
 {
-    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
     public final IActionData action;
 
     public BlockExplosive(IActionData action, Block.Properties properties)
@@ -44,23 +44,23 @@ public class BlockExplosive extends Block
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
-        return state.with(FACING, rot.rotate(state.get(FACING)));
+        return state.with(BlockStateProperties.FACING, rot.rotate(state.get(BlockStateProperties.FACING)));
     }
 
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.toRotation(state.get(FACING)));
+        return state.rotate(mirrorIn.toRotation(state.get(BlockStateProperties.FACING)));
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(BlockStateProperties.FACING);
     }
 
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return getDefaultState().with(FACING, context.getFace());
+        return getDefaultState().with(BlockStateProperties.FACING, context.getFace());
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BlockExplosive extends Block
     public void doAction(World world, BlockPos pos, @Nullable IActionCause cause) {
         if (!world.isRemote) {
             final BlockState state = world.getBlockState(pos);
-            final Direction direction = state.get(FACING).getOpposite();
+            final Direction direction = state.get(BlockStateProperties.FACING).getOpposite(); //TODO why opposite
 
             final PotentialAction potentialAction = new PotentialAction();
             potentialAction.withProvider(new ActionFieldProvider().field(ActionFields.HOST_DIRECTION, () -> direction));
