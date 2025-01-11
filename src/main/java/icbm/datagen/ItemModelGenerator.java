@@ -16,12 +16,12 @@ public class ItemModelGenerator extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        basicItem(ItemReg.ANTIDOTE_PILL);
+        singleLayerItem(ItemReg.ANTIDOTE_PILL);
     }
 
-    private void basicItem(RegistryObject<? extends Item> item) {
-        this.withExistingParent(item.getId().getPath(), "item/generated")
-            .texture("layer0", texture(item.getId().getPath()));
+    private void singleLayerItem(RegistryObject<? extends Item> item) {
+        this.withExistingParent(name(item), "item/generated")
+            .texture("layer0", texture(name(item)));
     }
 
     private String name(RegistryObject<? extends Item> item) {
