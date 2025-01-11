@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "icbm:blocks/silo_connector/connected",
+    "up": "icbm:blocks/silo_connector/disconnected",
+    "north": "icbm:blocks/silo_connector/disconnected",
+    "south": "icbm:blocks/silo_connector/connected",
+    "east": "icbm:blocks/silo_connector/connected",
+    "west": "icbm:blocks/silo_connector/disconnected",
+    "particle": "icbm:blocks/silo_connector/connected"
+  }
+}

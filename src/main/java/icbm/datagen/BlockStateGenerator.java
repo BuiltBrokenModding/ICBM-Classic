@@ -1,6 +1,7 @@
 package icbm.datagen;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.launcher.connector.BlockLaunchConnector;
 import icbm.classic.content.blocks.radarstation.BlockRadarStation;
 import icbm.classic.content.blocks.radarstation.EnumRadarState;
 import icbm.classic.content.reg.BlockReg;
@@ -69,7 +70,19 @@ public class BlockStateGenerator extends BlockStateProvider {
         directionalBlock(BlockReg.LAUNCHER_BASE.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_BASE.get())));
         directionalBlock(BlockReg.LAUNCHER_SCREEN.get(), new ModelFile.UncheckedModelFile(modelPath(BlockReg.LAUNCHER_SCREEN.get())));
 
-        //block(ItemReg.LAUNCHER_CONNECTOR);
+        getVariantBuilder(BlockReg.LAUNCHER_CONNECTOR.get())
+            .forAllStates(state -> {
+
+                final ResourceLocation model =  new ResourceLocation(ICBMConstants.DOMAIN, "block/" + BlockReg.LAUNCHER_CONNECTOR.getId().getPath() + "/"
+                    + (state.get(BlockLaunchConnector.DOWN) ? "a" : "h")
+                    + (state.get(BlockLaunchConnector.UP) ? "a" : "h")
+                    + (state.get(BlockLaunchConnector.NORTH) ? "a" : "h")
+                    + (state.get(BlockLaunchConnector.SOUTH) ? "a" : "h")
+                    + (state.get(BlockLaunchConnector.EAST) ? "a" : "h")
+                    + (state.get(BlockLaunchConnector.WEST) ? "a" : "h")
+                );
+                return ConfiguredModel.builder().modelFile(new ModelFile.UncheckedModelFile(model)).build();
+            });
         //block(ItemReg.LAUNCHER_CRUISE);
 
     }

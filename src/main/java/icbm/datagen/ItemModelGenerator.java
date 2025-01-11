@@ -62,7 +62,7 @@ public class ItemModelGenerator extends ItemModelProvider {
         singleLayerItem(ItemReg.BALLON);
 
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
-        
+
         //-------------------------------------------
 
         block(ItemReg.EXPLOSIVE_CONDENSED);
@@ -98,17 +98,52 @@ public class ItemModelGenerator extends ItemModelProvider {
         block(ItemReg.SPIKE_FIRE);
         block(ItemReg.SPIKE_POISON);
 
-        block(ItemReg.RADAR_SCREEN);
+        cubeMC(
+            name(ItemReg.RADAR_SCREEN),
+            textureBlock("machine_green"),
+            textureBlock("machine_green"),
+            textureBlock("screen/radar"),
+            textureBlock("machine_green"),
+            textureBlock("machine_green"),
+            textureBlock("machine_green")
+        );
         block(ItemReg.LAUNCHER_FRAME_BASE);
         block(ItemReg.LAUNCHER_FRAME_TOP);
         block(ItemReg.LAUNCHER_FRAME);
         block(ItemReg.LAUNCHER_BASE);
-        block(ItemReg.LAUNCHER_CONNECTOR);
-        block(ItemReg.LAUNCHER_SCREEN);
+        cubeMC(
+            name(ItemReg.LAUNCHER_CONNECTOR),
+            textureBlock("silo_connector/disconnected")
+        );
+        cubeMC(
+            name(ItemReg.LAUNCHER_SCREEN),
+            textureBlock("machine_green"),
+            textureBlock("machine_green"),
+            textureBlock("screen/silo"),
+            textureBlock("machine_green"),
+            textureBlock("machine_green"),
+            textureBlock("machine_green")
+        );
         block(ItemReg.LAUNCHER_CRUISE);
 
         block(ItemReg.RADIOACTIVE_DIRT);
         block(ItemReg.RADIOACTIVE_STONE);
+    }
+
+    protected void cubeMC(String name, ResourceLocation texture) {
+        getBuilder(name)
+            .parent(new ModelFile.UncheckedModelFile("block/cube_all"))
+            .texture("all", texture);
+    }
+
+    protected void cubeMC(String name, ResourceLocation down, ResourceLocation up, ResourceLocation north, ResourceLocation south, ResourceLocation east, ResourceLocation west) {
+        getBuilder(name).parent(new ModelFile.UncheckedModelFile("block/cube"))
+            .texture("down", down)
+            .texture("up", up)
+            .texture("north", north)
+            .texture("south", south)
+            .texture("east", east)
+            .texture("west", west);
     }
 
     private void block(RegistryObject<? extends Item> item) {
@@ -149,6 +184,10 @@ public class ItemModelGenerator extends ItemModelProvider {
 
     private ResourceLocation texture(String path) {
         return new ResourceLocation(ICBMConstants.DOMAIN, "items/" + path);
+    }
+
+    private ResourceLocation textureBlock(String path) {
+        return new ResourceLocation(ICBMConstants.DOMAIN, "blocks/" + path);
     }
 
     @Override

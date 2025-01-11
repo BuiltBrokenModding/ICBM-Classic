@@ -1,0 +1,196 @@
+{
+  "variants": {
+    "down=false,east=false,north=false,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhhhhh"
+    },
+    "down=true,east=false,north=false,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahhhhh"
+    },
+    "down=false,east=true,north=false,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhhhah"
+    },
+    "down=true,east=true,north=false,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahhhah"
+    },
+    "down=false,east=false,north=true,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhahhh"
+    },
+    "down=true,east=false,north=true,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahahhh"
+    },
+    "down=false,east=true,north=true,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhahah"
+    },
+    "down=true,east=true,north=true,south=false,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahahah"
+    },
+    "down=false,east=false,north=false,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhhahh"
+    },
+    "down=true,east=false,north=false,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahhahh"
+    },
+    "down=false,east=true,north=false,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhhaah"
+    },
+    "down=true,east=true,north=false,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahhaah"
+    },
+    "down=false,east=false,north=true,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhaahh"
+    },
+    "down=true,east=false,north=true,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahaahh"
+    },
+    "down=false,east=true,north=true,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/hhaaah"
+    },
+    "down=true,east=true,north=true,south=true,up=false,west=false": {
+      "model": "icbm:block/launcher_connector/ahaaah"
+    },
+    "down=false,east=false,north=false,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/hahhhh"
+    },
+    "down=true,east=false,north=false,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aahhhh"
+    },
+    "down=false,east=true,north=false,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/hahhah"
+    },
+    "down=true,east=true,north=false,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aahhah"
+    },
+    "down=false,east=false,north=true,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/haahhh"
+    },
+    "down=true,east=false,north=true,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aaahhh"
+    },
+    "down=false,east=true,north=true,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/haahah"
+    },
+    "down=true,east=true,north=true,south=false,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aaahah"
+    },
+    "down=false,east=false,north=false,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/hahahh"
+    },
+    "down=true,east=false,north=false,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aahahh"
+    },
+    "down=false,east=true,north=false,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/hahaah"
+    },
+    "down=true,east=true,north=false,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aahaah"
+    },
+    "down=false,east=false,north=true,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/haaahh"
+    },
+    "down=true,east=false,north=true,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aaaahh"
+    },
+    "down=false,east=true,north=true,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/haaaah"
+    },
+    "down=true,east=true,north=true,south=true,up=true,west=false": {
+      "model": "icbm:block/launcher_connector/aaaaah"
+    },
+    "down=false,east=false,north=false,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhhhha"
+    },
+    "down=true,east=false,north=false,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahhhha"
+    },
+    "down=false,east=true,north=false,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhhhaa"
+    },
+    "down=true,east=true,north=false,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahhhaa"
+    },
+    "down=false,east=false,north=true,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhahha"
+    },
+    "down=true,east=false,north=true,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahahha"
+    },
+    "down=false,east=true,north=true,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhahaa"
+    },
+    "down=true,east=true,north=true,south=false,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahahaa"
+    },
+    "down=false,east=false,north=false,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhhaha"
+    },
+    "down=true,east=false,north=false,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahhaha"
+    },
+    "down=false,east=true,north=false,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhhaaa"
+    },
+    "down=true,east=true,north=false,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahhaaa"
+    },
+    "down=false,east=false,north=true,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhaaha"
+    },
+    "down=true,east=false,north=true,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahaaha"
+    },
+    "down=false,east=true,north=true,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/hhaaaa"
+    },
+    "down=true,east=true,north=true,south=true,up=false,west=true": {
+      "model": "icbm:block/launcher_connector/ahaaaa"
+    },
+    "down=false,east=false,north=false,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/hahhha"
+    },
+    "down=true,east=false,north=false,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aahhha"
+    },
+    "down=false,east=true,north=false,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/hahhaa"
+    },
+    "down=true,east=true,north=false,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aahhaa"
+    },
+    "down=false,east=false,north=true,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/haahha"
+    },
+    "down=true,east=false,north=true,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aaahha"
+    },
+    "down=false,east=true,north=true,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/haahaa"
+    },
+    "down=true,east=true,north=true,south=false,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aaahaa"
+    },
+    "down=false,east=false,north=false,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/hahaha"
+    },
+    "down=true,east=false,north=false,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aahaha"
+    },
+    "down=false,east=true,north=false,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/hahaaa"
+    },
+    "down=true,east=true,north=false,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aahaaa"
+    },
+    "down=false,east=false,north=true,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/haaaha"
+    },
+    "down=true,east=false,north=true,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aaaaha"
+    },
+    "down=false,east=true,north=true,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/haaaaa"
+    },
+    "down=true,east=true,north=true,south=true,up=true,west=true": {
+      "model": "icbm:block/launcher_connector/aaaaaa"
+    }
+  }
+}

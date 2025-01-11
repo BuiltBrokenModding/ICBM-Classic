@@ -1,3 +1,11 @@
 {
-  "parent": "icbm:block/radar_screen"
+  "parent": "block/cube",
+  "textures": {
+    "down": "icbm:blocks/machine_green",
+    "up": "icbm:blocks/machine_green",
+    "north": "icbm:blocks/screen/radar",
+    "south": "icbm:blocks/machine_green",
+    "east": "icbm:blocks/machine_green",
+    "west": "icbm:blocks/machine_green"
+  }
 }
