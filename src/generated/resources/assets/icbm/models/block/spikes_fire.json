@@ -1,5 +1,5 @@
 {
-  "parent": "block/tinted_cross",
+  "parent": "block/cross",
   "textures": {
     "cross": "icbm:blocks/spikes_fire"
   }

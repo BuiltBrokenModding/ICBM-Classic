@@ -27,6 +27,10 @@ public class BlockModelGenerator extends BlockModelProvider {
         this.cubeAll(name(BlockReg.CONCRETE_REINFORCED), texture(BlockReg.CONCRETE_REINFORCED));
         this.cubeAll(name(BlockReg.GLASS_REINFORCED), texture(BlockReg.GLASS_REINFORCED));
 
+        this.cross(name(BlockReg.SPIKE_NORMAL), texture(BlockReg.SPIKE_NORMAL));
+        this.cross(name(BlockReg.SPIKE_FIRE), texture(BlockReg.SPIKE_FIRE));
+        this.cross(name(BlockReg.SPIKE_POISON), texture(BlockReg.SPIKE_POISON));
+
          this.cubeBottomTop(name(BlockReg.EXPLOSIVE_CONDENSED),
              texture("explosive/condensed_side"),
              texture("explosive/bottom_1"),
