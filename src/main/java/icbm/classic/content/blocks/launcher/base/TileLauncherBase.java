@@ -136,6 +136,16 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     }
 
     @Override
+    public void tick()
+    {
+        // whatever reason onLoad can't be used for tile checks
+        if(isServer() && this.ticks == 0) {
+            launcherNode.connectToTiles();
+        }
+        super.tick();
+    }
+
+    @Override
     public void markDirty()
     {
         super.markDirty();
@@ -219,12 +229,6 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
 
     public int getFiringCost() {
         return ConfigLauncher.POWER_COST;
-    }
-
-    @Override
-    public void onLoad()
-    {
-        launcherNode.connectToTiles();
     }
 
     @Override

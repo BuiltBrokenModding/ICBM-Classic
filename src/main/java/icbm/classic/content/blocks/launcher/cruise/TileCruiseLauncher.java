@@ -170,10 +170,10 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         return ConfigLauncher.POWER_COST;
     }
 
+
     @Override
     public void onLoad() {
         super.onLoad();
-        launcherNode.connectToTiles();
         if (isServer()) {
             RadioRegistry.add(radio);
         }
@@ -220,6 +220,11 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
 
     @Override
     public void tick() {
+
+        // whatever reason onLoad can't be used for tile checks
+        if(isServer() && this.ticks == 0) {
+            launcherNode.connectToTiles();
+        }
         super.tick();
 
         //TODO add a per tick energy consumption or at least while aiming

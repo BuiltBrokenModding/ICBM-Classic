@@ -34,7 +34,7 @@ public class TileMachine extends TileEntity implements ITickable
         ticks++;
         if (ticks >= Integer.MAX_VALUE - 1)
         {
-            ticks = 0;
+            ticks = 1;
         }
 
         tickActions.forEach(action -> {

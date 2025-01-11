@@ -108,6 +108,10 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     @Override
     public void tick()
     {
+        // whatever reason onLoad can't be used for tile checks
+        if(isServer() && this.ticks == 0) {
+            launcherNode.connectToTiles();
+        }
         super.tick();
 
         if (isServer())
@@ -309,7 +313,6 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     public void onLoad()
     {
         super.onLoad();
-        getNetworkNode().connectToTiles();
         if (isServer())
         {
             RadioRegistry.add(radioCap);
