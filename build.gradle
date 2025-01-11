@@ -105,7 +105,8 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
-            args '--mod', 'icbm', '--all', "--output", "\"" + file("src/generated/resources").toString() + "\"", "--validate", "--existing", "\"" + sourceSets.main.resources.srcDirs[0] + "\""
+            args '--mod', 'icbm', '--all', '--output', file('src/generated/resources/'), "--existing", "\"" + sourceSets.main.resources.srcDirs[0] + "\""
+            //args '--mod', 'icbm', '--all', "--output", "\"" + file("src/generated/resources").toString() + "\"", "--existing", "\"" + sourceSets.main.resources.srcDirs[0] + "\"" //"--validate"
             mods {
                 icbm {
                     source sourceSets.main

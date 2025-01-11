@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ExistingFileHelper;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.fml.RegistryObject;
 
 public class ItemModelGenerator extends ItemModelProvider {
@@ -60,6 +61,22 @@ public class ItemModelGenerator extends ItemModelProvider {
         this.withExistingParent(name(ItemReg.BOMBLET_CONDENSED), "icbm:item/base/bomblet");
 
         singleLayerItem(ItemReg.ANTIDOTE_PILL);
+
+        block(ItemReg.RADIOACTIVE_DIRT);
+        block(ItemReg.RADIOACTIVE_STONE);
+
+        block(ItemReg.CONCRETE_NORMAL);
+        block(ItemReg.CONCRETE_COMPACT);
+        block(ItemReg.CONCRETE_REINFORCED);
+        block(ItemReg.GLASS_REINFORCED);
+
+        block(ItemReg.SPIKE_NORMAL);
+        block(ItemReg.SPIKE_FIRE);
+        block(ItemReg.SPIKE_POISON);
+    }
+
+    private void block(RegistryObject<? extends Item> item) {
+        this.getBuilder(name(item)).parent(new ModelFile.UncheckedModelFile("icbm:block/" + name(item)));
     }
 
     private void singleLayerItem(RegistryObject<? extends Item> item) {
