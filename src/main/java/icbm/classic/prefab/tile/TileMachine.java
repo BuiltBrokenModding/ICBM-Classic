@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/9/2017.
  */
-public class TileMachine extends TileEntity implements ITickable
+public class TileMachine extends TileEntity implements ITickableTileEntity
 {
     protected int ticks = -1;
 
