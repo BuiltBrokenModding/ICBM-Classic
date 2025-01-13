@@ -3,6 +3,7 @@ package icbm.classic.content.blocks.launcher.cruise;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.reg.TileReg;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -60,7 +61,7 @@ public class BlockCruiseLauncher extends Block
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
-        return new TileCruiseLauncher();
+        return TileReg.LAUNCHER_CRUISE.get().create();
     }
 
     @Override
