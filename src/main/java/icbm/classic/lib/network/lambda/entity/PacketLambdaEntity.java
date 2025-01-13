@@ -75,12 +75,20 @@ public class PacketLambdaEntity<TARGET> {
     }
 
     public static void handle(PacketLambdaEntity packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        switch (contextSupplier.get().getDirection()) {
+        final NetworkEvent.Context context = contextSupplier.get();
+        switch (context.getDirection()) {
             case PLAY_TO_CLIENT:
-                contextSupplier.get().enqueueWork(() -> packet.handleClientSide(Minecraft.getInstance(), Objects.requireNonNull(contextSupplier.get().getSender())));
+                context.enqueueWork(packet::handleClientSide);
+                context.setPacketHandled(true);
                 break;
             case PLAY_TO_SERVER:
-                contextSupplier.get().enqueueWork(() -> packet.handleServerSide(Objects.requireNonNull(contextSupplier.get().getSender())));
+                if(context.getSender() != null) {
+                    context.enqueueWork(() -> packet.handleServerSide(Objects.requireNonNull(contextSupplier.get().getSender())));
+                    context.setPacketHandled(true);
+                }
+                else {
+                    ICBMClassic.logger().error("Received packet with no sender.\n\tContext: {} \n\tPacket: {}", context, packet);
+                }
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + contextSupplier.get().getDirection());
@@ -88,8 +96,9 @@ public class PacketLambdaEntity<TARGET> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void handleClientSide(Minecraft minecraft, PlayerEntity player)
+    public void handleClientSide()
     {
+        final PlayerEntity player = Minecraft.getInstance().player;
         final int playerDim = player.world.dimension.getType().getId();
 
         // Normal, player may have changed dim between network calls
@@ -98,10 +107,7 @@ public class PacketLambdaEntity<TARGET> {
             codex.logDebug(player.world, player.getPosition(), message);
             return;
         }
-
-        final World world = player.world;
-
-        minecraft.enqueue(() -> loadDataIntoTile(world, player));
+        loadDataIntoTile(player.world, player);
     }
 
     public void handleServerSide(PlayerEntity player)
@@ -123,7 +129,7 @@ public class PacketLambdaEntity<TARGET> {
         }
 
         final ServerWorld world = (ServerWorld) player.world;
-        world.getServer().execute(() -> loadDataIntoTile(world, player));
+        loadDataIntoTile(world, player);
     }
 
     private void loadDataIntoTile(World world, PlayerEntity player) {
