@@ -1,5 +1,6 @@
 package icbm.classic.lib.network.lambda.tile;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.PacketEvents;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
@@ -39,7 +40,7 @@ public class PacketLambdaTile<TARGET> {
     }
 
     public PacketLambdaTile(PacketCodexTile codex, World dimensionId, BlockPos pos, TARGET target) {
-      this(codex, dimensionId, pos.getX(), pos.getY(), pos.getZ(), target);
+        this(codex, dimensionId, pos.getX(), pos.getY(), pos.getZ(), target);
     }
 
     public PacketLambdaTile(PacketCodexTile codex, World world, int x, int y, int z, TARGET target) {
@@ -50,7 +51,6 @@ public class PacketLambdaTile<TARGET> {
 
         writers = codex.encodeAsWriters(target);
     }
-
 
 
     public void encode(PacketBuffer buffer) {
@@ -81,21 +81,29 @@ public class PacketLambdaTile<TARGET> {
     }
 
     public static void handle(PacketLambdaTile packet, Supplier<NetworkEvent.Context> contextSupplier) {
-       switch (contextSupplier.get().getDirection()) {
-           case PLAY_TO_CLIENT:
-               contextSupplier.get().enqueueWork(() -> packet.handleClientSide(Minecraft.getInstance(), Objects.requireNonNull(contextSupplier.get().getSender())));
-               break;
-           case PLAY_TO_SERVER:
-               contextSupplier.get().enqueueWork(() -> packet.handleServerSide(Objects.requireNonNull(contextSupplier.get().getSender())));
-               break;
-           default:
-               throw new IllegalStateException("Unexpected value: " + contextSupplier.get().getDirection());
-       }
+        final NetworkEvent.Context context = contextSupplier.get();
+        switch (context.getDirection()) {
+            case PLAY_TO_CLIENT:
+                contextSupplier.get().enqueueWork(packet::handleClientSide);
+                context.setPacketHandled(true);
+                break;
+            case PLAY_TO_SERVER:
+                if(context.getSender() != null) {
+                    contextSupplier.get().enqueueWork(() -> packet.handleServerSide(context.getSender()));
+                    context.setPacketHandled(true);
+                }
+                else {
+                    ICBMClassic.logger().error("Received packet with no sender.\n\tContext: {} \n\tPacket: {}", context, packet);
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + contextSupplier.get().getDirection());
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void handleClientSide(final Minecraft minecraft, final PlayerEntity player)
-    {
+    public void handleClientSide() {
+        final PlayerEntity player = Minecraft.getInstance().player;
         final int playerDim = player.world.getDimension().getType().getId();
 
         // Normal, player may have changed dim between network calls
@@ -103,14 +111,10 @@ public class PacketLambdaTile<TARGET> {
             PacketEvents.onWrongWorld(codex, EventTrackerHelpers.SIDE_CLIENT, getDimensionId(), playerDim);
             return;
         }
-
-        final World world = player.world;
-
-        DeferredWorkQueue.runLater(() -> loadDataIntoTile(world, player));
+        loadDataIntoTile(player.world, player);
     }
 
-    public void handleServerSide(PlayerEntity player)
-    {
+    public void handleServerSide(PlayerEntity player) {
         final int playerDim = player.world.getDimension().getType().getId();
 
         // Normal, player may have changed dim between network calls
@@ -120,19 +124,19 @@ public class PacketLambdaTile<TARGET> {
         }
 
         // Issue, should never happen
-        if(!(player.world instanceof ServerWorld)) {
+        if (!(player.world instanceof ServerWorld)) {
             PacketEvents.onNotServerWorld(codex, getDimensionId());
             return;
         }
 
         final ServerWorld world = (ServerWorld) player.world;
-        DeferredWorkQueue.runLater(() -> loadDataIntoTile(world, player));
+        loadDataIntoTile(world, player);
     }
 
     private void loadDataIntoTile(World world, PlayerEntity player) {
 
         // Area is no longer loaded, this is normal in most cases
-        if(!world.isBlockLoaded(pos)) {
+        if (!world.isBlockLoaded(pos)) {
             return;
         }
 
@@ -140,21 +144,20 @@ public class PacketLambdaTile<TARGET> {
             final TileEntity tile = player.world.getTileEntity(pos);
 
             // Could be normal, as data changes in main thread... especially given latency
-            if(tile == null || !codex.isValid(tile)) {
+            if (tile == null || !codex.isValid(tile)) {
                 PacketTileEvents.onInvalidTile(codex, world, pos);
                 return;
             }
 
             final TARGET target = (TARGET) codex.getConverter().apply(tile);
-            if(target != null) {
+            if (target != null) {
                 setters.forEach(c -> c.accept(target));
             }
-            if(codex.onFinished() != null) {
+            if (codex.onFinished() != null) {
                 codex.onFinished().accept(tile, target, player);
             }
-        }
-        catch (Exception e) {
-           PacketTileEvents.onHandlingError(codex, world, pos, e);
+        } catch (Exception e) {
+            PacketTileEvents.onHandlingError(codex, world, pos, e);
         }
     }
 }
