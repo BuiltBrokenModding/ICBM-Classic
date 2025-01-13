@@ -4,15 +4,21 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
 import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author tgame14
@@ -27,20 +33,23 @@ public class PacketManager
         .named(new ResourceLocation(ICBMConstants.DOMAIN, "main_channel"))
         .clientAcceptedVersions(PROTOCOL_VERSION::equals)
         .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-        .networkProtocolVersion(() -> PROTOCOL_VERSION)
+        .networkProtocolVersion(() -> PROTOCOL_VERSION) //TODO maybe use mod version?
         .simpleChannel();
 
-    private int nextID = 0;
+    // https://github.com/mekanism/Mekanism/blob/1.14.x/src/main/java/mekanism/common/PacketHandler.java
+
+    private static int nextID = 0;
 
     public PacketManager(String channel)
     {
         this.channel = channel;
     }
 
-    public void init()
+    public static void register()
     {
-        HANDLER.registerMessage(nextID++, PacketLambdaTile.class, PacketLambdaTile::encode, PacketLambdaTile::decode, PacketLambdaTile::handle);
-        HANDLER.registerMessage(nextID++, PacketLambdaEntity.class, PacketLambdaEntity::encode, PacketLambdaEntity::decode, PacketLambdaEntity::handle);
+        //TODO break out each codex into its own registry entry so we go strait from input -> target without decoding into a middle object
+        register(PacketLambdaTile.class, PacketLambdaTile::encode, PacketLambdaTile::decode, PacketLambdaTile::handle);
+        register(PacketLambdaEntity.class, PacketLambdaEntity::encode, PacketLambdaEntity::decode, PacketLambdaEntity::handle);
 
         //addPacket(PacketPlayerItem.class);
         //addPacket(PacketSpawnAirParticle.class);
@@ -48,11 +57,15 @@ public class PacketManager
         //addPacket(PacketEntityPos.class);
     }
 
+    private static <MSG> void register(Class<MSG> type, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler) {
+        HANDLER.registerMessage(nextID++, type, encoder, decoder, handler);
+    }
+
     /**
      * @param packet the packet to send to the player
      * @param player the player MP object
      */
-    public <MSG> void sendToPlayer(MSG packet, ServerPlayerEntity player)
+    public static <MSG> void sendToPlayer(MSG packet, ServerPlayerEntity player)
     {
         if (!(player instanceof FakePlayer))
         {
@@ -64,12 +77,12 @@ public class PacketManager
      * @param packet the packet to send to the players in the dimension
      * @param dimId  the dimension ID to send to.
      */
-    public <MSG> void sendToAllInDimension(MSG packet, DimensionType dimId)
+    public static <MSG> void sendToAllInDimension(MSG packet, DimensionType dimId)
     {
         HANDLER.send(PacketDistributor.DIMENSION.with(() -> dimId), packet);
     }
 
-    public <MSG> void sendToAllInDimension(MSG packet, World world)
+    public static <MSG> void sendToAllInDimension(MSG packet, World world)
     {
         sendToAllInDimension(packet, world.dimension.getType());
     }
@@ -79,33 +92,33 @@ public class PacketManager
      *
      * @param packet the packet to send.
      */
-    public <MSG> void sendToAll(MSG packet)
+    public static <MSG> void sendToAll(MSG packet)
     {
         HANDLER.send(PacketDistributor.ALL.noArg(), packet);
     }
 
-    public <MSG> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
+    public static <MSG> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
     {
         HANDLER.send(PacketDistributor.NEAR.with(() -> point), message);
     }
 
-    public <MSG> void sendToAllAround(MSG message, TileEntity tile)
+    public static <MSG> void sendToAllAround(MSG message, TileEntity tile)
     {
         sendToAllAround(message, tile, 64);
     }
 
-    public <MSG> void sendToAllAround(MSG message, TileEntity tile, double range)
+    public static <MSG> void sendToAllAround(MSG message, TileEntity tile, double range)
     {
         sendToAllAround(message, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), range);
     }
 
-    public <MSG> void sendToAllAround(MSG message, World world, double x, double y, double z, double range)
+    public static <MSG> void sendToAllAround(MSG message, World world, double x, double y, double z, double range)
     {
         if (world != null)
             sendToAllAround(message, new PacketDistributor.TargetPoint(null, x, y, z, range, world.dimension.getType()));
     }
 
-    public <MSG> void sendToServer(MSG packet)
+    public static <MSG> void sendToServer(MSG packet)
     {
         HANDLER.sendToServer(packet);
     }

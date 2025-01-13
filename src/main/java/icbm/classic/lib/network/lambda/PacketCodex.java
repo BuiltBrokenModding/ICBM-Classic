@@ -1,6 +1,7 @@
 package icbm.classic.lib.network.lambda;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.lib.network.netty.PacketManager;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -222,7 +223,7 @@ public abstract class PacketCodex<RAW, TARGET> {
 
     public void sendToServer(RAW raw) {
         try {
-            ICBMClassic.packetHandler.sendToServer(build(raw));
+            PacketManager.sendToServer(build(raw));
         } catch (Exception e) {
             ICBMClassic.logger().error("Failed to send packet(" + parent + ", " + name + ") to server for " + raw, e);
         }
@@ -232,7 +233,7 @@ public abstract class PacketCodex<RAW, TARGET> {
         try {
             final Object packet = build(raw);
             players.stream().filter(player -> player instanceof ServerPlayerEntity).forEach((player) -> {
-                ICBMClassic.packetHandler.sendToPlayer(packet, (ServerPlayerEntity) player);
+                PacketManager.sendToPlayer(packet, (ServerPlayerEntity) player);
             });
         } catch (Exception e) {
             ICBMClassic.logger().error("Failed to send packet(" + parent + ", " + name + ") to gui users for " + raw, e);
@@ -241,7 +242,7 @@ public abstract class PacketCodex<RAW, TARGET> {
 
     public void sendToAllAround(RAW raw, PacketDistributor.TargetPoint point) {
         try {
-            ICBMClassic.packetHandler.sendToAllAround(build(raw), point);
+            PacketManager.sendToAllAround(build(raw), point);
         } catch (Exception e) {
             ICBMClassic.logger().error("Failed to send packet({}, {}) to server for {}", parent, name, raw, e);
         }

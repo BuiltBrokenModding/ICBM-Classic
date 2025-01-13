@@ -59,9 +59,7 @@ import icbm.datagen.ItemModelGenerator;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -93,8 +91,6 @@ public class ICBMClassic
     @Deprecated
     private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
 
-    public static final PacketManager packetHandler = new PacketManager(ICBMConstants.DOMAIN);
-
     public static final ContagiousPoison chemicalPotion = new ContagiousPoison("Chemical", 0, false);
     public static final ContagiousPoison contagiousPotion = new ContagiousPoison("Contagious", 1, true);
 
@@ -108,7 +104,7 @@ public class ICBMClassic
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         // Life cycle
-        modBus.addListener(this::setup);
+        modBus.addListener(this::commonSetup);
         modBus.addListener(this::serverStarting);
         modBus.addListener(this::serverStopping);
         modBus.addListener(this::registerDatagen);
@@ -123,6 +119,7 @@ public class ICBMClassic
         TileReg.TILES.register(modBus);
         EntityReg.ENTITIES.register(modBus);
 
+        //TODO  modEventBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
 
         //TODO ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -180,8 +177,9 @@ public class ICBMClassic
     }*/
 
 
-    public void setup(FMLCommonSetupEvent event)
+    public void commonSetup(FMLCommonSetupEvent event)
     {
+        PacketManager.register();
         EnergySystem.register(new EnergySystemFE());
 
         //Network packets
@@ -204,7 +202,6 @@ public class ICBMClassic
         handleExRegistry();
         handleProjectileDataRegistry();
 
-        packetHandler.init();
         CREATIVE_TAB.init();
         ProjectileBlockInteraction.register();
         ClusterMissileHandler.setup();
