@@ -10,10 +10,12 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.TNTMinecartEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.IPacket;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityBombCart extends TNTMinecartEntity
 {
@@ -29,6 +31,12 @@ public class EntityBombCart extends TNTMinecartEntity
         explodeAction.setActionData(triggerAction);
         this.mimicBlock = LazyOptional.of(mimicBlock);
         this.cartStack = LazyOptional.of(cartStack);
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket()
+    {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

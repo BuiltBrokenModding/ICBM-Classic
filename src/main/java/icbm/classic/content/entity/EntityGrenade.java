@@ -13,12 +13,12 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 @Accessors(chain = true)
 public class EntityGrenade extends Entity
@@ -135,8 +135,9 @@ public class EntityGrenade extends Entity
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
-        return new SSpawnObjectPacket(this); //TODO figure out what this is
+    public IPacket<?> createSpawnPacket()
+    {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     /**

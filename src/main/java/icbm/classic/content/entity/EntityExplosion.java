@@ -18,12 +18,12 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 /**
  * The Entity handler responsible for entity explosions.
@@ -47,8 +47,9 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
-        return new SSpawnObjectPacket(this);
+    public IPacket<?> createSpawnPacket()
+    {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

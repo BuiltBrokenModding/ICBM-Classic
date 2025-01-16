@@ -6,10 +6,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 /**
  * Entity that spawns smoke from it's position
@@ -111,8 +111,9 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
-        return new SSpawnObjectPacket(this);
+    public IPacket<?> createSpawnPacket()
+    {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     private static final NbtSaveHandler<EntitySmoke> SAVE_LOGIC = new NbtSaveHandler<EntitySmoke>()

@@ -21,9 +21,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
@@ -105,11 +103,6 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     public EntityProjectile(EntityType<PROJECTILE> entityTypeIn, World world) {
         super(entityTypeIn, world);
         //this.setSize(0.5F, 0.5F);
-    }
-
-    @Override
-    public IPacket<?> createSpawnPacket() {
-        return new SSpawnObjectPacket(this);
     }
 
     @Override

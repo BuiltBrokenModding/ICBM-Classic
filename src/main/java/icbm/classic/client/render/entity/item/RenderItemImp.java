@@ -38,7 +38,7 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
     private final ItemRenderer itemRenderer;
     private final Random random = new Random();
 
-    private static final LazyBuilder<ItemStack> BACKUP_RENDER_STACK = new LazyBuilder<ItemStack>(() -> new ItemStack(Items.EGG));
+    protected static final LazyBuilder<ItemStack> BACKUP_RENDER_STACK = new LazyBuilder<ItemStack>(() -> new ItemStack(Items.EGG));
 
     @Setter @Getter
     @Accessors(chain = true)
