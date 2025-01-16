@@ -7,7 +7,7 @@ import lombok.Data;
 public final class ProjectileTypes {
 
     /** All projectiles */
-    public static final MetaTag TYPE_PROJECTILE = MetaTag.getOrCreateRoot("projectile", "icbmclassic");
+    public static final MetaTag TYPE_PROJECTILE = MetaTag.getOrCreateRoot("icbmclassic", "projectile");
 
     /** Applied to types that act as holders for other objects or entities... think landing rockets or parachutes */
     public static final MetaTag TYPE_HOLDER = MetaTag.getOrCreateSubTag(TYPE_PROJECTILE, "holder");

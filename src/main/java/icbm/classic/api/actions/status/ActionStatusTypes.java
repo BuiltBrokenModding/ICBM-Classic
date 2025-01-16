@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 public final class ActionStatusTypes {
 
     /** Root for all actions */
-    public static final MetaTag ROOT = MetaTag.getOrCreateRoot("action.status", "icbmclassic");
+    public static final MetaTag ROOT = MetaTag.getOrCreateRoot("icbmclassic", "action.status");
 
     /** Status that prevents interaction from continuing */
     public static final MetaTag BLOCKING = MetaTag.getOrCreateSubTag(ROOT, "blocking");

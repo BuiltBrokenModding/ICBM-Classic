@@ -192,32 +192,6 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         return launcherNode;
     }
 
-    /**
-     * Gets the translation to use for showing status to the user. Should
-     * only be used for long format displays.
-     *
-     * @return The string to be displayed
-     */
-    public ITextComponent getStatusTranslation() {
-        if (!hasChargeToFire()) {
-            return new TranslationTextComponent(LauncherLangs.ERROR_NO_POWER);
-        }
-        // Checks for empty slot
-        else if (!missileHolder.hasMissile()) {
-            return new TranslationTextComponent(LauncherLangs.ERROR_MISSILE_NONE);
-        } else if (!hasTarget()) {
-            return new TranslationTextComponent(LauncherLangs.ERROR_TARGET_NONE);
-        } else if (this.isTooClose(getTarget())) {
-            return new TranslationTextComponent(LauncherLangs.ERROR_TARGET_MIN);
-        } else if (!canSpawnMissileWithNoCollision()) {
-            return new TranslationTextComponent(LauncherLangs.ERROR_MISSILE_SPACE);
-        }
-
-        // TODO check angle limits
-
-        return new TranslationTextComponent(LauncherLangs.STATUS_READY);
-    }
-
     @Override
     public void tick() {
 
@@ -232,8 +206,7 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
         lastRotationUpdate = System.nanoTime();
 
-
-        if (isServer()) {
+        if(isServer()) {
 
             // Update current aim
             currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
@@ -309,25 +282,13 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         initFromLoad();
     }
 
-    //@Override
-    public boolean canLaunch() {
-        return hasTarget()
-            && isAimed()
-            && missileHolder.hasMissile()
-            && hasChargeToFire()
-            && !this.isTooClose(this.getTarget())
-            && canSpawnMissileWithNoCollision();
-    }
-
-    protected boolean hasTarget() {
+    protected boolean hasTarget()
+    {
         return getTarget() != null && getTarget() != Vec3d.ZERO;
     }
 
-    protected boolean hasChargeToFire() {
-        return this.energyStorage.consumePower(getFiringCost(), true);
-    }
-
-    protected boolean canSpawnMissileWithNoCollision() {
+    protected boolean canSpawnMissileWithNoCollision()
+    {
         //Make sure there is noting above us to hit when spawning the missile
         // TODO use raytrace to detect collision so we can fire out of holes
         for (int y = 1; y <= 2; y++) {

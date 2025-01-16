@@ -13,6 +13,7 @@ import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.entity.explosive.EntityMissileActionable;
+import icbm.classic.content.missile.entity.itemstack.EntityHeldItemMissile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -132,6 +133,15 @@ public final class EntityReg {
     public static final RegistryObject<EntityType<EntityMissileActionable>> MISSILE_CLUSTER = missile(
         "missile_cluster", null, // action is set in spawn item
         () -> ConfigMissile.CLUSTER_MISSILE.MAX_HEALTH, () -> new ItemStack(ItemReg.MISSILE_CLUSTER.get()));
+
+    public static final RegistryObject<EntityType<EntityHeldItemMissile>> MISSILE_HELD_ITEM = ENTITIES.register(
+        "missile_held_item", () -> EntityType.Builder.<EntityHeldItemMissile>create(
+                (t, w) -> new EntityHeldItemMissile(t, w, () -> new ItemStack(ItemReg.MISSILE_HELD_ITEM::get)), EntityClassification.MISC)
+            .setTrackingRange(500)
+            .setUpdateInterval(1)
+            .size(0.5f, 0.5f)
+            .immuneToFire()
+            .build(ICBMConstants.PREFIX + "missile_held_item"));
 
     public static final RegistryObject<EntityType<EntitySurfaceToAirMissile>> MISSILE_SURFACE_TO_AIR = ENTITIES.register(
         "missile_surface_to_air", () -> EntityType.Builder.<EntitySurfaceToAirMissile>create(

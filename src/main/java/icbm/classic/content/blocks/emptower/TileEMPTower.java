@@ -261,15 +261,24 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
 
     public float getChargePercentage()
     {
+        if(!ConfigMain.REQUIRES_POWER) {
+            return 1;
+        }
         return Math.max(0, Math.min(1, energyStorage.getEnergyStored() / (float) getFiringCost()));
     }
 
     public int getFiringCost()
     {
+        if(!ConfigMain.REQUIRES_POWER) {
+            return 0;
+        }
         return range * range * ConfigEmpTower.ENERGY_COST_AREA;// TODO change this to scale exponentially by area to discourage large area EMPs
     }
 
     public int getTickingCost() {
+        if(!ConfigMain.REQUIRES_POWER) {
+            return 0;
+        }
         return  range * ConfigEmpTower.ENERGY_COST_TICKING;
     }
 
@@ -311,13 +320,11 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
         return INFINITE_EXTENT_AABB;
     }
 
-    //@Callback TODO add CC support
     public boolean isReady()
     {
-        return getCooldown() <= 0 && this.energyStorage.consumePower(getFiringCost(), true);
+        return getCooldown() <= 0 && (!ConfigMain.REQUIRES_POWER || this.energyStorage.consumePower(getFiringCost(), true));
     }
 
-    //@Callback TODO add CC support
     public int getCooldown()
     {
         return cooldownTicks;
@@ -328,7 +335,6 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
         return 1f - (cooldownTicks / (float)getMaxCooldown());
     }
 
-    //@Callback TODO add CC support
     public int getMaxCooldown()
     {
         return ConfigEmpTower.COOLDOWN; //TODO add to config

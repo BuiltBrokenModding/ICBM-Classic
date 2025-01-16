@@ -23,12 +23,12 @@ public class RenderBombDroplet extends RenderItemImp<EntityBombDroplet>
     }
 
     @Override
-    protected ItemStack getRenderItem(EntityBombDroplet entity) {
+    protected ItemStack getRenderItem(EntityBombDroplet entity, int index) {
         return entity.toStack();
     }
 
     @Override
-    protected void translate(@Nullable EntityBombDroplet entity, IBakedModel iBakedModel, double x, double y, double z, float partialTicks) {
+    protected void translate(@Nullable EntityBombDroplet entity,  ItemStack itemStack, IBakedModel iBakedModel, double x, double y, double z, float partialTicks, int index) {
         //Translate to center of entity collider
         if (entity != null) {
             GlStateManager.translated(x, y + 0.15, z); //TODO handle in JSON
@@ -48,7 +48,7 @@ public class RenderBombDroplet extends RenderItemImp<EntityBombDroplet>
     }
 
     @Override
-    protected void rotate(@Nullable EntityBombDroplet EntityBombDroplet, float entityYaw, float entityPitch, float partialTicks) {
+    protected void rotate(@Nullable EntityBombDroplet EntityBombDroplet, ItemStack itemStack, float entityYaw, float entityPitch, float partialTicks, int index) {
         //Rotate
         GlStateManager.rotatef(entityYaw, 0F, 1F, 0F);
         GlStateManager.rotatef(entityPitch, 1F, 0F, 0F);

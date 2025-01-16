@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -71,9 +72,21 @@ public class BlastTNT extends Blast
     }
 
     @Override
+    protected void clientRunBlast()
+    {
+
+    }
+
+    @Override
     public boolean doExplode(int callCount)
     {
         calculateDamage(); //TODO add listener(s) to control block break and placement
+
+        if (!(this.size < 2.0F)) {
+            this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+        } else {
+            this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+        }
 
         this.getWorld().playSound(null,
             getPosition().x, getPosition().y, getPosition().z,

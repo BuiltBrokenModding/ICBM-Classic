@@ -54,9 +54,13 @@ public abstract class ItemStackConfigList<VALUE> extends ResourceConfigList<Item
             super(name, reloadCallback);
         }
 
-        public boolean isAllowed(ItemStack stack) {
+        public boolean isContained(ItemStack stack) {
             Boolean value = super.getValue(stack);
-            return value == null || value;
+            return value != null && value;
+        }
+
+        public boolean isAllowed(ItemStack stack, boolean ban) {
+            return ban && !isContained(stack) || !ban && isContained(stack);
         }
 
         @Override

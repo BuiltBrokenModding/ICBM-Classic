@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public final class ActionTypes {
     /** Root for all actions */
-    public static final MetaTag ROOT = MetaTag.getOrCreateRoot("action", "icbmclassic");
+    public static final MetaTag ROOT = MetaTag.getOrCreateRoot("icbmclassic", "action");
 
     /** Action type that are considered destructive, harmful, or negative in outcome */
     public static final MetaTag DESTRUCTIVE = MetaTag.getOrCreateSubTag(ROOT, "destructive");

@@ -1,10 +1,11 @@
 package icbm.classic.content.blast;
 
+import icbm.classic.api.explosion.IBlastTickable;
+import icbm.classic.config.util.BlockReplacementData;
 import icbm.classic.content.blast.threaded.BlastThreaded;
 import icbm.classic.content.radioactive.RadioactiveHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.Consumer;
 
@@ -27,9 +28,9 @@ public class BlastRadioactiveBlockSwaps extends BlastThreaded
     public void destroyBlock(BlockPos targetPosition)
     {
         final BlockState blockState = world.getBlockState(targetPosition);
-        final Pair<BlockState, Float> replacement = RadioactiveHandler.radioactiveBlockSwaps.getValue(blockState);
-        if(replacement != null && (replacement.getValue() == null || replacement.getValue() < world.rand.nextFloat())) {
-            world.setBlockState(targetPosition, replacement.getKey(), 3);
+        final BlockReplacementData replacement = RadioactiveHandler.radioactiveBlockSwaps.getValue(blockState);
+        if(replacement != null) {
+            replacement.apply(world, targetPosition);
         }
     }
 }

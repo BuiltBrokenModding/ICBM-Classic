@@ -1,9 +1,11 @@
 package icbm.classic.api.data.meta;
 
+import icbm.classic.ICBMClassic;
 import lombok.Data;
 import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +45,10 @@ public final class MetaTag {
     private final String key;
     /** Mod who owns this meta-tag */
     @Nonnull
-    private final String domain;
+    private final String namespace;
+
+    @Nonnull
+    private final String path;
     /**
      * Parent of this tag
      */
@@ -51,32 +56,68 @@ public final class MetaTag {
 
     private NonNullList<MetaTag> children;
 
-    private MetaTag(@Nonnull String key, @Nonnull String domain, MetaTag parent) {
-        this.key = key;
-        this.domain = domain;
+    private MetaTag(@Nonnull String namespace, @Nonnull String path, @Nullable MetaTag parent) {
+        this.key = namespace + ":" + path;
+        this.path = path;
+        this.namespace = namespace;
         this.parent = parent;
+    }
+
+    @Deprecated
+    public String getDomain() {
+        return getNamespace();
     }
 
     public static MetaTag find(String key) {
         return TAG_MAP.get(key);
     }
 
-    public static MetaTag getOrCreateRoot(String key, String domain) {
-        return getOrCreate(null, key, domain);
+    /**
+     * Creates a new root, for externals mods you rarely need this as roots are provided
+     * for major systems to leverage. If root already exists it will be returned instead.
+     *
+     * @param namespace of the owning mod
+     * @param path of the resource
+     * @return meta tag
+     */
+    public static MetaTag getOrCreateRoot(@Nonnull String namespace, @Nonnull String path) {
+        return getOrCreate(null, namespace, path);
     }
 
-    public static MetaTag getOrCreateSubTag(MetaTag parent, String subtype) {
-        return getOrCreate(parent, parent.domain, subtype);
+    /**
+     * Creates a new tag under an existing parent of the same namespace. If the tag
+     * already exists it will be returned instead
+     *
+     * Use {@link #getOrCreate(MetaTag, String, String)} if parent is not the
+     * same namespace. Otherwise other mods and users may become confused on the
+     * ownership of the tags.
+     *
+     * @param parent to use for creating the tag
+     * @param subtype to create
+     * @return tag created
+     */
+    public static MetaTag getOrCreateSubTag(@Nonnull MetaTag parent, @Nonnull String subtype) {
+        return getOrCreate(parent, parent.namespace, parent.path + "." + subtype);
     }
 
-    public static MetaTag getOrCreate(MetaTag parent, String key, String domain) {
-        final MetaTag exist = find(key);
+    /**
+     * Creates a new tag or pulls an existing tag if already created
+     *
+     * @param parent to attach to the newly created tag
+     * @param namespace to register tag with
+     * @param path of the resource representing the tag
+     * @return tag created
+     */
+    public static MetaTag getOrCreate(@Nullable MetaTag parent, @Nonnull String namespace, @Nonnull String path) {
+        final MetaTag exist = find(namespace + ":" + path);
         if(exist != null) {
             return exist;
         }
 
-        final MetaTag metaTag = new MetaTag(key, domain, parent);
-        TAG_MAP.put(key, metaTag);
+        final MetaTag metaTag = new MetaTag(namespace, path, parent);
+        TAG_MAP.put(path, metaTag);
+
+        ICBMClassic.logger().debug("MetaTag[{}] parent={}", metaTag.getKey(), parent != null ? parent.getKey() : "nil");
 
         if (parent != null) {
             parent.add(metaTag);

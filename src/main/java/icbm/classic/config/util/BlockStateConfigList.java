@@ -1,8 +1,10 @@
 package icbm.classic.config.util;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import icbm.classic.lib.ForgeRegistryHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 public abstract class BlockStateConfigList<VALUE> extends ResourceConfigList<BlockStateConfigList<VALUE>, BlockState, VALUE> {
 
     protected static final Pattern BLOCK_PROP_REGEX = Pattern.compile("^(.*):([^=\\s]*)\\[((?:[\\w.]+:[\\w.]+,?)+)\\](?:=(.*))?");
+    protected static final Pattern CHANCE_REGEX = Pattern.compile("^@chance\\(([0-9]*[.][0-9]*)\\)$");
+    protected static final Pattern NBT_REGEX = Pattern.compile("^@nbt\\((.*)\\)$");
 
 
     public BlockStateConfigList(String name, Consumer<BlockStateConfigList<VALUE>> reloadCallback) {
@@ -205,20 +209,71 @@ public abstract class BlockStateConfigList<VALUE> extends ResourceConfigList<Blo
         }
     }
 
-    public static class BlockChanceOut extends BlockStateConfigList<Pair<BlockState, Float>> {
+    public static class BlockChanceOut extends BlockStateConfigList<BlockReplacementData> {
 
-        public BlockChanceOut(String name, Consumer<BlockStateConfigList<Pair<BlockState, Float>>> reloadCallback) {
+        public BlockChanceOut(String name, Consumer<BlockStateConfigList<BlockReplacementData>> reloadCallback) {
             super(name, reloadCallback);
         }
 
         @Override
-        protected Pair<BlockState, Float> parseValue(String source, String entry, String value) {
+        protected BlockReplacementData parseValue(String source, String key, String value) {
 
-            if (value.contains(",")) { //TODO use regex to ensure we only have 1 comma
-                final String[] split = value.split(",");
-                return Pair.of(super.parseBlockState(source, entry, split[0]), Math.min(1, Math.max(0, Float.parseFloat(split[1]))));
+            //minecraft:dirt=minecraft:stone
+            //minecraft:dirt=minecraft:stone@2
+            //minecraft:dirt=minecraft:stone[variant=stone]
+            //minecraft:dirt=minecraft:stone;@chance(0.5);@nbt({"energy":0})
+
+            final BlockReplacementData blockReplacementData = new BlockReplacementData();
+
+            // TODO refactor to be part of normal block out, then have this extend that adding chance check
+            if(value.contains(";")) {
+                final String[] entries = value.split(";");
+
+                // First entry should always be block, @keep will skip replacement and use the existing block
+                if(!entries[0].equals("~")) {
+                    blockReplacementData.setBlockState(super.parseBlockState(source, key, entries[0]));
+                }
+
+                for(int i = 1; i < entries.length; i++) {
+                    final String subEntry = entries[i];
+
+                    //TODO add ability to selectively copy fields from source and target blockEntity
+                    //TODO add ability to conditionally set data based on source field
+
+                    final Matcher chanceMatcher = CHANCE_REGEX.matcher(subEntry);
+                    if(chanceMatcher.matches()) {
+                        blockReplacementData.setChance(Math.min(1, Math.max(0, Float.parseFloat(chanceMatcher.group(1)))));
+                        continue;
+                    }
+
+                    final Matcher nbtMatcher = NBT_REGEX.matcher(subEntry);
+                    if(nbtMatcher.matches()) {
+                        //TODO regex detect if JSON is valid
+                        try {
+                            blockReplacementData.setBlockNBT(JsonToNBT.getTagFromJson(nbtMatcher.group(1)));
+                        }
+                        catch (CommandSyntaxException e) {
+                            error(source, key, "Failed to read NBT json provided. Cause: " + e.getMessage());
+                            return null;
+                        }
+                        continue;
+                    }
+
+                    // Log regex entries that can't be matched
+                    error(source, key, "Unknown entry '" + subEntry + "' from value '" + value + "'");
+                }
+
+                return blockReplacementData;
             }
-            return Pair.of(super.parseBlockState(source, entry, value), null);
+            // Legacy block state & chance pair TODO remove after 1.12
+            else if (value.contains(",")) {
+                final String[] split = value.split(",");
+                return blockReplacementData
+                    .setChance(Math.min(1, Math.max(0, Float.parseFloat(split[1]))))
+                    .setBlockState(super.parseBlockState(source, key, split[0]));
+            }
+
+            return blockReplacementData.setBlockState(super.parseBlockState(source, key, value));
         }
     }
 

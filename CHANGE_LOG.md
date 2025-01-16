@@ -4,7 +4,121 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
-## 5.4.0 - October 10th, 2023
+## 1.12.2-6.4.1 - September 30th, 2024
+
+* Fixed: server side crash due to client side code loading
+
+## 1.12.2-6.4.0 - September 29th, 2024
+
+### Runtime Changes
+
+* Added: subtitle translations for audio assets
+* Added: item-holder missile (aka sword missile) that can hold and action held items/blocks
+* Added: config for missile simulation speed (how fast missile moves outside game world)
+* Added: recipe for marking smoke
+* Added: warning to cluster, parachute, and balloon when held items are config disabled
+* Added: configs for radioactive blocks (delay, chance, range, damage, and wither duration)
+* Added: audio for radioactive block
+* Added: half life decay for radioactive blocks (configurable chance and can be disabled)
+* Added: recipe to remove items from parachute and balloon
+* Added: partial korean translations made by community contributor (Shell) on github
+* Changed: condensed explosive to use vanilla large and huge explosion particles for resource pack makers
+* Changed: cruise launcher status messages to be more informative
+* Changed: 'No Status Data' message to 'No Status... server desync' to better reflect cause
+* Changed: tooltip on cluster, parachute, and balloon to show held item's tooltip & details
+* Changed: spike block config to exist under 'blocks' parent config
+* Fixed: parachute and balloon configs not always loading disallow list properly
+* Fixed: npe when unloading world with null blast instance
+* Fixed: thermobaric using same blast as nuke (legacy tech debt go brrr)
+* Fixed: missiles setting hit target's position to invalid number, fix by community contributor (Shell) on github
+* Removed: unused audio files decreasing file size
+
+## 1.12.2-6.3.1 - June 20th, 2024
+
+* Fixed: protective armor config not loading
+
+## 1.12.2-6.3.0 - June 20th, 2024
+
+### Runtime Changes
+
+* Added: config to disable JEI support
+* Added: config to disable payload recipes in JEI
+* Changed: emp tower to ignore missile intercepts outside it's max range
+* Reworked: missile emp effect
+* Fixed: conditional action system not building meta types (broke emp and cluster)
+* Fixed: emp tower not firing
+* Fixed: emp tower animation not playing if power requirements were off
+* Fixed: emp tower showing power requirements when power was disabled
+* Fixed: possible issue with flying block duplication, isn't confirmed but changes setBlock from status 3 to 2
+
+#### Missile EMP Rework
+
+Previously missile would only disable it's engine on EMP. With 6.3.0 it will randomly switch between engine disable, engine fuel explosion, missile destruction, and payload triggering. All of this is configurable and can be disabled as desired.
+
+Order of chance is destruction -> engine/guidance -> payload. Chance is less than equal to value set. Random is re-run per each section. With first to pass being picked.
+
+* Destruction: 50%
+    * Fuel: 100% -> Explosion: 1f
+* Engine: 80%
+    * guidance -> set to deadlogic zero fuel, falls out of sky but maintains existing velocity
+* Payload: 10%
+    * ExMissile -> explosive
+    * ActionMissile(cluster) -> action
+    * SAM -> Explosion: 1f
+
+### Dev Changes
+
+* Fixed: MetaTag generation using key as domain and other janky issues. This broke the MetaTag.isType check
+* Changed: MetaTag key to be namespace (mod's domain) + path (previously key)
+* Changed: MetaTag subtype creation to prefix the parent's path to better organize. Previously key was just `icbmclassic:error` now is `icbmclassic:action.status.red.error`. This will help with translation keys later and make it more clear what the tag is by name alone.
+
+## 1.12.2-6.2.0 - June 14, 2024
+
+* Added: config for missile visual arc limit
+* Changed: missile arc default from 200 to 500 meters
+* Fixed: blast not clearing if error is thrown
+* Fixed: multi-threaded blast re-running after chunk reloads
+* Fixed: blast not clearing if failed to load from save
+* Fixed: blast saying failed to find explosive data when it was actually found during world load
+* Fixed: explosive data returning null for a non-null api
+* Fixed: blasts not removing from world tick handler
+* Fixed: missiles entering simulation at world height due to vanilla chunk load detection
+
+## 1.12.2-6.1.0 - June 12, 2024
+
+* Added: configs for radar station
+* Changed: simulation enter height to 500 from 25
+* Changed: simulation exit height to 450 from 250
+* Changed: simulation exit speed to 1m/t from 2m/t 
+* Changed: sam firing delay from %tick to countdown reset
+* Changed: sam firing delay to 40 ticks from 10 ticks
+* Fixed: config gui crash due to parsing error
+* Fixed: some console log spam left over from dev testing
+* Fixed: typo in missile launcher power config
+
+## 1.12.2-6.0.1 - May 26, 2024
+
+TODO
+
+## 1.12.2-6.0.0 - April 23rd, 2024
+
+* Added: cluster missile - dynamic item support allowing anything to be added to payload. Some items have special projectile handling allowing spawning entity version instead of item.
+* Added: projectile handling for arrows
+* Added: projectile handling for potion arrows
+* Added: projectile handling for spectral arrows
+* Added: projectile handling for eggs
+* Added: projectile handling for snowballs
+* Added: projectile handling for spawn eggs
+* Added: Parachute - allows attaching items/blocks for deployment
+* Added: Balloon - similar to parachute but inverted gravity... mostly for lolz
+* Added: ballistic arc version of rocket launcher. Allows firing a missile in same way as silo or basically a javelin launcher
+* Reworked: FlyingBlocks to better handle placement and collect item version. Allows remembering machines and more complex blocks. Impacts redmatter, anti-gravity, endo, exo, sonic, and works with parachute system
+* Reworked: Anti-gravity to remove 1 block per tick, apply outward motion, and extend flying block life to encourage return to ground
+* Reworked large chunks of content to use action system, which will replace projectile and blast system as a generic conditional do-task system. For developers, this means large chunks of the API are deprecated and changed. Future plan is to feed everything through the action system and expose logic via listeners. Everything will have an action source, cause-by chain, and be abstracted to improve flexibility. Allowing for replacement of logic by other mods and interception of actions for better integrations. Such as providing improved world protection, handling admin logging, or even just showing events on a map.
+
+TODO finish
+
+## 1.12.2-5.4.0 - October 10th, 2023
 
 ### Runtime Changes
 

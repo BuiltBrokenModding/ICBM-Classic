@@ -43,6 +43,7 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     public float offsetZ = 0;
     public Direction prevFace;
     public Direction prevRotation;
+    public boolean prevRiding;
 
     public EntityPlayerSeat(EntityType<EntityPlayerSeat> type, World world)
     {
@@ -118,9 +119,10 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
             this.remove();
         }
 
-        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide())) {
+        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide() || prevRiding != this.isBeingRidden())) {
             prevFace = host.getLaunchDirection();
             prevRotation = host.getSeatSide();
+            prevRiding = this.isBeingRidden();
             updatePosition(host.getLaunchDirection(), host.getSeatSide());
             updateBox(host.getLaunchDirection(), host.getSeatSide());
         }
@@ -326,7 +328,19 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
+        if(getPassengers().contains(entityIn)) {
+            return null;
+        }
         return super.getBoundingBox(); //TODO might be needed for interaction
+    }
+
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox()
+    {
+        if(!this.getPassengers().isEmpty()) {
+            return null;
+        }
+        return this.getBoundingBox();
     }
 
     @Override

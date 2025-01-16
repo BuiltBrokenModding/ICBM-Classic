@@ -1,6 +1,8 @@
 package icbm.classic.mods.mekanism;
 
 import icbm.classic.ICBMClassic;
+import icbm.classic.config.util.BlockReplacementData;
+import icbm.classic.content.actions.emp.EmpHandler;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
@@ -8,6 +10,7 @@ import icbm.classic.mods.ModProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -29,6 +32,20 @@ public class MekProxy extends ModProxy
     public static Block machineBlock;
 
     public static Block basicBlock;
+
+    @Override
+    public void preInit() {
+        // Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/MekanismBlocks.java
+        //          https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/block/states/BlockStateMachine.java
+        //final CompoundNBT energyOverride = new CompoundNBT();
+        //energyOverride.putDouble("electricityStored", 0); // https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/tile/prefab/TileEntityElectricBlock.java#L169
+
+        // TODO replace with mek's API as this is painful given they use a central block for several sub-blocks
+        //EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        //EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock2"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        //EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock3"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        //EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "EnergyCube"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+    }
 
     @Override
     public void init()

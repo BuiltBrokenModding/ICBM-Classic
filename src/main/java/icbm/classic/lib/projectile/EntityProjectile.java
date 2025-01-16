@@ -109,7 +109,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     }
 
     public void setOwner(Entity owner) {
-        if(owner != null)
+        if (owner != null)
             this.owner = new ProjectileOwner(owner);
     }
 
@@ -278,17 +278,29 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
             }
 
 
-
-            if (rayHit.getType() == RayTraceResult.Type.BLOCK || entityHit != null) {
+            if ((rayHit.getType() == RayTraceResult.Type.BLOCK || entityHit != null) && !ignoreImpact(rayHit)) {
                 //Handle entity hit
                 if (entityHit != null) {
-                    handleEntityCollision(entityHit);
-                } else //Handle block hit
-                {
-                    handleBlockCollision(rayHit);
+                    //rayHit.hitVec == rayHit.entityHit.pos, So, hitbox points are calculated to prevent the entity from disappearing.
+                    Optional<Vec3d> hitPoint = entityHit.getEntity().getBoundingBox().rayTrace(
+                        new Vec3d(posX, posY, posZ),
+                        new Vec3d(entityHit.getEntity().posX, entityHit.getEntity().posY, entityHit.getEntity().posZ)
+                    );
+
+                    if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitPoint.isPresent() ? new EntityRayTraceResult(entityHit.getEntity(), hitPoint.get()) : entityHit)) {
+                        handleEntityCollision(entityHit);
+                        postImpact(rayHit);
+                    }
+                }
+                //Handle block hit
+                else {
+                    if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, rayHit)) {
+                        handleBlockCollision(rayHit, velocity);
+                        postImpact(rayHit);
+                    }
                 }
 
-                postImpact(rayHit);
+
             }
             updateMotion();
         }
@@ -315,7 +327,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
                 //Check if what we hit can be collided with
                 final VoxelShape voxelshape = state.getCollisionShape(this.world, tilePos);
                 if (!voxelshape.isEmpty()) {
-                    for(AxisAlignedBB axisalignedbb : voxelshape.toBoundingBoxList()) {
+                    for (AxisAlignedBB axisalignedbb : voxelshape.toBoundingBoxList()) {
                         if (axisalignedbb.offset(tilePos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
                             final Direction side = Direction.UP; //TODO calculate side based on position
                             this.inGroundData = new InGroundData(tilePos, side, state);
@@ -372,12 +384,11 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
         return entity.canBeCollidedWith() && !(entity instanceof EntityPlayerSeat);
     }
 
-    protected void handleBlockCollision(BlockRayTraceResult hit) {
+    protected void handleBlockCollision(BlockRayTraceResult hit, double velocity) {
         this.inGroundData = new InGroundData(world, hit);
 
         // Special handling for ender gateways TODO move to a registry of Block -> lambda
-        final IProjectileBlockInteraction.EnumHitReactions reaction =
-            ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.getHitVec(), this.inGroundData.getSide(), this.inGroundData.getState(), this);
+        final IProjectileBlockInteraction.EnumHitReactions reaction = specialHandleBlock(hit, velocity);
         if (reaction.stop) {
             return;
         }
@@ -395,6 +406,10 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
             onImpactTile(hit);
             this.setMotion(0, 0, 0);
         }
+    }
+
+    protected IProjectileBlockInteraction.EnumHitReactions specialHandleBlock(BlockRayTraceResult hit, double velocity) {
+        return ProjectileBlockInteraction.handleSpecialInteraction(world, this.inGroundData.getPos(), hit.getHitVec(), this.inGroundData.getSide(), this.inGroundData.getState(), this);
     }
 
     public void moveTowards(Vec3d hit, double offset) {

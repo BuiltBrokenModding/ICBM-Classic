@@ -19,6 +19,7 @@ import icbm.classic.lib.projectile.ProjectileStack;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -34,6 +35,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -146,6 +148,10 @@ public class ItemThrowableProjectile extends ItemBase {
 
     @Override
     public void addInformation(ItemStack stack, World world, List<ITextComponent> list, ITooltipFlag flag) {
+        if(true) {
+            return; //TODO remove after we fix regs
+        }
+
         final LazyOptional<IProjectileStack> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
 
         // Only show basic info if we have no projectile data
@@ -158,7 +164,29 @@ public class ItemThrowableProjectile extends ItemBase {
 
         // Show projectile information
         if(projectileStack.isPresent() && projectileStack.orElseThrow(IllegalStateException::new).getProjectileData() != null) {
-            //TODO LanguageUtility.outputComponents(projectileStack.orElseThrow(IllegalStateException::new).getProjectileData().getTooltip(), list::add);
+
+            final IProjectileData projectileData = projectileStack.orElseThrow(IllegalStateException::new).getProjectileData();
+            LanguageUtility.outputComponents(projectileData.getTooltip(), list::add);
+
+            if(projectileData instanceof CargoProjectileData) {
+                final ItemStack heldItem = ((CargoProjectileData<?, ?>) projectileData).getHeldItem();
+
+
+                if(heldItem != null && !heldItem.isEmpty()) {
+                    list.add(new StringTextComponent("")); //TODO move formating to translation file
+                    LanguageUtility.outputComponents(new TranslationTextComponent("projectile.icbmclassic:holder.held"), list::add);
+                    list.addAll(heldItem.getTooltip(Minecraft.getInstance().player, flag));
+                    list.add(new StringTextComponent(""));
+
+                    if(!CargoHolderHandler.isAllowed(heldItem)) {
+                        LanguageUtility.outputComponents(new TranslationTextComponent("projectile.icbmclassic:holder.disabled.config"), list::add);
+                    }
+                }
+                else {
+                    LanguageUtility.outputComponents(new TranslationTextComponent("projectile.icbmclassic:holder.empty"), list::add);
+                }
+            }
+
         }
     }
 

@@ -1,4 +1,4 @@
-package icbm.classic.config.machines;
+package icbm.classic.config.blocks;
 
 
 

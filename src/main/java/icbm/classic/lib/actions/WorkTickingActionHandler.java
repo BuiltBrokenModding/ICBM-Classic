@@ -38,7 +38,7 @@ public class WorkTickingActionHandler //TODO create interface that is related to
     @SubscribeEvent
     public static void worldUnload(WorldEvent.Unload event)
     {
-        if (!event.getWorld().isRemote())
+        if (!event.getWorld().isRemote() && !activeBlasts.isEmpty())
         {
             final DimensionType dim = event.getWorld().getDimension().getType();
             activeBlasts.stream()

@@ -380,17 +380,17 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 yDifference /= mag;
                 zDifference /= mag;
 
-                double blockProtection = getBlockDensity(center, entity);
-                double exScale = (1.0D - distance) * blockProtection;
-                int damage = (int) ((exScale * exScale + exScale) / 2.0D * 8.0D * power + 1.0D);
+                double blockDensity = getBlockDensity(center, entity);
+                double damageScale = (1.0D - distance) * blockDensity;
+                int damage = (int) ((damageScale * damageScale + damageScale) / 2.0D * 8.0D * power + 1.0D);
 
                 entity.attackEntityFrom(getDamageSource(), damage);
 
                 // Knock back
                 if (entity instanceof LivingEntity) {
-                    exScale = ProtectionEnchantment.getBlastDamageReduction((LivingEntity)entity, exScale);
+                    damageScale = ProtectionEnchantment.getBlastDamageReduction((LivingEntity)entity, damage);
                 }
-                entity.setMotion(entity.getMotion().add(xDifference * exScale, yDifference * exScale, zDifference * exScale));
+                entity.setMotion(entity.getMotion().add(xDifference * damageScale, yDifference * damageScale, zDifference * damageScale));
             }
         }
 

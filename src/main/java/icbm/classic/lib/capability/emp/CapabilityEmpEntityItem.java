@@ -2,7 +2,7 @@ package icbm.classic.lib.capability.emp;
 
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
-import icbm.classic.config.ConfigEMP;
+import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.lib.InventoryUtility;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -35,7 +35,7 @@ public class CapabilityEmpEntityItem implements IEMPReceiver, ICapabilityProvide
     @Override
     public float applyEmpAction(World world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
     {
-        if (ConfigEMP.ALLOW_GROUND_ITEMS)
+        if (ConfigBlast.emp.ALLOW_GROUND_ITEMS)
         {
             ItemStack stack = entityItem.getItem();
             if (!stack.isEmpty())

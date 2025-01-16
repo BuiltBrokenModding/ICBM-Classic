@@ -65,7 +65,7 @@ public final class ClusterMissileHandler {
     }
 
     public static boolean isAllowed(ItemStack itemStack) {
-        return ConfigMissile.CLUSTER_MISSILE.BAN_ALLOW.BAN == banAllowItems.isAllowed(itemStack);
+        return banAllowItems.isAllowed(itemStack, ConfigMissile.CLUSTER_MISSILE.BAN_ALLOW.BAN);
     }
 
     public static void loadFromConfig() {

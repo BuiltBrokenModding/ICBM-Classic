@@ -76,7 +76,7 @@ public class MissileTrackerWorld extends WorldSavedData
             double dst = Math.sqrt(dx * dx + dz * dz);
 
             //Calculate duration and queue up
-            mtd.ticksLeftToTarget = (int) Math.round(dst / speedPerSecond);
+            mtd.ticksLeftToTarget = (int) Math.round(dst / ConfigMissile.SIMULATION_FLIGHT_SPEED);
             missileList.add(mtd);
 
             //Destroys the entity and marks it for removal from world

@@ -104,7 +104,7 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
         }
 
         final IActionSource actionSource = new ActionSource(DimensionType.getKey(world.getDimension().getType()), new Vec3d(x, y, z), causeToUse);
-        return ICBMClassicAPI.ACTION_LISTENER.runAction(actionData.create(world, x, y, z, actionSource, Optional.ofNullable(this.fieldProvider).map(ActionFieldProvider::new).get()));
+        return ICBMClassicAPI.ACTION_LISTENER.runAction(actionData.create(world, x, y, z, actionSource, Optional.ofNullable(this.fieldProvider).map(ActionFieldProvider::new).orElse(null)));
     }
 
     @Override

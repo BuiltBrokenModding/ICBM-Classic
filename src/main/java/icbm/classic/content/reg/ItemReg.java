@@ -8,6 +8,7 @@ import icbm.classic.content.cluster.bomblet.ItemBombDroplet;
 import icbm.classic.content.cluster.missile.ItemClusterMissile;
 import icbm.classic.content.items.*;
 import icbm.classic.content.missile.entity.anti.item.ItemSurfaceToAirMissile;
+import icbm.classic.content.missile.entity.itemstack.item.ItemHeldItemMissile;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
@@ -208,6 +209,7 @@ public class ItemReg {
     // <editor-fold desc="entity-spawner-missiles">
     public static final RegistryObject<Item> MISSILE_SURFACE_TO_AIR = ITEMS.register("missile_surface_to_air", () -> new ItemSurfaceToAirMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> MISSILE_CLUSTER = ITEMS.register("missile_cluster", () -> new ItemClusterMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
+    public static final RegistryObject<Item> MISSILE_HELD_ITEM = ITEMS.register("missile_held_item", () -> new ItemHeldItemMissile(new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
 
     public static final RegistryObject<Item> MISSILE_CONDENSED = ITEMS.register("missile_explosive_condensed", () -> new ItemMissile(EntityReg.MISSILE_CONDENSED::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));
     public static final RegistryObject<Item> MISSILE_SHRAPNEL = ITEMS.register("missile_explosive_shrapnel", () -> new ItemMissile(EntityReg.MISSILE_SHRAPNEL::get, new Item.Properties().maxStackSize(1).group(ICBMClassic.CREATIVE_TAB)));

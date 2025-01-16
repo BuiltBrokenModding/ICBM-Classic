@@ -8,7 +8,9 @@ import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.api.events.EmpEvent;
 import icbm.classic.client.ICBMSounds;
-import icbm.classic.config.ConfigEMP;
+import icbm.classic.config.blast.ConfigBlast;
+import icbm.classic.config.util.BlockReplacementData;
+import icbm.classic.content.radioactive.RadioactiveHandler;
 import icbm.classic.lib.actions.ActionBase;
 import icbm.classic.lib.actions.status.ActionResponses;
 import icbm.classic.lib.capability.emp.CapabilityEMP;
@@ -25,7 +27,6 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,7 +43,9 @@ import java.util.List;
 @Getter
 @Setter
 public class ActionEmpArea extends ActionBase {
+
     static final List<ActionField> SUPPORTED_FIELDS = new ArrayList<>(Collections.singleton(ActionFields.AREA_SIZE));
+
     @Accessors(chain = true)
     private int size = 1;
 
@@ -72,107 +75,8 @@ public class ActionEmpArea extends ActionBase {
     @Override
     public IActionStatus doAction() {
         if (!getWorld().isRemote) {
-            if (ConfigEMP.ALLOW_TILES) {
-                //Loop through cube to effect blocks TODO replace with ray trace system
-                for (int x = (int) -this.size; x < (int) this.size; x++) {
-                    for (int y = (int) -this.size; y < (int) this.size; y++) {
-                        for (int z = (int) -this.size; z < (int) this.size; z++) {
-                            final BlockPos blockPos = this.getBlockPos().add(x, y, z);
-
-                            //Do distance check
-                            double dist = MathHelper.sqrt(x * x + y * y + z * z);
-                            if (dist > this.size) {
-                                continue;
-                            }
-
-                            //Apply action on block if loaded
-                            if (getWorld().isBlockLoaded(blockPos)) {
-                                //Generate some effects
-                                if (blockPos.getY() == this.getBlockPos().getY()) {
-                                    getWorld().addParticle(ParticleTypes.LARGE_SMOKE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
-                                }
-
-                                BlockState iBlockState = getWorld().getBlockState(blockPos);
-                                float powerEntity = 1f;
-
-                                //Fire event to allow canceling action on entity
-                                if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState))) {
-                                    TileEntity tileEntity = getWorld().getTileEntity(blockPos);
-                                    if (tileEntity != null) {
-                                        boolean doInventory = true;
-                                        final LazyOptional<IEMPReceiver> empCap = tileEntity.getCapability(CapabilityEMP.EMP);
-                                        if (empCap.isPresent()) {
-                                            final IEMPReceiver receiver = empCap.orElseThrow(IllegalStateException::new);
-                                            powerEntity = empEntity(tileEntity, powerEntity, receiver);
-                                            doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
-
-                                        } else if (ConfigEMP.DRAIN_ENERGY_TILES) {
-                                            IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
-                                            if (energySystem.canSetEnergyDirectly(tileEntity, null)) {
-                                                energySystem.setEnergy(tileEntity, null, 0, false);
-                                            } else {
-                                                //TODO Spawn tick based effect to drain as much energy as possible over several ticks
-                                            }
-                                        }
-
-                                        if (doInventory) {
-                                            final LazyOptional<IItemHandler> inv = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-                                            if (inv.isPresent()) {
-                                                powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
-                                            }
-                                        }
-                                    }
-                                }
-
-                                //Fire post event to allow hooking EMP action
-                                MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPost(this, getWorld(), blockPos, iBlockState));
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (ConfigEMP.ALLOW_ENTITY) {
-                //Calculate bounds
-                AxisAlignedBB bounds = new AxisAlignedBB(
-                    getPos().getX() - this.size, getPos().getY() - this.size, getPos().getZ() - this.size,
-                    getPos().getX() + this.size, getPos().getY() + this.size, getPos().getZ() + this.size);
-
-                //Get entities in bounds
-                List<Entity> entities = getWorld().getEntitiesWithinAABB(Entity.class, bounds);
-
-                //Loop entities to apply effects
-                for (Entity entity : entities) {
-                    float powerEntity = 1f;
-                    //Fire event to allow canceling action on entity
-                    if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity))) {
-                        boolean doInventory = true;
-                        final LazyOptional<IEMPReceiver> empCap = entity.getCapability(CapabilityEMP.EMP);
-                        if (empCap.isPresent()) {
-                            final IEMPReceiver receiver = empCap.orElseThrow(IllegalStateException::new);
-                            powerEntity = empEntity(entity, powerEntity, receiver);
-                            doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.posX, entity.posY, entity.posZ);
-                        } else if (ConfigEMP.DRAIN_ENERGY_ENTITY) {
-                            IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
-                            if (energySystem.canSetEnergyDirectly(entity, null)) {
-                                energySystem.setEnergy(entity, null, 0, false);
-                            } else {
-                                //TODO Spawn tick based effect to drain as much energy as possible over several ticks
-                            }
-                        }
-
-                        if (doInventory) {
-                            final LazyOptional<IItemHandler> inv = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-                            if(inv.isPresent()) {
-                                powerEntity = empEntity(entity, powerEntity, new CapabilityEmpInventory.EntityInv(entity));
-                            }
-                        }
-
-                        //Fire post event to allow hooking EMP action
-                        MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPost(this, entity));
-                    }
-                }
-            }
+            this.empTiles();
+            this.empEntities();
 
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 1, 3);
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 3, 3);
@@ -180,6 +84,120 @@ public class ActionEmpArea extends ActionBase {
             ICBMSounds.EMP.play(getWorld(), getPosition().x, getPosition().y, getPosition().z, 4.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
         }
         return ActionResponses.COMPLETED;
+    }
+
+    protected void empTiles() {
+        if (!ConfigBlast.emp.ALLOW_TILES) {
+            return;
+        }
+        final BlockPos.MutableBlockPos currentPos = new BlockPos.MutableBlockPos();
+        //Loop through cube to effect blocks TODO replace with ray trace system
+        for (int x = -this.size; x < this.size; x++) {
+            for (int y = -this.size; y < this.size; y++) {
+                for (int z = -this.size; z < this.size; z++) {
+                    currentPos.setPos(this.getBlockPos().getX() + x, this.getBlockPos().getY() + y, this.getBlockPos().getZ() + z);
+
+                    //Apply action on block if loaded
+                    if (getWorld().isBlockLoaded(currentPos)) {
+                        this.empTile(currentPos);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void empTile(BlockPos blockPos) {
+        //Generate some effects
+        if (blockPos.getY() == this.getBlockPos().getY()) {
+            getWorld().addParticle(ParticleTypes.LARGE_SMOKE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
+        }
+
+        BlockState iBlockState = getWorld().getBlockState(blockPos);
+        float powerEntity = 1f;
+
+        //Fire event to allow canceling action on entity
+        if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState))) {
+
+            // TODO allow scaling replacement by emp energy key=value@nbt({"energy":@energy(min, max)}) with @energy being a replacement target
+            // TODO allow gating replacement by emp energy @if(energy>30, replacement)
+            final BlockState blockState = getWorld().getBlockState(blockPos);
+            final BlockReplacementData replacement = EmpHandler.empBlockSwaps.getValue(blockState);
+            if(replacement != null) {
+                replacement.apply(getWorld(), blockPos);
+                return;
+            }
+
+            // TODO Oct 15, 2024 - run action handler per block
+            //                     add mod compatability for common mods using NBT editing and reflection
+
+            final TileEntity tileEntity = getWorld().getTileEntity(blockPos);
+            if (tileEntity != null) {
+                boolean doInventory = true;
+                if (tileEntity.getCapability(CapabilityEMP.EMP, null).isPresent()) {
+                    IEMPReceiver receiver = tileEntity.getCapability(CapabilityEMP.EMP, null).orElseThrow(IllegalStateException::new);
+                    if (receiver != null) {
+                        powerEntity = empEntity(tileEntity, powerEntity, receiver);
+                        doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
+                    }
+                } else if (ConfigBlast.emp.DRAIN_ENERGY_TILES) {
+                    IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
+                    if (energySystem.canSetEnergyDirectly(tileEntity, null)) {
+                        energySystem.setEnergy(tileEntity, null, 0, false);
+                    } else {
+                        //TODO Spawn tick based effect to drain as much energy as possible over several ticks
+                    }
+                }
+
+                if (doInventory && tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
+                    powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
+                }
+            }
+
+        }
+
+        //Fire post event to allow hooking EMP action
+        MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPost(this, getWorld(), blockPos, iBlockState));
+    }
+
+    protected void empEntities() {
+        if (!ConfigBlast.emp.ALLOW_ENTITY) {
+            return;
+        }
+        //Calculate bounds
+        AxisAlignedBB bounds = new AxisAlignedBB(
+            getPos().getX() - this.size, getPos().getY() - this.size, getPos().getZ() - this.size,
+            getPos().getX() + this.size, getPos().getY() + this.size, getPos().getZ() + this.size);
+
+        //Get entities in bounds
+        List<Entity> entities = getWorld().getEntitiesWithinAABB(Entity.class, bounds);
+
+        //Loop entities to apply effects
+        for (Entity entity : entities) {
+            float powerEntity = 1f;
+            //Fire event to allow canceling action on entity
+            if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity))) {
+                boolean doInventory = true;
+                if (entity.getCapability(CapabilityEMP.EMP, null).isPresent()) {
+                    IEMPReceiver receiver = entity.getCapability(CapabilityEMP.EMP, null).orElseThrow(IllegalStateException::new);
+                    powerEntity = empEntity(entity, powerEntity, receiver);
+                    doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.posX, entity.posY, entity.posZ);
+                } else if (ConfigBlast.emp.DRAIN_ENERGY_ENTITY) {
+                    IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
+                    if (energySystem.canSetEnergyDirectly(entity, null)) {
+                        energySystem.setEnergy(entity, null, 0, false);
+                    } else {
+                        //TODO Spawn tick based effect to drain as much energy as possible over several ticks
+                    }
+                }
+
+                if (doInventory && entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
+                    powerEntity = empEntity(entity, powerEntity, new CapabilityEmpInventory.EntityInv(entity));
+                }
+
+                //Fire post event to allow hooking EMP action
+                MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPost(this, entity));
+            }
+        }
     }
 
     protected float empEntity(Entity entity, float powerEntity, IEMPReceiver receiver) {

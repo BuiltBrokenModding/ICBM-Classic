@@ -52,18 +52,18 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
         this.shadowOpaque = 0.75F;
     }
 
-    protected abstract ItemStack getRenderItem(E entity);
+    protected abstract ItemStack getRenderItem(E entity, int index);
 
-    protected ItemCameraTransforms.TransformType getTransformType() {
+    protected ItemCameraTransforms.TransformType getTransformType(int index) {
         return ItemCameraTransforms.TransformType.NONE;
     }
 
-    protected void translate(@Nullable E entity, net.minecraft.client.renderer.model.IBakedModel iBakedModel, double x, double y, double z, float partialTicks) {
-        float hoverStart = iBakedModel.getItemCameraTransforms().getTransform(net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType.GROUND).scale.getY();
+    protected void translate(@Nullable E entity, ItemStack itemStack, IBakedModel iBakedModel, double x, double y, double z, float partialTicks, int index) {
+        float hoverStart = iBakedModel.getItemCameraTransforms().getTransform(ItemCameraTransforms.TransformType.GROUND).scale.getY();
         GlStateManager.translatef((float)x, (float)y + 0.25F * hoverStart, (float)z);
     }
 
-    protected void rotate(@Nullable E entity, float entityYaw, float entityPitch, float partialTicks) {
+    protected void rotate(@Nullable E entity, ItemStack itemStack, float entityYaw, float entityPitch, float partialTicks, int index) {
         // Rotate by entity yaw
         if(billboard) {
             GlStateManager.rotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F); //fish ><>
@@ -74,26 +74,25 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
         }
     }
 
-    protected void scale(@Nullable E e, float partialTicks) {
+    protected void scale(@Nullable E e, ItemStack itemStack, float partialTicks, int index) {
         //GlStateManager.scale(2, 2, 2);
     }
 
     @Override
     public void doRender(@Nonnull E entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        ItemStack itemstack = getRenderItem(entity);
-        if(itemstack == null || itemstack.isEmpty()) {
-            itemstack = BACKUP_RENDER_STACK.get();
-        }
-
         final float yaw = getYaw(entity, entityYaw, partialTicks); // yaw is already lerped by render manager
         final float entityPitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
         final float pitch = getPitch(entity, entityPitch, partialTicks);
-
-        this.renderItem(entity, itemstack, entity.world, x, y, z, yaw, pitch, partialTicks);
+        this.doRenderItem(entity, entity.world, x, y, z, yaw, pitch, partialTicks);
 
         super.doRender(entity, x, y, z, yaw, partialTicks);
     }
+
+    protected void doRenderItem(@Nonnull E entity, World world, double x, double y, double z, float yaw, float pitch, float partialTicks) {
+        this.renderItem(entity, getRenderItem(entity, 0), entity.world, x, y, z, yaw, pitch, partialTicks, 0);
+    }
+
 
     protected float getYaw(@Nonnull E entity, float providedYaw, float partialTicks) {
         return providedYaw;
@@ -103,17 +102,21 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
         return entity.rotationPitch;
     }
 
-    protected net.minecraft.client.renderer.model.IBakedModel getBakedModel(@Nullable E entity, World world, ItemStack stack) {
+    protected IBakedModel getBakedModel(@Nullable E entity, World world, ItemStack stack) {
         // TODO may need optimization, upcraft suggests caching model as doing the lookup per frame is slow.. could do per entity? or tree(item -> key -> model)
         return this.itemRenderer.getItemModelWithOverrides(stack, world, (LivingEntity) null);
     }
 
     public void renderItem(ItemStack missileStack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks)
     {
-        this.renderItem(null, missileStack, world, x, y, z, entityYaw, entityPitch, partialTicks);
+        this.renderItem(null, missileStack, world, x, y, z, entityYaw, entityPitch, partialTicks, 0);
     }
 
-    protected void renderItem(@Nullable E entity, ItemStack itemstack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks) {
+    protected void renderItem(@Nullable E entity, ItemStack itemstack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks, int index) {
+        if(itemstack == null || itemstack.isEmpty()) {
+            itemstack = BACKUP_RENDER_STACK.get();
+        }
+
         this.random.setSeed(Item.getIdFromItem(itemstack.getItem()) + itemstack.getDamage());
         boolean hasTexture = false;
 
@@ -132,9 +135,9 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
         GlStateManager.pushMatrix();
 
         IBakedModel ibakedmodel = this.getBakedModel(entity, world, itemstack);
-        this.translate(entity, ibakedmodel, x, y, z, partialTicks);
-        this.rotate(entity, entityYaw, entityPitch, partialTicks);
-        this.scale(entity, partialTicks);
+        this.translate(entity, itemstack, ibakedmodel, x, y, z, partialTicks, index);
+        this.rotate(entity, itemstack, entityYaw, entityPitch, partialTicks, index);
+        this.scale(entity, itemstack, partialTicks, index);
 
         if (this.renderOutlines)
         {
@@ -144,7 +147,7 @@ public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
 
         // Render item
         GlStateManager.pushMatrix();
-        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, getTransformType(), false);
+        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, getTransformType(index), false);
         this.itemRenderer.renderItem(itemstack, ibakedmodel);
         GlStateManager.popMatrix();
 

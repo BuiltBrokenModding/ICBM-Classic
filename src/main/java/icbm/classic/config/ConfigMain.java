@@ -1,10 +1,12 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.config.machines.ConfigSpikes;
+import icbm.classic.content.actions.emp.EmpHandler;
 import icbm.classic.content.cargo.CargoHolderHandler;
 import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
+import icbm.classic.content.gas.ProtectiveArmorHandler;
+import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.radioactive.RadioactiveHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,12 +25,10 @@ public class ConfigMain
     //@Config.Comment("Range of tier 1 launcher")
     public static boolean REQUIRES_POWER = true;
 
-    //@Config.Name("spike_blocks")
-    //@Config.Comment("Config for spike blocks")
-    public static ConfigSpikes spikes = new ConfigSpikes();
+
 
     //@Config.Name("protective_armor")
-    //@Config.Comment("Settings for setting protection support on armor items")
+   // @Config.Comment("Settings for setting protection support on armor items")
     public static ProtectiveArmorConfig protectiveArmor = new ProtectiveArmorConfig();
 
     public static class ProtectiveArmorConfig {
@@ -60,7 +60,7 @@ public class ConfigMain
         //TODO once on latest MC rethinking gas protection to be per weapon system.
         //@Config.Name("item_ratings")
         //@Config.Comment("Item/ItemStack to percentage protection between 0.0 to 1.0 'domain:resource=floating_point', ex: 'minecraft:iron_helmet=0.02'")
-        public String[] ITEMS = new String[]{"example:mask=0.95"};
+        public String[] ITEMS = new String[]{};
     }
 
     //@SubscribeEvent
@@ -74,7 +74,10 @@ public class ConfigMain
             FlyingBlock.loadFromConfig();
             ClusterMissileHandler.loadFromConfig();
             CargoHolderHandler.loadFromConfig();
+            HeldItemMissileHandler.loadFromConfig();
             RadioactiveHandler.loadFromConfig();
+            ProtectiveArmorHandler.loadFromConfig();
+            EmpHandler.loadFromConfig();
         }
     }
 }

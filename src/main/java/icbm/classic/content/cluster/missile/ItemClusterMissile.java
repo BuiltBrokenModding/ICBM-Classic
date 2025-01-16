@@ -9,20 +9,27 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.projectile.ProjectileStack;
 import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemStackCapProvider;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemClusterMissile extends ItemBase {
+public class ItemClusterMissile extends Item {
 
     public ItemClusterMissile(Properties p_i48487_1_) {
         super(p_i48487_1_);
@@ -71,32 +78,42 @@ public class ItemClusterMissile extends ItemBase {
     }
 
     @Override
-    protected boolean hasDetailedInfo(ItemStack stack, PlayerEntity player) {
-        return true;
-    }
-
-    @Override
-    protected void getDetailedInfo(ItemStack stack, PlayerEntity player, List list) {
-        StringBuilder contents = new StringBuilder("\n");
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> list, ITooltipFlag flagIn) {
+        if(true) {
+            return; //TODO remove after we fix regs
+        }
 
         CapabilityClusterMissileStack cap = (CapabilityClusterMissileStack) stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY).orElseThrow(IllegalStateException::new);;
 
-        if (cap.getActionDataCluster().getClusterSpawnEntries().isEmpty()) {
-            contents.append("empty");
-        }
-        else {
+        if (!cap.getActionDataCluster().getClusterSpawnEntries().isEmpty()) {
+            LanguageUtility.outputComponents(new TranslationTextComponent("projectile.icbmclassic:holder.held.multiple"), list::add);
+
             Map<String, Integer> contentMap = new HashMap<>();
+            boolean someDisabled = false;
             for (ItemStack itemStack : cap.getActionDataCluster().getClusterSpawnEntries()) {
-                int count = contentMap.computeIfAbsent(itemStack.getTranslationKey(), (k) -> 0);
-                contentMap.put(itemStack.getTranslationKey(), count + 1);
+                someDisabled = someDisabled || !ClusterMissileHandler.isAllowed(itemStack);
+
+                String displayName = itemStack.getDisplayName().getFormattedText();
+                if(!ClusterMissileHandler.isAllowed(itemStack)) {
+                    final TranslationTextComponent translation = new TranslationTextComponent("projectile.icbmclassic:holder.disabled.prefix", displayName);
+                    displayName = translation.getFormattedText();
+                }
+
+                int count = contentMap.computeIfAbsent(displayName, (k) -> 0);
+                contentMap.put(displayName, count + 1);
             }
             for (Map.Entry<String, Integer> entry : contentMap.entrySet()) {
-                contents.append("\t").append(entry.getValue()).append(" x ").append(entry.getKey());
+                list.add(new StringTextComponent("  " + entry.getValue() + " x " + entry.getKey()));
+                //TODO Find a way to provide more item details
+            }
+
+            if(someDisabled) {
+                final TranslationTextComponent translation = new TranslationTextComponent("projectile.icbmclassic:holder.disabled.prefix",
+                    LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled.config")
+                );
+                list.add(translation);
             }
         }
-
-
-        final TranslationTextComponent translation = new TranslationTextComponent(getTranslationKey() + ".contents", contents.toString());
-        LanguageUtility.outputLines(translation, list::add);
     }
 }

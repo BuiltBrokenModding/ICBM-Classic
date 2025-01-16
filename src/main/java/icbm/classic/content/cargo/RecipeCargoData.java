@@ -38,7 +38,8 @@ public class RecipeCargoData { //implements ICraftingRecipe, net.minecraftforge.
                     hasCargoItem = isValidProjectileStack(getProjectileStack(slotStack));
                 }
                 // Cluster takes priority as it is before parachute/balloon
-                else if((slotStack.getItem() == ItemReg.itemClusterMissile) && !hasCargoItem) {
+                else if((slotStack.getItem() == ItemReg.itemClusterMissile
+                    || slotStack.getItem() == ItemReg.heldItemMissile) && !hasCargoItem) {
                     return false;
                 }
                 else if(!CargoHolderHandler.isAllowed(slotStack)) {
@@ -96,7 +97,10 @@ public class RecipeCargoData { //implements ICraftingRecipe, net.minecraftforge.
         final ProjectileStack projectileStack = getProjectileStack(output);
 
         final CargoProjectileData projectileData = projectileStack.getProjectileData() instanceof CargoProjectileData ? (CargoProjectileData) projectileStack.getProjectileData() : dataBuilder.get();
-        projectileData.setHeldItem(cargo.copy());
+
+        final ItemStack insert = cargo.copy();
+        insert.setCount(1);
+        projectileData.setHeldItem(insert);
 
         projectileStack.setProjectileData(projectileData);
 

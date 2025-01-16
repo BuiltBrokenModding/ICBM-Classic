@@ -50,12 +50,13 @@ public class ICBMCreativeTab extends ItemGroup
         orderItem(ItemReg.itemRadarGun);
         orderItem(ItemReg.itemRemoteDetonator);
         orderItem(ItemReg.itemLaserDetonator);
-        orderItem(ItemReg.itemTracker);
-        orderItem(ItemReg.itemSignalDisrupter);
         orderItem(ItemReg.itemDefuser);
 
         orderItem(ItemReg.itemExplosiveMissile);
         orderItem(ItemReg.itemSAM);
+        orderItem(ItemReg.heldItemMissile);
+        orderItem(ItemReg.itemClusterMissile);
+
         orderItem(ItemReg.itemGrenade);
         orderItem(BlockReg.blockExplosive);
         orderItem(ItemReg.itemBombCart);*/

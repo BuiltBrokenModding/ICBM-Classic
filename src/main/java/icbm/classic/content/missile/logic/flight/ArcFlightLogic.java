@@ -13,6 +13,7 @@ import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -75,7 +76,8 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
     //TODO wire IMissile to connect to ILauncher so we can get launcher source and let the launcher know when we are clear
     //TODO code launcher to not reload until clear, use the all clear flag from the missile combined with collision checks and dead checks
 
-    protected void calculatePath() {
+    protected void calculatePath(Entity entity)
+    {
         //TODO rebuild to calculate arc up to maxHeight and move at a fixed speed instead of speed of sound+++++
         //TODO once it reaches maxHeight have it fly flat to make for a smoother player riding experience
         //TODO at end of arc if we can't fix the target offset have the missile fly at an angle strait at the target to fix accuracy issues
@@ -90,7 +92,7 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
         // Ground Displacement
         final float flatDistance = (float) Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
 
-        if (flatDistance < ConfigMissile.ARC_DISTANCE_LIMIT) {
+        if(flatDistance < ConfigMissile.ARC_DISTANCE_LIMIT || entity.getPassengers().stream().anyMatch(e -> e instanceof PlayerEntity)) {
 
             //Path constants
             final float ticksPerMeterFlat = 2f;
@@ -116,7 +118,21 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
     }
 
     @Override
-    public void onEntityTick(Entity entity, IMissile missile, int ticksInAir) {
+    public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
+    {
+        // Reset path if player starts riding after we already started
+        if(flightUpAlways && entity.getPassengers().stream().anyMatch(e -> e instanceof PlayerEntity)) {
+            this.flightUpAlways = false;
+
+            // TODO instead of restarting flight logic... end this instance and replace with a new instance appended to flight plan
+            this.startX = entity.posX;
+            this.startY = entity.posY;
+            this.startZ = entity.posZ;
+            ticksFlight = 0;
+            this.calculatePath(entity);
+            return;
+        }
+
         //Starts the missile into normal flight
         if (!hasStartedFlight) {
 
@@ -126,9 +142,10 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
             this.startY = entity.posY;
             this.startZ = entity.posZ;
 
-            calculatePath();
+            this.calculatePath(entity);
 
-            if (!flightUpAlways) {
+            // TODO split this into two different flight logics. Then have a parent logic object switch which is running
+            if(!flightUpAlways) {
 
 
                 entity.setMotion(
@@ -154,7 +171,9 @@ public class ArcFlightLogic extends BuildableObject<ArcFlightLogic, IBuilderRegi
     protected void runFlightLogic(Entity entity, int ticksInAir) {
         ticksFlight++;
 
-        if (!entity.world.isRemote) {
+        if (!entity.world.isRemote)
+        {
+
             // Apply gravity
             if (!flightUpAlways) {
                 entity.setMotion(entity.getMotion().x, entity.getMotion().y - this.acceleration, entity.getMotion().z);

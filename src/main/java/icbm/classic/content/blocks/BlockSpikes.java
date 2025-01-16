@@ -1,6 +1,6 @@
 package icbm.classic.content.blocks;
 
-import icbm.classic.config.ConfigMain;
+import icbm.classic.config.blocks.ConfigBlocks;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.Block;
@@ -49,16 +49,16 @@ public class BlockSpikes extends Block
         {
             if (poison) //TODO replace with state
             {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigMain.spikes.poisonDamage);
+                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.poisonDamage);
                 ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.POISON, 7 * 20, 0));
             }
             else if (fire)
             {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigMain.spikes.fireDamage);
+                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.fireDamage);
                 entity.setFire(7);
             }
             else {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigMain.spikes.normalDamage);
+                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.normalDamage);
             }
         }
     }

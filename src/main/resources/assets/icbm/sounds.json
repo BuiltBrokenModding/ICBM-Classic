@@ -1,34 +1,4 @@
 {
-  "airstrike": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:airstrike",
-    "sounds": [
-      {
-        "name": "icbm:airstrike",
-        "sream": false
-      }
-    ]
-  },
-  "alarm": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:alarm",
-    "sounds": [
-      {
-        "name": "icbm:alarm",
-        "sream": false
-      }
-    ]
-  },
-  "antigravity": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:explosion.antigravity",
-    "sounds": [
-      {
-        "name": "icbm:antigravity",
-        "sream": false
-      }
-    ]
-  },
   "antimatter": {
     "category": "block",
     "subtitle": "subtitle.icbm:explosion.antimatter",
@@ -137,46 +107,6 @@
       }
     ]
   },
-  "hypersonic": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:explosion.hypersonic",
-    "sounds": [
-      {
-        "name": "icbm:hypersonic",
-        "sream": false
-      }
-    ]
-  },
-  "interface": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:interface",
-    "sounds": [
-      {
-        "name": "icbm:interface1",
-        "sream": false
-      }
-    ]
-  },
-  "laser": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:laser",
-    "sounds": [
-      {
-        "name": "icbm:laser1",
-        "sream": false
-      }
-    ]
-  },
-  "lasershot": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:laser.shot",
-    "sounds": [
-      {
-        "name": "icbm:lasershot",
-        "sream": false
-      }
-    ]
-  },
   "machinehum": {
     "category": "block",
     "subtitle": "subtitle.icbm:machine.hum",
@@ -221,16 +151,6 @@
       }
     ]
   },
-  "radaralarm": {
-    "category": "block",
-    "subtitle": "subtitle.icbm:alarm.radar",
-    "sounds": [
-      {
-        "name": "icbm:radaralarm",
-        "sream": false
-      }
-    ]
-  },
   "redmatter": {
     "category": "block",
     "subtitle": "subtitle.icbm:explosion.redmatter",
@@ -251,22 +171,22 @@
       }
     ]
   },
-  "targetlocked": {
+  "meep": {
     "category": "block",
-    "subtitle": "subtitle.icbm:target.locked",
+    "subtitle": "subtitle.icbmclassic:meep",
     "sounds": [
       {
-        "name": "icbm:targetlocked",
+        "name": "icbmclassic:meep",
         "sream": false
       }
     ]
   },
-  "meep": {
+  "radioactive_tick": {
     "category": "block",
-    "subtitle": "subtitle.icbm:meep",
+    "subtitle": "subtitle.icbmclassic:radioactive_tick",
     "sounds": [
       {
-        "name": "icbm:meep",
+        "name": "icbmclassic:radioactive_tick",
         "sream": false
       }
     ]

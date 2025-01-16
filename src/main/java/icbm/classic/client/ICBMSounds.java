@@ -1,6 +1,7 @@
 package icbm.classic.client;
 
 import icbm.classic.ICBMConstants;
+import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -30,21 +31,25 @@ public enum ICBMSounds
     EXPLOSION("explosion"),
     EXPLOSION_FIRE("explosionfire"),
     GAS_LEAK("gasleak"),
-    HYPERSONIC("hypersonic"),
     MACHINE_HUM("machinehum"),
     POWER_DOWN("powerdown"),
-    TARGET_LOCKED("targetlocked"),
     REDMATTER("redmatter"),
     SONICWAVE("sonicwave"),
     MISSILE_LAUNCH("missilelaunch"),
     MISSILE_ENGINE("missileinair"),
-    MEEP("meep", SoundCategory.NEUTRAL);
+    MEEP("meep", SoundCategory.NEUTRAL),
+    RADIOACTIVE_TICK("radioactive_tick", SoundCategory.BLOCKS);
 
     private final ResourceLocation location;
     private final SoundCategory category;
+    /**
+     * -- GETTER --
+     *  Gets the sound event for use with MC code
+     *
+     * @return sound event
+     */
+    @Getter
     private SoundEvent sound;
-
-
 
     ICBMSounds(String path)
     {
@@ -55,16 +60,6 @@ public enum ICBMSounds
     {
         this.category = category;
         location = new ResourceLocation(ICBMConstants.DOMAIN, path);
-    }
-
-    /**
-     * Gets the sound event for use with MC code
-     *
-     * @return sound event
-     */
-    public SoundEvent getSound()
-    {
-        return sound;
     }
 
     /**
@@ -94,7 +89,12 @@ public enum ICBMSounds
      */
     public void play(World world, double x, double y, double z, float volume, float pitch, boolean distanceDelay)
     {
-        world.playSound(null, x, y, z, getSound(), category, volume, pitch);
+        if(world.isRemote) {
+            world.playSound(x, y, z, getSound(), category, volume, pitch, distanceDelay);
+        }
+        else {
+            world.playSound(null, x, y, z, getSound(), category, volume, pitch);
+        }
     }
 
     @SubscribeEvent

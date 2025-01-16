@@ -19,6 +19,7 @@ import icbm.classic.content.blast.gas.BlastDebilitation;
 import icbm.classic.content.blast.redmatter.ActionSpawnRedmatter;
 import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
+import icbm.classic.content.blast.threaded.BlastThermobaric;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -111,7 +112,7 @@ public class ExplosiveInit
         //12 -> Regen
 
         ICBMExplosives.THERMOBARIC = newEx("thermobaric",
-                (w, x, y, z, s) -> new BlastNuclear().setEnergy(45).setBlastSize(ConfigBlast.thermobaric.scale).setBlastWorld(w).setBlastPosition(x, y, z));
+                (w, x, y, z, s) -> new BlastThermobaric().setEnergy(ConfigBlast.thermobaric.energy).setBlastSize(ConfigBlast.thermobaric.scale).setBlastWorld(w).setBlastPosition(x, y, z));
 
         //14 -> S-Mine
 

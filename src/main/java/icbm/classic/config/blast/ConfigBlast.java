@@ -59,18 +59,17 @@ public class ConfigBlast
     //@Config.Comment("Settings for breaching explosive")
     public static ConfigBreaching breaching = new ConfigBreaching();
 
+    public static ConfigThermobaric thermobaric = new ConfigThermobaric();
     //@Config.LangKey("config.icbmclassic:blast.thermobaric.title")
     //@Config.Comment("Settings for thermobaric explosive")
-    public static ConfigExBasics thermobaric = new ConfigExBasics(30);
 
     //@Config.LangKey("config.icbmclassic:blast.nuclear.title")
     //@Config.Comment("Settings for nuclear explosive")
     public static ConfigNuclear nuclear = new ConfigNuclear();
 
-    @Deprecated
-    //@Config.LangKey("config.icbmclassic:blast.emp.title")
+    public static ConfigEmp emp = new ConfigEmp();
     //@Config.Comment("Settings for emp explosive")
-    public static ConfigExBasics emp = new ConfigExBasics(50);
+    //@Config.LangKey("config.icbmclassic:blast.emp.title")
 
     //@Config.LangKey("config.icbmclassic:blast.exothermic.title")
     //@Config.Comment("Settings for exothermic explosive")

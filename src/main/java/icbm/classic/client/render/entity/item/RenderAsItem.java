@@ -22,7 +22,7 @@ public class RenderAsItem<E extends Entity> extends RenderItemImp<E>
     }
 
     @Override
-    protected ItemStack getRenderItem(E entity) {
+    protected ItemStack getRenderItem(E entity, int index) {
         return itemAccessor.apply(entity);
     }
 }
