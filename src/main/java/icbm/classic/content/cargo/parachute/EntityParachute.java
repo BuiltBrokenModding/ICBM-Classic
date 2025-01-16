@@ -124,7 +124,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     @Override
     protected boolean shouldCollideWith(Entity entity) {
-        return super.shouldCollideWith(entity) && entity != shootingEntity;
+        return super.shouldCollideWith(entity) && entity != getOwner();
     }
 
     @Override

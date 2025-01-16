@@ -140,7 +140,7 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
 
     @Override
     protected boolean shouldCollideWith(Entity entity) {
-        return super.shouldCollideWith(entity) && entity != shootingEntity;
+        return super.shouldCollideWith(entity) && entity != getOwner();
     }
 
     @Override

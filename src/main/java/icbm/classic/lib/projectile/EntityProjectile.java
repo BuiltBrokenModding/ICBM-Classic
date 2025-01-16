@@ -57,15 +57,8 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     // Default is motionY *= 0.9800000190734863D
     public static final float DEFAULT_GRAVITY = 0.05F;
 
-    /**
-     * The entity who shot this projectile and can be used for damage calculations
-     * As well useful for causing argo on the shooter
-     */
-    public Entity shootingEntity;
-    /**
-     * Used to track shooting entity after being loaded from a save
-     */
-    public UUID shootingEntityUUID; //TODO abstract as a shooter object so we can track player vs entity vs tile vs admin command
+    private ProjectileOwner owner;
+
     /**
      * Location the projectile was fired from, use this over the shooting entity
      * to force argo on the source of the projectile. This way things like
@@ -115,6 +108,15 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
         freezeMotion = additionalData.readBoolean();
     }
 
+    public void setOwner(Entity owner) {
+        if(owner != null)
+            this.owner = new ProjectileOwner(owner);
+    }
+
+    public Entity getOwner() {
+        return this.owner != null ? this.owner.getOwner(world) : null;
+    }
+
     /**
      * Initialized the projectile to spawn from the shooter and aim at the target
      *
@@ -126,7 +128,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      */
     @Deprecated
     public PROJECTILE init(LivingEntity shooter, LivingEntity target, float multiplier, float random) {
-        this.shootingEntity = shooter;
+        this.setOwner(shooter);
         this.sourceOfProjectile = shooter.getPositionVector();
 
         this.posY = shooter.posY + (double) shooter.getEyeHeight() - 0.10000000149011612D;
@@ -179,7 +181,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
     @Override
     public void initAimingPosition(Entity shooter, float offsetMultiplier, float forceMultiplier) {
-        this.shootingEntity = shooter;
+        this.setOwner(shooter);
         initAimingPosition(
             shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ,
             shooter.rotationYaw, shooter.rotationPitch,
@@ -260,7 +262,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
 
             // TODO see if we can parallel stream this? As it might be thread safe assuming we .map first
             for (Entity checkEntity : list) {
-                if (shouldCollideWith(checkEntity) && (checkEntity != this.shootingEntity || this.ticksInAir >= 5)) { //TODO why 5 ticks specifically? Why not 'has collider left shooter'
+                if (shouldCollideWith(checkEntity) && (checkEntity != this.getOwner() || this.ticksInAir >= 5)) { //TODO why 5 ticks specifically? Why not 'has collider left shooter'
                     final AxisAlignedBB hitBox = checkEntity.getBoundingBox().expand(0.3F, 0.3F, 0.3F);
                     final Optional<Vec3d> entityRayHit = hitBox.rayTrace(rayStart, rayEnd);
 

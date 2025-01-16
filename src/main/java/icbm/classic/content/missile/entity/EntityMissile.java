@@ -252,7 +252,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     @Override
     protected boolean shouldCollideWith(Entity entityHit)
     {
-        return super.shouldCollideWith(entityHit) && !isRider(entityHit) && entityHit != shootingEntity;
+        return super.shouldCollideWith(entityHit) && !isRider(entityHit) && entityHit != getOwner();
     }
 
     public boolean isRider(Entity entity) {
