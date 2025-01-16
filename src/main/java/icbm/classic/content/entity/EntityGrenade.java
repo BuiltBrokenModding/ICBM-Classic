@@ -1,22 +1,19 @@
 package icbm.classic.content.entity;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.api.actions.IActionData;
+import icbm.classic.api.actions.status.ActionStatusTypes;
+import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.PotentialAction;
 import icbm.classic.lib.projectile.EntityProjectile;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.IPacket;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 @Accessors(chain = true)
 public class EntityGrenade extends EntityProjectile<EntityGrenade> {
@@ -41,16 +38,19 @@ public class EntityGrenade extends EntityProjectile<EntityGrenade> {
         return itemstack.orElse(ItemStack.EMPTY);
     }
 
-    /**
-     * Called to update the entity's position/logic.
-     */
     @Override
     public void tick() {
         super.tick();
 
         // TODO move to conditional for fuse and remove() call inside potential action
-        if (this.ticksExisted > FUSE_TIME) { //TODO decouple fuse from ticksExisted
-            this.explodeAction.doAction(world, this.posX, this.posY + 0.3f, this.posZ, new EntityCause(this));
+        if (!this.world.isRemote && this.ticksExisted > FUSE_TIME) { //TODO decouple fuse from ticksExisted
+            final IActionStatus status = this.explodeAction.doAction(world, this.posX, this.posY + 0.3f, this.posZ, new EntityCause(this));
+            if (!status.isType(ActionStatusTypes.GREEN)) {
+                ICBMClassic.logger().warn("Failed to trigger grenade due to status: {}\nEntity:{}", status, this);
+                itemstack.ifPresent((stack) -> {
+                    entityDropItem(stack, 0.0F);
+                });
+            }
             this.remove();
         }
     }
