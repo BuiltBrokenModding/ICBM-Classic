@@ -58,9 +58,7 @@ public class ItemGrenade extends ItemBase
 
             //Create generate entity
             final EntityGrenade grenade = entityType.get().create(world);
-            grenade.setThrower(entityLiving);
-            grenade.aimFromThrower();
-            grenade.setThrowMotion(throwEnergy);
+            grenade.initAimingPosition(entityLiving, 1, 1.8F * throwEnergy);
 
             //Consume item
             if (world.addEntity(grenade) && (!(entityLiving instanceof PlayerEntity) || !((PlayerEntity) entityLiving).isCreative()))

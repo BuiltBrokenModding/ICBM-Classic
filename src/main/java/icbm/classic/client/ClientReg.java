@@ -106,7 +106,6 @@ public class ClientReg {
         RenderingRegistry.registerEntityRenderingHandler(EntitySmoke.class, RenderSmoke::new);
 
         RenderingRegistry.registerEntityRenderingHandler(EntityMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
-        RenderingRegistry.registerEntityRenderingHandler(EntityExplosiveMissile.class, manager -> RenderMissile.INSTANCE = new RenderMissile(manager));
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileLauncherBase.class, new TESRLauncherBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
