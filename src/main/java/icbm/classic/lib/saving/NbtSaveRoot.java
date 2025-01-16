@@ -82,7 +82,7 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, Compoun
     @Override
     public void load(SaveObject objectToLoad, CompoundNBT save)
     {
-        if (save != null && save.isEmpty())
+        if (save != null && !save.isEmpty())
         {
             nodes.forEach(node -> {
                 if (save.contains(node.getSaveKey()))

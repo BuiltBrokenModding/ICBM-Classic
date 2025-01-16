@@ -97,7 +97,7 @@ public class NbtSaveHandler<E>
      */
     public void load(E objectToLoad, CompoundNBT save)
     {
-        if (save != null && save.isEmpty())
+        if (save != null && !save.isEmpty())
         {
             roots.forEach(root -> {
                 if(save.contains(root.getSaveKey()))
