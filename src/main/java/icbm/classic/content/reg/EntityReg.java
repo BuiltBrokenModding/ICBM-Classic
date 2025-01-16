@@ -32,98 +32,98 @@ public final class EntityReg {
     // <editor-fold desc="explosive missiles">
     // TODO make health per missile in the configs
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_CONDENSED = explosiveMissile(
-        "missile_explosive_condensed", ICBMExplosives.CONDENSED,
+        "missile_explosive_condensed", () -> ICBMExplosives.CONDENSED,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_CONDENSED.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_SHRAPNEL = explosiveMissile(
-        "missile_explosive_shrapnel", ICBMExplosives.SHRAPNEL,
+        "missile_explosive_shrapnel", () -> ICBMExplosives.SHRAPNEL,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_SHRAPNEL.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_INCENDIARY = explosiveMissile(
-        "missile_explosive_incendiary", ICBMExplosives.INCENDIARY,
+        "missile_explosive_incendiary", () -> ICBMExplosives.INCENDIARY,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_INCENDIARY.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_DEBILITATION = explosiveMissile(
-        "missile_explosive_debilitation", ICBMExplosives.DEBILITATION,
+        "missile_explosive_debilitation", () -> ICBMExplosives.DEBILITATION,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_DEBILITATION.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_CHEMICAL = explosiveMissile(
-        "missile_explosive_chemical", ICBMExplosives.CHEMICAL,
+        "missile_explosive_chemical", () -> ICBMExplosives.CHEMICAL,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_CHEMICAL.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_ANVIL = explosiveMissile(
-        "missile_explosive_anvil", ICBMExplosives.ANVIL,
+        "missile_explosive_anvil", () -> ICBMExplosives.ANVIL,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_ANVIL.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_REPULSIVE = explosiveMissile(
-        "missile_explosive_repulsive", ICBMExplosives.REPULSIVE,
+        "missile_explosive_repulsive", () -> ICBMExplosives.REPULSIVE,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_REPULSIVE.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_ATTRACTIVE = explosiveMissile(
-        "missile_explosive_attractive", ICBMExplosives.ATTRACTIVE,
+        "missile_explosive_attractive", () -> ICBMExplosives.ATTRACTIVE,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_ATTRACTIVE.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_COLOR = explosiveMissile(
-        "missile_explosive_color", ICBMExplosives.COLOR,
+        "missile_explosive_color", () -> ICBMExplosives.COLOR,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_COLOR.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_SMOKE = explosiveMissile(
-        "missile_explosive_smoke", ICBMExplosives.SMOKE,
+        "missile_explosive_smoke", () -> ICBMExplosives.SMOKE,
         () -> (float) ConfigMissile.TIER_1_HEALTH, () -> new ItemStack(ItemReg.MISSILE_SMOKE.get()));
 
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_FRAGMENTATION = explosiveMissile(
-        "missile_explosive_fragmentation", ICBMExplosives.FRAGMENTATION,
+        "missile_explosive_fragmentation", () -> ICBMExplosives.FRAGMENTATION,
         () -> (float) ConfigMissile.TIER_2_HEALTH, () -> new ItemStack(ItemReg.MISSILE_FRAGMENTATION.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_CONTAGIOUS = explosiveMissile(
-        "missile_explosive_contagious", ICBMExplosives.CONTAGIOUS,
+        "missile_explosive_contagious", () -> ICBMExplosives.CONTAGIOUS,
         () -> (float) ConfigMissile.TIER_2_HEALTH, () -> new ItemStack(ItemReg.MISSILE_CONTAGIOUS.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_SONIC = explosiveMissile(
-        "missile_explosive_sonic", ICBMExplosives.SONIC,
+        "missile_explosive_sonic", () -> ICBMExplosives.SONIC,
         () -> (float) ConfigMissile.TIER_2_HEALTH, () -> new ItemStack(ItemReg.MISSILE_SONIC.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_BREACHING = explosiveMissile(
-        "missile_explosive_breaching", ICBMExplosives.BREACHING,
+        "missile_explosive_breaching", () -> ICBMExplosives.BREACHING,
         () -> (float) ConfigMissile.TIER_2_HEALTH, () -> new ItemStack(ItemReg.MISSILE_BREACHING.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_THERMOBARIC = explosiveMissile(
-        "missile_explosive_thermobaric", ICBMExplosives.THERMOBARIC,
+        "missile_explosive_thermobaric", () -> ICBMExplosives.THERMOBARIC,
         () -> (float) ConfigMissile.TIER_2_HEALTH, () -> new ItemStack(ItemReg.MISSILE_THERMOBARIC.get()));
 
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_NUCLEAR = explosiveMissile(
-        "missile_explosive_nuclear", ICBMExplosives.NUCLEAR,
+        "missile_explosive_nuclear", () -> ICBMExplosives.NUCLEAR,
         () -> (float) ConfigMissile.TIER_3_HEALTH, () -> new ItemStack(ItemReg.MISSILE_NUCLEAR.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_EMP = explosiveMissile(
-        "missile_explosive_emp", ICBMExplosives.EMP,
+        "missile_explosive_emp", () -> ICBMExplosives.EMP,
         () -> (float) ConfigMissile.TIER_3_HEALTH, () -> new ItemStack(ItemReg.MISSILE_EMP.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_EXOTHERMIC = explosiveMissile(
-        "missile_explosive_exothermic", ICBMExplosives.EXOTHERMIC,
+        "missile_explosive_exothermic", () -> ICBMExplosives.EXOTHERMIC,
         () -> (float) ConfigMissile.TIER_3_HEALTH, () -> new ItemStack(ItemReg.MISSILE_EXOTHERMIC.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_ENDOTHERMIC = explosiveMissile(
-        "missile_explosive_endothermic", ICBMExplosives.ENDOTHERMIC,
+        "missile_explosive_endothermic", () -> ICBMExplosives.ENDOTHERMIC,
         () -> (float) ConfigMissile.TIER_3_HEALTH, () -> new ItemStack(ItemReg.MISSILE_ENDOTHERMIC.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_GRAVITY = explosiveMissile(
-        "missile_explosive_gravity", ICBMExplosives.GRAVITY,
+        "missile_explosive_gravity", () -> ICBMExplosives.GRAVITY,
         () -> (float) ConfigMissile.TIER_3_HEALTH, () -> new ItemStack(ItemReg.MISSILE_GRAVITY.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_ENDER = explosiveMissile(
-        "missile_explosive_ender", ICBMExplosives.ENDER,
+        "missile_explosive_ender", () -> ICBMExplosives.ENDER,
         () -> (float) ConfigMissile.TIER_3_HEALTH, () -> new ItemStack(ItemReg.MISSILE_ENDER.get()));
 
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_ANTIMATTER = explosiveMissile(
-        "missile_explosive_antimatter", ICBMExplosives.ANTIMATTER,
+        "missile_explosive_antimatter", () -> ICBMExplosives.ANTIMATTER,
         () -> (float) ConfigMissile.TIER_4_HEALTH, () -> new ItemStack(ItemReg.MISSILE_ANTIMATTER.get()));
 
     public static final RegistryObject<EntityType<EntityExplosiveMissile>> MISSILE_REDMATTER = explosiveMissile(
-        "missile_explosive_redmatter", ICBMExplosives.REDMATTER,
+        "missile_explosive_redmatter", () -> ICBMExplosives.REDMATTER,
         () -> (float) ConfigMissile.TIER_4_HEALTH, () -> new ItemStack(ItemReg.MISSILE_REDMATTER.get()));
     // </editor-fold>
 
@@ -186,233 +186,233 @@ public final class EntityReg {
 
     // <editor-fold desc="explosive blocks">
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_CONDENSED = explosiveBlock(
-        "block_explosive_condensed", ICBMExplosives.CONDENSED,
+        "block_explosive_condensed", () -> ICBMExplosives.CONDENSED,
         () -> new ItemStack(ItemReg.EXPLOSIVE_CONDENSED.get()), () -> BlockReg.EXPLOSIVE_CONDENSED.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_SHRAPNEL = explosiveBlock(
-        "block_explosive_shrapnel", ICBMExplosives.SHRAPNEL,
+        "block_explosive_shrapnel", () -> ICBMExplosives.SHRAPNEL,
         () -> new ItemStack(ItemReg.EXPLOSIVE_SHRAPNEL.get()), () -> BlockReg.EXPLOSIVE_SHRAPNEL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_INCENDIARY = explosiveBlock(
-        "block_explosive_incendiary", ICBMExplosives.INCENDIARY,
+        "block_explosive_incendiary", () -> ICBMExplosives.INCENDIARY,
         () -> new ItemStack(ItemReg.EXPLOSIVE_INCENDIARY.get()), () -> BlockReg.EXPLOSIVE_INCENDIARY.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_DEBILITATION = explosiveBlock(
-        "block_explosive_debilitation", ICBMExplosives.DEBILITATION,
+        "block_explosive_debilitation", () -> ICBMExplosives.DEBILITATION,
         () -> new ItemStack(ItemReg.EXPLOSIVE_DEBILITATION.get()), () -> BlockReg.EXPLOSIVE_DEBILITATION.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_CHEMICAL = explosiveBlock(
-        "block_explosive_chemical", ICBMExplosives.CHEMICAL,
+        "block_explosive_chemical", () -> ICBMExplosives.CHEMICAL,
         () -> new ItemStack(ItemReg.EXPLOSIVE_CHEMICAL.get()), () -> BlockReg.EXPLOSIVE_CHEMICAL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ANVIL = explosiveBlock(
-        "block_explosive_anvil", ICBMExplosives.ANVIL,
+        "block_explosive_anvil", () -> ICBMExplosives.ANVIL,
         () -> new ItemStack(ItemReg.EXPLOSIVE_ANVIL.get()), () -> BlockReg.EXPLOSIVE_ANVIL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_REPULSIVE = explosiveBlock(
-        "block_explosive_repulsive", ICBMExplosives.REPULSIVE,
+        "block_explosive_repulsive", () -> ICBMExplosives.REPULSIVE,
         () -> new ItemStack(ItemReg.EXPLOSIVE_REPULSIVE.get()), () -> BlockReg.EXPLOSIVE_REPULSIVE.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ATTRACTIVE = explosiveBlock(
-        "block_explosive_attractive", ICBMExplosives.ATTRACTIVE,
+        "block_explosive_attractive", () -> ICBMExplosives.ATTRACTIVE,
         () -> new ItemStack(ItemReg.EXPLOSIVE_ATTRACTIVE.get()), () -> BlockReg.EXPLOSIVE_ATTRACTIVE.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_COLOR = explosiveBlock(
-        "block_explosive_color", ICBMExplosives.COLOR,
+        "block_explosive_color", () -> ICBMExplosives.COLOR,
         () -> new ItemStack(ItemReg.EXPLOSIVE_COLOR.get()), () -> BlockReg.EXPLOSIVE_COLOR.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_SMOKE = explosiveBlock(
-        "block_explosive_smoke", ICBMExplosives.SMOKE,
+        "block_explosive_smoke", () -> ICBMExplosives.SMOKE,
         () -> new ItemStack(ItemReg.EXPLOSIVE_SMOKE.get()), () -> BlockReg.EXPLOSIVE_SMOKE.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_FRAGMENTATION = explosiveBlock(
-        "block_explosive_fragmentation", ICBMExplosives.FRAGMENTATION,
+        "block_explosive_fragmentation", () -> ICBMExplosives.FRAGMENTATION,
         () -> new ItemStack(ItemReg.EXPLOSIVE_FRAGMENTATION.get()), () -> BlockReg.EXPLOSIVE_FRAGMENTATION.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_CONTAGIOUS = explosiveBlock(
-        "block_explosive_contagious", ICBMExplosives.CONTAGIOUS,
+        "block_explosive_contagious", () -> ICBMExplosives.CONTAGIOUS,
         () -> new ItemStack(ItemReg.EXPLOSIVE_CONTAGIOUS.get()), () -> BlockReg.EXPLOSIVE_CONTAGIOUS.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_SONIC = explosiveBlock(
-        "block_explosive_sonic", ICBMExplosives.SONIC,
+        "block_explosive_sonic", () -> ICBMExplosives.SONIC,
         () -> new ItemStack(ItemReg.EXPLOSIVE_SONIC.get()), () -> BlockReg.EXPLOSIVE_SONIC.get().getDefaultState());
 
     // breaching doesn't need an entity, its instant always
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_THERMOBARIC = explosiveBlock(
-        "block_explosive_thermobaric", ICBMExplosives.THERMOBARIC,
+        "block_explosive_thermobaric", () -> ICBMExplosives.THERMOBARIC,
         () -> new ItemStack(ItemReg.EXPLOSIVE_THERMOBARIC.get()), () -> BlockReg.EXPLOSIVE_THERMOBARIC.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_NUCLEAR = explosiveBlock(
-        "block_explosive_nuclear", ICBMExplosives.NUCLEAR,
+        "block_explosive_nuclear", () -> ICBMExplosives.NUCLEAR,
         () -> new ItemStack(ItemReg.EXPLOSIVE_NUCLEAR.get()), () -> BlockReg.EXPLOSIVE_NUCLEAR.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_EMP = explosiveBlock(
-        "block_explosive_emp", ICBMExplosives.EMP,
+        "block_explosive_emp", () -> ICBMExplosives.EMP,
         () -> new ItemStack(ItemReg.EXPLOSIVE_EMP.get()), () -> BlockReg.EXPLOSIVE_EMP.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_EXOTHERMIC = explosiveBlock(
-        "block_explosive_exothermic", ICBMExplosives.EXOTHERMIC,
+        "block_explosive_exothermic", () -> ICBMExplosives.EXOTHERMIC,
         () -> new ItemStack(ItemReg.EXPLOSIVE_EXOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_EXOTHERMIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ENDOTHERMIC = explosiveBlock(
-        "block_explosive_endothermic", ICBMExplosives.ENDOTHERMIC,
+        "block_explosive_endothermic", () -> ICBMExplosives.ENDOTHERMIC,
         () -> new ItemStack(ItemReg.EXPLOSIVE_ENDOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_ENDOTHERMIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_GRAVITY = explosiveBlock(
-        "block_explosive_gravity", ICBMExplosives.GRAVITY,
+        "block_explosive_gravity", () -> ICBMExplosives.GRAVITY,
         () -> new ItemStack(ItemReg.EXPLOSIVE_GRAVITY.get()), () -> BlockReg.EXPLOSIVE_GRAVITY.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ENDER = explosiveBlock(
-        "block_explosive_ender", ICBMExplosives.ENDER,
+        "block_explosive_ender", () -> ICBMExplosives.ENDER,
         () -> new ItemStack(ItemReg.EXPLOSIVE_ENDER.get()), () -> BlockReg.EXPLOSIVE_ENDER.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_ANTIMATTER = explosiveBlock(
-        "block_explosive_antimatter", ICBMExplosives.ANTIMATTER,
+        "block_explosive_antimatter", () -> ICBMExplosives.ANTIMATTER,
         () -> new ItemStack(ItemReg.EXPLOSIVE_ANTIMATTER.get()), () -> BlockReg.EXPLOSIVE_ANTIMATTER.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityExplosive>> BLOCK_REDMATTER = explosiveBlock(
-        "block_explosive_redmatter", ICBMExplosives.REDMATTER,
+        "block_explosive_redmatter", () -> ICBMExplosives.REDMATTER,
         () -> new ItemStack(ItemReg.EXPLOSIVE_REDMATTER.get()), () -> BlockReg.EXPLOSIVE_REDMATTER.get().getDefaultState());
     // </editor-fold>
 
     // <editor-fold desc="grenades">
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_CONDENSED = grenade(
-        "grenade_explosive_condensed", ICBMExplosives.CONDENSED,
+        "grenade_explosive_condensed", () -> ICBMExplosives.CONDENSED,
         () -> new ItemStack(ItemReg.GRENADE_CONDENSED.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_SHRAPNEL = grenade(
-        "grenade_explosive_shrapnel", ICBMExplosives.SHRAPNEL,
+        "grenade_explosive_shrapnel", () -> ICBMExplosives.SHRAPNEL,
         () -> new ItemStack(ItemReg.GRENADE_SHRAPNEL.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_INCENDIARY = grenade(
-        "grenade_explosive_incendiary", ICBMExplosives.INCENDIARY,
+        "grenade_explosive_incendiary", () -> ICBMExplosives.INCENDIARY,
         () -> new ItemStack(ItemReg.GRENADE_INCENDIARY.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_DEBILITATION = grenade(
-        "grenade_explosive_debilitation", ICBMExplosives.DEBILITATION,
+        "grenade_explosive_debilitation", () -> ICBMExplosives.DEBILITATION,
        () -> new ItemStack(ItemReg.GRENADE_DEBILITATION.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_CHEMICAL = grenade(
-        "grenade_explosive_chemical", ICBMExplosives.CHEMICAL,
+        "grenade_explosive_chemical", () -> ICBMExplosives.CHEMICAL,
         () -> new ItemStack(ItemReg.GRENADE_CHEMICAL.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_ANVIL = grenade(
-        "grenade_explosive_anvil", ICBMExplosives.ANVIL,
+        "grenade_explosive_anvil", () -> ICBMExplosives.ANVIL,
         () -> new ItemStack(ItemReg.GRENADE_ANVIL.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_REPULSIVE = grenade(
-        "grenade_explosive_repulsive", ICBMExplosives.REPULSIVE,
+        "grenade_explosive_repulsive", () -> ICBMExplosives.REPULSIVE,
         () -> new ItemStack(ItemReg.GRENADE_REPULSIVE.get()));
 
     public static final RegistryObject<EntityType<EntityGrenade>> GRENADE_ATTRACTIVE = grenade(
-        "grenade_explosive_attractive", ICBMExplosives.ATTRACTIVE,
+        "grenade_explosive_attractive", () -> ICBMExplosives.ATTRACTIVE,
         () -> new ItemStack(ItemReg.GRENADE_ATTRACTIVE.get()));
     // </editor-fold>
 
     // <editor-fold desc="bomb carts">
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_CONDENSED = bombcart(
-        "minecraft_explosive_condensed", ICBMExplosives.CONDENSED,
+        "minecraft_explosive_condensed", () -> ICBMExplosives.CONDENSED,
         () -> new ItemStack(ItemReg .MINECART_CONDENSED.get()), () -> BlockReg.EXPLOSIVE_CONDENSED.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_SHRAPNEL = bombcart(
-        "minecraft_explosive_shrapnel", ICBMExplosives.SHRAPNEL,
+        "minecraft_explosive_shrapnel", () -> ICBMExplosives.SHRAPNEL,
         () -> new ItemStack(ItemReg .MINECART_SHRAPNEL.get()), () -> BlockReg.EXPLOSIVE_SHRAPNEL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_INCENDIARY = bombcart(
-        "minecraft_explosive_incendiary", ICBMExplosives.INCENDIARY,
+        "minecraft_explosive_incendiary", () -> ICBMExplosives.INCENDIARY,
         () -> new ItemStack(ItemReg .MINECART_INCENDIARY.get()), () -> BlockReg.EXPLOSIVE_INCENDIARY.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_DEBILITATION = bombcart(
-        "minecraft_explosive_debilitation", ICBMExplosives.DEBILITATION,
+        "minecraft_explosive_debilitation", () -> ICBMExplosives.DEBILITATION,
         () -> new ItemStack(ItemReg .MINECART_DEBILITATION.get()), () -> BlockReg.EXPLOSIVE_DEBILITATION.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_CHEMICAL = bombcart(
-        "minecraft_explosive_chemical", ICBMExplosives.CHEMICAL,
+        "minecraft_explosive_chemical", () -> ICBMExplosives.CHEMICAL,
         () -> new ItemStack(ItemReg .MINECART_CHEMICAL.get()), () -> BlockReg.EXPLOSIVE_CHEMICAL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ANVIL = bombcart(
-        "minecraft_explosive_anvil", ICBMExplosives.ANVIL,
+        "minecraft_explosive_anvil", () -> ICBMExplosives.ANVIL,
         () -> new ItemStack(ItemReg .MINECART_ANVIL.get()), () -> BlockReg.EXPLOSIVE_ANVIL.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_REPULSIVE = bombcart(
-        "minecraft_explosive_repulsive", ICBMExplosives.REPULSIVE,
+        "minecraft_explosive_repulsive", () -> ICBMExplosives.REPULSIVE,
         () -> new ItemStack(ItemReg .MINECART_REPULSIVE.get()), () -> BlockReg.EXPLOSIVE_REPULSIVE.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ATTRACTIVE = bombcart(
-        "minecraft_explosive_attractive", ICBMExplosives.ATTRACTIVE,
+        "minecraft_explosive_attractive", () -> ICBMExplosives.ATTRACTIVE,
         () -> new ItemStack(ItemReg .MINECART_ATTRACTIVE.get()), () -> BlockReg.EXPLOSIVE_ATTRACTIVE.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_COLOR = bombcart(
-        "minecraft_explosive_color", ICBMExplosives.COLOR,
+        "minecraft_explosive_color", () -> ICBMExplosives.COLOR,
         () -> new ItemStack(ItemReg .MINECART_COLOR.get()), () -> BlockReg.EXPLOSIVE_COLOR.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_SMOKE = bombcart(
-        "minecraft_explosive_smoke", ICBMExplosives.SMOKE,
+        "minecraft_explosive_smoke", () -> ICBMExplosives.SMOKE,
         () -> new ItemStack(ItemReg .MINECART_SMOKE.get()), () -> BlockReg.EXPLOSIVE_SMOKE.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_FRAGMENTATION = bombcart(
-        "minecraft_explosive_fragmentation", ICBMExplosives.FRAGMENTATION,
+        "minecraft_explosive_fragmentation", () -> ICBMExplosives.FRAGMENTATION,
         () -> new ItemStack(ItemReg .MINECART_FRAGMENTATION.get()), () -> BlockReg.EXPLOSIVE_FRAGMENTATION.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_CONTAGIOUS = bombcart(
-        "minecraft_explosive_contagious", ICBMExplosives.CONTAGIOUS,
+        "minecraft_explosive_contagious", () -> ICBMExplosives.CONTAGIOUS,
         () -> new ItemStack(ItemReg .MINECART_CONTAGIOUS.get()), () -> BlockReg.EXPLOSIVE_CONTAGIOUS.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_SONIC = bombcart(
-        "minecraft_explosive_sonic", ICBMExplosives.SONIC,
+        "minecraft_explosive_sonic", () -> ICBMExplosives.SONIC,
         () -> new ItemStack(ItemReg .MINECART_SONIC.get()), () -> BlockReg.EXPLOSIVE_SONIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_BREACHING = bombcart(
-        "minecraft_explosive_breaching", ICBMExplosives.BREACHING,
+        "minecraft_explosive_breaching", () -> ICBMExplosives.BREACHING,
         () -> new ItemStack(ItemReg .MINECART_BREACHING.get()), () -> BlockReg.EXPLOSIVE_BREACHING.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_THERMOBARIC = bombcart(
-        "minecraft_explosive_thermobaric", ICBMExplosives.THERMOBARIC,
+        "minecraft_explosive_thermobaric", () -> ICBMExplosives.THERMOBARIC,
         () -> new ItemStack(ItemReg .MINECART_THERMOBARIC.get()), () -> BlockReg.EXPLOSIVE_THERMOBARIC.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_NUCLEAR = bombcart(
-        "minecraft_explosive_nuclear", ICBMExplosives.NUCLEAR,
+        "minecraft_explosive_nuclear", () -> ICBMExplosives.NUCLEAR,
         () -> new ItemStack(ItemReg .MINECART_NUCLEAR.get()), () -> BlockReg.EXPLOSIVE_NUCLEAR.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_EMP = bombcart(
-        "minecraft_explosive_emp", ICBMExplosives.EMP,
+        "minecraft_explosive_emp", () -> ICBMExplosives.EMP,
         () -> new ItemStack(ItemReg .MINECART_EMP.get()), () -> BlockReg.EXPLOSIVE_EMP.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_EXOTHERMIC = bombcart(
-        "minecraft_explosive_exothermic", ICBMExplosives.EXOTHERMIC,
+        "minecraft_explosive_exothermic", () -> ICBMExplosives.EXOTHERMIC,
         () -> new ItemStack(ItemReg .MINECART_EXOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_EXOTHERMIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ENDOTHERMIC = bombcart(
-        "minecraft_explosive_endothermic", ICBMExplosives.ENDOTHERMIC,
+        "minecraft_explosive_endothermic", () -> ICBMExplosives.ENDOTHERMIC,
         () -> new ItemStack(ItemReg .MINECART_ENDOTHERMIC.get()), () -> BlockReg.EXPLOSIVE_ENDOTHERMIC.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_GRAVITY = bombcart(
-        "minecraft_explosive_gravity", ICBMExplosives.GRAVITY,
+        "minecraft_explosive_gravity", () -> ICBMExplosives.GRAVITY,
         () -> new ItemStack(ItemReg .MINECART_GRAVITY.get()), () -> BlockReg.EXPLOSIVE_GRAVITY.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ENDER = bombcart(
-        "minecraft_explosive_ender", ICBMExplosives.ENDER,
+        "minecraft_explosive_ender", () -> ICBMExplosives.ENDER,
         () -> new ItemStack(ItemReg .MINECART_ENDER.get()), () -> BlockReg.EXPLOSIVE_ENDER.get().getDefaultState());
 
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_ANTIMATTER = bombcart(
-        "minecraft_explosive_antimatter", ICBMExplosives.ANTIMATTER,
+        "minecraft_explosive_antimatter", () -> ICBMExplosives.ANTIMATTER,
         () -> new ItemStack(ItemReg .MINECART_ANTIMATTER.get()), () -> BlockReg.EXPLOSIVE_ANTIMATTER.get().getDefaultState());
 
     public static final RegistryObject<EntityType<EntityBombCart>> BOMBCART_REDMATTER = bombcart(
-        "minecraft_explosive_redmatter", ICBMExplosives.REDMATTER,
+        "minecraft_explosive_redmatter", () -> ICBMExplosives.REDMATTER,
         () -> new ItemStack(ItemReg .MINECART_REDMATTER.get()), () -> BlockReg.EXPLOSIVE_REDMATTER.get().getDefaultState());
     // </editor-fold>
 
     // <editor-fold desc="droplet">
     public static final RegistryObject<EntityType<EntityBombDroplet>> BOMBLET_CONDENSED = bomblet(
-        "bomblet_explosive_condensed", ICBMExplosives.CONDENSED,
+        "bomblet_explosive_condensed", () -> ICBMExplosives.CONDENSED,
         () -> new ItemStack(ItemReg.BOMBLET_CONDENSED.get()));
     // </editor-fold>
 
@@ -493,12 +493,12 @@ public final class EntityReg {
     // </editor-fold>
 
     /**
-     * @deprecated replace with {@link #missile(String, IActionData, NonNullSupplier, NonNullSupplier)}
+     * @deprecated replace with {@link #missile(String, NonNullSupplier, NonNullSupplier, NonNullSupplier)}
      */
     @Deprecated
-    private static RegistryObject<EntityType<EntityExplosiveMissile>> explosiveMissile(String name, IActionData action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
+    private static RegistryObject<EntityType<EntityExplosiveMissile>> explosiveMissile(String name, NonNullSupplier<IActionData> action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityExplosiveMissile>create(
-                (t, w) -> new EntityExplosiveMissile(t, w, action, maxHealth, itemstack), EntityClassification.MISC)
+                (t, w) -> new EntityExplosiveMissile(t, w, action.get(), maxHealth, itemstack), EntityClassification.MISC)
             .setTrackingRange(500)
             .setUpdateInterval(1)
             .size(0.5f, 0.5f)
@@ -507,9 +507,9 @@ public final class EntityReg {
         );
     }
 
-    private static RegistryObject<EntityType<EntityMissileActionable>> missile(String name, IActionData action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
+    private static RegistryObject<EntityType<EntityMissileActionable>> missile(String name, NonNullSupplier<IActionData> action, NonNullSupplier<Float> maxHealth, NonNullSupplier<ItemStack> itemstack) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityMissileActionable>create(
-                (t, w) -> new EntityMissileActionable(t, w, action, maxHealth, itemstack), EntityClassification.MISC)
+                (t, w) -> new EntityMissileActionable(t, w, action.get(), maxHealth, itemstack), EntityClassification.MISC)
             .setTrackingRange(500)
             .setUpdateInterval(1)
             .size(0.5f, 0.5f)
@@ -518,18 +518,18 @@ public final class EntityReg {
         );
     }
 
-    private static RegistryObject<EntityType<EntityExplosive>> explosiveBlock(String name, IActionData action, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate) {
+    private static RegistryObject<EntityType<EntityExplosive>> explosiveBlock(String name, NonNullSupplier<IActionData> action, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityExplosive>create(
-                (t, w) -> new EntityExplosive(t, w, action, itemstack, blockstate), EntityClassification.MISC)
+                (t, w) -> new EntityExplosive(t, w, action.get(), itemstack, blockstate), EntityClassification.MISC)
             .size(EntityType.TNT.getWidth(), EntityType.TNT.getHeight())
             .immuneToFire()
             .build(ICBMConstants.PREFIX + name)
         );
     }
 
-    private static RegistryObject<EntityType<EntityBombDroplet>> bomblet(String name, IActionData action, NonNullSupplier<ItemStack> itemstack) {
+    private static RegistryObject<EntityType<EntityBombDroplet>> bomblet(String name, NonNullSupplier<IActionData> action, NonNullSupplier<ItemStack> itemstack) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityBombDroplet>create(
-                (t, w) -> new EntityBombDroplet(t, w, action, itemstack), EntityClassification.MISC)
+                (t, w) -> new EntityBombDroplet(t, w, action.get(), itemstack), EntityClassification.MISC)
             .setTrackingRange(500)
             .setUpdateInterval(1)
             .size(0.5f, 0.5f)
@@ -538,18 +538,18 @@ public final class EntityReg {
         );
     }
 
-    private static RegistryObject<EntityType<EntityBombCart>> bombcart(String name, IActionData action, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate) {
+    private static RegistryObject<EntityType<EntityBombCart>> bombcart(String name, NonNullSupplier<IActionData> action, NonNullSupplier<ItemStack> itemstack, NonNullSupplier<BlockState> blockstate) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityBombCart>create(
-                (t, w) -> new EntityBombCart(t, w, action, blockstate, itemstack), EntityClassification.MISC)
+                (t, w) -> new EntityBombCart(t, w, action.get(), blockstate, itemstack), EntityClassification.MISC)
             .size(EntityType.MINECART.getWidth(), EntityType.MINECART.getHeight())
             .immuneToFire()
             .build(ICBMConstants.PREFIX + name)
         );
     }
 
-    private static RegistryObject<EntityType<EntityGrenade>> grenade(String name, IActionData action, NonNullSupplier<ItemStack> itemstack) {
+    private static RegistryObject<EntityType<EntityGrenade>> grenade(String name, NonNullSupplier<IActionData> action, NonNullSupplier<ItemStack> itemstack) {
         return ENTITIES.register(name, () -> EntityType.Builder.<EntityGrenade>create(
-                (t, w) -> new EntityGrenade(t, w, action, itemstack), EntityClassification.MISC)
+                (t, w) -> new EntityGrenade(t, w, action.get(), itemstack), EntityClassification.MISC)
             .size(0.25f, 0.25f)
             .immuneToFire()
             .build(ICBMConstants.PREFIX + name)
