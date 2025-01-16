@@ -2,7 +2,9 @@ package icbm.classic.lib.network.netty;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
+import icbm.classic.lib.network.lambda.item.PacketLambdaPlayerItem;
 import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
+import icbm.classic.lib.network.packet.PacketLaserDetonator;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -36,8 +38,6 @@ public class PacketManager
         .networkProtocolVersion(() -> PROTOCOL_VERSION) //TODO maybe use mod version?
         .simpleChannel();
 
-    // https://github.com/mekanism/Mekanism/blob/1.14.x/src/main/java/mekanism/common/PacketHandler.java
-
     private static int nextID = 0;
 
     public PacketManager(String channel)
@@ -50,8 +50,9 @@ public class PacketManager
         //TODO break out each codex into its own registry entry so we go strait from input -> target without decoding into a middle object
         register(PacketLambdaTile.class, PacketLambdaTile::encode, PacketLambdaTile::decode, PacketLambdaTile::handle);
         register(PacketLambdaEntity.class, PacketLambdaEntity::encode, PacketLambdaEntity::decode, PacketLambdaEntity::handle);
+        register(PacketLambdaPlayerItem.class, PacketLambdaPlayerItem::encode, PacketLambdaPlayerItem::decode, PacketLambdaPlayerItem::handle);
+        register(PacketLaserDetonator.class, PacketLaserDetonator::encode, PacketLaserDetonator::decode, PacketLaserDetonator::handle);
 
-        //addPacket(PacketPlayerItem.class);
         //addPacket(PacketSpawnAirParticle.class);
         //addPacket(PacketSpawnBlockExplosion.class);
         //addPacket(PacketEntityPos.class);
