@@ -15,6 +15,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nullable;
 
 public class TileLauncherFrame extends TileEntity implements ILauncherComponent, ITickableTileEntity {
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_frame");
 
     private final LauncherNode launcherNode = new LauncherNode(this, false);

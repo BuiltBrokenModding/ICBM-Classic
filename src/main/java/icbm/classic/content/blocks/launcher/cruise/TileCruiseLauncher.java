@@ -64,6 +64,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILauncherComponent, IMachineInfo, IPlayerUsing {
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_cruise");
 
     private static final int REDSTONE_CHECK_RATE = 40;

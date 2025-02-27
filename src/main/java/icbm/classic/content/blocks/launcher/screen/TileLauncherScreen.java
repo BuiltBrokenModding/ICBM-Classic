@@ -63,6 +63,7 @@ import java.util.stream.Collectors;
  */
 public class TileLauncherScreen extends TileMachine implements ILauncherComponent, IMachineInfo, IPlayerUsing, IGuiTile
 {
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_screen");
 
     /** Target position of the launcher */

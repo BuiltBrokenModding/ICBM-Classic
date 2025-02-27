@@ -56,6 +56,7 @@ import java.util.function.BiConsumer;
 /** Logic side of the EMP tower block */
 public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo, IPlayerUsing
 {
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "emp_tower_base");
 
     public static final int ROTATION_SPEED = 15;

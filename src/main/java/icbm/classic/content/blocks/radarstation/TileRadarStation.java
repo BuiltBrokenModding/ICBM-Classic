@@ -56,6 +56,7 @@ import java.util.function.BiConsumer;
 
 public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiTile, IPlayerUsing, INamedContainerProvider
 {
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "radar_screen");
 
 

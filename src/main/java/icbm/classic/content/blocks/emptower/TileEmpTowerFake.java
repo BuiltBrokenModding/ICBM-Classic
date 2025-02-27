@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class TileEmpTowerFake extends TileEntity {
 
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "emp_tower_coil");
 
     private TileEMPTower host;

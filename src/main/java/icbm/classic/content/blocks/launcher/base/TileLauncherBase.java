@@ -60,6 +60,7 @@ import java.util.function.BiConsumer;
  */
 public class TileLauncherBase extends TileMachine implements ILauncherComponent, IMachineInfo, IGuiTile, IPlayerUsing
 {
+    @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher_base");
 
     /**
