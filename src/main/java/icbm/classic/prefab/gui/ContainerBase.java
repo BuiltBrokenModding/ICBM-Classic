@@ -1,5 +1,6 @@
 package icbm.classic.prefab.gui;
 
+import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
@@ -16,7 +17,9 @@ public class ContainerBase<H extends Object> extends Container
 
     protected IInventory inventory;
     protected PlayerEntity player;
-    protected H host;
+
+    @Getter
+    private H host;
 
     public ContainerBase(@Nullable ContainerType<?> type, int id, IInventory inventory)
     {
@@ -28,12 +31,13 @@ public class ContainerBase<H extends Object> extends Container
     public ContainerBase(@Nullable ContainerType<?> type, int id, PlayerEntity player, H node)
     {
         super(type, id);
+        this.host = node;
+        this.player = player;
+
         if (node instanceof IInventory)
         {
             inventory = (IInventory) node;
         }
-
-        this.player = player;
         if (node instanceof IPlayerUsing)
         {
             ((IPlayerUsing) node).addPlayerToUseList(player);

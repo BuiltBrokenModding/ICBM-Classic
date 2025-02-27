@@ -9,6 +9,7 @@ import icbm.classic.content.blast.redmatter.render.RenderRedmatter;
 import icbm.classic.content.blocks.emptower.TESREmpTower;
 import icbm.classic.content.blocks.emptower.TileEMPTower;
 import icbm.classic.content.blocks.emptower.TileEmpTowerFake;
+import icbm.classic.content.blocks.emptower.gui.GuiEMPTower;
 import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
@@ -23,9 +24,11 @@ import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
 import icbm.classic.content.entity.flyingblock.RenderEntityBlock;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.ContainerReg;
 import icbm.classic.lib.colors.ColorHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.entity.ChickenRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -55,6 +58,7 @@ public class ClientReg {
         if(render instanceof ChickenRenderer) {
             ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer)render));
         }
+        registerScreens();
     }
 
     public static void registerBlockColor(ColorHandlerEvent.Block event) {
@@ -111,5 +115,9 @@ public class ClientReg {
         ClientRegistry.bindTileEntitySpecialRenderer(TileCruiseLauncher.class, new TESRCruiseLauncher());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEMPTower.class, new TESREmpTower());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEmpTowerFake.class, new TESREmpTower());
+    }
+
+    public static void registerScreens() {
+        ScreenManager.registerFactory(ContainerReg.EMP_TOWER_BASE.get(), GuiEMPTower::new);
     }
 }

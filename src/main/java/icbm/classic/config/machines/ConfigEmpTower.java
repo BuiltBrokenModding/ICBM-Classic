@@ -10,7 +10,7 @@ package icbm.classic.config.machines;
 public class ConfigEmpTower {
     //@Config.Name("extender_range_bonus")
     //@Config.Comment("Bonus max range (meters) given for each extender added above the base")
-    public static int BONUS_RADIUS = 20;
+    public static int BONUS_RANGE = 20;
 
     //@Config.Name("firing_cost_area")
     //@Config.Comment("Scaling energy cost (FE, ForgeEnergy) per meter^2 covered. Math: (range * range) * cost")

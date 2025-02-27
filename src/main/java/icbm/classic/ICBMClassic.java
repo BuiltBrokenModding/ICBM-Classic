@@ -118,6 +118,7 @@ public class ICBMClassic
         ItemReg.ITEMS.register(modBus);
         TileReg.TILES.register(modBus);
         EntityReg.ENTITIES.register(modBus);
+        ContainerReg.CONTAINER_TYPES.register(modBus);
 
         //TODO  modEventBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
 

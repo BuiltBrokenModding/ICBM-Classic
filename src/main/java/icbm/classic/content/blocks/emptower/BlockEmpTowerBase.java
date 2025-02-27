@@ -1,11 +1,14 @@
 package icbm.classic.content.blocks.emptower;
 
 import icbm.classic.content.reg.TileReg;
+import icbm.classic.lib.BlockUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Hand;
@@ -16,6 +19,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -40,10 +44,7 @@ public class BlockEmpTowerBase extends Block implements ITileEntityProvider
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        if (!worldIn.isRemote)
-        {
-            //player.openGui(ICBMClassic.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ()); TODO
-        }
+        BlockUtils.openGUI(worldIn, pos, player);
         return true;
     }
 

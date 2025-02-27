@@ -33,6 +33,9 @@ import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import lombok.Getter;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
@@ -42,6 +45,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -54,10 +59,11 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 /** Logic side of the EMP tower block */
-public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo, IPlayerUsing
+public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo, IPlayerUsing, INamedContainerProvider
 {
     @Deprecated //TODO pull from block registry name
     public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "emp_tower_base");
+    public static final ITextComponent DISPLAY_NAME = new TranslationTextComponent("block.icbm.emp_tower_base.name");
 
     public static final int ROTATION_SPEED = 15;
 
@@ -128,7 +134,7 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
         consumer.accept(ENERGY_COST_ACTION, getFiringCost());
         consumer.accept(ENERGY_RECEIVE_LIMIT, ConfigEmpTower.ENERGY_INPUT);
         consumer.accept("COOLING_TICKS", getMaxCooldown());
-        consumer.accept("MAX_RANGE", getMaxRadius());
+        consumer.accept("MAX_RANGE", getMaxRange());
     }
 
     @Override
@@ -283,12 +289,12 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
         return  range * ConfigEmpTower.ENERGY_COST_TICKING;
     }
 
-    public int getMaxRadius() {
-        return ConfigEmpTower.MAX_BASE_RANGE + (subBlocks.size() * ConfigEmpTower.BONUS_RADIUS);
+    public int getMaxRange() {
+        return ConfigEmpTower.MAX_BASE_RANGE + (subBlocks.size() * ConfigEmpTower.BONUS_RANGE);
     }
 
     public void setRange(int range) {
-        this.range = Math.min(range, getMaxRadius());
+        this.range = Math.min(range, getMaxRange());
     }
 
     public boolean fire(IActionCause cause)
@@ -437,4 +443,15 @@ public class TileEMPTower extends TileMachine implements IGuiTile, IMachineInfo,
         .fromServer()
         .nodeFloat((t) -> t.rotation, (t, f) -> t.rotation = f)
         .nodeInt((t) -> t.cooldownTicks, (t, f) -> t.cooldownTicks = f);
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return DISPLAY_NAME;
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int windowId, PlayerInventory inventory, PlayerEntity player) {
+        return new ContainerEMPTower(windowId, player, this);
+    }
 }

@@ -1,6 +1,7 @@
 package icbm.classic.content.blocks.emptower.gui;
 
 import icbm.classic.content.blocks.emptower.TileEMPTower;
+import icbm.classic.content.reg.ContainerReg;
 import icbm.classic.prefab.gui.ContainerBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
@@ -16,9 +17,9 @@ import javax.annotation.Nullable;
  */
 public class ContainerEMPTower extends ContainerBase<TileEMPTower>
 {
-    public ContainerEMPTower(@Nullable ContainerType<?> type, int id, PlayerEntity player, TileEMPTower tileEMPTower)
+    public ContainerEMPTower(int id, PlayerEntity player, TileEMPTower tileEMPTower)
     {
-        super(type, id, player, tileEMPTower);
+        super(ContainerReg.EMP_TOWER_BASE.get(), id, player, tileEMPTower);
         // Battery Slot
         this.addSlot(new SlotItemHandler(tileEMPTower.inventory, 0, 141, 47));
         addPlayerInventory(player, 7, 84);

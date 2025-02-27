@@ -66,7 +66,7 @@ public class TileReg {
     );
 
     private static <TILE extends TileEntity> RegistryObject<TileEntityType<TILE>> register(
-        ResourceLocation name, Supplier<Block> blockSupplier, Supplier<TILE> factory) {
+        ResourceLocation name, RegistryObject<Block> blockSupplier, Supplier<TILE> factory) {
         //TODO pull resource location from block to keep things consistent
         return TILES.register(
             name.getPath(),
