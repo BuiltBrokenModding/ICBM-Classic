@@ -120,7 +120,8 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
         if (!StringUtils.isEmpty(this.currentTooltipText))
         {
             java.util.List<String> lines = LanguageUtility.splitByLine(currentTooltipText);
-            this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines);
+            // Old version this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines);
+            this.renderTooltip(lines, mouseX - this.guiLeft, mouseY - this.guiTop);
         }
 
         // Reset tooltip for next render tick

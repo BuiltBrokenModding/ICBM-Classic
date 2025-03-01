@@ -3,6 +3,7 @@ package icbm.classic.prefab.gui.tooltip;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import lombok.Getter;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.text.ITextComponent;
 
 /**
@@ -53,7 +54,13 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
             hoveringTicks = 0;
         }
 
-        //Gui.drawRect(bounds.getMin().xi() + container.getGuiLeft(), bounds.getMin().yi() + container.getGuiTop(), bounds.getMax().xi() + container.getGuiLeft(), bounds.getMax().yi() + container.getGuiTop(), -6250336);
+        // Dev debug to see tooltip area TODO make toggle driven via hotkey
+        /*AbstractGui.fill(
+            x + container.getGuiLeft(),
+            y + container.getGuiTop(),
+            x + width + container.getGuiLeft(),
+            y + width + container.getGuiTop(),
+            -6250336);*/
     }
 
     @Override

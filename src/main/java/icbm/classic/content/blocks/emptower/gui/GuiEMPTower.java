@@ -59,9 +59,9 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
             .setTooltip(() -> {
                 if (!container.getHost().isReady()) {
                     if (container.getHost().getCooldown() > 0) {
-                        return new TranslationTextComponent(COOLING_NEEDED, String.format("%.2f", container.getHost().getCooldownPercentage() * 100));
+                        return new TranslationTextComponent(COOLING_NEEDED, String.format("%.2f", container.getHost().getCooldownPercentage() * 100)); //TODO cache until change
                     } else if (!container.getHost().energyStorage.consumePower(container.getHost().getFiringCost(), false)) {
-                        return new TranslationTextComponent(POWER_NEEDED, String.format("%.2f", container.getHost().getChargePercentage() * 100));
+                        return new TranslationTextComponent(POWER_NEEDED, String.format("%.2f", container.getHost().getChargePercentage() * 100));  //TODO cache until change
                     }
                 }
                 return READY;
