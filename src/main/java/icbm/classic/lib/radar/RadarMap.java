@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,7 @@ public class RadarMap
      */
     public void update()
     {
-        if (ticks++ >= UPDATE_DELAY && chunk_to_entities.size() > 0)
+        if (ticks++ >= UPDATE_DELAY && !chunk_to_entities.isEmpty())
         {
             ticks = 0;
             //TODO consider multi-threading if number of entries is too high (need to ensure runs in less than 10ms~)
@@ -87,7 +88,7 @@ public class RadarMap
                 if (list != null)
                 {
                     list.remove(entry.getKey());
-                    if (list.size() > 0)
+                    if (!list.isEmpty())
                     {
                         chunk_to_entities.put(entry.getValue(), list);
                     }
@@ -105,17 +106,29 @@ public class RadarMap
             this.accessingData = false;
 
             addList.forEach(this::add);
-            allEntities.removeIf(object -> !object.isValid());
+            allEntities.removeIf(object -> object == null || !object.isValid());
         }
     }
 
     public boolean add(Entity entity)
     {
+        // Some reason nulls are finding their way into this call
+        if(entity == null) {
+            ICBMClassic.logger().warn(this + ": Attempted to add null  entity", new RuntimeException());
+            return false;
+        }
+
         return add(new RadarEntity(entity));
     }
 
-    public boolean add(RadarEntity object)
+    public boolean add(@Nonnull RadarEntity object)
     {
+        // Some reason nulls are finding their way into this call
+        if(object == null) {
+            ICBMClassic.logger().warn(this + ": Attempted to add null radar entity", new RuntimeException());
+            return false;
+        }
+        
         if(accessingData) {
             ICBMClassic.logger().warn("Attempted to add radar entity mid access of entities", new RuntimeException());
             return false;
