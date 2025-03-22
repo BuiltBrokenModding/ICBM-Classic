@@ -4,7 +4,12 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
-## 1.12.2-6.5.0 - March 22nd, 2025
+## [1.12.2-6.5.1 - March 22nd, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.1)
+
+* __Fixed__: [NPE #452](https://github.com/BuiltBrokenModding/ICBM-Classic/issues/452) caused by projectiles failing to calculate intercept. 
+  * __Introduced__ in version [1.12.2-6.4.0](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.4.0) as part of commit [9c870ad](https://github.com/BuiltBrokenModding/ICBM-Classic/commit/9c870adf1ddcd47b388300c996ffaf1bc61dfb21)
+
+## [1.12.2-6.5.0 - March 22nd, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.0)
 
 ### Runtime changes
 
@@ -25,7 +30,7 @@ This log contains changes made to the project. Each entry contains changed made 
 * Fixed: launcher GUI zeroing out target fields when game unfocuses
 * Fixed: launcher seat breaking tool interaction
 * Fixed: radioactive replacement chance being inverted
-* Fixed: (partially) NPE caused by radar map receiving a null entity or contact
+* Fixed: [NPE #452](https://github.com/BuiltBrokenModding/ICBM-Classic/issues/452) caused by radar map receiving a null entity or contact
 
 ### Dev changes
 
@@ -35,7 +40,7 @@ This log contains changes made to the project. Each entry contains changed made 
 
 * Fixed: server side crash due to client side code loading
 
-## 1.12.2-6.4.0 - September 29th, 2024
+## [1.12.2-6.4.0 - September 29th, 2024](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.4.0)
 
 ### Runtime Changes
 
@@ -57,7 +62,7 @@ This log contains changes made to the project. Each entry contains changed made 
 * Fixed: parachute and balloon configs not always loading disallow list properly
 * Fixed: npe when unloading world with null blast instance
 * Fixed: thermobaric using same blast as nuke (legacy tech debt go brrr)
-* Fixed: missiles setting hit target's position to invalid number, fix by community contributor (Shell) on github
+* Fixed: [Issue #447](https://github.com/BuiltBrokenModding/ICBM-Classic/issues/447) missiles setting hit target's position to invalid number, fix by community contributor [Shell4026](https://github.com/Shell4026) on [Github PR 448](https://github.com/BuiltBrokenModding/ICBM-Classic/pull/448)
 * Removed: unused audio files decreasing file size
 
 ## 1.12.2-6.3.1 - June 20th, 2024
