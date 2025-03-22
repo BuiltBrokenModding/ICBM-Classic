@@ -4,6 +4,33 @@ This log contains changes made to the project. Each entry contains changed made 
 
 # Versions
 
+## 1.12.2-6.5.0 - March 22nd, 2025
+
+### Runtime changes
+
+* Added: JEI handling for held item missile
+* Added: JEI handling for balloon cargo item
+* Added: JEI handling for parachute cargo item
+* Added: smoke particles matching vanilla to TNT like blasts
+* Added: nbt support to block replacement system
+* Added: nbt support to radioactive block swap system
+* Added: ~ support to block state replacements to keep existing state the same
+* Added: default support for emps to mekanism machines
+* Changed: emp config location and various fields
+* Changed: emp from radius check to box size range check (small performance bonus)
+* Fixed: default config values causing unknown item warnings
+* Fixed: ore dictionary values not registering at correct loading phase
+* Fixed: missing projectile impact event to missiles and cargo entities
+* Fixed: players riding missiles not triggering arc flight logic
+* Fixed: launcher GUI zeroing out target fields when game unfocuses
+* Fixed: launcher seat breaking tool interaction
+* Fixed: radioactive replacement chance being inverted
+* Fixed: (partially) NPE caused by radar map receiving a null entity or contact
+
+### Dev changes
+
+* Removed: unused has emp handler check
+
 ## 1.12.2-6.4.1 - September 30th, 2024
 
 * Fixed: server side crash due to client side code loading
