@@ -281,13 +281,13 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
                 //Handle entity hit
                 if (rayHit.typeOfHit == RayTraceResult.Type.ENTITY) {
                     //rayHit.hitVec == rayHit.entityHit.pos, So, hitbox points are calculated to prevent the entity from disappearing.
-                    RayTraceResult hitPoint = rayHit.entityHit.getEntityBoundingBox().calculateIntercept(
+                    final RayTraceResult hitPoint = rayHit.entityHit.getEntityBoundingBox().calculateIntercept(
                         new Vec3d(posX, posY, posZ),
                         new Vec3d(rayHit.entityHit.posX, rayHit.entityHit.posY, rayHit.entityHit.posZ)
                     );
 
                     if(!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitPoint)) {
-                        handleEntityCollision(hitPoint, rayHit.entityHit);
+                        handleEntityCollision(hitPoint != null ? hitPoint : rayHit, rayHit.entityHit);
                         postImpact(rayHit);
                     }
                 }
@@ -463,7 +463,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * @param hit
      * @param entityHit
      */
-    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit) {
+    protected void handleEntityCollision(@Nonnull RayTraceResult hit, @Nonnull Entity entityHit) {
         onImpactEntity(entityHit, (float) getVelocity().magnitude(), hit);
     }
 
@@ -478,7 +478,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * @param hit       trace used to calculate the impact, use this for projectile position
      */
 
-    protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
+    protected void onImpactEntity(@Nonnull Entity entityHit, float velocity, @Nonnull RayTraceResult hit) {
         if (!world.isRemote) {
             final float damage = getImpactDamage(entityHit, velocity, hit);
             final DamageSource damageSource = getImpactDamageSource(entityHit, velocity, hit);
@@ -551,7 +551,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
      * Use {@link #onImpactEntity(Entity, float, RayTraceResult)} or {@link #onImpactTile(RayTraceResult)} for
      * better handling of impacts.
      */
-    protected void onImpact(RayTraceResult hit) {
+    protected void onImpact(@Nonnull RayTraceResult hit) {
         this.setDead();
     }
 

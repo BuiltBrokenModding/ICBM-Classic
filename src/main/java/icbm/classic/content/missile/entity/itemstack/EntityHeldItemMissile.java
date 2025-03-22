@@ -44,6 +44,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
@@ -213,7 +214,7 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     }
 
     @Override
-    protected void onImpactEntity(Entity entityHit, float velocity, RayTraceResult hit) {
+    protected void onImpactEntity(@Nonnull Entity entityHit, float velocity, @Nonnull RayTraceResult hit) {
         if (!world.isRemote) {
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
             final FakePlayer player = getFakePlayer(hit.hitVec);

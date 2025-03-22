@@ -151,7 +151,7 @@ public class EntityBalloon extends EntityProjectile<EntityBalloon> implements IE
     }
 
     @Override
-    protected void onImpact(RayTraceResult hit) {
+    protected void onImpact(@Nonnull RayTraceResult hit) {
         releaseCargoAndDespawn();
     }
 

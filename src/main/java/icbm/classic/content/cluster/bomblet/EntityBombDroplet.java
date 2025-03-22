@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> implements IEntityAdditionalSpawnData {
@@ -51,7 +52,7 @@ public class EntityBombDroplet extends EntityProjectile<EntityBombDroplet> imple
     }
 
     @Override
-    protected void onImpact(RayTraceResult hit) {
+    protected void onImpact(@Nonnull RayTraceResult hit) {
        super.onImpact(hit);
        explosive.doExplosion(hit.hitVec.x, hit.hitVec.y, hit.hitVec.z, new ActionSource(world, new Vec3d(posX, posY, posZ), new EntityCause(this))); //TODO include impact cause info
     }

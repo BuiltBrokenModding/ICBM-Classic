@@ -174,7 +174,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     @Override
-    protected void onImpact(RayTraceResult impactLocation) {
+    protected void onImpact(@Nonnull RayTraceResult impactLocation) {
         releaseParachute();
     }
 
