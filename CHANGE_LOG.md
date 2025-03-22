@@ -33,7 +33,7 @@ https://modrinth.com/mod/icbm
   * Artifacts not fully tested should stay in `alpha` or `beta` status
 * Artifacts should be published on all supported platforms
   * Modrith should be first
-  * CurseForge should be second, stagger if possible
+  * CurseForge should be second, stagger for feature releases but never bug fixes
 * API and Source sets should be attached if possible
 * Change logs should be attached if possible
 * Social media should note released artifacts
