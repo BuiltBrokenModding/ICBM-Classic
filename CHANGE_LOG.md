@@ -2,6 +2,90 @@
 
 This log contains changes made to the project. Each entry contains changed made after the last version but before the number was changed. Any changes made after a number change are considered part of the next release. This is regardless if versions are still being released with that version number attached. 
 
+<details>
+  <summary>Developer Docs</summary>
+
+TODO move these to a separate file and create a link
+
+https://modrinth.com/mod/icbm
+
+## Notes for versioning
+
+* Each version must have a unique version number aligning with semver
+  * Test versions must include test version number. Ex: `1.12.2-5.0.0.56789`
+  * Nightly version must include build version number. Ex: `1.12.2-5.0.0.20250322102356789`
+  * Build or nightly version should never be released outside of testing status
+    * CurseForge this is `alpha` status
+    * Modrith this is `alpha` status
+* Each version must include the minecraft version prefixed Ex: `<MC_VERSION>-<MOD_VERSION>` or `1.12.2-5.0.0`
+* Each version must include the above in the artifact Ex: `<NAME> <MC_VERSION>-<MOD_VERSION>.<BUILD>` or `ICBM 1.12.2-5.0.0.2`
+* Each version must be documented
+  * Regardless if released to any platform
+  * Regardless if copy is just for testing
+  * Exception is local dev only artifacts
+* Each version must include a tag containing the unique version number
+
+## Notes for releases
+
+* Artifacts must be tested on a client before release
+* Artifacts must be tested on server before release
+* Artifacts must be fully tested to be marked as full release
+  * Artifacts not fully tested should stay in `alpha` or `beta` status
+* Artifacts should be published on all supported platforms
+  * Modrith should be first
+  * CurseForge should be second, stagger if possible
+* API and Source sets should be attached if possible
+* Change logs should be attached if possible
+* Social media should note released artifacts
+
+## Notes for publishing a release
+
+* Artifacts must flow fully through versioning and release sections
+* Artifacts must be documented correct via the platform
+  * Correct modloader is documented
+  * Correct java version is documented
+  * Correct minecraft version is documented
+  * Correct version number is documented
+  * Correct change log is documented/uploaded
+* Artifact should start in `alpha` status
+
+## Notes For logging Versions information
+
+* Each version release should have a h2 section created
+  * Title format `## [<MINECRAFT_VERSION>-<MOD_VERSION> - <MONTH DAY, YEAR in EST>](<RELEASE_TAG_URL>) * <OPTIONAL_GIT_HASH> * <OPTIONAL_FILE_DOWNLOAD>`
+  * Link used should be to the release tag page on github to help navigate to associated git history
+  * Optionally append git hash
+  * Optionally append download urls to hosting platforms
+* Body should be broken into two sub-headers `### Runtime Changes` and `### Dev Changes`
+  * If no dev change exist then ignore sub-headers
+  * Runtime changes should be anything impacting an end user (players, server owner, modpack maker, mapmaker)
+  * Dev changes should be anything impacting technical users (mod developers, library developers, plugin developers, resource pack makers, data pack makers)
+* Each change should be clearly defined under the body or sub-section related
+  * Entries should be prefixed with `Added`, `Fixed`, `Changed`, `Removed`
+  * Entries should be sorted to by alphanumeric asc when possible
+  * Entries should be marked as bold and suffixed with `:` followed by a space.
+  * Entries should attempt to link related commits, pull requests, and denote contributions from outside individuals for proper credit
+  * `Added` is for any new feature or addition to an existing feature
+  * `Changed` is for any modifications to features or functionality
+  * `Removed` is for any removal of features, additions, content, etc
+  * `Fixed` any corrections to functionality to solve for defects, bugs, or unexpected behavior. Improvements would be `Added` even if previous behavior was not optimal.
+  * Any `Fixed` should be connected to an issue ticket via URL and likely version introduced.
+  * Any `Fixed` should attempt to describe the cause of the issue
+  * Any `Fixed` that is complex should define a separate section seperated by `----` in addition to entry
+  * Breaking changes should be properly highlighted and listed at top of version history seperated by `----` if necessary
+
+Example:
+
+```markdown
+
+# [1.12.2-1.2.3 - January 1st, 1999](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F1.2.3)
+
+```
+
+</details>
+
+----
+
 # Versions
 
 ## [1.12.2-6.5.1 - March 22nd, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.1)
