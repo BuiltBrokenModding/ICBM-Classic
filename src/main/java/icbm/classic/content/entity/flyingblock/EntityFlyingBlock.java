@@ -139,7 +139,7 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     }
 
     @Override
-    protected void onImpact(RayTraceResult impactLocation) {
+    protected void onImpact(@Nonnull RayTraceResult impactLocation) {
         //Grace period to get away from the ground
         if(ticksInAir < 5) return;
 

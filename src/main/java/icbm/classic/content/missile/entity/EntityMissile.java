@@ -142,7 +142,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void handleEntityCollision(RayTraceResult hit, Entity entityHit)
+    protected void handleEntityCollision(@Nonnull RayTraceResult hit, @Nonnull Entity entityHit)
     {
         if(entityHit instanceof EntityChicken) { //TODO baby zombie for lolz?
             if(getRidingEntity() == null) {
@@ -278,7 +278,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected final void onImpact(RayTraceResult impactLocation) {
+    protected final void onImpact(@Nonnull RayTraceResult impactLocation) {
         if(!hasImpacted) {
             this.hasImpacted = true; //TODO store impact information and move this to projectile
             logImpact(impactLocation.hitVec);
