@@ -6,7 +6,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
@@ -39,23 +39,14 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
         this.components.clear();
     }
 
-    /**
-     * Adds a button to the GUI
-     *
-     * @param button
-     * @param <E>
-     * @return
-     */
-    @Deprecated
-    protected <E extends Button> E addButton(E button)
+    @Override
+    protected <T extends Widget> T addButton(T button)
     {
         if(button instanceof IGuiComponent) {
-            addComponent((IGuiComponent) button);
+            components.add((IGuiComponent)button);
+            ((IGuiComponent)button).onAddedToHost(this);
         }
-        else {
-            buttons.add(button);
-        }
-        return button;
+        return super.addButton(button);
     }
 
     protected void drawString(String str, int x, int y, int color)
@@ -68,15 +59,6 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
         drawString(str, x - (this.font.getStringWidth(str) / 2), y, color);
     }
 
-    protected <T extends IGuiComponent> T addComponent(T field) {
-        if(field instanceof Button) {
-            buttons.add((Button) field);
-        }
-        components.add(field);
-        field.onAddedToHost(this);
-        return field;
-    }
-
     @Override
     public void onClose()
     {
@@ -87,7 +69,7 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
     @Override
     public void tick() {
         super.tick();
-        components.forEach(IGuiComponent::onUpdate);
+        components.forEach(IGuiComponent::update);
     }
 
     @Override

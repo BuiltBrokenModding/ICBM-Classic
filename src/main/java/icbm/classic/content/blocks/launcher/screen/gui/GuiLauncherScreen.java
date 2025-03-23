@@ -48,11 +48,11 @@ public class GuiLauncherScreen extends GuiContainerBase
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
+        addButton(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, (o) -> TileLauncherScreen.PACKET_TARGET.sendToServer(tileEntity)));
 
         // Hz
-        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
+        addButton(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, (o) -> TileLauncherScreen.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
@@ -62,18 +62,18 @@ public class GuiLauncherScreen extends GuiContainerBase
             .setAction(() -> TileLauncherScreen.PACKET_LAUNCH.sendToServer(tileEntity))
             .setEnabledCheck(tileEntity::canLaunch);
 
-        addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
+        addButton(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
 
-        addComponent(new TooltipTranslations(60, 32, 30, 12, ACCURACY_TOOLTIP).withDelay(1));
+        addButton(new TooltipTranslations(60, 32, 30, 12, ACCURACY_TOOLTIP).withDelay(1));
 
         // Radio tooltip
-        addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
-        addComponent(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radioCap::isDisabled)
+        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radioCap::isDisabled)
             .setAction(() -> TileLauncherScreen.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
 
         // Target tooltip
-        addComponent(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
+        addButton(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

@@ -38,18 +38,18 @@ public class GuiRadarStation extends GuiContainerBase
         int componentID = 0;
 
         // Hz
-        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
+        addButton(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.getRadio()::getChannel, tileEntity.getRadio()::setChannel, (o) -> TileRadarStation.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // trigger
-        addComponent(TextInput.intField(componentID++, font, 18, 77, 29, 12,
+        addButton(TextInput.intField(componentID++, font, 18, 77, 29, 12,
             tileEntity::getTriggerRange, tileEntity::setTriggerRange, (o) -> TileRadarStation.PACKET_TRIGGER_RANGE.sendToServer(tileEntity)));
 
         // detection
-        addComponent(TextInput.intField(componentID++, font, 49, 77, 29, 12,
+        addButton(TextInput.intField(componentID++, font, 49, 77, 29, 12,
             tileEntity::getDetectionRange, tileEntity::setDetectionRange, (o) -> TileRadarStation.PACKET_DETECTION_RANGE.sendToServer(tileEntity)));
 
-        addComponent(
+        addButton(
             new RedstoneButton( 160 + guiLeft, 3 + guiTop, tileEntity::isOutputRedstone)
             .setAction(() -> TileRadarStation.PACKET_REDSTONE_OUTPUT.sendToServer(tileEntity))
                 .setTooltip(() -> {
@@ -60,18 +60,18 @@ public class GuiRadarStation extends GuiContainerBase
                 })
         );
 
-        addComponent(new SlotEnergyBar(141, 66,
+        addButton(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,
             tileEntity.energyStorage::getMaxEnergyStored)
             .withTickingCost(tileEntity::getEnergyCost)
         );
-        addComponent(new RadarComponent(tileEntity, 5, 18));
+        addButton(new RadarComponent(tileEntity, 5, 18));
 
         // Range tooltip
-        addComponent(new TooltipTranslations(4, 76, 14, 14, TileRadarStation.TRANSLATION_TOOLTIP_RANGE).withShift(TileRadarStation.TRANSLATION_TOOLTIP_RANGE_SHIFT).withDelay(1));
+        addButton(new TooltipTranslations(4, 76, 14, 14, TileRadarStation.TRANSLATION_TOOLTIP_RANGE).withShift(TileRadarStation.TRANSLATION_TOOLTIP_RANGE_SHIFT).withDelay(1));
 
         // Radio tooltip
-        addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

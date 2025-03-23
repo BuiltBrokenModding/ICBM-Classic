@@ -2,6 +2,7 @@ package icbm.classic.prefab.gui.tooltip;
 
 import net.minecraft.util.text.ITextComponent;
 
+@Deprecated
 public interface IToolTip {
 
     /**

@@ -46,11 +46,11 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.intField(componentID++, this.font, 18, 17, 40, 12,
+        addButton(TextInput.intField(componentID++, this.font, 18, 17, 40, 12,
             container.getHost()::getRange, container.getHost()::setRange, (r) -> TileEMPTower.PACKET_RADIUS.sendToServer(container.getHost())));
 
         // Frequency field
-        addComponent(TextInput.textField(componentID++, this.font, 135, 17, 34, 12,
+        addButton(TextInput.textField(componentID++, this.font, 135, 17, 34, 12,
             container.getHost().radioCap::getChannel, container.getHost().radioCap::setChannel, (r) -> TileEMPTower.PACKET_RADIO_HZ.sendToServer(container.getHost())));
 
         // Launch button
@@ -70,7 +70,7 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
             .setEnabledCheck(container.getHost()::isReady)
         );
 
-        addComponent(new SlotEnergyBar(141, 66,
+        addButton(new SlotEnergyBar(141, 66,
             container.getHost().energyStorage::getEnergyStored,
             container.getHost().energyStorage::getMaxEnergyStored)
             .withTickingCost(container.getHost()::getTickingCost)
@@ -78,20 +78,20 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
         );
 
         // Radio tooltip TODO remove I18n usage
-        addComponent(new DisableButton( guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), container.getHost().radioCap::isDisabled)
+        addButton(new DisableButton( guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), container.getHost().radioCap::isDisabled)
             .setAction(() -> TileEMPTower.PACKET_RADIO_DISABLE.sendToServer(container.getHost()))
         );
-        addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
 
         // Range tooltip
-        addComponent(new TooltipTranslations(2, 16, 14, 14, TRANSLATION_TOOLTIP_RANGE).withDelay(1));
+        addButton(new TooltipTranslations(2, 16, 14, 14, TRANSLATION_TOOLTIP_RANGE).withDelay(1));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         // Draw text
         this.font.drawString("\u00a77" + TITLE.getFormattedText(), 52, 6, 4210752);
-        this.font.drawString(container.getHost().getRange() + " / " + container.getHost().getMaxRange(), 62, 19, 4210752);
+        this.font.drawString(" / " + container.getHost().getMaxRange(), 62, 19, 4210752);
 
         // Goes last so tooltips render above our UI elements
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);

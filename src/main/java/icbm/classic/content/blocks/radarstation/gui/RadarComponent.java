@@ -38,7 +38,7 @@ public class RadarComponent implements IGuiComponent {
     }
 
     @Override
-    public void onUpdate() {
+    public void update() {
         meterSpacing = (int)Math.floor((this.tile.getDetectionRange() / (float)100) * 40); //TODO consider center grid to chunk bounds
     }
 

@@ -44,8 +44,8 @@ public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implem
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void update() {
+        super.update();
 
         final Direction side = currentRotationGetter.get();
         if(prevSide != side) {

@@ -1,7 +1,6 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
 import icbm.classic.ICBMConstants;
-import icbm.classic.api.actions.status.ActionStatusTypes;
 import icbm.classic.content.blocks.launcher.LauncherLangs;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
@@ -48,9 +47,9 @@ public class GuiCruiseLauncher extends GuiContainerBase
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
+        addButton(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, (o) -> TileCruiseLauncher.PACKET_TARGET.sendToServer(tileEntity)));
-        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
+        addButton(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.radio::getChannel, tileEntity.radio::setChannel, (o) -> TileCruiseLauncher.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
@@ -61,20 +60,20 @@ public class GuiCruiseLauncher extends GuiContainerBase
             .setEnabledCheck(() -> !tileEntity.getLauncher().preCheckLaunch(new BasicTargetData(tileEntity.getTarget()), null).isBlocking())
         ;
 
-        addComponent(new SlotEnergyBar(141, 66,
+        addButton(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,
             tileEntity.energyStorage::getMaxEnergyStored)
             .withActionCost(tileEntity::getFiringCost)
         );
 
         // Radio tooltip
-        addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
-        addComponent(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radio::isDisabled)
+        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radio::isDisabled)
             .setAction(() -> TileCruiseLauncher.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
 
         // Target tooltip
-        addComponent(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
+        addButton(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

@@ -1,6 +1,10 @@
 package icbm.classic.prefab.gui;
 
-public interface IGuiComponent {
+/**
+ * @deprecated Replaced with {@link net.minecraft.client.gui.widget.Widget}
+ */
+@Deprecated
+public interface IGuiComponent extends ITickingWidget {
 
     /**
      * Callback for when this component is added to the container UI
@@ -8,13 +12,6 @@ public interface IGuiComponent {
      * @param container added to
      */
     default void onAddedToHost(GuiContainerBase container) {
-
-    }
-
-    /**
-     * Called each UI tick
-     */
-    default void onUpdate() {
 
     }
 

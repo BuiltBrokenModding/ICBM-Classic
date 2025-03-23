@@ -74,7 +74,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     }
 
     @Override
-    public void onUpdate() {
+    public void update() {
         if(!isFocused() && sourceWatcher != null) {
             detectForChange();
 

@@ -22,8 +22,8 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void update() {
+        super.update();
         if (enabledCheck != null) {
             this.active = enabledCheck.get();
         }
