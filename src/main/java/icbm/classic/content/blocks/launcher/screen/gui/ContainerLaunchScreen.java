@@ -25,6 +25,11 @@ public class ContainerLaunchScreen extends ContainerBase<TileLauncherScreen>
     @Override
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex)
     {
+        // Duplication guard
+        if(!this.canInteractWith(par1EntityPlayer)) {
+            return ItemStack.EMPTY;
+        }
+
         ItemStack targetItemStackCopy = null;
         Slot targetSlot = (Slot) this.inventorySlots.get(slotIndex);
 

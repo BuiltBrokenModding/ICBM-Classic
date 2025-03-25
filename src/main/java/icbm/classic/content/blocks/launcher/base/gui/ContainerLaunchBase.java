@@ -7,6 +7,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
+import javax.annotation.Nonnull;
+
 /**
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/27/2018.
@@ -25,9 +27,15 @@ public class ContainerLaunchBase extends ContainerBase<TileLauncherBase>
         addPlayerInventory(player, 7, 84);
     }
 
+    @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex)
+    public ItemStack transferStackInSlot(@Nonnull EntityPlayer par1EntityPlayer, int slotIndex)
     {
+        // Duplication guard
+        if(!this.canInteractWith(par1EntityPlayer)) {
+            return ItemStack.EMPTY;
+        }
+
         ItemStack targetItemStackCopy = null;
         Slot targetSlot = (Slot) this.inventorySlots.get(slotIndex);
 
