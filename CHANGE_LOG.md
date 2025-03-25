@@ -88,6 +88,18 @@ Example:
 
 # Versions
 
+## [1.12.2-6.5.2 - March 24nd, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.2)
+
+* __Added__: Validation for gui container host being in same world, valid, and loaded to interaction check
+* __Added__: Validation for player moving items into and out of inventories to run the above checks
+* __Fixed__: Duplication bug caused by tiles failing interaction check
+
+### Duplication Bug
+
+This was caused by GuiContainerBase failing to set the `node` during construction. With the node being `null` the 
+interaction check was defaulting to `true`. Leading to no range checks on any player opened ICBM inventories. Which 
+when combined with chunk save/load exploits can result in duplication.
+
 ## [1.12.2-6.5.1 - March 22nd, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.1)
 
 * __Fixed__: [NPE #452](https://github.com/BuiltBrokenModding/ICBM-Classic/issues/452) caused by projectiles failing to calculate intercept. 
