@@ -1,5 +1,6 @@
 package icbm.classic.prefab.gui;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.lib.transform.region.Rectangle;
@@ -113,11 +114,11 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
 
     @Override
     public void setFocused(boolean isFocusedIn) {
-        super.setFocused(isFocusedIn);
-
         if(isFocusedIn == this.isFocused()) {
             return;
         }
+
+        super.setFocused(isFocusedIn);
 
         // Reset error feedback when we de-select
         if(!isFocusedIn) {
