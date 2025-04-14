@@ -88,6 +88,12 @@ Example:
 
 # Versions
 
+## [1.12.2-6.5.3 - April 14th, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.3)
+
+* __Fixed__: GUI TextField component failing to maintain value inputted
+  * __Impacted__ Radar, Launcher, Controller, Cruise Launcher, EMP Tower
+  * __Introduced__ in version [1.12.2-6.5.2](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.0) as part of commit [d8b44b5](https://github.com/BuiltBrokenModding/ICBM-Classic/commit/d8b44b56fb5008672aa9c3d5553cd954776a3a40)
+
 ## [1.12.2-6.5.2 - March 24nd, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.2)
 
 * __Added__: Validation for gui container host being in same world, valid, and loaded to interaction check
