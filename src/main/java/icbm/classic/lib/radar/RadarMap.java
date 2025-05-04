@@ -7,10 +7,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -163,19 +160,23 @@ public class RadarMap
         return false;
     }
 
-    public boolean remove(Entity entity)
+    public boolean remove(@Nonnull Entity entity)
     {
         return remove(new RadarEntity(entity));
     }
 
-    public boolean remove(RadarEntity object)
+    public boolean remove(@Nonnull RadarEntity object)
     {
         if(accessingData) {
             ICBMClassic.logger().warn("Attempted to remove radar entity mid access of entities", new RuntimeException());
             return false;
         }
+        if(object == null) {
+            ICBMClassic.logger().warn("Attempted to remove a null radar centity", new RuntimeException());
+            return false;
+        }
 
-        ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
+        final ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
         allEntities.remove(object);
         if (chunk_to_entities.containsKey(pair))
         {
@@ -200,19 +201,19 @@ public class RadarMap
     public void remove(Chunk chunk)
     {
         if(accessingData) {
-            ICBMClassic.logger().warn("Attempted to add radar chunk mid access of entities", new RuntimeException());
+            ICBMClassic.logger().warn("Attempted to remove radar chunk mid access of entities", new RuntimeException());
+            return;
+        }
+        if(chunk == null) {
+            ICBMClassic.logger().warn("Attempted to remove a null radar chunk", new RuntimeException());
             return;
         }
 
-        ChunkPos pair = chunk.getPos();
-        if (chunk_to_entities.containsKey(pair))
-        {
-            for (RadarEntity object : chunk_to_entities.get(pair))
-            {
-                //TODO fire remove event
-                allEntities.remove(object);
-            }
-            chunk_to_entities.remove(pair);
+        final ChunkPos pair = chunk.getPos();
+        final List<RadarEntity> entities = chunk_to_entities.remove(pair);
+        if(entities != null) {
+            //TODO fire remove event
+            allEntities.removeAll(entities);
         }
     }
 
