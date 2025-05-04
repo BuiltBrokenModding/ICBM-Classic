@@ -88,6 +88,12 @@ Example:
 
 # Versions
 
+## [1.12.2-6.5.4 - May 4th, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.4)
+
+* __Fixed__: Some NPE issues with radar-map remove calls
+  * __Impacted__ Chunk/World unloading resulting in console spam [#444](https://github.com/BuiltBrokenModding/ICBM-Classic/issues/444) and in rare cases crashing [#458](https://github.com/BuiltBrokenModding/ICBM-Classic/issues/458)
+  * __Introduced__ unknown, source of issue couldn't be replicated and may still be present. As its likely entities registering incorrectly to the radar system.
+
 ## [1.12.2-6.5.3 - April 14th, 2025](https://github.com/BuiltBrokenModding/ICBM-Classic/releases/tag/release%2F6.5.3)
 
 * __Fixed__: GUI TextField component failing to maintain value inputted
