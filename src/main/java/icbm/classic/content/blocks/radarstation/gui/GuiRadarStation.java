@@ -11,7 +11,7 @@ import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
-public class GuiRadarStation extends GuiContainerBase
+public class GuiRadarStation extends GuiContainerBase<ContainerRadarStation>
 {
     public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_radar.png");
 
@@ -66,7 +66,7 @@ public class GuiRadarStation extends GuiContainerBase
             TEXTURE)
             .withTickingCost(tileEntity::getEnergyCost)
         );
-        addButton(new RadarComponent(tileEntity, 5, 18));
+        addButton(new RadarComponent(this, 5, 18));
 
         // Range tooltip
         addButton(new TooltipTranslations(this,4, 76, 14, 14, TileRadarStation.TRANSLATION_TOOLTIP_RANGE).withShift(TileRadarStation.TRANSLATION_TOOLTIP_RANGE_SHIFT).withDelay(1));
