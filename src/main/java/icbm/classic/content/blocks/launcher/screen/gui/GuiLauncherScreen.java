@@ -62,18 +62,22 @@ public class GuiLauncherScreen extends GuiContainerBase
             .setAction(() -> TileLauncherScreen.PACKET_LAUNCH.sendToServer(tileEntity))
             .setEnabledCheck(tileEntity::canLaunch);
 
-        addButton(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
+        addButton(new SlotEnergyBar(141, 66,
+            tileEntity.energyStorage::getEnergyStored,
+            tileEntity.energyStorage::getMaxEnergyStored,
+            TEXTURE
+        ));
 
-        addButton(new TooltipTranslations(60, 32, 30, 12, ACCURACY_TOOLTIP).withDelay(1));
+        addButton(new TooltipTranslations(this, 60, 32, 30, 12, ACCURACY_TOOLTIP).withDelay(1));
 
         // Radio tooltip
-        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new TooltipTranslations(this,119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
         addButton(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radioCap::isDisabled)
             .setAction(() -> TileLauncherScreen.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
 
         // Target tooltip
-        addButton(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
+        addButton(new TooltipTranslations(this,2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

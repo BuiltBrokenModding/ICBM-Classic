@@ -72,7 +72,7 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
 
         addButton(new SlotEnergyBar(141, 66,
             container.getHost().energyStorage::getEnergyStored,
-            container.getHost().energyStorage::getMaxEnergyStored)
+            container.getHost().energyStorage::getMaxEnergyStored, TEXTURE)
             .withTickingCost(container.getHost()::getTickingCost)
             .withActionCost(container.getHost()::getFiringCost)
         );
@@ -81,10 +81,10 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
         addButton(new DisableButton( guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), container.getHost().radioCap::isDisabled)
             .setAction(() -> TileEMPTower.PACKET_RADIO_DISABLE.sendToServer(container.getHost()))
         );
-        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new TooltipTranslations(this, 119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
 
         // Range tooltip
-        addButton(new TooltipTranslations(2, 16, 14, 14, TRANSLATION_TOOLTIP_RANGE).withDelay(1));
+        addButton(new TooltipTranslations(this,2, 16, 14, 14, TRANSLATION_TOOLTIP_RANGE).withDelay(1));
     }
 
     @Override

@@ -62,16 +62,17 @@ public class GuiRadarStation extends GuiContainerBase
 
         addButton(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,
-            tileEntity.energyStorage::getMaxEnergyStored)
+            tileEntity.energyStorage::getMaxEnergyStored,
+            TEXTURE)
             .withTickingCost(tileEntity::getEnergyCost)
         );
         addButton(new RadarComponent(tileEntity, 5, 18));
 
         // Range tooltip
-        addButton(new TooltipTranslations(4, 76, 14, 14, TileRadarStation.TRANSLATION_TOOLTIP_RANGE).withShift(TileRadarStation.TRANSLATION_TOOLTIP_RANGE_SHIFT).withDelay(1));
+        addButton(new TooltipTranslations(this,4, 76, 14, 14, TileRadarStation.TRANSLATION_TOOLTIP_RANGE).withShift(TileRadarStation.TRANSLATION_TOOLTIP_RANGE_SHIFT).withDelay(1));
 
         // Radio tooltip
-        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new TooltipTranslations(this,119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

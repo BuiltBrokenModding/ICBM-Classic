@@ -1,10 +1,13 @@
 package icbm.classic.prefab.gui.components;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import icbm.classic.prefab.gui.GuiContainerBase;
-import icbm.classic.prefab.gui.IGuiComponent;
+import icbm.classic.ICBMConstants;
+import icbm.classic.prefab.gui.ITickingWidget;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -12,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 
-public class SlotEnergyBar implements IGuiComponent, IToolTip {
+public class SlotEnergyBar extends Widget implements ITickingWidget, IToolTip {
 
     //UV
     private static final int ENERGY_BAR_WIDTH = 16;
@@ -35,9 +38,6 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     /** Cost per action getter */
     private Supplier<Integer> actionCostGetter;
 
-    /** Parent */
-    private GuiContainerBase container;
-
     private float energyPercent = 0;
 
     private int prevEnergy = 0;
@@ -46,8 +46,13 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
 
     private ITextComponent tooltip;
 
+    private final ResourceLocation texture;
 
-    public SlotEnergyBar(int x, int y, Supplier<Integer> energyGetter, Supplier<Integer> energyMaxGetter) {
+
+    public SlotEnergyBar(int x, int y, Supplier<Integer> energyGetter, Supplier<Integer> energyMaxGetter,
+                         ResourceLocation resource) {
+        super(x, y, ENERGY_BAR_WIDTH, ENERGY_BAR_HEIGHT, ICBMConstants.PREFIX + "energy.bar"); //TODO translate
+        this.texture = resource;
         this.x = x;
         this.y = y;
         this.energyGetter = energyGetter;
@@ -65,7 +70,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     }
 
     @Override
-    public void onUpdate() {
+    public void update() {
         // Cached data to avoid redoing each frame render
         final int energy = energyGetter.get();
         final int maxEnergy = energyMaxGetter.get();
@@ -119,18 +124,12 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
             number = number / 1_000;
             type = "k";
         }
-        return String.format("%s%d%s", neg ? "-" :  "", number, type); //TODO add decimal place
+        return String.format("%s%d%s", neg ? "-" :  "", number, type); //TODO add decimal place and replace with translation component
     }
 
     @Override
-    public void onAddedToHost(GuiContainerBase container) {
-        this.container = container;
-    }
-
-    @Override
-    public void drawBackgroundLayer(float f, int mouseX, int mouseY) {
-
-        container.getMinecraft().textureManager.bindTexture(container.getBackground());
+    public void render(int mouseX, int mouseY, float f) {
+        Minecraft.getInstance().textureManager.bindTexture(texture); //TODO replace with widget-ref-sheet
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Calculate bar ratio
@@ -141,14 +140,12 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         int renderWidth = (int)Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
 
         // Render box
-        container.blit(container.getGuiLeft() + x, container.getGuiTop() + y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
+        blit(x, y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
     }
 
     @Override
-    public boolean isWithin(int mouseX, int mouseY) {
-        final int cursorX = mouseX - container.getGuiLeft();
-        final int cursorY = mouseY - container.getGuiTop();
-        return cursorX >= this.x && cursorY >= this.y && cursorX < this.x + ENERGY_BAR_WIDTH && cursorY < this.y + ENERGY_BAR_HEIGHT;
+    public boolean isWithin(int x, int y) {
+        return super.isMouseOver(x, y);
     }
 
     @Override

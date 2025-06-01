@@ -1,43 +1,39 @@
 package icbm.classic.prefab.gui.tooltip;
 
+import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.gui.GuiContainerBase;
-import icbm.classic.prefab.gui.IGuiComponent;
 import lombok.Getter;
-import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.client.config.GuiUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 /**
  * Simple tooltip component for showing users additional information
  */
-public abstract class TooltipBase implements IToolTip, IGuiComponent {
+public abstract class TooltipBase<GUI extends GuiContainerBase> extends Widget {
 
-    int x;
-    int y;
-    int width;
-    int height;
     /**
      * Delay in seconds to wait to show tooltip
      */
     @Getter
     private float hoverDelay;
-
-    private GuiContainerBase container;
-
-    /**
-     * Is mouse over component
-     */
-    @Getter
-    private boolean isHovering = false;
     /**
      * Current hover tick in seconds
      */
     private float hoveringTicks = 0;
 
-    public TooltipBase(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    /** Current tooltip */
+    private ITextComponent currentTooltip;
+
+    protected final GUI host;
+
+    public TooltipBase(GUI host, int x, int y, int width, int height) {
+        super(x, y, width, height, "");
+        this.host = host;
     }
 
     public TooltipBase withDelay(float delay) {
@@ -46,12 +42,30 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
     }
 
     @Override
-    public void draw(int mouseX, int mouseY, float partialTicks) {
-        isHovering = isWithin(mouseX, mouseY);
-        if (isHovering) {
-            hoveringTicks += partialTicks;
-        } else {
-            hoveringTicks = 0;
+    public void renderButton(int mouseX, int mouseY, float partialTicks) {
+        if (!this.isHovered()) {
+            this.hoveringTicks = 0;
+            return;
+        }
+        this.hoveringTicks += partialTicks;
+
+        if (hoveringTicks < hoverDelay) {
+            return;
+        }
+
+        this.currentTooltip = this.getTooltip();
+
+        // Render current tooltip if not empty
+        final String currentTooltipText = this.currentTooltip == null ? "" : this.currentTooltip.getFormattedText();
+        if (!StringUtils.isEmpty(currentTooltipText))
+        {
+            final List<String> lines = LanguageUtility.splitByLine(currentTooltipText);
+            GuiUtils.drawHoveringText(lines,
+                mouseX - host.getGuiLeft(),
+                mouseY - host.getGuiTop(),
+                host.width,
+                host.height,
+                -1, Minecraft.getInstance().fontRenderer);
         }
 
         // Dev debug to see tooltip area TODO make toggle driven via hotkey
@@ -63,26 +77,5 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
             -6250336);*/
     }
 
-    @Override
-    public void onAddedToHost(GuiContainerBase container) {
-        this.container = container;
-    }
-
-    @Override
-    public boolean isWithin(int x, int y) {
-        return x - container.getGuiLeft() >= this.x
-            && x - container.getGuiLeft() < this.x + this.width
-            && y - container.getGuiTop() >= this.y
-            && y - container.getGuiTop() < this.y + this.height;
-    }
-
-    @Override
-    public final ITextComponent getTooltip() {
-        if (hoveringTicks < hoverDelay) {
-            return null;
-        }
-        return getActualTooltip();
-    }
-
-    protected abstract ITextComponent getActualTooltip();
+    protected abstract ITextComponent getTooltip();
 }

@@ -87,7 +87,7 @@ Order of chance is destruction -> engine/guidance -> payload. Chance is less tha
 ## 1.12.2-6.1.0 - June 12, 2024
 
 * Added: configs for radar station
-* Changed: simulation enter height to 500 from 25
+* Changed: simulation enter height to 500 from 250
 * Changed: simulation exit height to 450 from 250
 * Changed: simulation exit speed to 1m/t from 2m/t 
 * Changed: sam firing delay from %tick to countdown reset

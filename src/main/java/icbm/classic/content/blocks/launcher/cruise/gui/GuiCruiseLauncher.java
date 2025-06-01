@@ -14,7 +14,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
-public class GuiCruiseLauncher extends GuiContainerBase
+public class GuiCruiseLauncher extends GuiContainerBase<ContainerCruiseLauncher>
 {
     // Localizations
     private static final String LANG_KEY = "gui.launcher.cruise";
@@ -55,25 +55,26 @@ public class GuiCruiseLauncher extends GuiContainerBase
         // Launch button
         addButton(new LaunchButton(guiLeft + 24, guiTop + 38)
             .doDrawDisabledGlass()
-            .setTooltip(() -> this.tileEntity.getLauncher().preCheckLaunch(new BasicTargetData(tileEntity.getTarget()), null).message()))
+            .setTooltip(() -> this.tileEntity.getLauncher().preCheckLaunch(new BasicTargetData(tileEntity.getTarget()), null).message())
             .setAction(() -> TileCruiseLauncher.PACKET_LAUNCH.sendToServer(tileEntity))
             .setEnabledCheck(() -> !tileEntity.getLauncher().preCheckLaunch(new BasicTargetData(tileEntity.getTarget()), null).isBlocking())
-        ;
+        );
 
         addButton(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,
-            tileEntity.energyStorage::getMaxEnergyStored)
+            tileEntity.energyStorage::getMaxEnergyStored,
+            TEXTURE)
             .withActionCost(tileEntity::getFiringCost)
         );
 
         // Radio tooltip
-        addButton(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
+        addButton(new TooltipTranslations(this, 119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
         addButton(new DisableButton(guiLeft + 119, guiTop + 16, I18n.format(ICBMConstants.PREFIX + "button.disable.machine"), tileEntity.radio::isDisabled)
             .setAction(() -> TileCruiseLauncher.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
 
         // Target tooltip
-        addButton(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
+        addButton(new TooltipTranslations(this,2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */

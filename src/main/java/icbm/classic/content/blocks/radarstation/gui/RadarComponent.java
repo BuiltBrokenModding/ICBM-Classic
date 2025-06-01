@@ -8,10 +8,11 @@ import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.widget.Widget;
 
 import java.util.List;
 
-public class RadarComponent implements IGuiComponent {
+public class RadarComponent extends Widget implements IGuiComponent {
 
     final int MARKER_COLOR = ColorHelper.toARGB(0, 255, 0, 255);
     final int HOSTILE_COLOR = ColorHelper.toARGB(255, 255, 0, 255);
@@ -19,17 +20,13 @@ public class RadarComponent implements IGuiComponent {
     final int TRIGGER_RANGE = ColorHelper.toARGB(255, 0, 255, 255);
 
     private final TileRadarStation tile;
-    private final int x;
-    private final int y;
-
     private GuiContainerBase container;
 
     int meterSpacing = 0;
 
     public RadarComponent(TileRadarStation tile, int x, int y) {
+        super(x, y, RadarRenderData.UV_SIZE + 1, RadarRenderData.UV_SIZE + 1, "");
         this.tile = tile;
-        this.x = x;
-        this.y = y;
     }
 
     @Override
@@ -39,7 +36,8 @@ public class RadarComponent implements IGuiComponent {
 
     @Override
     public void update() {
-        meterSpacing = (int)Math.floor((this.tile.getDetectionRange() / (float)100) * 40); //TODO consider center grid to chunk bounds
+        //TODO consider center grid to chunk bounds
+        meterSpacing = (int)Math.floor((this.tile.getDetectionRange() / (float)100) * 40); // TODO magic numbers
     }
 
     @Override
@@ -47,9 +45,9 @@ public class RadarComponent implements IGuiComponent {
 
         final List<RadarRenderDot> dots = this.tile.getRadarRenderData().getDots();
 
-        container.drawString(container.getMinecraft().fontRenderer, String.format("%dm", meterSpacing), x + 56, y + 46, MARKER_COLOR);
-        container.drawString(container.getMinecraft().fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.HOSTILE).count()), x + 56, y + 2, HOSTILE_COLOR);
-        container.drawString(container.getMinecraft().fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.INCOMING).count()), x + 56, y + 14, INCOMING_COLOR);
+        drawString(container.getMinecraft().fontRenderer, String.format("%dm", meterSpacing), x + 56, y + 46, MARKER_COLOR);
+        drawString(container.getMinecraft().fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.HOSTILE).count()), x + 56, y + 2, HOSTILE_COLOR);
+        drawString(container.getMinecraft().fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.INCOMING).count()), x + 56, y + 14, INCOMING_COLOR);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class RadarComponent implements IGuiComponent {
         // Trigger area
         int triggerRange = (int)Math.ceil((this.tile.getTriggerRange() / (float)this.tile.getDetectionRange()) * halfUV);
 
-        // Trigger bottom line
+        // Trigger bottom line TODO could render as edges as a square then background then lines?
         AbstractGui.fill(gx - triggerRange, gy + triggerRange, gx + triggerRange, gy + triggerRange + 1, TRIGGER_RANGE);
 
         // Trigger top line

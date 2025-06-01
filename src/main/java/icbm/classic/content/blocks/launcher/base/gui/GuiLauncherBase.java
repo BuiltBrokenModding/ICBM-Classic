@@ -61,14 +61,15 @@ public class GuiLauncherBase extends GuiContainerBase
 
         addButton(new SlotEnergyBar(141, 66,
             tileEntity.energyStorage::getEnergyStored,
-            tileEntity.energyStorage::getMaxEnergyStored
+            tileEntity.energyStorage::getMaxEnergyStored,
+            TEXTURE
            ).withActionCost(tileEntity::getFiringCost)
         );
 
-        addButton(new TooltipTranslations(4, 16, 14, 14, LOCK_HEIGHT_TOOLTIP).withDelay(1));
-        addButton(new TooltipTranslations(68, 16, 14, 14, GROUP_ID_TOOLTIP).withDelay(1));
-        addButton(new TooltipTranslations(113, 16, 14, 14, GROUP_INDEX_TOOLTIP).withDelay(1));
-        addButton(new TooltipTranslations(4, 16 + 16, 14, 14, FIRING_DELAY_TOOLTIP).withDelay(1));
+        addButton(new TooltipTranslations(this, 4, 16, 14, 14, LOCK_HEIGHT_TOOLTIP).withDelay(1));
+        addButton(new TooltipTranslations(this,68, 16, 14, 14, GROUP_ID_TOOLTIP).withDelay(1));
+        addButton(new TooltipTranslations(this,113, 16, 14, 14, GROUP_INDEX_TOOLTIP).withDelay(1));
+        addButton(new TooltipTranslations(this,4, 16 + 16, 14, 14, FIRING_DELAY_TOOLTIP).withDelay(1));
     }
 
     /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
