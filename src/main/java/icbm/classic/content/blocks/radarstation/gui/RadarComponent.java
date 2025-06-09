@@ -40,7 +40,7 @@ public class RadarComponent extends Widget implements ITickingWidget {
 
     public void drawForegroundLayer(int mouseX, int mouseY) {
 
-        final List<RadarRenderDot> dots = this.tile.getRadarRenderData().getDots();
+        final List<RadarRenderDot> dots = this.host.getContainer().getHost().getRadarRenderData().getDots();
 
         drawString(this.host.getMinecraft().fontRenderer, String.format("%dm", meterSpacing), x + 56, y + 46, MARKER_COLOR);
         drawString(this.host.getMinecraft().fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.HOSTILE).count()), x + 56, y + 2, HOSTILE_COLOR);

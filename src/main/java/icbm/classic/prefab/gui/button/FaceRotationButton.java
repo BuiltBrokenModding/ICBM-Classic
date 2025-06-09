@@ -1,8 +1,7 @@
 package icbm.classic.prefab.gui.button;
 
 import icbm.classic.lib.data.FaceRotations;
-import icbm.classic.prefab.gui.IGuiComponent;
-import icbm.classic.prefab.gui.tooltip.IToolTip;
+import icbm.classic.prefab.gui.ITickingWidget;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
@@ -11,7 +10,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implements IGuiComponent, IToolTip {
+public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implements ITickingWidget {
 
     public static final ITextComponent TOOLTIP = new TranslationTextComponent("gui.icbmclassic:button.face.tooltip");
 
@@ -45,7 +44,6 @@ public class FaceRotationButton extends GuiButtonBase<FaceRotationButton> implem
 
     @Override
     public void update() {
-        super.update();
 
         final Direction side = currentRotationGetter.get();
         if(prevSide != side) {

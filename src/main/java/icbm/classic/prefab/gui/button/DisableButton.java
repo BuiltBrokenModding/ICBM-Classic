@@ -2,13 +2,11 @@ package icbm.classic.prefab.gui.button;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.prefab.gui.GuiContainerBase;
-import icbm.classic.prefab.gui.IGuiComponent;
-import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.Minecraft;
 
 import java.util.function.Supplier;
 
-public class DisableButton extends GuiButtonBase<DisableButton> implements IGuiComponent, IToolTip {
+public class DisableButton extends GuiButtonBase<DisableButton> {
 
     // Icon this designed to cover is 13x13
     private static final int WIDTH = 15;

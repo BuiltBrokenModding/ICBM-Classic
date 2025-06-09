@@ -2,10 +2,9 @@ package icbm.classic.prefab.gui;
 
 import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.colors.ColorHelper;
-import icbm.classic.prefab.gui.textbox.GuiTextFieldBase;
-import icbm.classic.prefab.gui.tooltip.IToolTip;
 import lombok.Setter;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -17,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGuiComponent {
+public class TextInput<Output> extends TextFieldWidget implements ITickingWidget{
 
     private final static int ERROR_COLOR = ColorHelper.toARGB(255, 1, 1, 255);
 
@@ -42,7 +41,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     private String previousText;
 
     public TextInput(FontRenderer fontrendererObj, int x, int y, int width, int height) {
-        super(fontrendererObj, x, y, width, height);
+        super(fontrendererObj, x, y, width, height, "");
     }
 
     public static TextInput<Vec3d> vec3dField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
@@ -164,19 +163,6 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
             drawHorizontalLine(this.x, this.x + this.width, this.y + this.height, ERROR_COLOR);
         }
     }*/
-
-    @Override
-    public boolean isWithin(int x, int y) {
-        return x - container.getGuiLeft() >= this.x
-            && x - container.getGuiLeft() < this.x + this.width
-            && y - container.getGuiTop() >= this.y
-            && y - container.getGuiTop() < this.y + this.height;
-    }
-
-    @Override
-    public ITextComponent getTooltip() {
-        return getErrorFeedback();
-    }
 
     public ITextComponent getErrorFeedback() {
         return errorFeedback;
