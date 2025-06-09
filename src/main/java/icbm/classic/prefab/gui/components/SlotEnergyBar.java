@@ -3,7 +3,6 @@ package icbm.classic.prefab.gui.components;
 import com.mojang.blaze3d.platform.GlStateManager;
 import icbm.classic.ICBMConstants;
 import icbm.classic.prefab.gui.ITickingWidget;
-import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
@@ -15,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 
-public class SlotEnergyBar extends Widget implements ITickingWidget, IToolTip {
+public class SlotEnergyBar extends Widget implements ITickingWidget {
 
     //UV
     private static final int ENERGY_BAR_WIDTH = 16;
@@ -141,15 +140,5 @@ public class SlotEnergyBar extends Widget implements ITickingWidget, IToolTip {
 
         // Render box
         blit(x, y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
-    }
-
-    @Override
-    public boolean isWithin(int x, int y) {
-        return super.isMouseOver(x, y);
-    }
-
-    @Override
-    public ITextComponent getTooltip() {
-        return tooltip;
     }
 }
