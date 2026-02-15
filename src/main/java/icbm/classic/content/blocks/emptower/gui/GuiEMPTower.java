@@ -43,8 +43,6 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
     public void init() {
         super.init();
 
-        int componentID = 0;
-
         // Target field
         addButton(TextInput.intField(this.font, this.guiLeft + 18, this.guiTop + 17, 40, 12,
             container.getHost()::getRange, container.getHost()::setRange, (r) -> TileEMPTower.PACKET_RADIUS.sendToServer(container.getHost())));
@@ -70,7 +68,7 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
             .setEnabledCheck(container.getHost()::isReady)
         );
 
-        addButton(new SlotEnergyBar(141, 66,
+        addButton(new SlotEnergyBar(this.guiLeft + 141, this.guiTop + 66,
             container.getHost().energyStorage::getEnergyStored,
             container.getHost().energyStorage::getMaxEnergyStored, TEXTURE)
             .withTickingCost(container.getHost()::getTickingCost)
