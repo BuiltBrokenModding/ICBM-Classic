@@ -38,15 +38,15 @@ public class GuiRadarStation extends GuiContainerBase<ContainerRadarStation>
         int componentID = 0;
 
         // Hz
-        addButton(TextInput.textField(componentID++, font, 135, 17, 34, 12,
+        addButton(TextInput.textField(font, 135, 17, 34, 12,
             tileEntity.getRadio()::getChannel, tileEntity.getRadio()::setChannel, (o) -> TileRadarStation.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // trigger
-        addButton(TextInput.intField(componentID++, font, 18, 77, 29, 12,
+        addButton(TextInput.intField(font, 18, 77, 29, 12,
             tileEntity::getTriggerRange, tileEntity::setTriggerRange, (o) -> TileRadarStation.PACKET_TRIGGER_RANGE.sendToServer(tileEntity)));
 
         // detection
-        addButton(TextInput.intField(componentID++, font, 49, 77, 29, 12,
+        addButton(TextInput.intField(font, 49, 77, 29, 12,
             tileEntity::getDetectionRange, tileEntity::setDetectionRange, (o) -> TileRadarStation.PACKET_DETECTION_RANGE.sendToServer(tileEntity)));
 
         addButton(

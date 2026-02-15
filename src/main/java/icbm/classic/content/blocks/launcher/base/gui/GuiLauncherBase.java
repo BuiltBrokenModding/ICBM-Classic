@@ -47,13 +47,13 @@ public class GuiLauncherBase extends GuiContainerBase
         int componentID = 0;
 
         // Target field
-        addButton(TextInput.intField(componentID++, this.font, 17, 17, 30, 12,
+        addButton(TextInput.intField(this.font, 17, 17, 30, 12,
             tileEntity::getLockHeight, tileEntity::setLockHeight, (o) -> TileLauncherBase.PACKET_LOCK_HEIGHT.sendToServer(tileEntity)));
-        addButton(TextInput.intField(componentID++, this.font, 82, 17, 30, 12,
+        addButton(TextInput.intField(this.font, 82, 17, 30, 12,
             tileEntity::getGroupId, tileEntity::setGroupId, (o) -> TileLauncherBase.PACKET_GROUP_ID.sendToServer(tileEntity)));
-        addButton(TextInput.intField(componentID++, this.font, 127, 17, 30, 12,
+        addButton(TextInput.intField(this.font, 127, 17, 30, 12,
             tileEntity::getGroupIndex, tileEntity::setGroupIndex, (o) -> TileLauncherBase.PACKET_GROUP_INDEX.sendToServer(tileEntity)));
-        addButton(TextInput.intField(componentID++, this.font, 17, 17 + 16, 30, 12,
+        addButton(TextInput.intField(this.font, 17, 17 + 16, 30, 12,
             tileEntity::getFiringDelay, tileEntity::setFiringDelay, (o) -> TileLauncherBase.PACKET_FIRING_DELAY.sendToServer(tileEntity)));
 
         addButton(new FaceRotationButton(guiLeft + 157, guiTop + 3,  tileEntity::getLaunchDirection, tileEntity::getSeatSide, tileEntity::setSeatSide,

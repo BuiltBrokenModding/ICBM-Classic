@@ -1,12 +1,13 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import icbm.classic.prefab.gui.ITickingWidget;
 import icbm.classic.prefab.gui.button.GuiButtonBase;
 import net.minecraft.client.Minecraft;
 
 import java.util.function.Supplier;
 
-public class LaunchButton extends GuiButtonBase<LaunchButton> {
+public class LaunchButton extends GuiButtonBase<LaunchButton> implements ITickingWidget {
 
     private boolean wasPressed;
     private boolean doDrawGlass = false;
@@ -23,7 +24,6 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
 
     @Override
     public void update() {
-        super.update();
         if (enabledCheck != null) {
             this.active = enabledCheck.get();
         }

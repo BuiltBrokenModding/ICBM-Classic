@@ -47,9 +47,9 @@ public class GuiCruiseLauncher extends GuiContainerBase<ContainerCruiseLauncher>
         int componentID = 0;
 
         // Target field
-        addButton(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
+        addButton(TextInput.vec3dField(font, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, (o) -> TileCruiseLauncher.PACKET_TARGET.sendToServer(tileEntity)));
-        addButton(TextInput.textField(componentID++, font, 135, 17, 34, 12,
+        addButton(TextInput.textField(font, 135, 17, 34, 12,
             tileEntity.radio::getChannel, tileEntity.radio::setChannel, (o) -> TileCruiseLauncher.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
