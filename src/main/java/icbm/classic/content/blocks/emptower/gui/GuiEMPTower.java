@@ -46,11 +46,11 @@ public class GuiEMPTower extends GuiContainerBase<ContainerEMPTower> {
         int componentID = 0;
 
         // Target field
-        addButton(TextInput.intField(componentID++, this.font, 18, 17, 40, 12,
+        addButton(TextInput.intField(componentID++, this.font, this.guiLeft + 18, this.guiTop + 17, 40, 12,
             container.getHost()::getRange, container.getHost()::setRange, (r) -> TileEMPTower.PACKET_RADIUS.sendToServer(container.getHost())));
 
         // Frequency field
-        addButton(TextInput.textField(componentID++, this.font, 135, 17, 34, 12,
+        addButton(TextInput.textField(componentID++, this.font, this.guiLeft + 135, this.guiTop + 17, 34, 12,
             container.getHost().radioCap::getChannel, container.getHost().radioCap::setChannel, (r) -> TileEMPTower.PACKET_RADIO_HZ.sendToServer(container.getHost())));
 
         // Launch button
