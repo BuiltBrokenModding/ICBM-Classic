@@ -2,6 +2,7 @@ package icbm.classic.content.reg;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.emptower.gui.ContainerEMPTower;
+import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,6 +25,10 @@ public final class ContainerReg {
     public static final RegistryObject<ContainerType<ContainerEMPTower>> EMP_TOWER_BASE = registerTileContainer(
         TileReg.EMP_TOWER_BASE,
         ContainerEMPTower::new
+    );
+    public static final RegistryObject<ContainerType<ContainerLaunchScreen>> LAUNCHER_SCREEN = registerTileContainer(
+        TileReg.LAUNCHER_SCREEN,
+        ContainerLaunchScreen::new
     );
 
     private static <CONTAINER extends Container, TILE extends TileEntity> RegistryObject<ContainerType<CONTAINER>>

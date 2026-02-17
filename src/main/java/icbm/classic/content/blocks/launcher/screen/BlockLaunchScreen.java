@@ -4,10 +4,12 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.reg.TileReg;
+import icbm.classic.lib.BlockUtils;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
@@ -30,8 +32,7 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
-public class BlockLaunchScreen extends Block
-{
+public class BlockLaunchScreen extends Block implements ITileEntityProvider {
     public BlockLaunchScreen(Properties properties) {
         super(properties);
     }
@@ -47,8 +48,7 @@ public class BlockLaunchScreen extends Block
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
-    {
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
         return getDefaultState().with(BlockStateProperties.FACING, context.getFace());
     }
 
@@ -58,54 +58,55 @@ public class BlockLaunchScreen extends Block
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state)
-    {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
-    {
-        if (!world.isRemote)
-        {
-            final TileEntity tileEntity = world.getTileEntity(pos);
-            if(tileEntity instanceof TileLauncherScreen)
-            {
-                final TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
-                final ItemStack stack = player.getHeldItem(hand);
-                if (stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).isPresent()
-                    && GPSDataHelpers.handlePlayerInteraction(stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).orElseThrow(IllegalStateException::new), player, screen::setTarget))
-                {
-                    return true;
-                }
-                else if(stack.getItem() == Items.STONE_AXE) {
-                    final LauncherNetwork network = screen.getNetworkNode().getNetwork();
-                    player.sendMessage(new StringTextComponent("Network: " + network));
-                    player.sendMessage(new StringTextComponent("L: " + network.getLaunchers().size()));
-                }
-                else
-                {
-                    //TODO player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
-                }
-            }
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (world.isRemote) {
+            return true;
         }
+
+        final TileEntity tileEntity = world.getTileEntity(pos);
+        if (!(tileEntity instanceof TileLauncherScreen)) {
+            return true;
+        }
+
+        final TileLauncherScreen screen = (TileLauncherScreen) tileEntity;
+        final ItemStack stack = player.getHeldItem(hand);
+        if (stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).isPresent()
+            && GPSDataHelpers.handlePlayerInteraction(stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).orElseThrow(IllegalStateException::new), player, screen::setTarget)) {
+            return true;
+        } else if (stack.getItem() == Items.STONE_AXE) {
+            final LauncherNetwork network = screen.getNetworkNode().getNetwork();
+            player.sendMessage(new StringTextComponent("Network: " + network));
+            player.sendMessage(new StringTextComponent("L: " + network.getLaunchers().size()));
+        } else {
+            BlockUtils.openGUI(world, pos, player);
+        }
+
         return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
-    {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return TileReg.LAUNCHER_SCREEN.get().create();
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+        //TODO figure out why this deprecated method works but the main forge one doesn't
         return TileReg.LAUNCHER_SCREEN.get().create();
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
-    {
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         //TODO drop inventory
         final TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ILauncherComponent)
-        {
+        if (tile instanceof ILauncherComponent) {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
         super.onReplaced(state, world, pos, newState, isMoving);

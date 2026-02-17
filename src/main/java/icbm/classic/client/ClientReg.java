@@ -14,6 +14,7 @@ import icbm.classic.content.blocks.launcher.base.TESRLauncherBase;
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
 import icbm.classic.content.blocks.launcher.cruise.TESRCruiseLauncher;
 import icbm.classic.content.blocks.launcher.cruise.TileCruiseLauncher;
+import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.cargo.balloon.EntityBalloon;
 import icbm.classic.content.cargo.parachute.EntityParachute;
 import icbm.classic.content.cargo.parachute.RenderParachute;
@@ -55,8 +56,8 @@ public class ClientReg {
 
     public static void clientSetup(final FMLClientSetupEvent event) {
         final EntityRenderer<ChickenEntity> render = Minecraft.getInstance().getRenderManager().getRenderer(ChickenEntity.class);
-        if(render instanceof ChickenRenderer) {
-            ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer)render));
+        if (render instanceof ChickenRenderer) {
+            ((ChickenRenderer) render).addLayer(new LayerChickenHelmet((ChickenRenderer) render));
         }
         registerScreens();
     }
@@ -100,7 +101,7 @@ public class ClientReg {
         RenderingRegistry.registerEntityRenderingHandler(EntityExplosion.class, RenderExplosion::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityGrenade.class,
             (rm) -> new RenderAsItem<EntityGrenade>(rm, EntityGrenade::renderItemStack).setBillboard(true));
-        RenderingRegistry.registerEntityRenderingHandler(EntityParachute.class, (r) -> new RenderParachute(r,1));
+        RenderingRegistry.registerEntityRenderingHandler(EntityParachute.class, (r) -> new RenderParachute(r, 1));
         RenderingRegistry.registerEntityRenderingHandler(EntityBalloon.class,
             (rm) -> new RenderAsItem<EntityBalloon>(rm, (e) -> e.getRenderStack().orElseThrow(IllegalStateException::new)));
         RenderingRegistry.registerEntityRenderingHandler(EntityLightBeam.class, RenderLightBeam::new);
@@ -119,5 +120,6 @@ public class ClientReg {
 
     public static void registerScreens() {
         ScreenManager.registerFactory(ContainerReg.EMP_TOWER_BASE.get(), GuiEMPTower::new);
+        ScreenManager.registerFactory(ContainerReg.LAUNCHER_SCREEN.get(), GuiLauncherScreen::new);
     }
 }
