@@ -27,12 +27,10 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/23/2018.
  */
-public class BlockEmpTowerBase extends Block implements ITileEntityProvider
-{
+public class BlockEmpTowerBase extends Block implements ITileEntityProvider {
     final VoxelShape shape = VoxelShapes.create(0.2, 0, 0.2, 0.8, 1, 0.8);
 
-    public BlockEmpTowerBase(Properties properties)
-    {
+    public BlockEmpTowerBase(Properties properties) {
         super(properties);
     }
 
@@ -42,34 +40,36 @@ public class BlockEmpTowerBase extends Block implements ITileEntityProvider
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
-    {
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         BlockUtils.openGUI(worldIn, pos, player);
         return true;
     }
 
     @Override
-    public boolean hasComparatorInputOverride(BlockState state)
-    {
+    public boolean hasComparatorInputOverride(BlockState state) {
         return false;
     }
 
     @Override
-    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos)
-    {
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
         return 0; //TODO output charge amount
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state)
-    {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn)
-    {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return TileReg.EMP_TOWER_BASE.get().create();
+    }
+    
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+        //TODO figure out why this deprecated method works but the main forge one doesn't
         return TileReg.EMP_TOWER_BASE.get().create();
     }
 }
