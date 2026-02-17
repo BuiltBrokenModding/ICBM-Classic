@@ -33,16 +33,14 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/15/2018.
  */
-public class BlockCruiseLauncher extends Block
-{
+public class BlockCruiseLauncher extends Block {
     private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(
         Block.makeCuboidShape(0, 0, 0, 16, 4, 16),
         Block.makeCuboidShape(2, 4, 2, 14, 16, 14),
         IBooleanFunction.OR
     );
 
-    public BlockCruiseLauncher(Properties properties)
-    {
+    public BlockCruiseLauncher(Properties properties) {
         super(properties);
     }
 
@@ -62,41 +60,35 @@ public class BlockCruiseLauncher extends Block
     }
 
     @Override
-    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side)
-    {
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side) {
         return true;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state)
-    {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
-    {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return TileReg.LAUNCHER_CRUISE.get().create();
     }
 
+
     @Override
-    public boolean hasTileEntity(BlockState state)
-    {
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
-    {
-        if (!world.isRemote)
-        {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (!world.isRemote) {
             final TileEntity tileEntity = world.getTileEntity(pos);
-            if (tileEntity instanceof TileCruiseLauncher)
-            {
+            if (tileEntity instanceof TileCruiseLauncher) {
                 final TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
                 final ItemStack stack = player.getHeldItem(hand);
-                if(stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).isPresent()) {
+                if (stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).isPresent()) {
                     final IGPSData gpsData = stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY).orElseThrow(IllegalStateException::new);
                     if (!GPSDataHelpers.handlePlayerInteraction(gpsData, player, launcher::setTarget)) {
                         // TODO player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
@@ -108,11 +100,9 @@ public class BlockCruiseLauncher extends Block
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving)
-    {
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ILauncherComponent)
-        {
+        if (tile instanceof ILauncherComponent) {
             ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
         }
         super.onReplaced(state, world, pos, newState, isMoving);

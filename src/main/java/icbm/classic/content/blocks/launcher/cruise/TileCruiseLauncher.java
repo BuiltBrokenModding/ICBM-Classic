@@ -35,6 +35,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -145,12 +146,12 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
 
     @Override
     public void setPos(BlockPos posIn) {
-       super.setPos(posIn);
-       launcherCenter= new Vec3d(
-           this.getPos().getX() + 0.5,
-           this.getPos().getY() + MISSILE__HOLDER_Y,
-           this.getPos().getZ() + 0.5
-       );
+        super.setPos(posIn);
+        launcherCenter = new Vec3d(
+            this.getPos().getX() + 0.5,
+            this.getPos().getY() + MISSILE__HOLDER_Y,
+            this.getPos().getZ() + 0.5
+        );
     }
 
     @Override
@@ -197,7 +198,7 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
     public void tick() {
 
         // whatever reason onLoad can't be used for tile checks
-        if(isServer() && this.ticks == 0) {
+        if (isServer() && this.ticks == 0) {
             launcherNode.connectToTiles();
         }
         super.tick();
@@ -207,7 +208,7 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         deltaTime = (System.nanoTime() - lastRotationUpdate) / 100000000.0; // time / time_tick, client uses different value
         lastRotationUpdate = System.nanoTime();
 
-        if(isServer()) {
+        if (isServer()) {
 
             // Update current aim
             currentAim.moveTowards(aim, ROTATION_SPEED, deltaTime).clampTo360();
@@ -283,13 +284,11 @@ public class TileCruiseLauncher extends TileMachine implements IGuiTile, ILaunch
         initFromLoad();
     }
 
-    protected boolean hasTarget()
-    {
+    protected boolean hasTarget() {
         return getTarget() != null && getTarget() != Vec3d.ZERO;
     }
 
-    protected boolean canSpawnMissileWithNoCollision()
-    {
+    protected boolean canSpawnMissileWithNoCollision() {
         //Make sure there is noting above us to hit when spawning the missile
         // TODO use raytrace to detect collision so we can fire out of holes
         for (int y = 1; y <= 2; y++) {

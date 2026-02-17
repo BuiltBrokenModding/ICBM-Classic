@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
  */
-public class BlockLaunchScreen extends Block implements ITileEntityProvider {
+public class BlockLaunchScreen extends Block {
     public BlockLaunchScreen(Properties properties) {
         super(properties);
     }
@@ -95,11 +95,9 @@ public class BlockLaunchScreen extends Block implements ITileEntityProvider {
         return TileReg.LAUNCHER_SCREEN.get().create();
     }
 
-    @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        //TODO figure out why this deprecated method works but the main forge one doesn't
-        return TileReg.LAUNCHER_SCREEN.get().create();
+    public boolean hasTileEntity(BlockState state) {
+        return true;
     }
 
     @Override
