@@ -7,7 +7,7 @@ This log contains changes made to the project. Each entry contains changed made 
 
 TODO move these to a separate file and create a link
 
-https://modrinth.com/mod/icbm
+https://modrinth.com/mod/icbm https://www.curseforge.com/minecraft/mc-mods/icbm
 
 ## Notes for versioning
 
