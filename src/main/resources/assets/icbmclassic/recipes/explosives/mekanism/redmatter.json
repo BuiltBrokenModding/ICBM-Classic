@@ -22,7 +22,6 @@
   "conditions": [
     {
       "type": "minecraft:item_exists",
-      "condition": "true",
       "item": "mekanism:atomicalloy"
     }
   ]

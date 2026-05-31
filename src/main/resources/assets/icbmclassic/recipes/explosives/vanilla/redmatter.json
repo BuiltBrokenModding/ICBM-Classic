@@ -22,9 +22,11 @@
   },
   "conditions": [
     {
-      "type": "minecraft:item_exists",
-      "condition": "false",
-      "item": "mekanism:atomicalloy"
+      "type": "forge:not",
+      "value": {
+        "type": "minecraft:item_exists",
+        "item": "mekanism:atomicalloy"
+      }
     }
   ]
 }
