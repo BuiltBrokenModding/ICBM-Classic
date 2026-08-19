@@ -5,6 +5,7 @@ import icbm.classic.client.ICBMSounds;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
 import icbm.classic.lib.NBTConstants;
+import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.BlockState;
@@ -289,7 +290,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
     protected void spawnGasParticles(final Vec3i pos)
     {
-        /*ICBMClassic.proxy.spawnAirParticle(world,
+        PacketSpawnAirParticle.sendToAllClientsInWorld(world,
                 pos.getX(),
                 pos.getY(),
                 pos.getZ(),
@@ -299,7 +300,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
                 getParticleColorRed(pos),
                 getParticleColorGreen(pos),
                 getParticleColorBlue(pos),
-                7.0F, duration);*/
+            7.0F, duration);
     }
 
     protected float getParticleColorRed(final Vec3i pos)

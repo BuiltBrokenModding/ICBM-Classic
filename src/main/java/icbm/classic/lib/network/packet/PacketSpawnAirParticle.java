@@ -1,12 +1,21 @@
 package icbm.classic.lib.network.packet;
 
-public class PacketSpawnAirParticle //implements IPacket<PacketSpawnAirParticle>
-{
-    /*
-    Id of the dimension that this particle should be placed in.
-     *//*
-    private ResourceLocation dimId;
+import icbm.classic.ICBMClassic;
+import icbm.classic.lib.network.netty.PacketManager;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.function.Supplier;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class PacketSpawnAirParticle {
     // x y and z positions
     private double posX;
     private double posY;
@@ -28,32 +37,8 @@ public class PacketSpawnAirParticle //implements IPacket<PacketSpawnAirParticle>
     // how long this particle will live for
     private int ticksToLive;
 
-    public PacketSpawnAirParticle()
+    public void encode(PacketBuffer buffer)
     {
-        //Needed for forge to construct the packet
-    }
-
-    public PacketSpawnAirParticle(ResourceLocation dimId, double posX, double posY, double posZ, double v, double v1, double v2,
-                                  float red, float green, float blue, float scale, int ticksToLive)
-    {
-        this.dimId = dimId;
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
-        this.v = v;
-        this.v1 = v1;
-        this.v2 = v2;
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.scale = scale;
-        this.ticksToLive = ticksToLive;
-    }
-
-    @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
-    {
-        buffer.writeInt(dimId);
         buffer.writeDouble(posX);
         buffer.writeDouble(posY);
         buffer.writeDouble(posZ);
@@ -67,38 +52,38 @@ public class PacketSpawnAirParticle //implements IPacket<PacketSpawnAirParticle>
         buffer.writeInt(ticksToLive);
     }
 
-    @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public static PacketSpawnAirParticle decode(PacketBuffer buffer)
     {
-        dimId = buffer.readInt();
-        posX = buffer.readDouble();
-        posY = buffer.readDouble();
-        posZ = buffer.readDouble();
-        v = buffer.readDouble();
-        v1 = buffer.readDouble();
-        v2 = buffer.readDouble();
-        red = buffer.readFloat();
-        green = buffer.readFloat();
-        blue = buffer.readFloat();
-        scale = buffer.readFloat();
-        ticksToLive = buffer.readInt();
+        final PacketSpawnAirParticle rv = new PacketSpawnAirParticle();
+        rv.posX = buffer.readDouble();
+        rv.posY = buffer.readDouble();
+        rv.posZ = buffer.readDouble();
+        rv.v = buffer.readDouble();
+        rv.v1 = buffer.readDouble();
+        rv.v2 = buffer.readDouble();
+        rv.red = buffer.readFloat();
+        rv.green = buffer.readFloat();
+        rv.blue = buffer.readFloat();
+        rv.scale = buffer.readFloat();
+        rv.ticksToLive = buffer.readInt();
+        return rv;
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void handleClientSide(Minecraft minecraft, PlayerEntity player)
-    {
-        if (minecraft.world != null && DimensionType.getKey(player.world.getDimension().getType()) == dimId)
-        {
-            ICBMClassic.proxy.spawnAirParticle(player.world, posX, posY, posZ, v, v1, v2, red, green, blue, scale, ticksToLive);
+    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+        final NetworkEvent.Context context = contextSupplier.get();
+        if (context.getDirection().getReceptionSide().isClient()) {
+            context.setPacketHandled(true);
+            ICBMClassic.proxy.spawnAirParticle(Minecraft.getInstance().world,
+                this.posX, this.posY, this.posZ, this.v, this.v1, this.v2,
+                this.red, this.green, this.blue, this.scale, this.ticksToLive
+            );
+        } else {
+            ICBMClassic.logger().warn(String.format("Received %s packet serverside when we expected it clientside instead", this.getClass()));
         }
     }
 
-    public static void sendToAllClients(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
-    {
-        final int dimid = world.provider.getDimension();
-        final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, x, y, z, 256);
-        ICBMClassic.packetHandler.sendToAllAround(packet, point);
-    }*/
+    public static void sendToAllClientsInWorld(World world, double x, double y, double z, double v, double v1, double v2,
+                                               float red, float green, float blue, float scale, int ticksToLive) {
+        PacketManager.sendToAllInDimension(new PacketSpawnAirParticle(x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive), world);
+    }
 }

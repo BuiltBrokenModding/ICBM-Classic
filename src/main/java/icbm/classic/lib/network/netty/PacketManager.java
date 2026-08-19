@@ -5,6 +5,7 @@ import icbm.classic.lib.network.lambda.entity.PacketLambdaEntity;
 import icbm.classic.lib.network.lambda.item.PacketLambdaPlayerItem;
 import icbm.classic.lib.network.lambda.tile.PacketLambdaTile;
 import icbm.classic.lib.network.packet.PacketLaserDetonator;
+import icbm.classic.lib.network.packet.PacketSpawnAirParticle;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -52,6 +53,7 @@ public class PacketManager
         register(PacketLambdaEntity.class, PacketLambdaEntity::encode, PacketLambdaEntity::decode, PacketLambdaEntity::handle);
         register(PacketLambdaPlayerItem.class, PacketLambdaPlayerItem::encode, PacketLambdaPlayerItem::decode, PacketLambdaPlayerItem::handle);
         register(PacketLaserDetonator.class, PacketLaserDetonator::encode, PacketLaserDetonator::decode, PacketLaserDetonator::handle);
+        register(PacketSpawnAirParticle.class, PacketSpawnAirParticle::encode, PacketSpawnAirParticle::decode, PacketSpawnAirParticle::handle);
 
         //addPacket(PacketSpawnAirParticle.class);
         //addPacket(PacketSpawnBlockExplosion.class);

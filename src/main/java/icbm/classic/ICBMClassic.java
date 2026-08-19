@@ -6,6 +6,7 @@ import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.api.reg.events.MissileFlightLogicRegistryEvent;
 import icbm.classic.api.reg.events.MissileTargetRegistryEvent;
 import icbm.classic.api.reg.events.ProjectileDataRegistryEvent;
+import icbm.classic.client.ClientProxy;
 import icbm.classic.client.ClientReg;
 import icbm.classic.client.ICBMCreativeTab;
 import icbm.classic.config.ConfigThread;
@@ -57,6 +58,8 @@ import icbm.datagen.BlockModelGenerator;
 import icbm.datagen.BlockStateGenerator;
 import icbm.datagen.ItemModelGenerator;
 import net.minecraft.data.DataGenerator;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -83,8 +86,8 @@ public class ICBMClassic
 
     public static ICBMClassic INSTANCE;
 
-    //@SidedProxy(clientSide = "icbm.classic.client.ClientProxy", serverSide = "icbm.classic.CommonProxy")
-    //public static CommonProxy proxy;
+    @OnlyIn(Dist.CLIENT)
+    public static ClientProxy proxy = new ClientProxy();
 
     public static final int MAP_HEIGHT = 255;
 
