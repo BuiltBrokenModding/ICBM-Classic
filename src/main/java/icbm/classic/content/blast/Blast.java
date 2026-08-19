@@ -388,7 +388,9 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
 
                 // Knock back
                 if (entity instanceof LivingEntity) {
-                    damageScale = ProtectionEnchantment.getBlastDamageReduction((LivingEntity)entity, damage);
+                    // we need to cap the added motion here as otherwise for the antimatter blast we get values of the oder e+9 which then causes the server
+                    // to load many chunks to check player collision, stalling it essentially permanently.
+                    damageScale = Math.min(10, ProtectionEnchantment.getBlastDamageReduction((LivingEntity) entity, damage));
                 }
                 entity.setMotion(entity.getMotion().add(xDifference * damageScale, yDifference * damageScale, zDifference * damageScale));
             }
