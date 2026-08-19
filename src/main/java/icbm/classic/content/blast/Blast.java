@@ -10,6 +10,7 @@ import icbm.classic.api.explosion.IBlastTickable;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.thread.ThreadExplosion;
+import icbm.classic.content.entity.EntityExplosion;
 import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.actions.WorkTickingActionHandler;
@@ -127,11 +128,13 @@ public abstract class Blast extends Explosion implements IBlastInit, IBlastResto
                 //Start explosion
                 if (this instanceof IBlastTickable)
                 {
-                    if (!this.getWorld().addEntity(EntityReg.TICKING_EXPLOSION.get().create(world)))
+                    EntityExplosion blastEntity = EntityReg.TICKING_EXPLOSION.get().create(world);
+                    if (!this.getWorld().addEntity(blastEntity))
                     {
                         isAlive = false;
                         return ActionResponses.ENTITY_SPAWN_FAILED;
                     }
+                    blastEntity.setBlast(this);
                     return ActionResponses.COMPLETED;
                 }
                 else
