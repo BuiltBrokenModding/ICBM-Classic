@@ -105,8 +105,6 @@ public class ICBMClassic
 
         // Life cycle
         modBus.addListener(this::commonSetup);
-        modBus.addListener(this::serverStarting);
-        modBus.addListener(this::serverStopping);
         modBus.addListener(this::registerDatagen);
 
         modBus.addListener(ClientReg::clientSetup);
@@ -119,6 +117,10 @@ public class ICBMClassic
         TileReg.TILES.register(modBus);
         EntityReg.ENTITIES.register(modBus);
         ContainerReg.CONTAINER_TYPES.register(modBus);
+
+        final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+        forgeBus.addListener(this::serverStarting);
+        forgeBus.addListener(this::serverStopping);
 
         //TODO  modEventBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
 
