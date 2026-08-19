@@ -100,6 +100,7 @@ public class BlockExplosive extends Block
 
             final PotentialAction potentialAction = new PotentialAction();
             potentialAction.withProvider(new ActionFieldProvider().field(ActionFields.HOST_DIRECTION, () -> direction));
+            potentialAction.setActionData(action);
             potentialAction.doAction(world, pos, cause);
         }
     }
