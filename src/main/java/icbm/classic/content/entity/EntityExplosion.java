@@ -93,7 +93,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     {
         if (!(this.getBlast() instanceof IBlastTickable) || ((IBlastTickable)this.getBlast()).getEntity() != this || ((IBlastTickable)this.getBlast()).isCompleted())
         {
-            this.tick();
+            super.tick();
             return;
         }
 
