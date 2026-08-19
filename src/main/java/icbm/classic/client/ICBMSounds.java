@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.Mod;
  * <p>
  * Credit to https://github.com/kitsushadow for sharing info on how to do sounds in MC 1.12
  */
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
+@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN, bus = Mod.EventBusSubscriber.Bus.MOD)
 public enum ICBMSounds
 {
     ANTIMATTER("antimatter"),
