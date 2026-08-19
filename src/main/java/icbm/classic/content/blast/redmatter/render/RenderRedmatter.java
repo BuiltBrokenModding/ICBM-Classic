@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
@@ -77,7 +78,8 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1);
 
         //Render outer sphere
-        // TODO new Sphere().draw(radius * 0.8f, 32, 32);
+        renderSphere(radius * 0.8f, 16, 16);
+
 
         //Reset
         //GlStateManager.enableLighting();
@@ -117,7 +119,7 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
         {
             scaleDelta = radius * scaleSize * ticks;
         }
-        // TODO new Sphere().draw(radius + scaleDelta, 32, 32);
+        renderSphere(radius + scaleDelta, 16, 16);
 
         //Reset
         GlStateManager.enableLighting();
@@ -294,6 +296,39 @@ public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
 
         //End
         GlStateManager.popMatrix();
+    }
+
+    private void renderSphere(float radius, int longitudeSteps, int latitudeSteps) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+
+        for (int lat = 0; lat < latitudeSteps; lat++) {
+            float theta1 = (float) Math.PI * lat / latitudeSteps;
+            float theta2 = (float) Math.PI * (lat + 1) / latitudeSteps;
+
+            for (int lon = 0; lon < longitudeSteps; lon++) {
+                float phi1 = (float) (2.0 * Math.PI * lon / longitudeSteps);
+                float phi2 = (float) (2.0 * Math.PI * (lon + 1) / longitudeSteps);
+
+                addVertex(buffer, radius, theta1, phi1);
+                addVertex(buffer, radius, theta1, phi2);
+                addVertex(buffer, radius, theta2, phi2);
+                addVertex(buffer, radius, theta2, phi1);
+            }
+        }
+
+        tessellator.draw();
+    }
+
+    private void addVertex(BufferBuilder buffer, float radius, float theta, float phi) {
+        float sinTheta = MathHelper.sin(theta);
+        float x = radius * sinTheta * MathHelper.cos(phi);
+        float y = radius * MathHelper.cos(theta);
+        float z = radius * sinTheta * MathHelper.sin(phi);
+
+        buffer.pos(x, y, z).endVertex();
     }
 
     @Nullable
