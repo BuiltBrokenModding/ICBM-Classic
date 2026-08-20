@@ -41,9 +41,11 @@ public class WorkTickingActionHandler //TODO create interface that is related to
         if (!event.getWorld().isRemote() && !activeBlasts.isEmpty())
         {
             final DimensionType dim = event.getWorld().getDimension().getType();
-            activeBlasts.stream()
-                    .filter(blast -> blast.getWorld() == null || blast.getWorld().getDimension().getType() == dim)
-                    .forEach(IBlast::clearBlast);
+            IBlast[] toRemove = activeBlasts.stream()
+                .filter(blast -> blast.getWorld() == null || blast.getWorld().getDimension().getType() == dim).toArray(IBlast[]::new);
+            for (IBlast iBlast : toRemove) {
+                iBlast.clearBlast();
+            }
         }
     }
 
