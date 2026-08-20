@@ -44,7 +44,7 @@ public class WorkTickingActionHandler //TODO create interface that is related to
             IBlast[] toRemove = activeBlasts.stream()
                 .filter(blast -> blast.getWorld() == null || blast.getWorld().getDimension().getType() == dim).toArray(IBlast[]::new);
             for (IBlast iBlast : toRemove) {
-                iBlast.clearBlast();
+                iBlast.clearBlast(); // clearBlast will modify activeBlasts so we need to do this after filtering as we get a comodofication exception otherwise
             }
         }
     }
