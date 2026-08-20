@@ -9,6 +9,7 @@ import icbm.classic.lib.actions.fields.ActionFieldProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SoundType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -31,8 +32,10 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootContext;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 public class BlockExplosive extends Block
@@ -41,8 +44,18 @@ public class BlockExplosive extends Block
 
     public BlockExplosive(IActionData action, Block.Properties properties)
     {
-        super(properties);
+        super(properties.sound(SoundType.PLANT).hardnessAndResistance(0));
         this.action = action;
+    }
+
+    @Override
+    public boolean canDropFromExplosion(BlockState state, IBlockReader world, BlockPos pos, Explosion explosion) {
+        return false;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+        return Collections.singletonList(new ItemStack(this));
     }
 
     @Override
