@@ -30,6 +30,7 @@ public abstract class GuiContainerBase<T extends Container> extends ContainerScr
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
+        renderBackground();
         this.getMinecraft().textureManager.bindTexture(this.getBackground());
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
