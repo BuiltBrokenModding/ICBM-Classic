@@ -46,6 +46,11 @@ public class BlockExplosive extends Block
     }
 
     @Override
+    public int getFlammability(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
+        return 300;
+    }
+
+    @Override
     public BlockState rotate(BlockState state, Rotation rot) {
         return state.with(BlockStateProperties.FACING, rot.rotate(state.get(BlockStateProperties.FACING)));
     }
