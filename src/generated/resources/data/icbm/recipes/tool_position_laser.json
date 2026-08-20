@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "gci",
+    " bw"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "b": {
+      "item": "minecraft:stone_button"
+    },
+    "i": {
+      "tag": "forge:ingots/steel"
+    },
+    "c": {
+      "tag": "forge:circuit_basic"
+    },
+    "w": {
+      "tag": "forge:plank_wood"
+    }
+  },
+  "result": {
+    "item": "icbm:tool_position_laser"
+  }
+}

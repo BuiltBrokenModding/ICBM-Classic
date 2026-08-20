@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "icbm:dust_poison"
+    ]
+  },
+  "criteria": {
+    "item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:spider_eye"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "icbm:dust_poison"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "item",
+      "has_the_recipe"
+    ]
+  ]
+}

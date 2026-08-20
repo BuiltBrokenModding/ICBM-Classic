@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "ici",
+    "ibi"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:redstone_torch"
+    },
+    "b": {
+      "item": "minecraft:stone_button"
+    },
+    "i": {
+      "tag": "forge:ingots/steel"
+    },
+    "c": {
+      "tag": "forge:circuit_advanced"
+    }
+  },
+  "result": {
+    "item": "icbm:tool_detonator_remote"
+  }
+}

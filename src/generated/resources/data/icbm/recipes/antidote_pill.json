@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sss",
+    "sss",
+    "sss"
+  ],
+  "key": {
+    "s": {
+      "tag": "forge:seeds"
+    }
+  },
+  "result": {
+    "item": "icbm:antidote_pill",
+    "count": 6
+  }
+}

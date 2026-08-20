@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "aaa",
+    "aca",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:arrow"
+    },
+    "c": {
+      "item": "icbm:explosive_condensed"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_shrapnel"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "icbm:explosive_contagious"
+    ]
+  },
+  "criteria": {
+    "item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "icbm:explosive_chemical"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "icbm:explosive_contagious"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "item",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "w w",
+    "rar",
+    "ici"
+  ],
+  "key": {
+    "i": {
+      "tag": "forge:ingots/copper"
+    },
+    "c": {
+      "tag": "forge:circuit_basic"
+    },
+    "w": {
+      "tag": "forge:plank_wood"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "a": {
+      "item": "minecraft:shears"
+    }
+  },
+  "result": {
+    "item": "icbm:tool_deactivation_kit"
+  }
+}

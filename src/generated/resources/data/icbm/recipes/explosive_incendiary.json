@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "aaa",
+    "ara",
+    "ala"
+  ],
+  "key": {
+    "a": {
+      "tag": "forge:dusts/sulfur"
+    },
+    "l": {
+      "item": "minecraft:lava_bucket"
+    },
+    "r": {
+      "item": "icbm:explosive_shrapnel"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_incendiary"
+  }
+}

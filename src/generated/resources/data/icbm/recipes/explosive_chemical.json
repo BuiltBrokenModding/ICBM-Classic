@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ppp",
+    "prp",
+    "ppp"
+  ],
+  "key": {
+    "p": {
+      "item": "icbm:dust_poison"
+    },
+    "r": {
+      "item": "icbm:explosive_debilitation"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_chemical"
+  }
+}

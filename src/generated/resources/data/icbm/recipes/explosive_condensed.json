@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "trt",
+    "rtr",
+    "trt"
+  ],
+  "key": {
+    "t": {
+      "item": "minecraft:tnt"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_condensed",
+    "count": 3
+  }
+}

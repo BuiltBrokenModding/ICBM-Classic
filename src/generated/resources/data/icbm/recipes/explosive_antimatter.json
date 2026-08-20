@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "nnn",
+    "nrn",
+    "nnn"
+  ],
+  "key": {
+    "n": {
+      "item": "minecraft:nether_star"
+    },
+    "r": {
+      "item": "icbm:explosive_nuclear"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_antimatter"
+  }
+}

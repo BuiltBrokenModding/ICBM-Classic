@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "er"
+  ],
+  "key": {
+    "e": {
+      "item": "minecraft:spider_eye"
+    },
+    "r": {
+      "item": "minecraft:rotten_flesh"
+    }
+  },
+  "result": {
+    "item": "icbm:dust_poison",
+    "count": 3
+  }
+}

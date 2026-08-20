@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CrC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "tag": "forge:dyes"
+    },
+    "r": {
+      "item": "icbm:explosive_repulsive"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_color"
+  }
+}

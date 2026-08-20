@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "tit",
+    "iii",
+    "tit"
+  ],
+  "key": {
+    "i": {
+      "tag": "forge:ingots/uranium"
+    },
+    "t": {
+      "item": "icbm:explosive_thermobaric"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_nuclear"
+  }
+}

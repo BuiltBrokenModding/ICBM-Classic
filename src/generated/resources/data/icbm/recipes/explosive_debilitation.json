@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sss",
+    "wrw",
+    "sss"
+  ],
+  "key": {
+    "r": {
+      "item": "icbm:explosive_shrapnel"
+    },
+    "w": {
+      "item": "minecraft:water_bucket"
+    },
+    "s": {
+      "tag": "forge:dusts/sulfur"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_debilitation",
+    "count": 3
+  }
+}

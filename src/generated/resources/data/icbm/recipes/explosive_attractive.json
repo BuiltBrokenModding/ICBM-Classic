@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cc"
+  ],
+  "key": {
+    "c": {
+      "item": "icbm:explosive_condensed"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_attractive"
+  }
+}

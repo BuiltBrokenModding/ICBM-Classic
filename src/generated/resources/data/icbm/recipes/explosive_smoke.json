@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ccc",
+    "crc",
+    "ccc"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:coal"
+    },
+    "r": {
+      "item": "icbm:explosive_repulsive"
+    }
+  },
+  "result": {
+    "item": "icbm:explosive_smoke"
+  }
+}
