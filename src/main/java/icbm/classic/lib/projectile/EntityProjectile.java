@@ -556,7 +556,7 @@ public abstract class EntityProjectile<PROJECTILE extends EntityProjectile<PROJE
     }
 
     protected void updateMotion() {
-        if (!freezeMotion && !world.isRemote) {
+        if (!freezeMotion) {
             //Update motion
             this.posX += this.getMotion().x;
             this.posY += this.getMotion().y;
