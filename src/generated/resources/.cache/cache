@@ -222,3 +222,5 @@ f21352dd44db485c7544cf3cbc8b7c08ada7b3cc assets\icbm\models\item\radioactive_dir
 2ab2e139ee2ae7da47f98187eb3a6f21a454ac18 assets\icbm\models\item\spikes_fire.json
 c71a0a012a67c6696868991ab11c1c366a066998 assets\icbm\models\item\spikes_normal.json
 3af37235087391dfe8272bc79c8d44d628afd38a assets\icbm\models\item\spikes_poison.json
+f7688b0b8e8bfaee40419b2724e15668f43ba31a data\icbm\advancements\recipes\icbm\explosive_gravity.json
+0e537bc080e94940f974e7359560d9e6470ed9f7 data\icbm\recipes\explosive_gravity.json

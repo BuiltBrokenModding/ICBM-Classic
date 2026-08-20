@@ -57,6 +57,7 @@ import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.datagen.BlockModelGenerator;
 import icbm.datagen.BlockStateGenerator;
 import icbm.datagen.ItemModelGenerator;
+import icbm.datagen.RecipeGenerator;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -137,6 +138,7 @@ public class ICBMClassic
         gen.addProvider(new BlockStateGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
         gen.addProvider(new BlockModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
         gen.addProvider(new ItemModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
+        gen.addProvider(new RecipeGenerator(gen));
     }
 
     /*@SubscribeEvent TODO likely moved to JSON
