@@ -37,6 +37,7 @@ public class RecipeGenerator extends RecipeProvider {
         Tag<Item> INGOT_STEEL = new ItemTags.Wrapper(new ResourceLocation("forge", "ingots/steel"));
         Tag<Item> CIRCUIT_ADVANCED = new ItemTags.Wrapper(new ResourceLocation("forge", "circuit_advanced"));
 
+        // reference for porting recipes: https://github.com/BuiltBrokenModding/ICBM-Classic/tree/prod/1.12/src/main/resources/assets/icbmclassic/recipes
         // ================== EXPLOSIVES ==================
         shaped(BlockReg.EXPLOSIVE_GRAVITY.get())
             .patternLine("eee")
