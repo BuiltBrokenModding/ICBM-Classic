@@ -11,15 +11,20 @@ repositories {
         url "https://maven.su5ed.dev/releases"
     }
     maven {
-        // JEI
-        name "Progwml6 maven"
-        url "https://dvs1.progwml6.com/files/maven/"
-    };
+        // location of the maven that hosts JEI files before January 2023
+        name = "Progwml6's maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
     maven {
-        // JEI fallback
-        name "ModMaven"
-        url "https://modmaven.dev"
-    };
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
     maven {
         name 'SquidDev'
         url 'https://squiddev.cc/maven/'
@@ -70,7 +75,7 @@ sourceSets {
 
 dependencies {
     // https://files.minecraftforge.net/net/minecraftforge/forge/index_1.14.4.html
-    minecraft 'net.minecraftforge:forge:1.14.4-28.2.26'
+    minecraft "net.minecraftforge:forge:${version_mc}-28.2.26"
 
     // https://projectlombok.org/setup/gradle
     compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -79,10 +84,16 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-    //Mods
+    // ----- Mods -----
     //implementation files('libs/NBT-Exporter-1.0-forgelib.jar')
     //compileOnly "mezz.jei:jei_1.12.2:4.16.1.302:api"
     //https://github.com/mekanism/Mekanism/tree/1.12
+	
+	// JEI
+    // compile against the JEI API but do not include it at runtime
+    //compileOnly(fg.deobf("mezz.jei:jei-${version_mc}-api:${jei_version}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${version_mc}:${jei_version}"))
 
     //Junit 5
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
