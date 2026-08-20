@@ -99,7 +99,8 @@ public class BlockExplosive extends Block
     public void doAction(World world, BlockPos pos, @Nullable IActionCause cause) {
         if (!world.isRemote) {
             final BlockState state = world.getBlockState(pos);
-            final Direction direction = state.get(BlockStateProperties.FACING).getOpposite(); //TODO why opposite
+            final Direction direction = state.getBlock() instanceof BlockExplosive && state.has(BlockStateProperties.FACING) ?
+                state.get(BlockStateProperties.FACING).getOpposite() : null; //TODO why opposite
 
             final PotentialAction potentialAction = new PotentialAction();
             potentialAction.withProvider(new ActionFieldProvider().field(ActionFields.HOST_DIRECTION, () -> direction));
