@@ -52,17 +52,13 @@ public class WorkTickingActionHandler //TODO create interface that is related to
     /**
      * Called to remove blasts near the location
      *
-     * @param world = position
-     * @param x     - position
-     * @param y     - position
-     * @param z     - position
+     * @param world = world
+     * @param pos - position
      * @param range - distance from position, less than zero will turn into global
      * @return number of blasts removed
      */
-    public static int removeNear(World world, double x, double y, double z, double range)
+    public static int removeNear(World world, Vec3d pos, double range)
     {
-        final Vec3d pos = new Vec3d(x, y, z);
-
         //Collect blasts marked for removal
         final List<IBlast> toRemove = WorkTickingActionHandler.activeBlasts.stream()
                 .filter(blast -> blast.getWorld() == world)

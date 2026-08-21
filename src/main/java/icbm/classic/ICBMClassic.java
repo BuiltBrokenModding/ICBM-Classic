@@ -1,5 +1,6 @@
 package icbm.classic;
 
+import com.mojang.brigadier.CommandDispatcher;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
@@ -9,6 +10,7 @@ import icbm.classic.api.reg.events.ProjectileDataRegistryEvent;
 import icbm.classic.client.ClientProxy;
 import icbm.classic.client.ClientReg;
 import icbm.classic.client.ICBMCreativeTab;
+import icbm.classic.command.ICBMCommands;
 import icbm.classic.config.ConfigThread;
 import icbm.classic.content.blast.caps.CapabilityBlast;
 import icbm.classic.content.blast.caps.CapabilityBlastVelocity;
@@ -58,6 +60,7 @@ import icbm.datagen.BlockModelGenerator;
 import icbm.datagen.BlockStateGenerator;
 import icbm.datagen.ItemModelGenerator;
 import icbm.datagen.RecipeGenerator;
+import net.minecraft.command.CommandSource;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -321,13 +324,10 @@ public class ICBMClassic
     public void serverStarting(FMLServerStartingEvent event)
     {
         //Get command manager
-        //CommandDispatcher<CommandSource> commandManager = event.getCommandDispatcher();
+        CommandDispatcher<CommandSource> commandManager = event.getCommandDispatcher();
 
         //Setup commands
-        //TODO ICBMCommands.init();
-
-        //Register main command
-        //TODO commandManager.register(new CommandEntryPoint("icbm", ICBMCommands.ICBM_COMMAND));
+        ICBMCommands.setupCommands(commandManager);
 
         WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
         WorkerThreadManager.INSTANCE.startThreads();
