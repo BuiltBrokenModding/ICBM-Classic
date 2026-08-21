@@ -1,7 +1,9 @@
 package icbm.classic.content.items;
 
 import icbm.classic.content.entity.EntityBombCart;
+import icbm.classic.content.entity.EntityExplosive;
 import icbm.classic.prefab.item.ItemICBMElectrical;
+import lombok.var;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
@@ -36,6 +38,18 @@ public class ItemDeactivationTool extends ItemICBMElectrical
     {
         if (this.getEnergy(itemStack) >= ENERGY_COST)
         {
+            if (entity instanceof EntityExplosive) {
+                var entityExplosive = ((EntityExplosive) entity);
+
+                if (!entity.world.isRemote) {
+                    entity.world.addEntity(new ItemEntity(entity.world,
+                        entity.posX, entity.posY, entity.posZ,
+                        new ItemStack(entityExplosive.getBlockRender().getBlock().asItem()))
+                    );
+                }
+                entity.remove();
+
+            }
             /*if (entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null).isPresent())
             {
                 if (!entity.world.isRemote)
@@ -49,8 +63,8 @@ public class ItemDeactivationTool extends ItemICBMElectrical
                     explosive.onDefuse();
                     entity.remove();
                 }
-            }
-            else*/ if (entity instanceof TNTEntity)
+            }*/
+            else if (entity instanceof TNTEntity)
             {
                 //TODO restore via action system
                 /*if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity)))
