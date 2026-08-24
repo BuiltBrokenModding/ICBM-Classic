@@ -1,10 +1,23 @@
 root = true
 
-[*.java]
-indent_style = space
-indent_size = 4
+[*]
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 charset = utf-8
 max_line_length = 120
+
+[*.java]
+indent_style = tab
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{yaml,yml}]
+indent_style = tab
+indent_size = 2
+
+[*.{json,jsonc}]
+indent_style = space
+indent_size = 2

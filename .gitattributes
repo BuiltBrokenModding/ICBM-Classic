@@ -1,33 +1,95 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# Custom for Visual Studio
-*.cs     diff=csharp
-*.sln    merge=union
-*.csproj merge=union
-*.vbproj merge=union
-*.fsproj merge=union
-*.dbproj merge=union
+# Windows shit (Windows tends to prefer crlf, even if it can handle lf... even then it breaks)
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+*.xml text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
 
-# Standard to msysgit
-*.doc	 diff=astextplain
-*.DOC	 diff=astextplain
-*.docx diff=astextplain
-*.DOCX diff=astextplain
-*.dot  diff=astextplain
-*.DOT  diff=astextplain
-*.pdf  diff=astextplain
-*.PDF	 diff=astextplain
-*.rtf	 diff=astextplain
-*.RTF	 diff=astextplain
+# LF gang
+*.sh text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lfs
+*.md text eol=lf
+*.txt text eol=lf
+*.svg text eol=lf
+*.canvas text eol=lf
+*.csv text eol=lf
+*.tsv text eol=lf
+*.java text eol=lf
+*.cs text eol=lf
 
-# These files are text and should be normalized (Convert crlf => lf)
-*.java text
-*.xml text
-*.txt text
+# Do not touch, or it dies (editing binary files can corrupt data)
 
-# These files are binary and should be left untouched
-# (binary is a macro for -text -diff)
-*.jar binary
-*.so binary
+## Images and Graphic Design
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.psd binary
+*.ai binary
+*.xcf binary
+
+## Audio and Video Media
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.mp4 binary
+*.mov binary
+*.avi binary
+*.mkv binary
+*.flv binary
+
+## Compiled Code, Binaries, and Libraries
+*.exe binary
 *.dll binary
+*.so binary
+*.dylib binary
+*.bin binary
+*.out binary
+*.app binary
+*.msi binary
+
+## Compressed Archives and Disk Images
+*.zip binary
+*.tar binary
+*.gz binary
+*.rar binary
+*.7z binary
+*.iso binary
+*.dmg binary
+
+## Java and Web Runtimes
+*.jar binary
+*.war binary
+*.ear binary
+*.class binary
+*.wasm binary
+
+## Office Documents and PDFs
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+## Fonts
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+
+## Databases and Local Storage
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.localstorage binary
