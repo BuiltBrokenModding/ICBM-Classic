@@ -59,6 +59,7 @@ import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.datagen.BlockModelGenerator;
 import icbm.datagen.BlockStateGenerator;
 import icbm.datagen.ItemModelGenerator;
+import icbm.datagen.LootTableGenerator;
 import icbm.datagen.RecipeGenerator;
 import net.minecraft.command.CommandSource;
 import net.minecraft.data.DataGenerator;
@@ -90,59 +91,60 @@ public class ICBMClassic
 
     public static ICBMClassic INSTANCE;
 
-    @OnlyIn(Dist.CLIENT)
-    public static ClientProxy proxy = new ClientProxy();
+	@OnlyIn(Dist.CLIENT)
+	public static ClientProxy proxy = new ClientProxy();
 
-    public static final int MAP_HEIGHT = 255;
+	public static final int MAP_HEIGHT = 255;
 
-    @Deprecated
-    private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
+	@Deprecated
+	private static final Logger logger = LogManager.getLogger(ICBMConstants.DOMAIN);
 
-    public static final ContagiousPoison chemicalPotion = new ContagiousPoison("Chemical", 0, false);
-    public static final ContagiousPoison contagiousPotion = new ContagiousPoison("Contagious", 1, true);
+	public static final ContagiousPoison chemicalPotion = new ContagiousPoison("Chemical", 0, false);
+	public static final ContagiousPoison contagiousPotion = new ContagiousPoison("Contagious", 1, true);
 
-    public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(ICBMConstants.DOMAIN);
+	public static final ICBMCreativeTab CREATIVE_TAB = new ICBMCreativeTab(ICBMConstants.DOMAIN);
 
-    public static final EventTracker MAIN_TRACKER = new EventTracker();
+	public static final EventTracker MAIN_TRACKER = new EventTracker();
 
-    public ICBMClassic() {
-        INSTANCE = this;
+	public ICBMClassic() {
+		INSTANCE = this;
 
-        final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+		final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Life cycle
-        modBus.addListener(this::commonSetup);
-        modBus.addListener(this::registerDatagen);
+		// Life cycle
+		modBus.addListener(this::commonSetup);
+		modBus.addListener(this::registerDatagen);
 
-        modBus.addListener(ClientReg::clientSetup);
-        modBus.addListener(ClientReg::registerAllModels);
-        modBus.addListener(ClientReg::registerBlockColor);
+		modBus.addListener(ClientReg::clientSetup);
+		modBus.addListener(ClientReg::registerAllModels);
+		modBus.addListener(ClientReg::registerBlockColor);
 
-        // Registries
-        BlockReg.BLOCKS.register(modBus);
-        ItemReg.ITEMS.register(modBus);
-        TileReg.TILES.register(modBus);
-        EntityReg.ENTITIES.register(modBus);
-        ContainerReg.CONTAINER_TYPES.register(modBus);
+		// Registries
+		BlockReg.BLOCKS.register(modBus);
+		ItemReg.ITEMS.register(modBus);
+		TileReg.TILES.register(modBus);
+		EntityReg.ENTITIES.register(modBus);
+		ContainerReg.CONTAINER_TYPES.register(modBus);
 
-        final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-        forgeBus.addListener(this::serverStarting);
-        forgeBus.addListener(this::serverStopping);
+		final IEventBus forgeBus = MinecraftForge.EVENT_BUS;
+		forgeBus.addListener(this::serverStarting);
+		forgeBus.addListener(this::serverStopping);
 
-        //TODO  modEventBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
+		//TODO  modEventBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
 
-        //TODO ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-    }
+		//TODO ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+	}
 
-    // TODO split to a seperate datagen module
-    // TODO find a way to run this headless as a gradle pre-build step to avoid forgetting to run on changes
-    private void registerDatagen(final GatherDataEvent event) {
-        final DataGenerator gen = event.getGenerator();
-        gen.addProvider(new BlockStateGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
-        gen.addProvider(new BlockModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
-        gen.addProvider(new ItemModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
-        gen.addProvider(new RecipeGenerator(gen));
-    }
+	// TODO split to a seperate datagen module
+	// TODO find a way to run this headless as a gradle pre-build step to avoid forgetting to run on changes
+	private void registerDatagen(final GatherDataEvent event) {
+		final DataGenerator gen = event.getGenerator();
+		gen.addProvider(new BlockStateGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
+		gen.addProvider(new BlockModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
+		gen.addProvider(new ItemModelGenerator(gen, ICBMConstants.DOMAIN, event.getExistingFileHelper()));
+		gen.addProvider(new RecipeGenerator(gen));
+		gen.addProvider(new LootTableGenerator(gen));
+	}
 
     /*@SubscribeEvent TODO likely moved to JSON
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
@@ -197,56 +199,56 @@ public class ICBMClassic
         PacketManager.register();
         EnergySystem.register(new EnergySystemFE());
 
-        //Network packets
-        TileEMPTower.register();
-        TileRadarStation.register();
-        TileLauncherBase.register();
-        TileLauncherScreen.register();
-        TileCruiseLauncher.register();
+		//Network packets
+		TileEMPTower.register();
+		TileRadarStation.register();
+		TileLauncherBase.register();
+		TileLauncherScreen.register();
+		TileCruiseLauncher.register();
 
-        //Register caps
-        registerCapabilities();
+		//Register caps
+		registerCapabilities();
 
-        MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
-        //NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
+		MinecraftForge.EVENT_BUS.register(RadarRegistry.INSTANCE);
+		MinecraftForge.EVENT_BUS.register(RadioRegistry.INSTANCE);
+		//NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 
-        handleMissileTargetRegistry();
-        handleMissileFlightRegistry();
-        ActionSystem.setup();
-        handleExRegistry();
-        handleProjectileDataRegistry();
+		handleMissileTargetRegistry();
+		handleMissileFlightRegistry();
+		ActionSystem.setup();
+		handleExRegistry();
+		handleProjectileDataRegistry();
 
-        CREATIVE_TAB.init();
-        ProjectileBlockInteraction.register();
-        ClusterMissileHandler.setup();
-        CargoHolderHandler.setup();
-        RadioactiveHandler.setup();
+		CREATIVE_TAB.init();
+		ProjectileBlockInteraction.register();
+		ClusterMissileHandler.setup();
+		CargoHolderHandler.setup();
+		RadioactiveHandler.setup();
 
-        // Needs to lock late as we need content to register some types
-        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
-        MinecraftForge.EVENT_BUS.post(new ProjectileDataRegistryEvent(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY));
-        ((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).lock();
+		// Needs to lock late as we need content to register some types
+		((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).registerVanillaDefaults();
+		MinecraftForge.EVENT_BUS.post(new ProjectileDataRegistryEvent(ICBMClassicAPI.PROJECTILE_DATA_REGISTRY));
+		((ProjectileDataRegistry) ICBMClassicAPI.PROJECTILE_DATA_REGISTRY).lock();
 
 
-        // DispenserBlock.registerDispenseBehavior(ItemReg.GRENADE_ANVIL::get, new GrenadeDispenseBehavior()); TODO
-        // DispenserBlock.registerDispenseBehavior(ItemReg.itemBombCart, new BombCartDispenseBehavior()); TODO
+		// DispenserBlock.registerDispenseBehavior(ItemReg.GRENADE_ANVIL::get, new GrenadeDispenseBehavior()); TODO
+		// DispenserBlock.registerDispenseBehavior(ItemReg.itemBombCart, new BombCartDispenseBehavior()); TODO
 
-        // Generate defaults
-        FlyingBlock.loadFromConfig();
-    }
+		// Generate defaults
+		FlyingBlock.loadFromConfig();
+	}
 
-    void registerCapabilities() {
-        CapabilityEMP.register();
-        CapabilityMissile.register();
-        CapabilityBlast.register();
-        CapabilityBlastVelocity.register();
-        CapabilityMissileHolder.register();
-        CapabilityMissileStack.register();
-        CapabilityProjectileStack.register();
-        CapabilityMissileLauncher.register();
-        CapabilityRadio.register();
-        CapSpaceChicken.register();
+	void registerCapabilities() {
+		CapabilityEMP.register();
+		CapabilityMissile.register();
+		CapabilityBlast.register();
+		CapabilityBlastVelocity.register();
+		CapabilityMissileHolder.register();
+		CapabilityMissileStack.register();
+		CapabilityProjectileStack.register();
+		CapabilityMissileLauncher.register();
+		CapabilityRadio.register();
+		CapSpaceChicken.register();
         CapabilityGPSData.register();
     }
 
@@ -255,11 +257,11 @@ public class ICBMClassic
         ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY = new BuildableObjectRegistry<IMissileTarget>("TARGET_DATA");
 
         // Default types
-        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(BasicTargetData.REG_NAME, BasicTargetData::new);
-        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(BallisticTargetingData.REG_NAME, BallisticTargetingData::new);
-        ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(SAMTargetData.REG_NAME, () -> null); //Can't be restored from save but reserving name
+		ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(BasicTargetData.REG_NAME, BasicTargetData::new);
+		ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(BallisticTargetingData.REG_NAME, BallisticTargetingData::new);
+		ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY.register(SAMTargetData.REG_NAME, () -> null); //Can't be restored from save but reserving name
 
-        //Fire registry event
+		//Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileTargetRegistryEvent(ICBMClassicAPI.MISSILE_TARGET_DATA_REGISTRY));
 
         //Lock to prevent late registry
@@ -271,17 +273,17 @@ public class ICBMClassic
         ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY = new BuildableObjectRegistry<IMissileFlightLogic>("FLIGHT_LOGIC");
 
         // Register defaults
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(ArcFlightLogic.REG_NAME, ArcFlightLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(WarmupFlightLogic.REG_NAME, WarmupFlightLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveByFacingLogic.REG_NAME, MoveByFacingLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveByVec3Logic.REG_NAME, MoveByVec3Logic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveForTicksLogic.REG_NAME, MoveForTicksLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DeadFlightLogic.REG_NAME, DeadFlightLogic::new);
-        ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(FollowTargetLogic.REG_NAME, FollowTargetLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DirectFlightLogic.REG_NAME, DirectFlightLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(ArcFlightLogic.REG_NAME, ArcFlightLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(WarmupFlightLogic.REG_NAME, WarmupFlightLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveByFacingLogic.REG_NAME, MoveByFacingLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveByVec3Logic.REG_NAME, MoveByVec3Logic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(MoveForTicksLogic.REG_NAME, MoveForTicksLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(DeadFlightLogic.REG_NAME, DeadFlightLogic::new);
+		ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY.register(FollowTargetLogic.REG_NAME, FollowTargetLogic::new);
 
 
-        //Fire registry event
+		//Fire registry event
         MinecraftForge.EVENT_BUS.post(new MissileFlightLogicRegistryEvent(ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY));
 
         //Lock to prevent late registry
@@ -294,8 +296,8 @@ public class ICBMClassic
 
         // Register defaults
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BombletProjectileData.NAME, BombletProjectileData::new);
-        ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, () -> new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_1::get));
-        // TODO ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, () -> new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_2::get));
+		ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, () -> new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_1::get));
+		// TODO ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(ParachuteProjectileData.NAME, () -> new ParachuteProjectileData(EntityReg.CARGO_PARACHUTE_SIZE_2::get));
         ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.register(BalloonProjectileData.NAME, () -> new BalloonProjectileData(EntityReg.CARGO_BALLOON::get));
     }
 
@@ -305,19 +307,19 @@ public class ICBMClassic
         final ExplosiveRegistry explosiveRegistry = new ExplosiveRegistry();
         ICBMClassicAPI.EXPLOSIVE_REGISTRY = explosiveRegistry;
 
-        //Fire registry events for content types
+		//Fire registry events for content types
 
-        //Lock content types, done to prevent errors with adding content
-        explosiveRegistry.lockNewContentTypes();
+		//Lock content types, done to prevent errors with adding content
+		explosiveRegistry.lockNewContentTypes();
 
-        //Register internal first to reserve slots for backwards compatibility
-        ExplosiveInit.init();
+		//Register internal first to reserve slots for backwards compatibility
+		ExplosiveInit.init();
 
-        //Fire registry event for explosives
-        explosiveRegistry.lockNewExplosives();
+		//Fire registry event for explosives
+		explosiveRegistry.lockNewExplosives();
 
-        //Lock all registry, done to prevent errors in data generation for renders and content
-        explosiveRegistry.completeLock();
+		//Lock all registry, done to prevent errors in data generation for renders and content
+		explosiveRegistry.completeLock();
     }
 
 
@@ -326,10 +328,10 @@ public class ICBMClassic
         //Get command manager
         CommandDispatcher<CommandSource> commandManager = event.getCommandDispatcher();
 
-        //Setup commands
-        ICBMCommands.setupCommands(commandManager);
+		//Setup commands
+		ICBMCommands.setupCommands(commandManager);
 
-        WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
+		WorkerThreadManager.INSTANCE = new WorkerThreadManager(ConfigThread.THREAD_COUNT);
         WorkerThreadManager.INSTANCE.startThreads();
     }
 
