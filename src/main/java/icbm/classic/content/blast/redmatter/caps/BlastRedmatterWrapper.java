@@ -9,9 +9,9 @@ import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.status.ActionResponses;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,20 +41,20 @@ public class BlastRedmatterWrapper implements IBlast
     @Nonnull
     @Override
     public IActionSource getSource() {
-        return new ActionSource(host.world, new Vec3d(host.posX, host.posY, host.posZ), new EntityCause(host));
+        return new ActionSource(host.level(), host.position(), new EntityCause(host));
     }
 
     @Override
     public void clearBlast()
     {
-        host.setDead();
+        host.discard();
     }
 
     //<editor-fold desc="properties">
     @Override
     public boolean isCompleted()
     {
-        return host.isDead;
+        return host.isRemoved();
     }
 
     @Nonnull
@@ -80,27 +80,28 @@ public class BlastRedmatterWrapper implements IBlast
 
     //<editor-fold desc="position-data">
     @Override
-    public World world()
+    public Level world()
     {
-        return host.world;
+        return host.level();
     }
 
     @Override
     public double z()
     {
-        return host.posZ;
+        return host.getZ();
     }
 
     @Override
     public double x()
     {
-        return host.posX;
+        return host.getX();
     }
 
     @Override
     public double y()
     {
-        return host.posY;
+        return host.getY();
     }
     //</editor-fold>
 }
+// PORTED

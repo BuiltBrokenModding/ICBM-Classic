@@ -5,8 +5,8 @@ import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.missiles.IMissile;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  */
 @Data
 public class LaunchedWithMissile implements IActionStatus {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcher.launched.missile_data");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "launcher.launched.missile_data");
 
     /**
      * Missile launched, runtime only and doesn't save
@@ -27,7 +27,7 @@ public class LaunchedWithMissile implements IActionStatus {
     //TODO include missile payload, name, type, etc... anything useful to player
 
     @Override
-    public ITextComponent message() {
+    public Component message() {
         return LauncherStatus.LAUNCHED.message(); //TODO provide missile info
     }
 
@@ -37,3 +37,4 @@ public class LaunchedWithMissile implements IActionStatus {
         return REG_NAME;
     }
 }
+// PORTED

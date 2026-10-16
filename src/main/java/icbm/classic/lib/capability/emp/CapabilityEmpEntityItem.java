@@ -4,33 +4,27 @@ import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.lib.InventoryUtility;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 /**
- * Wrapper to trigger EMP calls on ItemStack contained inside of {@link EntityItem}
+ * Wrapper to trigger EMP calls on ItemStack contained inside of {@link ItemEntity}
  *
  *
  * Created by Dark(DarkGuardsman, Robin) on 3/12/2018.
  */
-public class CapabilityEmpEntityItem implements IEMPReceiver, ICapabilityProvider
+public class CapabilityEmpEntityItem implements IEMPReceiver
 {
-    public final EntityItem entityItem;
+    public final ItemEntity entityItem;
 
-    public CapabilityEmpEntityItem(EntityItem entityItem)
+    public CapabilityEmpEntityItem(ItemEntity entityItem)
     {
         this.entityItem = entityItem;
     }
 
     @Override
-    public float applyEmpAction(World world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
+    public float applyEmpAction(Level world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
     {
         if (ConfigBlast.emp.ALLOW_GROUND_ITEMS)
         {
@@ -52,17 +46,5 @@ public class CapabilityEmpEntityItem implements IEMPReceiver, ICapabilityProvide
         }
         return power;
     }
-
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityEMP.EMP;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityEMP.EMP ? (T) this : null;
-    }
 }
+// PORTED

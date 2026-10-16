@@ -9,8 +9,9 @@ import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.tile.ITick;
 import lombok.Data;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
  * Used to store firing information when working with countdowns/delays
  */
 @Data
-public class FiringPackage implements INBTSerializable<NBTTagCompound>, ITick {
+public class FiringPackage implements INBTSerializable<CompoundTag>, ITick {
 
     /** Input: Target data */
     private IMissileTarget targetData;
@@ -67,12 +68,12 @@ public class FiringPackage implements INBTSerializable<NBTTagCompound>, ITick {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, new NBTTagCompound());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, new CompoundTag());
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -93,3 +94,4 @@ public class FiringPackage implements INBTSerializable<NBTTagCompound>, ITick {
         }
     }
 }
+// PORTED

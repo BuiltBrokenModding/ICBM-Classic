@@ -4,8 +4,8 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.transform.vector.Location;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 /** @author Calclavia */
 @Deprecated
@@ -17,11 +17,17 @@ public abstract class ThreadExplosion extends Thread //TODO replace with worker 
     public float energy;
     public Entity source;
 
-    /** Is the thread completed */
-    public boolean isComplete = false;
+    /**
+     * PORT: loaded chunks around the blast, captured on the server thread when the thread is created. The level
+     * can not be read from this thread in 1.21 without blocking on the server thread, see {@link ChunkSnapshot}.
+     */
+    protected final ChunkSnapshot snapshot;
 
-    /** Used to kill the thread on its next loop cycle */
-    protected boolean kill = false;
+    /** Is the thread completed, set by this thread and read by the server thread */
+    public volatile boolean isComplete = false;
+
+    /** Used to kill the thread on its next loop cycle, set by the server thread */
+    protected volatile boolean kill = false;
 
     public ThreadExplosion(Blast blast, int radius, float energy, Entity source)
     {
@@ -31,6 +37,14 @@ public abstract class ThreadExplosion extends Thread //TODO replace with worker 
         this.radius = radius;
         this.energy = energy;
         this.source = source;
+        // Small explosion rays travel up to about 1.75x the radius (power 1.3 * radius, 0.3 blocks per 0.225 power)
+        this.snapshot = ChunkSnapshot.capture(blast.world(), position != null ? position.x() : 0, position != null ? position.z() : 0,
+            (int) Math.ceil(radius * 1.75F) + 2);
+        // Used for resistance checks, created here so the thread does not create it lazily
+        if (blast.world() != null && position != null)
+        {
+            blast.asVanillaExplosion();
+        }
         this.setPriority(Thread.MIN_PRIORITY); //We don't care how fast this runs
         this.setDaemon(true); //Fix for threads still running when MC closes
     }
@@ -73,7 +87,7 @@ public abstract class ThreadExplosion extends Thread //TODO replace with worker 
             else
             {
                 ICBMClassic.logger().error("ThreadExplosion#run() -> Invalid world or position provided for thread. " +
-                        "Canceling action to prevent issues. \n Pos = " + position + " World = " + (position != null ? position.world : "null"));
+                        "Canceling action to prevent issues. \n Pos = " + position + " Level = " + (position != null ? position.world : "null"));
             }
         }
         catch (Exception e)
@@ -103,5 +117,6 @@ public abstract class ThreadExplosion extends Thread //TODO replace with worker 
         }
     }
 
-    protected abstract void doRun(World world, Location center);
+    protected abstract void doRun(Level world, Location center);
 }
+// PORTED

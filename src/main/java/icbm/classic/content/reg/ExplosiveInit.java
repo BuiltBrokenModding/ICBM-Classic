@@ -27,20 +27,19 @@ import icbm.classic.content.blast.threaded.BlastAntimatter;
 import icbm.classic.content.blast.threaded.BlastNuclear;
 import icbm.classic.content.blast.threaded.BlastThermobaric;
 import icbm.classic.content.entity.EntityFragments;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.explosive.reg.ExplosiveRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
@@ -64,7 +63,7 @@ public class ExplosiveInit
             .setProjectile((world) -> {
                 final EntityFragments fragments = new EntityFragments(world);
                 fragments.setArrowCritical(true);
-                fragments.setFire(100);
+                fragments.igniteForSeconds(100);
                 fragments.setDamage(ConfigBlast.shrapnel.damage);
                 return fragments;
             })
@@ -77,7 +76,7 @@ public class ExplosiveInit
 
         ICBMExplosives.INCENDIARY = newEx(2, "incendiary", EnumTier.ONE, (w, x, y, z, s) -> new BlastFire().setBlastWorld(w).setBlastPosition(x, y, z).setBlastSize(ConfigBlast.incendiary.scale));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ICBMExplosives.INCENDIARY.getRegistryKey(),
-                (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
+                (world, x, y, z, tick) -> world.addParticle(ParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D)
                 );
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.INCENDIARY.getRegistryKey(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.INCENDIARY);
         ICBMClassicAPI.EX_GRENADE_REGISTRY.setFuseSupplier(ICBMExplosives.INCENDIARY.getRegistryKey(), (entity) -> ConfigBlast.FUSE_TIMES.GRENADES.INCENDIARY);
@@ -215,7 +214,7 @@ public class ExplosiveInit
 
         ICBMExplosives.EXOTHERMIC = newEx(17, "exothermic", EnumTier.THREE, (w, x, y, z, s) -> new BlastExothermic().setBlastSize(ConfigBlast.exothermic.scale).setBlastWorld(w).setBlastPosition(x, y, z));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseTickListener(ICBMExplosives.EXOTHERMIC.getRegistryKey(),
-                (world, x, y, z, tick) -> world.spawnParticle(EnumParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D));
+                (world, x, y, z, tick) -> world.addParticle(ParticleTypes.LAVA, x, y + 0.5D, z, 0.0D, 0.0D, 0.0D));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.EXOTHERMIC.getRegistryKey(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.EXOTHERMIC);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.EXOTHERMIC.getRegistryKey(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.EXOTHERMIC);
 
@@ -251,7 +250,7 @@ public class ExplosiveInit
 
         //TODO add config (disable by default) for alarm audio
 
-        ICBMExplosives.REDMATTER = newEx(23, "redMatter", EnumTier.FOUR, (w, x, y, z, s) -> new ActionSpawnRedmatter(w, new Vec3d(x, y, z), s, ICBMExplosives.REDMATTER));
+        ICBMExplosives.REDMATTER = newEx(23, "redmatter", EnumTier.FOUR, (w, x, y, z, s) -> new ActionSpawnRedmatter(w, new Vec3(x, y, z), s, ICBMExplosives.REDMATTER));
         ICBMClassicAPI.EX_BLOCK_REGISTRY.setFuseSupplier(ICBMExplosives.REDMATTER.getRegistryKey(), (world, x, y, z) -> ConfigBlast.FUSE_TIMES.EXPLOSIVES.REDMATTER);
         ICBMClassicAPI.EX_MINECART_REGISTRY.setFuseSupplier(ICBMExplosives.REDMATTER.getRegistryKey(), (entity) -> ConfigBlast.FUSE_TIMES.BOMB_CARTS.REDMATTER);
 
@@ -266,7 +265,7 @@ public class ExplosiveInit
         //=================== New Explosives not part of classic original
         ICBMExplosives.COLOR = newEx(-1, "colors", EnumTier.ONE, (w, x, y, z, s) -> new BlastColor().setBlastSize(ConfigBlast.colorful.scale).setBlastWorld(w).setBlastPosition(x, y, z));
         ICBMExplosives.SMOKE = newEx(-1, "smoke", EnumTier.ONE, (w, x, y, z, s) -> {
-            final ActionSpawnEntity actionSpawnEntity = new ActionSpawnEntity(w, new Vec3d(x, y, z), s, ICBMExplosives.SMOKE);
+            final ActionSpawnEntity actionSpawnEntity = new ActionSpawnEntity(w, new Vec3(x, y, z), s, ICBMExplosives.SMOKE);
             actionSpawnEntity.setValue(ActionFields.ENTITY_REG_NAME, ICBMEntities.SMOKE);
             return actionSpawnEntity;
         });
@@ -289,7 +288,7 @@ public class ExplosiveInit
     @Deprecated
     private static IExplosiveData newEx(int id, String name, EnumTier tier, IBlastFactory factory)
     {
-        final ResourceLocation regName = new ResourceLocation(ICBMConstants.DOMAIN, name);
+        final ResourceLocation regName = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, name);
         if (id != -1)
         {
             //Setup old IDs so saves work
@@ -310,44 +309,46 @@ public class ExplosiveInit
         return data;
     }
 
-    private static boolean enderMissileCoordSet(Entity entity, EntityPlayer player, EnumHand hand)
+    private static boolean enderMissileCoordSet(Entity entity, Player player, InteractionHand hand)
     {
-        if (entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        final IExplosive explosive = entity.getCapability(ICBMClassicAPI.EXPLOSIVE_ENTITY_CAPABILITY);
+        if (explosive != null)
         {
-            return encodeEnderCoordSet(entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null), player, hand);
+            return encodeEnderCoordSet(explosive, player, hand);
         }
         return false;
     }
 
-    private static boolean enderBlockCoordSet(World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitz)
+    private static boolean enderBlockCoordSet(Level world, BlockPos pos, Player player, InteractionHand hand, Direction facing, float hitX, float hitY, float hitz)
     {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final BlockEntity tileEntity = world.getBlockEntity(pos);
 
-        if (tileEntity != null && tileEntity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, facing))
+        // PORT: 1.12 checked hasCapability(facing) then fetched with a null side
+        if (tileEntity != null && world.getCapability(ICBMClassicAPI.EXPLOSIVE_BLOCK_CAPABILITY, pos, facing) != null)
         {
-            return encodeEnderCoordSet(tileEntity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null), player, hand);
+            return encodeEnderCoordSet(world.getCapability(ICBMClassicAPI.EXPLOSIVE_BLOCK_CAPABILITY, pos, null), player, hand);
         }
 
         return false;
     }
 
-    private static boolean encodeEnderCoordSet(IExplosive provider, EntityPlayer player, EnumHand hand) {
+    private static boolean encodeEnderCoordSet(IExplosive provider, Player player, InteractionHand hand) {
         if(provider == null) {
             return false;
         }
-        final ItemStack stack = player.getHeldItem(hand);
+        final ItemStack stack = player.getItemInHand(hand);
         final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
         if (gpsData != null)
         {
-            final Vec3d position = gpsData.getPosition();
+            final Vec3 position = gpsData.getPosition();
             if (position != null)
             {
                 provider.addCustomization(new EnderBlastCustomization(gpsData.getWorldId(), position));
-                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.toolTargetSet")));
+                player.sendSystemMessage(Component.translatable("chat.launcher.toolTargetSet"));
             }
             else
             {
-                player.sendMessage(new TextComponentString(LanguageUtility.getLocal("chat.launcher.noTargetInTool")));
+                player.sendSystemMessage(Component.translatable("chat.launcher.noTargetInTool"));
             }
             return true;
         }

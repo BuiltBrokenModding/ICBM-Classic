@@ -3,9 +3,8 @@ package icbm.classic.lib.actions.status;
 import icbm.classic.ICBMConstants;
 import icbm.classic.api.actions.status.IActionStatus;
 import lombok.NoArgsConstructor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +17,7 @@ public class ActionStatus implements IActionStatus {
     private boolean error = false;
     private boolean block = false;
     protected String translationKey;
-    protected ITextComponent textComponent;
+    protected Component textComponent;
     private ResourceLocation regName;
 
     public ActionStatus asError() {
@@ -41,7 +40,7 @@ public class ActionStatus implements IActionStatus {
     }
 
     public ActionStatus withRegName(String domain, String key) {
-        this.regName = new ResourceLocation(domain, key);
+        this.regName = ResourceLocation.fromNamespaceAndPath(domain, key);
         return this;
     }
 
@@ -56,9 +55,9 @@ public class ActionStatus implements IActionStatus {
     }
 
     @Override
-    public ITextComponent message() {
+    public Component message() {
         if(textComponent == null) {
-            textComponent = new TextComponentTranslation(translationKey);
+            textComponent = Component.translatable(translationKey);
         }
         return textComponent;
     }
@@ -74,3 +73,4 @@ public class ActionStatus implements IActionStatus {
         return "ActionStatus[ '" + getRegistryKey() + "' , '" + translationKey + "' ]@" + hashCode();
     }
 }
+// PORTED

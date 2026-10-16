@@ -48,3 +48,4 @@ public interface IEnergyBuffer
      */
     void setEnergyStored(int energy);
 }
+// PORTED

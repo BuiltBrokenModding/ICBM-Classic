@@ -3,118 +3,128 @@ package icbm.classic.content.missile.entity.itemstack.item;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.capability.holder.ICapabilityHolderItem;
+import icbm.classic.prefab.item.ISubItemProvider;
+import icbm.classic.prefab.item.ItemBase;
 import icbm.classic.prefab.item.ItemICBMBase;
-import icbm.classic.prefab.item.ItemStackCapProvider;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemHeldItemMissile extends ItemICBMBase {
+public class ItemHeldItemMissile extends ItemICBMBase implements ICapabilityHolderItem, ISubItemProvider {
     public ItemHeldItemMissile() {
-        super("held_item_missile");
-        this.setMaxStackSize(1);
-        this.setHasSubtypes(true);
+        super("held_item_missile", new Item.Properties().stacksTo(1));
     }
 
-    @Override
-    public boolean showDurabilityBar(ItemStack stack)
-    {
-        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if (cap instanceof CapabilityHeldItemMissile) {
-            final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
-            return heldItem.getItem().showDurabilityBar(heldItem);
-        }
-        return stack.isItemDamaged();
-    }
-
-    @Override
-    public double getDurabilityForDisplay(ItemStack stack)
-    {
-        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if (cap instanceof CapabilityHeldItemMissile) {
-            final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
-            return heldItem.getItem().getDurabilityForDisplay(heldItem);
-        }
-        return super.getDurabilityForDisplay(stack);
-    }
-
-    @Override
     @Nullable
-    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
-        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("missile", ICBMClassicAPI.MISSILE_STACK_CAPABILITY, new CapabilityHeldItemMissile());
-        return provider;
+    private static CapabilityHeldItemMissile getCap(ItemStack stack) {
+        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
+        return cap instanceof CapabilityHeldItemMissile ? (CapabilityHeldItemMissile) cap : null;
+    }
+
+    /** 1.12 showDurabilityBar */
+    @Override
+    public boolean isBarVisible(ItemStack stack)
+    {
+        final CapabilityHeldItemMissile cap = getCap(stack);
+        if (cap != null) {
+            final ItemStack heldItem = cap.getHeldItem();
+            return !heldItem.isEmpty() && heldItem.isBarVisible();
+        }
+        return stack.isDamaged();
+    }
+
+    /** 1.12 getDurabilityForDisplay */
+    @Override
+    public int getBarWidth(ItemStack stack)
+    {
+        final CapabilityHeldItemMissile cap = getCap(stack);
+        if (cap != null && !cap.getHeldItem().isEmpty()) {
+            return cap.getHeldItem().getBarWidth();
+        }
+        return super.getBarWidth(stack);
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if (cap instanceof CapabilityHeldItemMissile && (((CapabilityHeldItemMissile) cap).getHeldItem().getItem() instanceof ItemSword)) {
-            return super.getUnlocalizedName(stack) + ".sword";
+    public int getBarColor(ItemStack stack)
+    {
+        final CapabilityHeldItemMissile cap = getCap(stack);
+        if (cap != null && !cap.getHeldItem().isEmpty()) {
+            return cap.getHeldItem().getBarColor();
+        }
+        return super.getBarColor(stack);
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(ItemCapability<T, Void> capability, ItemStack stack) {
+        if (capability == ICBMClassicAPI.MISSILE_STACK_CAPABILITY) {
+            return (T) new CapabilityHeldItemMissile(stack);
+        }
+        return null;
+    }
+
+    @Override
+    public String getDescriptionId(ItemStack stack) {
+        final CapabilityHeldItemMissile cap = getCap(stack);
+        if (cap != null && cap.getHeldItem().getItem() instanceof SwordItem) {
+            return super.getDescriptionId(stack) + ".sword";
             //TODO attempt to localize all items to allow customized naming
         }
-        return super.getUnlocalizedName(stack);
+        return super.getDescriptionId(stack);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
-        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
+        final CapabilityHeldItemMissile cap = getCap(stack);
 
         // Only show basic info if we have no projectile data
-        if (!(cap instanceof CapabilityHeldItemMissile) || ((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
-            LanguageUtility.outputLines(new TextComponentTranslation(getUnlocalizedName() + ".info"), list::add);
+        if (cap == null || cap.getHeldItem().isEmpty()) {
+            LanguageUtility.outputLines(Component.translatable(getDescriptionId() + ".info"), line -> list.add(Component.literal(line)));
         }
 
         // Show projectile information
-        if (cap instanceof CapabilityHeldItemMissile && !((CapabilityHeldItemMissile) cap).getHeldItem().isEmpty()) {
-            final ItemStack heldItem = ((CapabilityHeldItemMissile) cap).getHeldItem();
-
+        if (cap != null && !cap.getHeldItem().isEmpty()) {
+            final ItemStack heldItem = cap.getHeldItem();
 
             LanguageUtility.outputLines(
-                new TextComponentTranslation(
-                    getUnlocalizedName() + ".held_item." + ((CapabilityHeldItemMissile) cap).getActionMode().name().toLowerCase()
-                ), list::add);
+                Component.translatable(
+                    getDescriptionId() + ".held_item." + cap.getActionMode().name().toLowerCase()
+                ), line -> list.add(Component.literal(line)));
 
-
-            list.add("");
-            list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.held"));
-            list.addAll(heldItem.getTooltip(Minecraft.getMinecraft().player, flag));
-            list.add("");
+            list.add(Component.empty());
+            list.add(Component.translatable("projectile.icbmclassic:holder.held"));
+            list.addAll(heldItem.getTooltipLines(context, ItemBase.getClientPlayer(), flag));
+            list.add(Component.empty());
 
             if(!HeldItemMissileHandler.isAllowed(heldItem)) {
-                list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled.config"));
+                list.add(Component.translatable("projectile.icbmclassic:holder.disabled.config"));
             }
         }
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (this.isInCreativeTab(tab)) {
-            items.add(new ItemStack(this));
-            items.add(createStack(new ItemStack(Items.DIAMOND_SWORD)));
-            items.add(createStack(new ItemStack(Items.SHEARS)));
-        }
+    public void getSubItems(NonNullList<ItemStack> items) {
+        items.add(new ItemStack(this));
+        items.add(createStack(new ItemStack(Items.DIAMOND_SWORD)));
+        items.add(createStack(new ItemStack(Items.SHEARS)));
     }
 
     private ItemStack createStack(ItemStack data) {
         final ItemStack stack = new ItemStack(this);
-        final ICapabilityMissileStack cap = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if (cap instanceof CapabilityHeldItemMissile) {
-            ((CapabilityHeldItemMissile) cap).setHeldItem(data);
+        final CapabilityHeldItemMissile cap = getCap(stack);
+        if (cap != null) {
+            cap.setHeldItem(data);
         }
         return stack;
     }
 }
+// PORTED

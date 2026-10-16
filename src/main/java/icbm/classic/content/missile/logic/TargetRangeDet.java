@@ -5,7 +5,7 @@ import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.missile.logic.targeting.BallisticTargetingData;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public class TargetRangeDet {
     private final EntityExplosiveMissile missile;
@@ -16,7 +16,7 @@ public class TargetRangeDet {
 
     public void update() {
 
-        if(missile.world.isRemote || missile.getMissileCapability().getTargetData() == null) {
+        if(missile.level().isClientSide() || missile.getMissileCapability().getTargetData() == null) {
             return;
         }
 
@@ -30,9 +30,9 @@ public class TargetRangeDet {
 
         if(offset > 0)
         {
-            double deltaX = missile.getMissileCapability().getTargetData() .getX() - missile.posX;
-            double deltaY = missile.getMissileCapability().getTargetData() .getY() - missile.posY;
-            double deltaZ = missile.getMissileCapability().getTargetData() .getZ() - missile.posZ;
+            double deltaX = missile.getMissileCapability().getTargetData() .getX() - missile.getX();
+            double deltaY = missile.getMissileCapability().getTargetData() .getY() - missile.getY();
+            double deltaZ = missile.getMissileCapability().getTargetData() .getZ() - missile.getZ();
 
             //Validate we are near flat distance of the target
             if (inRange(offset, deltaX) && inRange(offset, deltaZ)) // TODO account for next tick motion
@@ -40,8 +40,8 @@ public class TargetRangeDet {
                 double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
                 if(distance <= offset)
                 {
-                    missile.explosive.doExplosion(missile.posX, missile.posY, missile.posZ, new ActionSource(missile.world, new Vec3d(missile.posX, missile.posY, missile.posZ), new EntityCause(missile))); //TODO make lambda driven, so we can reuse fuses on other entities
-                    missile.setDead();
+                    missile.explosive.doExplosion(missile.getX(), missile.getY(), missile.getZ(), new ActionSource(missile.level(), new Vec3(missile.getX(), missile.getY(), missile.getZ()), new EntityCause(missile))); //TODO make lambda driven, so we can reuse fuses on other entities
+                    missile.discard();
                 }
             }
         }
@@ -52,3 +52,4 @@ public class TargetRangeDet {
         return value <= range && value >= -range;
     }
 }
+// PORTED

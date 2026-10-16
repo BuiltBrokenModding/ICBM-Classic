@@ -1,77 +1,101 @@
 package icbm.classic.mods.mekanism;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.config.blast.ConfigBlast;
-import icbm.classic.config.util.BlockReplacementData;
-import icbm.classic.content.actions.emp.EmpHandler;
 import icbm.classic.lib.network.packet.PacketEntityPos;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
 import icbm.classic.mods.ModProxy;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Method;
 
 /**
- *
+ * Mekanism interaction. Mekanism is not on the compile classpath, everything goes through registry names and
+ * reflection, guarded by {@link #isModLoaded(String)}.
+ * <p>
  * Created by Dark(DarkGuardsman, Robin) on 5/22/2018.
  */
 public class MekProxy extends ModProxy
 {
+    public static final String MOD_ID = "mekanism";
+
     public static final MekProxy INSTANCE = new MekProxy();
+
+    /** PORT: 1.12 machine block meta 11, flattened to its own block in Mekanism 1.21 */
+    public static final ResourceLocation TELEPORTER = ResourceLocation.fromNamespaceAndPath(MOD_ID, "teleporter");
+    /** PORT: 1.12 basic block meta 7, flattened to its own block in Mekanism 1.21 */
+    public static final ResourceLocation TELEPORTER_FRAME = ResourceLocation.fromNamespaceAndPath(MOD_ID, "teleporter_frame");
 
     private boolean isLoaded = false;
 
-    @GameRegistry.ObjectHolder("mekanism:MachineBlock")
-    public static Block machineBlock;
+    public static Block teleporterBlock;
+    public static Block teleporterFrameBlock;
 
-    @GameRegistry.ObjectHolder("mekanism:BasicBlock")
-    public static Block basicBlock;
+    /** Mekanism's public no-arg teleport method, null when this Mekanism version does not have it */
+    private static Method teleportMethod;
 
-    @Optional.Method(modid = "mekanism")
     @Override
     public void preInit() {
+        if (!isModLoaded(MOD_ID)) {
+            return;
+        }
         // Mekanism https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/MekanismBlocks.java
         //          https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/block/states/BlockStateMachine.java
-        final NBTTagCompound energyOverride = new NBTTagCompound();
-        energyOverride.setDouble("electricityStored", 0); // https://github.com/mekanism/Mekanism/blob/1.12/src/main/java/mekanism/common/tile/prefab/TileEntityElectricBlock.java#L169
-
-        // TODO replace with mek's API as this is painful given they use a central block for several sub-blocks
-        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
-        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock2"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
-        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "MachineBlock3"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
-        EmpHandler.empBlockSwaps.setDefault(new ResourceLocation("mekanism", "EnergyCube"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        // PORT-TODO: 1.12 zeroed "electricityStored" through EMP block swaps for MachineBlock/MachineBlock2/MachineBlock3/EnergyCube.
+        //  Mekanism 1.21 has one block per machine and saves energy in "EnergyContainers", so the NBT override no longer
+        //  applies. Energy is drained through the generic FE capability EMP handling instead. Original setup kept for reference:
+        // final CompoundTag energyOverride = new CompoundTag();
+        // energyOverride.putDouble("electricityStored", 0);
+        // EmpHandler.empBlockSwaps.setDefault(ResourceLocation.fromNamespaceAndPath("mekanism", "MachineBlock"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        // EmpHandler.empBlockSwaps.setDefault(ResourceLocation.fromNamespaceAndPath("mekanism", "MachineBlock2"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        // EmpHandler.empBlockSwaps.setDefault(ResourceLocation.fromNamespaceAndPath("mekanism", "MachineBlock3"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
+        // EmpHandler.empBlockSwaps.setDefault(ResourceLocation.fromNamespaceAndPath("mekanism", "EnergyCube"), new BlockReplacementData().setBlockNBT(energyOverride), 0);
     }
 
     @Override
-    @Optional.Method(modid = "mekanism")
     public void init()
     {
+        if (!isModLoaded(MOD_ID)) {
+            return;
+        }
         this.isLoaded = true;
 
-        ICBMClassic.logger().info("Mekanism interaction: " + machineBlock + " " + basicBlock);
+        teleporterBlock = BuiltInRegistries.BLOCK.getOptional(TELEPORTER).orElse(null);
+        teleporterFrameBlock = BuiltInRegistries.BLOCK.getOptional(TELEPORTER_FRAME).orElse(null);
 
-        if(machineBlock != null && basicBlock != null) {
+        ICBMClassic.logger().info("Mekanism interaction: " + teleporterBlock + " " + teleporterFrameBlock);
 
-            // Teleporter frame is basic block meta 7
-            final IBlockState frameState = basicBlock.getStateFromMeta(7);
+        if(teleporterBlock != null && teleporterBlock != Blocks.AIR && teleporterFrameBlock != null && teleporterFrameBlock != Blocks.AIR) {
 
-            ICBMClassic.logger().info("Mekanism interaction: " + frameState);
+            ICBMClassic.logger().info("Mekanism interaction: " + teleporterFrameBlock);
 
-            ProjectileBlockInteraction.addBlockStateInteraction(frameState, (world, blockPos, hit, side, state, entity) -> {
-                final BlockPos possiblePortal = blockPos.offset(side);
+            // PORT: 1.12 Mekanism had a public no-arg TileEntityTeleporter#teleport(). Look it up once and only hook the frame
+            //  when it exists, otherwise every hit logged a NoSuchMethodException and the projectile was pushed back without
+            //  teleporting. Without it projectiles hit the frame like any other block.
+            try {
+                teleportMethod = Class.forName("mekanism.common.tile.TileEntityTeleporter").getMethod("teleport");
+            }
+            catch (ReflectiveOperationException | LinkageError e) {
+                teleportMethod = null;
+                ICBMClassic.logger().warn("Mekanism teleporter API changed, projectile teleport compat disabled");
+            }
+            if (teleportMethod == null) {
+                return;
+            }
+
+            ProjectileBlockInteraction.addBlockInteraction(teleporterFrameBlock, (world, blockPos, hit, side, state, entity) -> {
+                final BlockPos possiblePortal = blockPos.relative(side);
                 final BlockPos teleporter = findTeleporter(world, possiblePortal);
                 if(teleporter != null) {
                     teleport(world, teleporter, hit, entity);
@@ -82,98 +106,94 @@ public class MekProxy extends ModProxy
         }
     }
 
-    protected BlockPos findTeleporter(World world, BlockPos possiblePortal) {
-        final BlockPos optionA = possiblePortal.down();
+    protected BlockPos findTeleporter(Level world, BlockPos possiblePortal) {
+        final BlockPos optionA = possiblePortal.below();
 
         if(isTeleporter(world.getBlockState(optionA))) {
             return optionA;
         }
 
-        final BlockPos optionB = optionA.down();
+        final BlockPos optionB = optionA.below();
         if(isTeleporter(world.getBlockState(optionB))) {
            return optionB;
         }
 
-        final BlockPos optionC = optionB.down();
+        final BlockPos optionC = optionB.below();
         if(isTeleporter(world.getBlockState(optionC))) {
             return optionC;
         }
         return null;
     }
 
-    protected void teleport(World world, BlockPos telePos, Vec3d hit, Entity entity) {
+    protected void teleport(Level world, BlockPos telePos, Vec3 hit, Entity entity) {
         if(entity instanceof EntityProjectile) {
             ((EntityProjectile<?>) entity).moveTowards(hit, -0.5);
         }
         else {
-            entity.setPosition(telePos.getX() + 0.5, telePos.getY() + 1.5, telePos.getZ() + 0.5);
+            entity.setPos(telePos.getX() + 0.5, telePos.getY() + 1.5, telePos.getZ() + 0.5);
         }
 
-        final EnumFacing facingDirection = entity.getHorizontalFacing();
+        final Direction facingDirection = entity.getDirection();
 
         // Figure out how high above the top of the teleport block we are located
         // Once teleported mekanism will set the entity to +1 of the bottom of the teleporter block... which is not where we entered
-        final double yOffset = entity.posY - telePos.getY() - 1;
+        final double yOffset = entity.getY() - telePos.getY() - 1;
 
-        final TileEntity tile = world.getTileEntity(telePos);
+        final BlockEntity tile = world.getBlockEntity(telePos);
 
         if(tile != null && "mekanism.common.tile.TileEntityTeleporter".equals(tile.getClass().getTypeName())) {
-            final Class cls = tile.getClass();
             try {
-                final Method method = cls.getMethod("teleport");
-                method.invoke(tile);
+                teleportMethod.invoke(tile);
 
                 // Cross dim sets it dead
-                if(entity.isEntityAlive() && entity.world == world) {
-                    final BlockPos possiblePortal = entity.getPosition();
+                if(entity.isAlive() && entity.level() == world) {
+                    final BlockPos possiblePortal = entity.blockPosition();
                     final BlockPos teleporter = findTeleporter(world, possiblePortal);
                     if(teleporter != null) {
 
                         // Update rotation to face exit
-                        final EnumFacing openSide = getSide(world, possiblePortal);
+                        final Direction openSide = getSide(world, possiblePortal);
                         if(openSide != null) {
 
                             // Move to outside portal
-                            entity.setPosition(entity.posX + openSide.getFrontOffsetX(), entity.posY + yOffset, entity.posZ + openSide.getFrontOffsetZ());
+                            entity.setPos(entity.getX() + openSide.getStepX(), entity.getY() + yOffset, entity.getZ() + openSide.getStepZ());
 
                             // Update motion vector
-                            double motionX = entity.motionX;
-                            double motionZ = entity.motionZ;
+                            final Vec3 motion = entity.getDeltaMovement();
+                            double motionX = motion.x;
+                            double motionZ = motion.z;
 
-                            if(facingDirection.getAxis() == EnumFacing.Axis.X && openSide.getAxis() != EnumFacing.Axis.X) {
-                                entity.motionX = openSide.getFrontOffsetX() * motionZ;
-                                entity.motionZ = motionX;
+                            if(facingDirection.getAxis() == Direction.Axis.X && openSide.getAxis() != Direction.Axis.X) {
+                                entity.setDeltaMovement(openSide.getStepX() * motionZ, motion.y, motionX);
                             }
-                            else if(facingDirection.getAxis() == EnumFacing.Axis.Z && openSide.getAxis() != EnumFacing.Axis.Z) {
-                                entity.motionX = motionZ;
-                                entity.motionZ = openSide.getFrontOffsetZ() * motionX;
+                            else if(facingDirection.getAxis() == Direction.Axis.Z && openSide.getAxis() != Direction.Axis.Z) {
+                                entity.setDeltaMovement(motionZ, motion.y, openSide.getStepZ() * motionX);
                             }
 
                             if(entity instanceof EntityProjectile) {
-                                ((EntityProjectile)entity).rotateTowardsMotion(1);
+                                ((EntityProjectile<?>)entity).rotateTowardsMotion(1);
                                 //TODO manually calculate rotation based on directly
                                 //  As some flight logic systems will not allow rotation towards motion
                             }
                             else {
                                 // Update facing
                                 float yawAdjust = getYaw(openSide);
-                                entity.rotationYaw += yawAdjust;
-                                while(entity.rotationYaw > 360) {
-                                    entity.rotationYaw -= 360;
+                                float yaw = entity.getYRot() + yawAdjust;
+                                while(yaw > 360) {
+                                    yaw -= 360;
                                 }
-                                while(entity.rotationYaw < -360) {
-                                    entity.rotationYaw += 360;
+                                while(yaw < -360) {
+                                    yaw += 360;
                                 }
+                                entity.setYRot(yaw);
                             }
 
-                            ICBMClassic.packetHandler.sendToAllAround(new PacketEntityPos(entity), world, entity.posX, entity.posY, entity.posZ, 400);
+                            ICBMClassic.packetHandler.sendToAllAround(new PacketEntityPos(entity), world, entity.getX(), entity.getY(), entity.getZ(), 400);
                         }
                         else {
                             // Update position to mimic enter point
-                            entity.setPositionAndUpdate(entity.posX, entity.posY + yOffset, entity.posZ);
+                            entity.teleportTo(entity.getX(), entity.getY() + yOffset, entity.getZ());
                         }
-
-
                     }
                 }
             }
@@ -183,23 +203,21 @@ public class MekProxy extends ModProxy
         }
     }
 
-    protected boolean isTeleporter(IBlockState state) {
-        return state.getBlock() == machineBlock && state.getBlock().getMetaFromState(state) == 11;
+    protected boolean isTeleporter(BlockState state) {
+        return teleporterBlock != null && state.getBlock() == teleporterBlock;
     }
 
-    protected EnumFacing getSide(World world, BlockPos pos) {
-        for (EnumFacing side : EnumFacing.HORIZONTALS) {
-            final BlockPos sidePos = pos.offset(side);
-            if (world.isAirBlock(sidePos)) {
+    protected Direction getSide(Level world, BlockPos pos) {
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            final BlockPos sidePos = pos.relative(side);
+            if (world.isEmptyBlock(sidePos)) {
                return side;
             }
         }
         return null;
-
-
     }
 
-    protected float getYaw(EnumFacing side) {
+    protected float getYaw(Direction side) {
         switch (side) {
             case NORTH:
                 return 180;
@@ -209,11 +227,13 @@ public class MekProxy extends ModProxy
                 return 90;
             case EAST:
                 return 270;
+            default:
+                return 0;
         }
-        return 0;
     }
 
     public boolean isMekanismLoaded() {
         return isLoaded;
     }
 }
+// PORTED

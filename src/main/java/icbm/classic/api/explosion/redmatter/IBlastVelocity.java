@@ -1,7 +1,7 @@
 package icbm.classic.api.explosion.redmatter;
 
 import icbm.classic.api.explosion.IBlast;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
@@ -31,3 +31,4 @@ public interface IBlastVelocity
      */
     boolean onBlastApplyMotion(@Nullable Entity source, IBlast blast, double xDifference, double yDifference, double zDifference, double distance);
 }
+// PORTED

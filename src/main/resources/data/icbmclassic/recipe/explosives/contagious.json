@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " c ",
+    "crc",
+    " c "
+  ],
+  "key": {
+    "c": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:chemical"
+      }
+    },
+    "r": {
+      "item": "minecraft:rotten_flesh"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 2,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:contagious"
+    }
+  }
+}

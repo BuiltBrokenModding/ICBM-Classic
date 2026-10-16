@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "icbmclassic:chemical",
+    "icbmclassic:contagious",
+    "icbmclassic:spikes",
+    "icbmclassic:radioactive_block",
+    "icbmclassic:projectile",
+    "icbmclassic:bomblet"
+  ]
+}

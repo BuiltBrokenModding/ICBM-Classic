@@ -14,90 +14,84 @@ import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.capability.holder.ICapabilityHolderItem;
 import icbm.classic.lib.projectile.ProjectileStack;
+import icbm.classic.prefab.item.ISubItemProvider;
 import icbm.classic.prefab.item.ItemBase;
-import icbm.classic.prefab.item.ItemStackCapProvider;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemThrowableProjectile extends ItemBase {
+public class ItemThrowableProjectile extends ItemBase implements ICapabilityHolderItem, ISubItemProvider {
     public static final int MAX_USE_DURATION = 3 * 20; //TODO config
     public static final float THROW_VELOCITY = 0.5f;
 
-    public static final TextComponentTranslation ERROR_THROWING_INTERFACE = new TextComponentTranslation("error.icbmclassic:projectile.throwing.interface", IProjectileThrowable.class.getSimpleName());
-    public static final TextComponentTranslation ERROR_THROWING_TYPE = new TextComponentTranslation("error.icbmclassic:projectile.throwing.type", ProjectileTypes.TYPE_THROWABLE.getKey());
+    public static final Component ERROR_THROWING_INTERFACE = Component.translatable("error.icbmclassic:projectile.throwing.interface", IProjectileThrowable.class.getSimpleName());
+    public static final Component ERROR_THROWING_TYPE = Component.translatable("error.icbmclassic:projectile.throwing.type", ProjectileTypes.TYPE_THROWABLE.getKey());
 
     // TODO split into empty crafting item and version holding item
     // TODO add a damaged/used version to drop after deploying cargo
 
     public ItemThrowableProjectile() {
-        this.setMaxStackSize(16);
-        this.setMaxDamage(0);
-        this.setHasSubtypes(true);
+        super(new Item.Properties().stacksTo(16));
     }
 
-    @Override
     @Nullable
-    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable NBTTagCompound nbt) {
-        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-        provider.add("projectile", ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, new ProjectileStack());
-        return provider;
+    @Override
+    public <T> T getCapability(ItemCapability<T, Void> capability, ItemStack stack) {
+        if (capability == ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY) {
+            return (T) new ProjectileStack(stack);
+        }
+        return null;
     }
 
     @Override
-    public EnumAction getItemUseAction(@Nonnull ItemStack stack) {
-        return EnumAction.BOW;
+    public UseAnim getUseAnimation(@Nonnull ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public int getMaxItemUseDuration(@Nonnull ItemStack stack) {
+    public int getUseDuration(@Nonnull ItemStack stack, @Nonnull LivingEntity entity) {
         return MAX_USE_DURATION;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
-        final ItemStack itemstack = playerIn.getHeldItem(handIn);
-        playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+    public InteractionResultHolder<ItemStack> use(@Nonnull Level world, Player playerIn, @Nonnull InteractionHand handIn) {
+        final ItemStack itemstack = playerIn.getItemInHand(handIn);
+        playerIn.startUsingItem(handIn);
+        return InteractionResultHolder.consume(itemstack);
     }
 
     @Override
-    public void onPlayerStoppedUsing(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entityLiving, int timeLeft) {
-        if (!world.isRemote && throwProjectile(stack, world, entityLiving) && !(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).isCreative()) {
+    public void releaseUsing(@Nonnull ItemStack stack, @Nonnull Level world, @Nonnull LivingEntity entityLiving, int timeLeft) {
+        // PORT: 1.12 had an operator precedence bug here (shrunk for any non-creative user even on failed throws, crashed for non-players)
+        if (!world.isClientSide() && throwProjectile(stack, world, entityLiving) && !(entityLiving instanceof Player && ((Player) entityLiving).isCreative())) {
             stack.shrink(1);
         }
     }
 
     // TODO move logic to common helper called `throwProjectile` to better reuse common spawn logic
-    public static boolean throwProjectile(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull Entity thrower) {
-        final boolean isCreative = thrower instanceof EntityPlayer && ((EntityPlayer) thrower).isCreative();
-        final EnumHand hand = thrower instanceof EntityLivingBase ? ((EntityLivingBase) thrower).getActiveHand() : EnumHand.MAIN_HAND;
-        if (!stack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-            return false;
-        }
-        final IProjectileStack<Entity> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+    public static boolean throwProjectile(@Nonnull ItemStack stack, @Nonnull Level world, @Nonnull Entity thrower) {
+        final boolean isCreative = thrower instanceof Player && ((Player) thrower).isCreative();
+        final InteractionHand hand = thrower instanceof LivingEntity ? ((LivingEntity) thrower).getUsedItemHand() : InteractionHand.MAIN_HAND;
+        final IProjectileStack<Entity> projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
         if (projectileStack == null) {
             return false;
         }
@@ -109,8 +103,8 @@ public class ItemThrowableProjectile extends ItemBase {
 
         final Entity parachute = projectileData.newEntity(world, !isCreative);
         if (!projectileData.isType(ProjectileTypes.TYPE_THROWABLE)) {
-            if(thrower instanceof EntityPlayer) {
-                ((EntityPlayer) thrower).sendStatusMessage(ERROR_THROWING_TYPE, true);
+            if(thrower instanceof Player) {
+                ((Player) thrower).displayClientMessage(ERROR_THROWING_TYPE, true);
             }
             ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as type(s) isn't supported. " +
                 "This is likely missing implementation on the projectile. " +
@@ -119,18 +113,18 @@ public class ItemThrowableProjectile extends ItemBase {
         }
 
         if (parachute instanceof IProjectileThrowable) {
-            final float yaw = thrower instanceof EntityLivingBase ? ((EntityLivingBase) thrower).rotationYawHead : thrower.rotationYaw;
-            final float pitch = thrower.rotationPitch;
-            final double x = thrower.posX;
-            final double y = thrower.posY + thrower.getEyeHeight()  ;
-            final double z = thrower.posZ;
+            final float yaw = thrower instanceof LivingEntity ? ((LivingEntity) thrower).getYHeadRot() : thrower.getYRot();
+            final float pitch = thrower.getXRot();
+            final double x = thrower.getX();
+            final double y = thrower.getY() + thrower.getEyeHeight();
+            final double z = thrower.getZ();
 
-            final IActionSource source = new ActionSource(world, new Vec3d(x, y, z), new EntityCause(thrower));
+            final IActionSource source = new ActionSource(world, new Vec3(x, y, z), new EntityCause(thrower));
             ((IProjectileThrowable<Entity>) parachute).throwProjectile(parachute, source, x, y, z, yaw, pitch, THROW_VELOCITY, 0);
 
         } else {
-            if(thrower instanceof EntityPlayer) {
-                ((EntityPlayer) thrower).sendStatusMessage(ERROR_THROWING_INTERFACE, true);
+            if(thrower instanceof Player) {
+                ((Player) thrower).displayClientMessage(ERROR_THROWING_INTERFACE, true);
             }
             ICBMClassic.logger().warn("ItemParachute: Couldn't throw projectile as it doesn't support IProjectileThrowable." +
                 "Stack: {}, Data: {}, Entity: {}", projectileStack, projectileData, thrower);
@@ -138,10 +132,10 @@ public class ItemThrowableProjectile extends ItemBase {
         }
 
         // Spawn
-        if (world.spawnEntity(parachute)) {
+        if (world.addFreshEntity(parachute)) {
 
             // Run post spawn logic
-            projectileStack.getProjectileData().onEntitySpawned(parachute, thrower, hand);
+            projectileData.onEntitySpawned(parachute, thrower, hand);
 
             return true;
         }
@@ -149,44 +143,37 @@ public class ItemThrowableProjectile extends ItemBase {
     }
 
     @Override
-    public int getMetadata(int damage) {
-        return damage;
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
-        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
+        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
 
         // Only show basic info if we have no projectile data
         if(projectileStack == null || projectileStack.getProjectileData() == null) {
-            final String key = getUnlocalizedName(stack) + ".info";
+            final String key = getDescriptionId(stack) + ".info";
             final float gravity = -EntityParachute.GRAVITY * 20;
             final float air = (1 - EntityParachute.AIR_RESISTANCE) * 100;
-            LanguageUtility.outputLines(new TextComponentTranslation(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), list::add);
+            LanguageUtility.outputLines(Component.translatable(key, String.format("%.2f", air) + " %", String.format("%.2f", gravity)), line -> list.add(Component.literal(line)));
         }
 
         // Show projectile information
         if(projectileStack != null && projectileStack.getProjectileData() != null) {
             final IProjectileData projectileData = projectileStack.getProjectileData();
-            LanguageUtility.outputLines(projectileData.getTooltip(), list::add);
+            LanguageUtility.outputLines(projectileData.getTooltip(), line -> list.add(Component.literal(line)));
 
             if(projectileData instanceof CargoProjectileData) {
                 final ItemStack heldItem = ((CargoProjectileData<?, ?>) projectileData).getHeldItem();
 
-
                 if(heldItem != null && !heldItem.isEmpty()) {
-                    list.add("");
-                    list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.held"));
-                    list.addAll(heldItem.getTooltip(Minecraft.getMinecraft().player, flag));
-                    list.add("");
+                    list.add(Component.empty());
+                    list.add(Component.translatable("projectile.icbmclassic:holder.held"));
+                    list.addAll(heldItem.getTooltipLines(context, ItemBase.getClientPlayer(), flag));
+                    list.add(Component.empty());
 
                     if(!CargoHolderHandler.isAllowed(heldItem)) {
-                        list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.disabled.config"));
+                        list.add(Component.translatable("projectile.icbmclassic:holder.disabled.config"));
                     }
                 }
                 else {
-                    list.add(LanguageUtility.getLocal("projectile.icbmclassic:holder.empty"));
+                    list.add(Component.translatable("projectile.icbmclassic:holder.empty"));
                 }
             }
 
@@ -194,29 +181,27 @@ public class ItemThrowableProjectile extends ItemBase {
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    public void getSubItems(NonNullList<ItemStack> items)
     {
-        if (this.isInCreativeTab(tab))
-        {
-            items.add(new ItemStack(this));
+        items.add(new ItemStack(this));
 
-            if(this == ItemReg.itemParachute) {
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Blocks.FURNACE)).setParachuteMode(ProjectileCargoMode.BLOCK)));
-                items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Blocks.TNT)).setParachuteMode(ProjectileCargoMode.BLOCK)));
-            }
-            else if(this == ItemReg.itemBalloon) {
-                items.add(parachuteWith(new BalloonProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
-            }
+        if(this == ItemReg.itemParachute.get()) {
+            items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
+            items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Blocks.FURNACE)).setParachuteMode(ProjectileCargoMode.BLOCK)));
+            items.add(parachuteWith(new ParachuteProjectileData().setHeldItem(new ItemStack(Blocks.TNT)).setParachuteMode(ProjectileCargoMode.BLOCK)));
+        }
+        else if(this == ItemReg.itemBalloon.get()) {
+            items.add(parachuteWith(new BalloonProjectileData().setHeldItem(new ItemStack(Items.EGG)).setParachuteMode(ProjectileCargoMode.ITEM)));
         }
     }
 
     private ItemStack parachuteWith(IProjectileData data) {
         final ItemStack stack = new ItemStack(this);
-        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        final IProjectileStack projectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
         if(projectileStack instanceof ProjectileStack) {
             ((ProjectileStack) projectileStack).setProjectileData(data);
         }
         return stack;
     }
 }
+// PORTED

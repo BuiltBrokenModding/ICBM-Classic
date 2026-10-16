@@ -1,129 +1,119 @@
 package icbm.classic.client.render.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.entity.EntityFragments;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nullable;
-
-@SideOnly(Side.CLIENT)
-public class RenderFragments extends Render<EntityFragments>
+public class RenderFragments extends EntityRenderer<EntityFragments>
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.png");
 
-    public RenderFragments(RenderManager renderManager)
+    /** 1.12 EnumFacing.Plane.HORIZONTAL.facings() order, only the first 3 were picked */
+    private static final Direction[] ANVIL_FACINGS = {Direction.NORTH, Direction.EAST, Direction.SOUTH};
+
+    public RenderFragments(EntityRendererProvider.Context context)
     {
-        super(renderManager);
+        super(context);
     }
 
     @Override
-    public void doRender(EntityFragments entity, double x, double y, double z, float entityYaw, float partialTicks)
+    public void render(EntityFragments entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
-        this.bindEntityTexture(entity);
         if (entity.isAnvil)
         {
-            final IBlockState blockState = Blocks.ANVIL.getDefaultState()
-                    .withProperty(BlockAnvil.DAMAGE, entity.world.rand.nextInt(2))
-                    .withProperty(BlockAnvil.FACING, EnumFacing.Plane.HORIZONTAL.facings()[entity.world.rand.nextInt(3)]);
+            // PORT: 1.12 anvil DAMAGE property 0-1 became the anvil and chipped_anvil blocks
+            final BlockState blockState = (entity.level().random.nextInt(2) == 0 ? Blocks.ANVIL : Blocks.CHIPPED_ANVIL).defaultBlockState()
+                    .setValue(AnvilBlock.FACING, ANVIL_FACINGS[entity.level().random.nextInt(3)]);
             //TODO store rotation and damage in entity to reduce random nature
 
+            final BlockRenderDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRenderer();
 
-            final BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-
-            GlStateManager.pushMatrix();
-            GlStateManager.translate((float) x, (float) y + 0.5F, (float) z);
-
-
-            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-
-            GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(-0.5F, -0.5F, 0.5F);
-            blockrendererdispatcher.renderBlockBrightness(blockState, entity.getBrightness());
-            GlStateManager.translate(0.0F, 0.0F, 1.0F);
-
-            GlStateManager.popMatrix();
+            poseStack.pushPose();
+            poseStack.translate(0, 0.5F, 0);
+            poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+            poseStack.translate(-0.5F, -0.5F, 0.5F);
+            // PORT: 1.12 renderBlockBrightness rotated +90 on Y internally, renderSingleBlock does not (see vanilla TntRenderer)
+            poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+            blockrendererdispatcher.renderSingleBlock(blockState, poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
         }
         else
         {
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.pushMatrix();
-            GlStateManager.disableLighting();
-            GlStateManager.translate((float) x, (float) y, (float) z);
-            GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferbuilder = tessellator.getBuffer();
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
 
-            GlStateManager.enableRescaleNormal();
             float f9 = (float) entity.arrowShake - partialTicks;
-
             if (f9 > 0.0F)
             {
-                float f10 = -MathHelper.sin(f9 * 3.0F) * f9;
-                GlStateManager.rotate(f10, 0.0F, 0.0F, 1.0F);
+                float f10 = -Mth.sin(f9 * 3.0F) * f9;
+                poseStack.mulPose(Axis.ZP.rotationDegrees(f10));
             }
 
-            GlStateManager.rotate(45.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.scale(0.05625F, 0.05625F, 0.05625F);
-            GlStateManager.translate(-4.0F, 0.0F, 0.0F);
+            poseStack.mulPose(Axis.XP.rotationDegrees(45.0F));
+            poseStack.scale(0.05625F, 0.05625F, 0.05625F);
+            poseStack.translate(-4.0F, 0.0F, 0.0F);
 
-            GlStateManager.glNormal3f(0.05625F, 0.0F, 0.0F);
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-            bufferbuilder.pos(-7.0D, -2.0D, -2.0D).tex(0.0D, 0.15625D).endVertex();
-            bufferbuilder.pos(-7.0D, -2.0D, 2.0D).tex(0.15625D, 0.15625D).endVertex();
-            bufferbuilder.pos(-7.0D, 2.0D, 2.0D).tex(0.15625D, 0.3125D).endVertex();
-            bufferbuilder.pos(-7.0D, 2.0D, -2.0D).tex(0.0D, 0.3125D).endVertex();
-            tessellator.draw();
+            final VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutout(TEXTURE));
+            PoseStack.Pose pose = poseStack.last();
 
-            GlStateManager.glNormal3f(-0.05625F, 0.0F, 0.0F);
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-            bufferbuilder.pos(-7.0D, 2.0D, -2.0D).tex(0.0D, 0.15625D).endVertex();
-            bufferbuilder.pos(-7.0D, 2.0D, 2.0D).tex(0.15625D, 0.15625D).endVertex();
-            bufferbuilder.pos(-7.0D, -2.0D, 2.0D).tex(0.15625D, 0.3125D).endVertex();
-            bufferbuilder.pos(-7.0D, -2.0D, -2.0D).tex(0.0D, 0.3125D).endVertex();
-            tessellator.draw();
+            // Back faces
+            vertex(pose, consumer, -7, -2, -2, 0.0F, 0.15625F, 1, 0, 0, packedLight);
+            vertex(pose, consumer, -7, -2, 2, 0.15625F, 0.15625F, 1, 0, 0, packedLight);
+            vertex(pose, consumer, -7, 2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLight);
+            vertex(pose, consumer, -7, 2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLight);
 
+            vertex(pose, consumer, -7, 2, -2, 0.0F, 0.15625F, -1, 0, 0, packedLight);
+            vertex(pose, consumer, -7, 2, 2, 0.15625F, 0.15625F, -1, 0, 0, packedLight);
+            vertex(pose, consumer, -7, -2, 2, 0.15625F, 0.3125F, -1, 0, 0, packedLight);
+            vertex(pose, consumer, -7, -2, -2, 0.0F, 0.3125F, -1, 0, 0, packedLight);
+
+            // Shaft
             for (int j = 0; j < 4; ++j)
             {
-                GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-                GlStateManager.glNormal3f(0.0F, 0.0F, 0.05625F);
-                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-                bufferbuilder.pos(-8.0D, -2.0D, 0.0D).tex(0.0D, 0.0D).endVertex();
-                bufferbuilder.pos(8.0D, -2.0D, 0.0D).tex(0.5D, 0.0D).endVertex();
-                bufferbuilder.pos(8.0D, 2.0D, 0.0D).tex(0.5D, 0.15625D).endVertex();
-                bufferbuilder.pos(-8.0D, 2.0D, 0.0D).tex(0.0D, 0.15625D).endVertex();
-                tessellator.draw();
+                poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+                pose = poseStack.last();
+                vertex(pose, consumer, -8, -2, 0, 0.0F, 0.0F, 0, 0, 1, packedLight);
+                vertex(pose, consumer, 8, -2, 0, 0.5F, 0.0F, 0, 0, 1, packedLight);
+                vertex(pose, consumer, 8, 2, 0, 0.5F, 0.15625F, 0, 0, 1, packedLight);
+                vertex(pose, consumer, -8, 2, 0, 0.0F, 0.15625F, 0, 0, 1, packedLight);
             }
 
-            GlStateManager.disableRescaleNormal();
-            GlStateManager.enableLighting();
-            GlStateManager.popMatrix();
+            poseStack.popPose();
         }
 
-
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    @Nullable
+    private static void vertex(PoseStack.Pose pose, VertexConsumer consumer, float x, float y, float z, float u, float v, float nx, float ny, float nz, int packedLight)
+    {
+        consumer.addVertex(pose, x, y, z)
+            .setColor(1f, 1f, 1f, 1f)
+            .setUv(u, v)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(packedLight)
+            .setNormal(pose, nx, ny, nz);
+    }
+
     @Override
-    protected ResourceLocation getEntityTexture(EntityFragments entity)
+    public ResourceLocation getTextureLocation(EntityFragments entity)
     {
         return TEXTURE;
     }
 }
+// PORTED

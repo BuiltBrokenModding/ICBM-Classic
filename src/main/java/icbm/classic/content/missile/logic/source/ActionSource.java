@@ -7,27 +7,28 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public final class ActionSource implements IActionSource, INBTSerializable<NBTTagCompound> {
+public final class ActionSource implements IActionSource, INBTSerializable<CompoundTag> {
 
-    private World world;
-    private Vec3d position;
+    private Level world;
+    private Vec3 position;
     private IActionCause cause;
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, new NBTTagCompound());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, new CompoundTag());
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound save) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag save) {
         SAVE_LOGIC.load(this, save);
     }
 
@@ -38,3 +39,4 @@ public final class ActionSource implements IActionSource, INBTSerializable<NBTTa
         /* */.nodeBuildableObject("cause", () -> ICBMClassicAPI.ACTION_CAUSE_REGISTRY, ActionSource::getCause, ActionSource::setCause)
         .base();
 }
+// PORTED

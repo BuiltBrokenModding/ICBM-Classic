@@ -1,47 +1,77 @@
 package icbm.classic.prefab.item;
 
-import icbm.classic.lib.LanguageUtility;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+
+import javax.annotation.Nullable;
 
 /**
- * Implementation of a block with subtypes that extends the base ItemBlock class used by VoltzEngine
- *
- *
+ * Implementation of a block with subtypes that extends the base BlockItem class used by VoltzEngine
+ * <p>
+ * PORT: metadata is gone, flattened items pass their old meta value as {@code subType}. The translation
+ * key keeps the 1.12 format {@code <block key>.<meta>} (e.g. tile.icbmclassic:emptower.1).
+ * <p>
  * Created by Dark(DarkGuardsman, Robin) on 2/14/2017.
  */
 public class ItemBlockSubTypes extends ItemBlockAbstract
 {
+    /** Old metadata value of this item */
+    protected final int subType;
+
     public ItemBlockSubTypes(Block block)
     {
-        super(block);
-        setHasSubtypes(true);
-        setRegistryName(block.getRegistryName());
+        this(block, 0, new Item.Properties());
+    }
+
+    public ItemBlockSubTypes(Block block, Item.Properties properties)
+    {
+        this(block, 0, properties);
+    }
+
+    public ItemBlockSubTypes(Block block, int subType)
+    {
+        this(block, subType, new Item.Properties());
+    }
+
+    public ItemBlockSubTypes(Block block, int subType, Item.Properties properties)
+    {
+        super(block, properties);
+        this.subType = subType;
+    }
+
+    /** @return old metadata value */
+    public int getSubType()
+    {
+        return subType;
     }
 
     @Override
-    public int getMetadata(int damage)
+    public String getDescriptionId()
     {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack itemstack)
-    {
-        String localized = LanguageUtility.getLocal(getUnlocalizedName() + "." + itemstack.getItemDamage() + ".name");
-        if (localized != null && !localized.isEmpty())
+        final String base = super.getDescriptionId();
+        final String variantKey = base + "." + subType;
+        // 1.12 checked for "<key>.name", lang conversion keeps both forms
+        if (ItemBase.hasTranslation(variantKey) || ItemBase.hasTranslation(variantKey + ".name"))
         {
-            return getUnlocalizedName() + "." + itemstack.getItemDamage();
+            return variantKey;
         }
-        return getUnlocalizedName();
+        return base;
     }
 
     @Override
-    protected boolean hasShiftInfo(ItemStack stack, EntityPlayer player)
+    public String getDescriptionId(ItemStack stack)
     {
-        final String translationKey = getUnlocalizedName(stack) + ".info.detailed";
-        final String translation = LanguageUtility.getLocal(translationKey);
+        return getDescriptionId();
+    }
+
+    @Override
+    protected boolean hasShiftInfo(ItemStack stack, @Nullable Player player)
+    {
+        final String translationKey = getDescriptionId(stack) + ".info.detailed";
+        final String translation = ItemBase.translate(translationKey);
         return !translation.trim().isEmpty() && !translation.equals(translationKey);
     }
 }
+// PORTED

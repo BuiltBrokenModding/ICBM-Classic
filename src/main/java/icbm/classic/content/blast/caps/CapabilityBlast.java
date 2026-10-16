@@ -5,11 +5,7 @@ import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.blast.BlastStatus;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,7 +35,7 @@ public class CapabilityBlast implements IBlast
     }
 
     @Override
-    public World world()
+    public Level world()
     {
         return null;
     }
@@ -69,23 +65,7 @@ public class CapabilityBlast implements IBlast
 
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IBlast.class, new Capability.IStorage<IBlast>()
-                {
-                    @Nullable
-                    @Override
-                    public NBTBase writeNBT(Capability<IBlast> capability, IBlast instance, EnumFacing side)
-                    {
-                        return null;
-                    }
-
-                    @Override
-                    public void readNBT(Capability<IBlast> capability, IBlast instance, EnumFacing side, NBTBase nbt)
-                    {
-
-                    }
-                },
-                CapabilityBlast::new);
-    }
+    // PORT: 1.12 registered this as the capability default through CapabilityManager. NeoForge capabilities
+    // have no default instance or storage, ICBMClassicAPI declares the capability and providers return instances.
 }
+// PORTED

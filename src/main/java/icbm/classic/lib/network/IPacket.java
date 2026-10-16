@@ -1,23 +1,18 @@
 package icbm.classic.lib.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.function.Consumer;
 
 /**
  * Base object for all custom packets using in VoltzEngine.
  * </p>
- * Ensure that there is always a default constructor so forge can create the packet.
+ * Ensure that there is always a default constructor so the packet can be created on receive.
  * <p>
- * <p>
- * An NPE will be thrown if the packet is not registered due to PacketManager not knowing how to handle it
- * <p>
- * See PacketManager#sendToAll(IPacket) for exact usage on sending the packet
+ * All packets ride a single NeoForge payload, see {@link icbm.classic.lib.network.netty.PacketManager}.
+ * Handlers are called on the main thread.
  *
  * @author tgame14, DarkCow
  * @since 26/05/14
@@ -26,21 +21,18 @@ public interface IPacket<P extends IPacket>
 {
 
     /**
-     * Encode the packet data into the ByteBuf stream. Complex data sets may need specific data handlers
+     * Encode the packet data into the buffer. Complex data sets may need specific data handlers
      *
-     * @param ctx    channel context
      * @param buffer the buffer to encode into
-     *               PacketManager#writeData(io.netty.buffer.ByteBuf, Object...)
      */
-    void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer);
+    void encodeInto(RegistryFriendlyByteBuf buffer);
 
     /**
-     * Decode the packet data from the ByteBuf stream. Complex data sets may need specific data handlers
+     * Decode the packet data from the buffer. Must consume all bytes written by {@link #encodeInto(RegistryFriendlyByteBuf)}.
      *
-     * @param ctx    channel context
      * @param buffer the buffer to decode from
      */
-    void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer);
+    void decodeInto(RegistryFriendlyByteBuf buffer);
 
     @Deprecated
     default P addData(Object... objects)
@@ -49,12 +41,18 @@ public interface IPacket<P extends IPacket>
     }
 
     @Deprecated
-    default P addData(Consumer<ByteBuf> writer) {
+    default P addData(Consumer<RegistryFriendlyByteBuf> writer) {
         return (P) this;
     }
 
-    @SideOnly(Side.CLIENT)
-    default void handleClientSide(final Minecraft minecraft, final EntityPlayer player)
+    /**
+     * Handle a packet on the client side. Note this occurs after decoding has completed. Only ever called
+     * on the physical client.
+     *
+     * @param minecraft client instance
+     * @param player the client player
+     */
+    default void handleClientSide(final Minecraft minecraft, final Player player)
     {
         throw new UnsupportedOperationException("Unsupported operation for Packet: " + getClass().getSimpleName());
     }
@@ -64,7 +62,7 @@ public interface IPacket<P extends IPacket>
      *
      * @param player the player reference
      */
-    default void handleServerSide(EntityPlayer player)
+    default void handleServerSide(Player player)
     {
         throw new UnsupportedOperationException("Unsupported operation for Packet: " + getClass().getSimpleName());
     }

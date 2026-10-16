@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "w w",
+    "rar",
+    "ici"
+  ],
+  "key": {
+    "i": {
+      "tag": "c:ingots/copper"
+    },
+    "c": {
+      "tag": "c:circuits/basic"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "a": {
+      "item": "minecraft:shears"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:defuser",
+    "count": 1
+  }
+}

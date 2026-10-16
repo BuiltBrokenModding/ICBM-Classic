@@ -4,10 +4,10 @@ import icbm.classic.api.ICBMClassicAPI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -39,12 +39,9 @@ public class NetworkInventory implements IItemHandler {
         return slots.size();
     }
 
-    private IItemHandler getHandler(TileEntity tile) {
-        if(tile.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null) && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
-            final IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            if(handler != null) {
-                return handler;
-            }
+    private IItemHandler getHandler(BlockEntity tile) {
+        if(LauncherNetwork.getTileCapability(tile, ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null) != null) {
+            return LauncherNetwork.getTileCapability(tile, Capabilities.ItemHandler.BLOCK, null);
         }
         return null;
     }
@@ -109,3 +106,4 @@ public class NetworkInventory implements IItemHandler {
         private final int slotIndex;
     }
 }
+// PORTED

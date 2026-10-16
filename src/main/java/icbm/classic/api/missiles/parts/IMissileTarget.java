@@ -1,7 +1,7 @@
 package icbm.classic.api.missiles.parts;
 
 import icbm.classic.api.reg.obj.IBuildableObject;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Abstracted targeting logic for missiles
@@ -13,7 +13,7 @@ public interface IMissileTarget extends IBuildableObject {
      *
      * @return current targeting position
      */
-    Vec3d getPosition();
+    Vec3 getPosition();
 
     /**
      * Checks if the target data is valid
@@ -38,3 +38,4 @@ public interface IMissileTarget extends IBuildableObject {
      */
     double getZ();
 }
+// PORTED

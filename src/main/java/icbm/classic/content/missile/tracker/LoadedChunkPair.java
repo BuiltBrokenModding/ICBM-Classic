@@ -1,6 +1,6 @@
 package icbm.classic.content.missile.tracker;
 
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 
 /**
  * Object representing a chunk that is queued to be unloaded later
@@ -19,3 +19,4 @@ public class LoadedChunkPair
         this.timeLeft = unloadChunkCooldown;
     }
 }
+// PORTED

@@ -5,9 +5,8 @@ import icbm.classic.api.actions.status.ActionStatusTypes;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.data.meta.MetaTag;
 import lombok.Getter;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
@@ -21,7 +20,7 @@ public class ImmutableStatus implements IActionStatus {
     private final ImmutableList<MetaTag> typeTags;
     protected final String translationKey;
 
-    protected ITextComponent textComponent;
+    protected Component textComponent;
 
     protected ImmutableStatus(ResourceLocation regName, MetaTag... tags) {
         this.regName = regName;
@@ -42,9 +41,9 @@ public class ImmutableStatus implements IActionStatus {
     }
 
     @Override
-    public ITextComponent message() {
+    public Component message() {
         if(textComponent == null) {
-            textComponent = new TextComponentTranslation(translationKey);
+            textComponent = Component.translatable(translationKey);
         }
         return textComponent;
     }
@@ -60,3 +59,4 @@ public class ImmutableStatus implements IActionStatus {
         return "ActionStatus[ '" + getRegistryKey() + "' , '" + translationKey + "' ]@" + hashCode();
     }
 }
+// PORTED

@@ -1,7 +1,11 @@
 package icbm.classic.prefab.gui.tooltip;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
+/**
+ * PORT: 1.12 {@code getTooltip()} is renamed {@link #getToolTip()} because 1.21 AbstractWidget already
+ * declares {@code Tooltip getTooltip()} and ICBM buttons/text boxes are widgets.
+ */
 public interface IToolTip {
 
     /**
@@ -18,5 +22,6 @@ public interface IToolTip {
      *
      * @return tooltip or null to ignore
      */
-    ITextComponent getTooltip();
+    Component getToolTip();
 }
+// PORTED

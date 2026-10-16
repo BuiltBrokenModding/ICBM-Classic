@@ -1,12 +1,15 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.config.blast.ConfigBlast;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.BaseFireBlock;
+import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 
 import java.util.List;
 
@@ -34,59 +37,57 @@ public class BlastExothermic extends BlastBeam
             final double distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
             final double distanceScale = 1 - (distance / radius);
 
-            IBlockState blockState = world.getBlockState(targetPosition);
+            BlockState blockState = world.getBlockState(targetPosition);
             Block block = blockState.getBlock();
 
             //Turn fluids and liquid like blocks to air
-            if (blockState.getMaterial() == Material.WATER || block == Blocks.ICE)
+            if (BlastBlockHelpers.isWaterMaterial(blockState) || block == Blocks.ICE)
             {
-                this.world().setBlockToAir(targetPosition);
+                this.world().removeBlock(targetPosition, false);
             }
 
             //Closer to center the better the chance of spawning blocks
             if (distance <= radiusDecay || Math.random() < distanceScale)
             {
                 //Destroy plants
-                if (blockState.getMaterial() == Material.LEAVES
-                        || blockState.getMaterial() == Material.VINE
-                        || blockState.getMaterial() == Material.PLANTS)
+                if (BlastBlockHelpers.isPlantMaterial(blockState))
                 {
-                    if (!block.isReplaceable(world(), targetPosition) || Blocks.FIRE.canPlaceBlockAt(world(), targetPosition))
+                    if (!blockState.canBeReplaced() || canPlaceFire(world(), targetPosition))
                     {
-                        this.world().setBlockToAir(targetPosition);
+                        this.world().removeBlock(targetPosition, false);
                     }
                     else
                     {
-                        this.world().setBlockState(targetPosition, Blocks.FIRE.getDefaultState());
+                        this.world().setBlock(targetPosition, BaseFireBlock.getState(world(), targetPosition), 3);
                     }
                 }
 
                 //Turn random stone into lava
-                else if (blockState.getMaterial() == Material.ROCK)
+                else if (BlastBlockHelpers.isRockMaterial(blockState))
                 {
                     //Small chance to turn to lava
-                    if (this.world().rand.nextFloat() > 0.9) //TODO add config
+                    if (this.world().random.nextFloat() > 0.9) //TODO add config
                     {
-                        this.world().setBlockState(targetPosition, Blocks.FLOWING_LAVA.getDefaultState(), 3);
+                        this.world().setBlock(targetPosition, Blocks.LAVA.defaultBlockState(), 3);
                     }
                     //Coin flip to turn to magma
-                    else if (this.world().rand.nextBoolean()) //TODO add config
+                    else if (this.world().random.nextBoolean()) //TODO add config
                     {
-                        this.world().setBlockState(targetPosition.down(), Blocks.MAGMA.getDefaultState(), 3);
+                        this.world().setBlock(targetPosition.below(), Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
                     }
                     //Coin flip to turn to netherrack
-                    else if (this.world().rand.nextBoolean() || distance <= radiusEnsured) //TODO add config
+                    else if (this.world().random.nextBoolean() || distance <= radiusEnsured) //TODO add config
                     {
                         placeNetherrack(world, targetPosition);
                     }
                 }
 
                 //Sand replacement
-                else if (blockState.getMaterial() == Material.SAND)
+                else if (BlastBlockHelpers.isSandMaterial(blockState))
                 {
-                    if (this.world().rand.nextBoolean()) //TODO add config
+                    if (this.world().random.nextBoolean()) //TODO add config
                     {
-                        this.world().setBlockState(targetPosition.down(), Blocks.SOUL_SAND.getDefaultState(), 3);
+                        this.world().setBlock(targetPosition.below(), Blocks.SOUL_SAND.defaultBlockState(), 3);
                     }
                     else
                     {
@@ -95,7 +96,7 @@ public class BlastExothermic extends BlastBeam
                 }
 
                 //Ground replacement
-                else if (blockState.getMaterial() == Material.GROUND || blockState.getMaterial() == Material.GRASS)
+                else if (BlastBlockHelpers.isGroundMaterial(blockState))
                 {
                     placeNetherrack(world, targetPosition);
                 }
@@ -103,34 +104,40 @@ public class BlastExothermic extends BlastBeam
                 //Randomly place fire TODO move to outside mutate so we always place fire while charging up
                 if (Math.random() < distanceScale)
                 {
-                    tryPlaceFire(world, targetPosition.up(), false);
+                    tryPlaceFire(world, targetPosition.above(), false);
                 }
             }
         }
     }
 
-    private static void placeNetherrack(World world, BlockPos pos)
+    private static void placeNetherrack(Level world, BlockPos pos)
     {
-        if (!world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), 3))
+        if (!world.setBlock(pos, Blocks.NETHERRACK.defaultBlockState(), 3))
         {
             System.out.println("Failed to place netherrack at " + pos);
         }
 
         //Place fire randomly above netherrack
-        tryPlaceFire(world, pos.up(), true);
+        tryPlaceFire(world, pos.above(), true);
     }
 
-    private static void tryPlaceFire(World world, BlockPos pos, boolean random)
+    private static void tryPlaceFire(Level world, BlockPos pos, boolean random)
     {
-        if (!random || world.rand.nextBoolean())
+        if (!random || world.random.nextBoolean())
         {
             //Place fire
-            final IBlockState blockState = world.getBlockState(pos);
-            if (blockState.getBlock().isReplaceable(world, pos) && Blocks.FIRE.canPlaceBlockAt(world, pos))
+            final BlockState blockState = world.getBlockState(pos);
+            if (blockState.canBeReplaced() && canPlaceFire(world, pos))
             {
-                world.setBlockState(pos, Blocks.FIRE.getDefaultState(), 3);
+                world.setBlock(pos, BaseFireBlock.getState(world, pos), 3);
             }
         }
+    }
+
+    /** Replaces 1.12 Blocks.FIRE.canPlaceBlockAt */
+    private static boolean canPlaceFire(Level world, BlockPos pos)
+    {
+        return BaseFireBlock.getState(world, pos).canSurvive(world, pos);
     }
 
     @Override
@@ -139,9 +146,10 @@ public class BlastExothermic extends BlastBeam
         super.onBlastCompleted();
 
         //Change time of day
-        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))
+        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean(GameRules.RULE_DAYLIGHT) && world() instanceof ServerLevel serverLevel)
         {
-            this.world().setWorldTime(18_000);
+            serverLevel.setDayTime(18_000);
         }
     }
 }
+// PORTED

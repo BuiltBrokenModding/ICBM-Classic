@@ -10,14 +10,16 @@ import icbm.classic.lib.LanguageUtility;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -26,29 +28,30 @@ import java.util.function.Consumer;
 
 @Data
 @NoArgsConstructor
-public class EnderBlastCustomization implements IExplosiveCustomization, INBTSerializable<NBTTagCompound> {
+public class EnderBlastCustomization implements IExplosiveCustomization, INBTSerializable<CompoundTag> {
 
-    public static final ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ender");
+    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "ender");
 
-    private Integer dim;
-    private Vec3d pos;
+    /** PORT: 1.12 stored the int dimension id, saved as the dimension ResourceLocation string now */
+    private ResourceKey<Level> dim;
+    private Vec3 pos;
 
     private String posTooltip;
     private String dimTooltip;
 
-    public EnderBlastCustomization(Integer dim, Vec3d pos) {
+    public EnderBlastCustomization(ResourceKey<Level> dim, Vec3 pos) {
         this.dim = dim;
         this.pos = pos;
     }
 
-    public void setPos(Vec3d pos) {
+    public void setPos(Vec3 pos) {
         if(!Objects.equals(pos, this.pos)) {
             posTooltip = null;
         }
         this.pos = pos;
     }
 
-    public void setDim(Integer dim) {
+    public void setDim(ResourceKey<Level> dim) {
         if(!Objects.equals(dim, this.dim)) {
             dimTooltip = null;
         }
@@ -59,14 +62,18 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
     public void collectCustomizationInformation(Consumer<String> collector) {
         if(pos != null) {
             if(posTooltip == null) {
-                posTooltip = LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:ender.pos", pos.x, pos.y, pos.z));
+                posTooltip = LanguageUtility.buildToolTipString(Component.translatable("explosive.icbmclassic:ender.pos", pos.x, pos.y, pos.z));
             }
             collector.accept(posTooltip);
         }
         if(dim != null) {
             if(dimTooltip == null) {
-                final String worldName = Optional.ofNullable(DimensionManager.getWorld(dim)).map(World::getWorldInfo).map(WorldInfo::getWorldName).orElse("???");
-                dimTooltip = LanguageUtility.buildToolTipString(new TextComponentTranslation("explosive.icbmclassic:ender.world", dim, worldName));
+                // 1.12 showed the save name of the dimension's world, only known when the server is local
+                final String worldName = Optional.ofNullable(ServerLifecycleHooks.getCurrentServer())
+                    .filter(server -> server.getLevel(dim) != null)
+                    .map(server -> server.getWorldData().getLevelName())
+                    .orElse("???");
+                dimTooltip = LanguageUtility.buildToolTipString(Component.translatable("explosive.icbmclassic:ender.world", dim.location().toString(), worldName));
             }
             collector.accept(dimTooltip);
         }
@@ -88,22 +95,27 @@ public class EnderBlastCustomization implements IExplosiveCustomization, INBTSer
     public void apply(IExplosiveData explosiveData, IBlast blast) {
         if(blast instanceof BlastEnder) {
             ((BlastEnder) blast).setTeleportTarget(pos);
+            // PORT: 1.12 stored the dimension but never applied it
+            ((BlastEnder) blast).setTeleportDim(pos != null ? dim : null);
         }
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<EnderBlastCustomization> SAVE_LOGIC = new NbtSaveHandler<EnderBlastCustomization>()
         .mainRoot()
         /* */.nodeVec3d("pos", EnderBlastCustomization::getPos, EnderBlastCustomization::setPos)
-        /* */.nodeInteger("dim", EnderBlastCustomization::getDim, EnderBlastCustomization::setDim)
+        /* */.nodeResourceLocation("dim",
+            (c) -> c.getDim() != null ? c.getDim().location() : null,
+            (c, rl) -> c.setDim(ResourceKey.create(Registries.DIMENSION, rl)))
         .base();
 }
+// PORTED

@@ -1,5 +1,8 @@
 package icbm.classic.client.render.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.client.render.entity.item.RenderItemImp;
@@ -7,30 +10,27 @@ import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.itemstack.EntityHeldItemMissile;
 import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMissile;
 import icbm.classic.content.reg.ItemReg;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SideOnly(Side.CLIENT)
 public class RenderMissile extends RenderItemImp<EntityMissile>
 {
     public static RenderMissile INSTANCE;
 
-    public RenderMissile(RenderManager renderManager)
+    public RenderMissile(EntityRendererProvider.Context context)
     {
-        super(renderManager);
+        super(context);
+        INSTANCE = this;
     }
 
     @Override
@@ -42,13 +42,10 @@ public class RenderMissile extends RenderItemImp<EntityMissile>
     }
 
     @Override
-    protected void translate(@Nullable EntityMissile entity, ItemStack itemstack, IBakedModel iBakedModel, double x, double y, double z, float partialTicks, int index) {
+    protected void translate(@Nullable EntityMissile entity, ItemStack itemstack, BakedModel iBakedModel, PoseStack poseStack, float partialTicks, int index) {
         //Translate to center of entity collider
         if(entity != null) {
-            GlStateManager.translate(x, y + 0.2, z); //TODO handle in JSON
-        }
-        else {
-            GlStateManager.translate(x, y, z);
+            poseStack.translate(0, 0.2, 0); //TODO handle in JSON
         }
     }
 
@@ -63,88 +60,103 @@ public class RenderMissile extends RenderItemImp<EntityMissile>
     }
 
     @Override
-    protected void rotate(@Nullable EntityMissile entityMissile, ItemStack itemstack, float entityYaw, float entityPitch, float partialTicks, int index) {
+    protected void rotate(@Nullable EntityMissile entityMissile, ItemStack itemstack, PoseStack poseStack, float entityYaw, float entityPitch, float partialTicks, int index) {
         //Rotate
         if(index == 0) {
-            GlStateManager.rotate(entityYaw, 0F, 1F, 0F);
-            GlStateManager.rotate(entityPitch, 1F, 0F, 0F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
         }
         else if(index == 1) {
-            GlStateManager.rotate(entityYaw, 0F, 1F, 0F);
-            GlStateManager.rotate(entityPitch + 10, 1F, 0F, 0F);
-            //GlStateManager.rotate(-45, 0F, 0F, 1F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch + 10));
         }
 
         //Translate to rotation point of model TODO handle in JSON
         if(entityMissile != null) {
             if(index == 0) {
-                GlStateManager.translate(0, -0.8, 0);
+                poseStack.translate(0, -0.8, 0);
             }
             else if(index == 1) {
-                GlStateManager.translate(0, 0.27, -0.12);
+                poseStack.translate(0, 0.27, -0.12);
             }
         }
         else if(index == 1) {
-            GlStateManager.translate(0, 1.1, -0.27);
+            poseStack.translate(0, 1.1, -0.27);
         }
     }
 
     @Override
-    protected ItemCameraTransforms.TransformType getTransformType(int index) {
+    protected ItemDisplayContext getTransformType(int index) {
         if(index == 1) {
-            return ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND;
+            return ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
         }
-        return ItemCameraTransforms.TransformType.NONE;
+        return ItemDisplayContext.NONE;
     }
 
     @Override
-    protected void scale(@Nullable EntityMissile e, ItemStack itemstack, float partialTicks, int index) {
-       if(index == 1 && !itemstack.getItem().isFull3D()) { //TODO use a config driven list rather than assuming 3D means tool that can be held
-           GlStateManager.scale(0.5, 0.5, 0.5);
-       }
+    protected void scale(@Nullable EntityMissile e, ItemStack itemstack, PoseStack poseStack, float partialTicks, int index) {
+        // PORT-CHECK: 1.12 Item#isFull3D (tools, swords, sticks) approximated by the TOOL data component
+        if(index == 1 && !itemstack.has(DataComponents.TOOL)) { //TODO use a config driven list rather than assuming 3D means tool that can be held
+            poseStack.scale(0.5f, 0.5f, 0.5f);
+        }
     }
 
-    @Override
-    public void renderItem(ItemStack missileStack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks)
+    /**
+     * Renders a missile stack outside of an entity, used by launcher block entity renderers.
+     * Yaw and pitch are used as given (callers apply the model offsets, as in 1.12).
+     *
+     * @param x - offset from the current pose origin
+     * @param y - offset from the current pose origin
+     * @param z - offset from the current pose origin
+     */
+    public void renderItem(ItemStack missileStack, Level level, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                           double x, double y, double z, float yaw, float pitch, float partialTicks)
     {
-        super.renderItem(missileStack, world, x, y, z, entityYaw, entityPitch, partialTicks);
+        poseStack.pushPose();
+        poseStack.translate(x, y, z);
+        this.renderItem(missileStack, level, poseStack, buffer, packedLight, yaw, pitch, partialTicks);
+        poseStack.popPose();
+    }
+
+    @Override
+    public void renderItem(ItemStack missileStack, Level world, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float entityYaw, float entityPitch, float partialTicks)
+    {
+        super.renderItem(missileStack, world, poseStack, buffer, packedLight, entityYaw, entityPitch, partialTicks);
 
         //TODO cache on caller for better render performance
         //TODO move to sub-renderer
-        if(missileStack.getItem() == ItemReg.heldItemMissile) {
-           final ICapabilityMissileStack cap = missileStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        if(missileStack.getItem() == ItemReg.heldItemMissile.get()) {
+           final ICapabilityMissileStack cap = missileStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
            if(cap instanceof CapabilityHeldItemMissile) {
-               this.renderItem(null, ((CapabilityHeldItemMissile) cap).getHeldItem(), world, x, y, z, entityYaw, entityPitch, partialTicks, 1);
+               this.renderItem(null, ((CapabilityHeldItemMissile) cap).getHeldItem(), world, poseStack, buffer, packedLight, entityYaw, entityPitch, partialTicks, 1);
            }
         }
     }
 
     @Override
-    protected void doRenderItem(@Nonnull EntityMissile entity, World world, double x, double y, double z, float yaw, float pitch, float partialTicks) {
-        super.doRenderItem(entity, world, x, y, z, yaw, pitch, partialTicks);
+    protected void doRenderItem(@Nonnull EntityMissile entity, Level world, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float yaw, float pitch, float partialTicks) {
+        super.doRenderItem(entity, world, poseStack, buffer, packedLight, yaw, pitch, partialTicks);
         if(entity instanceof EntityHeldItemMissile) { //TODO move to sub-renderer
-            this.renderItem(entity, getRenderItem(entity, 1), entity.world, x, y, z, yaw, pitch, partialTicks, 1);
+            this.renderItem(entity, getRenderItem(entity, 1), entity.level(), poseStack, buffer, packedLight, yaw, pitch, partialTicks, 1);
         }
     }
 
     @Override
-    public void doRender(EntityMissile entityMissile, double x, double y, double z, float entityYaw, float partialTicks)
+    public void render(@Nonnull EntityMissile entityMissile, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
-        super.doRender(entityMissile, x, y, z, entityYaw, partialTicks);
+        super.render(entityMissile, entityYaw, partialTicks, poseStack, buffer, packedLight);
 
-        if (renderManager.isDebugBoundingBox()) //TODO fix so we can see motion vector
+        if (this.entityRenderDispatcher.shouldRenderHitBoxes()) //TODO fix so we can see motion vector
         {
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferbuilder = tessellator.getBuffer();
-            bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
-            bufferbuilder.pos(x, y, z).color(0, 255, 0, 255).endVertex();
-            bufferbuilder.pos(x + entityMissile.motionX * 2.0D, y + entityMissile.motionY * 2.0D, z + entityMissile.motionZ * 2.0D).color(0, 255, 0, 2555).endVertex();
-            tessellator.draw();
-            GlStateManager.enableTexture2D();
-            GlStateManager.enableLighting();
-            GlStateManager.enableCull();
-            GlStateManager.disableBlend();
-            GlStateManager.depthMask(true);
+            // PORT: 1.12 drew a raw GL line strip, now a line in the lines render type
+            final Vec3 motion = entityMissile.getDeltaMovement();
+            final Vec3 normal = motion.lengthSqr() > 0 ? motion.normalize() : new Vec3(0, 1, 0);
+            final PoseStack.Pose pose = poseStack.last();
+            final VertexConsumer lines = buffer.getBuffer(RenderType.lines());
+            lines.addVertex(pose, 0, 0, 0).setColor(0, 255, 0, 255).setNormal(pose, (float) normal.x, (float) normal.y, (float) normal.z);
+            lines.addVertex(pose, (float) (motion.x * 2.0D), (float) (motion.y * 2.0D), (float) (motion.z * 2.0D))
+                .setColor(0, 255, 0, 255).setNormal(pose, (float) normal.x, (float) normal.y, (float) normal.z);
         }
     }
 }
+// PORTED

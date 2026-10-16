@@ -6,8 +6,8 @@ import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.data.ActionField;
 import icbm.classic.api.actions.data.IActionFieldProvider;
 import lombok.Getter;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,13 +38,14 @@ public final class ActionDataGeneric extends ActionDataBase {
 
     @Nonnull
     @Override
-    public IAction create(World world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor) {
+    public IAction create(Level world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor) {
         return createAction.create(world, x, y, z, source, this)
             .applyFields(this)
             .applyFields(fieldAccessor);
     }
 
     public interface CreateAction {
-        IAction create(World world, double x, double y, double z, @Nonnull IActionSource source, IActionData data);
+        IAction create(Level world, double x, double y, double z, @Nonnull IActionSource source, IActionData data);
     }
 }
+// PORTED

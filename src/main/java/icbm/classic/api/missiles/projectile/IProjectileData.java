@@ -3,9 +3,9 @@ package icbm.classic.api.missiles.projectile;
 import icbm.classic.api.actions.data.EntityActionTypes;
 import icbm.classic.api.data.meta.ITypeTaggable;
 import icbm.classic.api.reg.obj.IBuildableObject;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * @param <E> created from the projectile data
  *
  * @deprecated being replaced with {@link icbm.classic.api.actions.IActionData} and {@link EntityActionTypes#PROJECTILE}
- * as current solution isn't flexible enough and results in odd spawning when {@link #onEntitySpawned(Entity, Entity, EnumHand)} is invoked. It
+ * as current solution isn't flexible enough and results in odd spawning when {@link #onEntitySpawned(Entity, Entity, InteractionHand)} is invoked. It
  * also gives caller too much visibility into what is spawned. When it should just provide starting information via {@link icbm.classic.api.actions.data.IActionFieldProvider}
  * then let the spawn entity use what it needs. Plus this makes it far easier for reuse of common actions and provide implemetation for other mods.
  * As the majority of projects can be implemented as ActionSpawnEntity((world, pos, provider) -> new Entity(world, pos, provider)). Dropping
@@ -38,7 +38,7 @@ public interface IProjectileData<E extends Entity>  extends IBuildableObject, IT
      * @param allowItemPickup true to allow entity to be collected, such as picking up arrows
      * @return entity to spawn
      */
-    E newEntity(World world, boolean allowItemPickup);
+    E newEntity(Level world, boolean allowItemPickup);
 
     /**
      * Called after the entity has been added to the world. Useful
@@ -51,8 +51,9 @@ public interface IProjectileData<E extends Entity>  extends IBuildableObject, IT
      * @param source that created the entity, may not always be present
      * @param hand used to spawn entity, for non-humanoid this will always be main hand
      */
-    default void onEntitySpawned(@Nonnull E entity, @Nullable Entity source, @Nullable EnumHand hand) {
+    default void onEntitySpawned(@Nonnull E entity, @Nullable Entity source, @Nullable InteractionHand hand) {
 
     }
 
 }
+// PORTED

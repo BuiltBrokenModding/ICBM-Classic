@@ -1,7 +1,7 @@
 package icbm.classic.api.data;
 
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
@@ -17,3 +17,4 @@ public interface WorldEntityIntSupplier
      */
     int get(Entity entity);
 }
+// PORTED

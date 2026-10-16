@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:item_exists",
+        "item": "mekanism:alloy_atomic"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "nnn",
+    "nrn",
+    "nnn"
+  ],
+  "key": {
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:antimatter"
+      }
+    },
+    "n": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:redmatter"
+    }
+  }
+}

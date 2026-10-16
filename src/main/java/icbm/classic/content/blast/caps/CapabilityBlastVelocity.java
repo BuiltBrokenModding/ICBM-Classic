@@ -2,11 +2,7 @@ package icbm.classic.content.blast.caps;
 
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
@@ -22,23 +18,7 @@ public class CapabilityBlastVelocity implements IBlastVelocity
         return false;
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IBlastVelocity.class, new Capability.IStorage<IBlastVelocity>()
-                {
-                    @Nullable
-                    @Override
-                    public NBTBase writeNBT(Capability<IBlastVelocity> capability, IBlastVelocity instance, EnumFacing side)
-                    {
-                        return null;
-                    }
-
-                    @Override
-                    public void readNBT(Capability<IBlastVelocity> capability, IBlastVelocity instance, EnumFacing side, NBTBase nbt)
-                    {
-
-                    }
-                },
-                CapabilityBlastVelocity::new);
-    }
+    // PORT: 1.12 registered this as the capability default through CapabilityManager. NeoForge capabilities
+    // have no default instance or storage, ICBMClassicAPI declares the capability and providers return instances.
 }
+// PORTED

@@ -6,15 +6,15 @@ import icbm.classic.api.actions.cause.IActionSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 @Getter @Setter @RequiredArgsConstructor
 public abstract class ActionBase implements IAction {
 
-    private final World world;
-    private final Vec3d position;
+    private final Level world;
+    private final Vec3 position;
     private final IActionSource source;
     private final IActionData actionData;
 
@@ -23,8 +23,9 @@ public abstract class ActionBase implements IAction {
     public BlockPos getBlockPos()
     {
         if(pos == null) {
-            pos = new BlockPos(position);
+            pos = BlockPos.containing(position);
         }
         return pos;
     }
 }
+// PORTED

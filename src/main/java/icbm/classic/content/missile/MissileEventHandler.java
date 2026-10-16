@@ -9,14 +9,14 @@ import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.radar.RadarMap;
 import icbm.classic.lib.radar.RadarRegistry;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ChunkPos;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,31 +24,33 @@ import java.util.List;
 /**
  * Created by Dark(DarkGuardsman, Robin) on 8/4/2019.
  */
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
+@EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class MissileEventHandler
 {
     @SubscribeEvent
     public static void onEntityMount(EntityMountEvent event)
     {
         if (event.isDismounting()
-                && event.getEntityBeingMounted().hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)
-                && event.getEntityMounting() instanceof EntityPlayer)
+                && event.getEntityBeingMounted() != null
+                && event.getEntityMounting() instanceof Player)
         {
-            IMissile missile = event.getEntityBeingMounted().getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+            IMissile missile = event.getEntityBeingMounted().getCapability(ICBMClassicAPI.MISSILE_CAPABILITY);
             if(missile != null)
             {
-                event.setCanceled(MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Stop(missile, (EntityPlayer) event.getEntityMounting())));
+                event.setCanceled(NeoForge.EVENT_BUS.post(new MissileRideEvent.Stop(missile, (Player) event.getEntityMounting())).isCanceled());
             }
         }
     }
 
+    // PORT: kept as a fallback only. In 1.21 entities are unloaded (setRemoved UNLOADED_TO_CHUNK) well before
+    // ChunkEvent.Unload fires, so missiles found here are usually no longer alive and simulateMissile skips them.
+    // Flight logics now simulate before entering a chunk where entities do not tick, see MissileTrackerHandler#canEntitiesTick
     @SubscribeEvent
     public static void chunkUnload(ChunkEvent.Unload event)
     {
-        final World world = event.getWorld();
-        if (!world.isRemote)
+        if (event.getLevel() instanceof Level world && !world.isClientSide())
         {
-            final Chunk chunk = event.getChunk();
+            final ChunkPos chunk = event.getChunk().getPos();
             final RadarMap map = RadarRegistry.getRadarMapForWorld(world);
             if (map != null)
             {
@@ -68,3 +70,4 @@ public class MissileEventHandler
         }
     }
 }
+// PORTED

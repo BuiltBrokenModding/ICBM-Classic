@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:advanced_circuit"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "wcw",
+    "ibi",
+    "wcw"
+  ],
+  "key": {
+    "w": {
+      "tag": "c:wires/copper"
+    },
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "i": {
+      "item": "minecraft:redstone_torch"
+    },
+    "b": {
+      "tag": "c:circuits/basic"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:advanced_circuit",
+    "count": 1
+  }
+}

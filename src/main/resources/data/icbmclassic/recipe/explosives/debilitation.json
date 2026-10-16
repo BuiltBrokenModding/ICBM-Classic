@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "sss",
+    "wrw",
+    "sss"
+  ],
+  "key": {
+    "s": {
+      "tag": "c:dusts/sulfur"
+    },
+    "w": {
+      "item": "minecraft:water_bucket"
+    },
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:shrapnel"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 3,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:debilitation"
+    }
+  }
+}

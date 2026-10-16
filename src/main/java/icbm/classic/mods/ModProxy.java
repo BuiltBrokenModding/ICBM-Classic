@@ -1,6 +1,7 @@
 package icbm.classic.mods;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.fml.ModList;
 
 /**
  *
@@ -23,13 +24,20 @@ public class ModProxy
 
     }
 
-    public void onTileValidate(TileEntity tile)
+    public void onTileValidate(BlockEntity tile)
     {
 
     }
 
-    public void onTileInvalidate(TileEntity tile)
+    public void onTileInvalidate(BlockEntity tile)
     {
 
+    }
+
+    /** PORT: replaces 1.12 {@code @Optional.Method(modid)} */
+    protected static boolean isModLoaded(String modId)
+    {
+        return ModList.get() != null && ModList.get().isLoaded(modId);
     }
 }
+// PORTED

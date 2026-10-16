@@ -1,6 +1,7 @@
 {
-  "parent": "block/tinted_cross",
+  "parent": "minecraft:block/tinted_cross",
+  "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "icbmclassic:blocks/spikes"
+    "cross": "icbmclassic:block/spikes"
   }
 }

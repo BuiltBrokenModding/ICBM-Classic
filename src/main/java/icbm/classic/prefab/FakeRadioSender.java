@@ -7,12 +7,11 @@ import icbm.classic.api.radio.IRadioSender;
 import icbm.classic.api.radio.messages.ITextMessage;
 import icbm.classic.lib.data.BoundBlockPos;
 import icbm.classic.lib.radio.RadioRegistry;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -26,16 +25,16 @@ public class FakeRadioSender implements IRadioSender
 {
     private static final Object[] empty = new Object[0];
 
-    public final EntityPlayer player;
+    public final Player player;
     public final ItemStack item;
     IBoundBox<BlockPos> bounds;
 
-    public FakeRadioSender(EntityPlayer player, ItemStack item, Integer range)
+    public FakeRadioSender(Player player, ItemStack item, Integer range)
     {
         this.player = player;
         this.item = item;
         if(range != null) {
-            this.bounds = new BoundBlockPos(player.getPosition(), range);
+            this.bounds = new BoundBlockPos(player.blockPosition(), range);
         }
         else {
             this.bounds = RadioRegistry.INFINITE;
@@ -44,12 +43,12 @@ public class FakeRadioSender implements IRadioSender
 
     @Override
     public BlockPos getBlockPos() {
-        return player.getPosition();
+        return player.blockPosition();
     }
 
     @Override
-    public World getWorld() {
-        return player.getEntityWorld();
+    public Level getWorld() {
+        return player.level();
     }
 
     @Override
@@ -63,11 +62,12 @@ public class FakeRadioSender implements IRadioSender
             final ITextMessage textMessage = (ITextMessage) response;
             if(textMessage.shouldTranslate()) {
                 final Object[] data = Optional.ofNullable(textMessage.getTranslationInputs()).orElse(empty);
-                player.sendStatusMessage(new TextComponentTranslation(textMessage.getMessage(), data), true);
+                player.displayClientMessage(Component.translatable(textMessage.getMessage(), data), true);
             }
             else {
-                player.sendStatusMessage(new TextComponentString(((ITextMessage) response).getMessage()), true);
+                player.displayClientMessage(Component.literal(((ITextMessage) response).getMessage()), true);
             }
         }
     }
 }
+// PORTED

@@ -1,7 +1,7 @@
 package icbm.classic.api.missiles.projectile;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -45,3 +45,4 @@ public interface IProjectileStack<E extends Entity>
         return 1;
     }
 }
+// PORTED

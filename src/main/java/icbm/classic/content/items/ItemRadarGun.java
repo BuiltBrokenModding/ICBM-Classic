@@ -1,200 +1,218 @@
 package icbm.classic.content.items;
 
 import icbm.classic.ICBMClassic;
-import icbm.classic.ICBMConstants;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.api.events.RadarGunTraceEvent;
 import icbm.classic.lib.LanguageUtility;
+import icbm.classic.lib.StackNbt;
 import icbm.classic.lib.capability.gps.CapabilityGPSDataItem;
+import icbm.classic.lib.capability.holder.ICapabilityHolderItem;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.packet.PacketPlayerItem;
 import icbm.classic.prefab.item.ItemBase;
-import icbm.classic.prefab.item.ItemStackCapProvider;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 6/13/2016.
  */
-public class ItemRadarGun extends ItemBase implements IPacketIDReceiver
+public class ItemRadarGun extends ItemBase implements IPacketIDReceiver, ICapabilityHolderItem
 {
     public static final double MAX_RANGE = 200; //TODO config
 
     public ItemRadarGun()
     {
-        this.setMaxStackSize(1);
-        this.setHasSubtypes(true);
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setUnlocalizedName(ICBMConstants.PREFIX + "radarGun");
-        this.setRegistryName(ICBMConstants.DOMAIN, "radarGun");
+        super(new Item.Properties().stacksTo(1));
+        this.setName("radarGun");
     }
 
-    @Override
+    // PORT: 1.12 migrated the v5.3.x "linkPos" tag here. 1.12 worlds are not migrated so that was dropped.
     @Nullable
-    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getCapability(ItemCapability<T, Void> capability, ItemStack stack)
     {
-        final ItemStackCapProvider provider = new ItemStackCapProvider(stack);
-
-        final IGPSData data = new CapabilityGPSDataItem(stack);
-        provider.add("gps_data", ICBMClassicAPI.GPS_CAPABILITY, data);
-
-        // Legacy logic from before IGPSData, v5.3.x
-        if(nbt != null && nbt.hasKey("linkPos")) {
-            final NBTTagCompound save = nbt.getCompoundTag("linkPos");
-            data.setWorld(save.getInteger("dimension"));
-            data.setPosition(new Vec3d(save.getDouble("x"), save.getDouble("y"), save.getDouble("z")));
-            nbt.removeTag("linkPos");
+        if (capability == ICBMClassicAPI.GPS_CAPABILITY)
+        {
+            return (T) new CapabilityGPSDataItem(stack);
         }
-        return provider;
+        return null;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> lines, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> lines, TooltipFlag flagIn)
     {
         // Stored data
         final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
-        if(gpsData != null && gpsData.getPosition() != null) {
-            final Vec3d pos = gpsData.getPosition();
-            final World world = gpsData.getWorld();
+        if (gpsData != null && gpsData.getPosition() != null)
+        {
+            final Vec3 pos = gpsData.getPosition();
+            final ResourceKey<Level> worldId = gpsData.getWorldId();
 
             final String x = String.format("%.1f", pos.x);
             final String y = String.format("%.1f", pos.y);
             final String z = String.format("%.1f", pos.z);
 
-            if(world != null) {
-                final String name = Optional.of(world.getWorldInfo()).map(WorldInfo::getWorldName).orElse("--");
-                final String worldName = String.format("(%s)%s", world.provider.getDimension(), name);
-                final ITextComponent output = new TextComponentTranslation(getUnlocalizedName() + ".data.all", x, y, z, worldName);
-                LanguageUtility.outputLines(output, lines::add);
+            if (worldId != null)
+            {
+                // PORT: 1.12 only knew the world (and its save name) on single player, the dimension id is shown either way now
+                final Level world = gpsData.getWorld();
+                final String name = world != null && world.getServer() != null ? world.getServer().getWorldData().getLevelName() : "--";
+                final String worldName = String.format("(%s)%s", worldId.location(), name);
+                final Component output = Component.translatable(getDescriptionId() + ".data.all", x, y, z, worldName);
+                outputLines(output, lines);
             }
-            else {
-                final ITextComponent output = new TextComponentTranslation(getUnlocalizedName() + ".data.pos", x, y, z);
-                LanguageUtility.outputLines(output, lines::add);
+            else
+            {
+                final Component output = Component.translatable(getDescriptionId() + ".data.pos", x, y, z);
+                outputLines(output, lines);
             }
         }
-        else {
-            LanguageUtility.outputLines(new TextComponentTranslation(getUnlocalizedName() + ".data.empty"), lines::add);
+        else
+        {
+            outputLines(Component.translatable(getDescriptionId() + ".data.empty"), lines);
         }
 
         // General information
-        final ITextComponent output = new TextComponentTranslation(getUnlocalizedName() + ".info", MAX_RANGE);
-        LanguageUtility.outputLines(output, lines::add);
+        final Component output = Component.translatable(getDescriptionId() + ".info", MAX_RANGE);
+        outputLines(output, lines);
+    }
+
+    private static void outputLines(Component component, List<Component> lines)
+    {
+        LanguageUtility.splitByLine(component.getString(), LanguageUtility.toolTipLineLength, line -> lines.add(Component.literal(line)));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn)
     {
-        if (player.isSneaking()) // also clear the gps coord if the play is shift-rightclicking in the air
+        if (player.isShiftKeyDown()) // also clear the gps coord if the play is shift-rightclicking in the air
         {
-            if (!world.isRemote) {
-                ItemStack stack = player.getHeldItem(handIn);
-                stack.setTagCompound(null);
-                stack.setItemDamage(0);
-                LanguageUtility.addChatToPlayer(player, "gps.cleared.name");
-                player.inventoryContainer.detectAndSendChanges();
+            if (!world.isClientSide())
+            {
+                clear(player, player.getItemInHand(handIn));
             }
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
+            return InteractionResultHolder.success(player.getItemInHand(handIn));
         }
 
-        if (world.isRemote)
+        if (world.isClientSide())
         {
-            RayTraceResult objectMouseOver = player.rayTrace(200, 1);
-            if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) { // TODO add message saying that the gps target is out of range.
-                final TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
-                if (!(ICBMClassicHelpers.isLauncher(tileEntity, null))) {
-                    sendToServer(player, handIn, objectMouseOver.hitVec);
+            final HitResult objectMouseOver = player.pick(MAX_RANGE, 1, false);
+            if (objectMouseOver.getType() != HitResult.Type.MISS && objectMouseOver instanceof BlockHitResult blockHit)
+            { // TODO add message saying that the gps target is out of range.
+                final BlockEntity tileEntity = world.getBlockEntity(blockHit.getBlockPos());
+                if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
+                {
+                    sendToServer(player, handIn, objectMouseOver.getLocation());
                 }
             }
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(handIn));
+        return InteractionResultHolder.success(player.getItemInHand(handIn));
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public InteractionResult useOn(UseOnContext context)
     {
-        final ItemStack stack = player.getHeldItem(hand);
-        if (world.isRemote)
+        final Player player = context.getPlayer();
+        final ItemStack stack = context.getItemInHand();
+        if (context.getLevel().isClientSide() || player == null)
         {
-            return EnumActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        if (player.isSneaking())
+        if (player.isShiftKeyDown())
         {
-            stack.setTagCompound(null);
-            stack.setItemDamage(0);
-            LanguageUtility.addChatToPlayer(player, "gps.cleared.name");
-            player.inventoryContainer.detectAndSendChanges();
-            return EnumActionResult.SUCCESS;
+            clear(player, stack);
+            return InteractionResult.SUCCESS;
         }
-        else if(onTrace(new Vec3d(pos.getX() + hitX, pos.getY() + hitX, pos.getZ() + hitZ), player, stack)) {
-            return EnumActionResult.SUCCESS;
+        // PORT: 1.12 added hitX to the y position (bug), the real click location is used now
+        else if (onTrace(context.getClickLocation(), player, stack))
+        {
+            return InteractionResult.SUCCESS;
         }
-        return EnumActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    public void sendToServer(EntityPlayer player, EnumHand hand, Vec3d hit) {
-        ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(hand == EnumHand.MAIN_HAND).addData(hit));
+    private void clear(Player player, ItemStack stack)
+    {
+        StackNbt.set(stack, null);
+        player.sendSystemMessage(Component.translatable("gps.cleared.name"));
+        player.inventoryMenu.broadcastChanges();
+    }
+
+    public void sendToServer(Player player, InteractionHand hand, Vec3 hit)
+    {
+        // PORT: 1.12 always sent the selected hotbar slot, so off hand use reached the wrong item
+        final int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+        ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(slot).addData(hand == InteractionHand.MAIN_HAND).addData(hit));
     }
 
     @Override
-    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
+    public boolean read(ByteBuf buf, int id, Player player, IPacket packet)
     {
-        final EnumHand hand = buf.readBoolean() ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
-        final Vec3d pos = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
-        if(player.world instanceof WorldServer) {
-            ((WorldServer) player.world).addScheduledTask(() -> {
-                onTrace(pos, player, player.getHeldItem(hand));
-            });
+        final InteractionHand hand = buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+        final Vec3 pos = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
+
+        // PORT: 1.12 trusted the client position, reject anything the client trace could not have hit
+        if (!Double.isFinite(pos.x) || !Double.isFinite(pos.y) || !Double.isFinite(pos.z)
+            || player.getEyePosition().distanceToSqr(pos) > (MAX_RANGE + 8) * (MAX_RANGE + 8))
+        {
+            return true;
+        }
+
+        if (!player.level().isClientSide())
+        {
+            // Packet handlers already run on the main thread
+            onTrace(pos, player, player.getItemInHand(hand));
         }
         return true;
     }
 
-    public boolean onTrace(final Vec3d posIn, EntityPlayer player, ItemStack stack)
+    public boolean onTrace(final Vec3 posIn, Player player, ItemStack stack)
     {
         if (stack.getItem() == this)
         {
-            final RadarGunTraceEvent event = new RadarGunTraceEvent(player.world, posIn, player);
+            final RadarGunTraceEvent event = new RadarGunTraceEvent(player.level(), posIn, player);
 
-            if(MinecraftForge.EVENT_BUS.post(event) || event.pos == null) {
+            if (NeoForge.EVENT_BUS.post(event).isCanceled() || event.pos == null)
+            {
                 //event was canceled
                 return false; // TODO give user feedback
             }
 
             final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
-            if(gpsData != null) {
+            if (gpsData != null)
+            {
                 gpsData.setPosition(posIn);
-                gpsData.setWorld(player.world);
-                LanguageUtility.addChatToPlayer(player, "gps.pos.set.name");
+                gpsData.setWorld(player.level());
+                player.sendSystemMessage(Component.translatable("gps.pos.set.name"));
             }
             // TODO give user feedback that something broke
         }
         return true;
     }
 }
+// PORTED

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "eee",
+    "ere",
+    "eee"
+  ],
+  "key": {
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:shrapnel"
+      }
+    },
+    "e": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:antigravitational"
+    }
+  }
+}

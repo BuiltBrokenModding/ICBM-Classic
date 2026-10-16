@@ -5,17 +5,17 @@ import icbm.classic.config.util.ItemStackConfigList;
 import icbm.classic.content.reg.ItemReg;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class HeldItemMissileHandler {
     public static final ItemStackConfigList.ContainsCheck banAllowItems = new ItemStackConfigList.ContainsCheck("[HeldItem][Ban/Allow Config]", (configList) -> {
-        configList.setDefault(ItemReg.itemBalloon.getRegistryName(), false, 0);
-        configList.setDefault(ItemReg.itemParachute.getRegistryName(), false, 0);
+        configList.setDefault(ItemReg.itemBalloon.getId(), false, 0);
+        configList.setDefault(ItemReg.itemParachute.getId(), false, 0);
 
-        configList.setDefault(ItemReg.itemClusterMissile.getRegistryName(), false, 0);
-        configList.setDefault(ItemReg.itemExplosiveMissile.getRegistryName(), false, 0);
-        configList.setDefault(ItemReg.itemSAM.getRegistryName(), false, 0);
+        configList.setDefault(ItemReg.itemClusterMissile.getId(), false, 0);
+        configList.setDefault(ItemReg.itemExplosiveMissile.getId(), false, 0);
+        configList.setDefault(ItemReg.itemSAM.getId(), false, 0);
 
         configList.load("icbmclassic/missile/held_item/item_ban_allow/list", ConfigMissile.HELD_ITEM_MISSILE.BAN_ALLOW.ITEMS);
     });
@@ -32,3 +32,4 @@ public final class HeldItemMissileHandler {
         banAllowItems.reload();
     }
 }
+// PORTED

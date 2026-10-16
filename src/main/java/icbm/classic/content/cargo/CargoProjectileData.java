@@ -15,27 +15,35 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemMonsterPlacer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY extends Entity> implements IBuildableObject, IProjectileData<ENTITY>, INBTSerializable<NBTTagCompound> {
+public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY extends Entity> implements IBuildableObject, IProjectileData<ENTITY>, INBTSerializable<CompoundTag> {
 
     private final static ImmutableList<MetaTag> TYPE = ImmutableList.of(EntityActionTypes.ENTITY_CREATION, ProjectileTypes.TYPE_HOLDER, ProjectileTypes.TYPE_THROWABLE);
 
@@ -69,13 +77,14 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
         return TYPE;
     }
 
+    @Nonnull
     @Override
-    public ITextComponent getTooltip() {
-        return new TextComponentTranslation(getTranslationKey() + ".info." + parachuteMode.name().toLowerCase());
+    public Component getTooltip() {
+        return Component.translatable(getTranslationKey() + ".info." + parachuteMode.name().toLowerCase());
     }
 
     @Override
-    public void onEntitySpawned(@Nonnull ENTITY entity, @Nullable Entity source, @Nullable EnumHand hand) {
+    public void onEntitySpawned(@Nonnull ENTITY entity, @Nullable Entity source, @Nullable InteractionHand hand) {
         if (!heldItem.isEmpty()) {
             switch (parachuteMode) {
                 case PROJECTILE:
@@ -97,11 +106,13 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     private void spawnProjectile(@Nonnull ENTITY entity) {
         final Entity projectile =
             ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.spawnProjectile(heldItem,
-                entity.world, entity.posX, entity.posY, entity.posZ,
+                entity.level(), entity.getX(), entity.getY(), entity.getZ(),
                 entity, true, (proj) -> {
                     // TODO add extra logic for parachute spawning
-                    proj.rotationPitch = proj.prevRotationPitch = entity.rotationPitch;
-                    proj.rotationYaw = proj.prevRotationYaw = entity.rotationYaw;
+                    proj.setXRot(entity.getXRot());
+                    proj.xRotO = entity.getXRot();
+                    proj.setYRot(entity.getYRot());
+                    proj.yRotO = entity.getYRot();
                 }
             );
 
@@ -115,20 +126,22 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     private void spawnEntity(@Nonnull ENTITY entity) {
         //TODO for some entities attempt to render a parachute on their model instead of acting as a mount
 
-        if (entity.world.isRemote) {
+        if (entity.level().isClientSide()) {
             return;
         }
 
-        if (heldItem.getItem() instanceof ItemMonsterPlacer) {
-            final Entity mob = ItemMonsterPlacer.spawnCreature(entity.world, ItemMonsterPlacer.getNamedIdFrom(heldItem), entity.posX, entity.posY, entity.posZ);
+        if (heldItem.getItem() instanceof SpawnEggItem egg) {
+            // PORT: 1.12 ItemMonsterPlacer.spawnCreature + applyItemEntityDataToEntity, EntityType#spawn applies stack name and entity data
+            final EntityType<?> type = egg.getType(heldItem);
+            final Entity mob = type.spawn((ServerLevel) entity.level(), heldItem, null, entity.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
             if (mob != null) {
+                mob.moveTo(entity.getX(), entity.getY(), entity.getZ(), mob.getYRot(), mob.getXRot());
                 mob.startRiding(entity);
 
-                if (mob instanceof EntityLivingBase && heldItem.hasDisplayName()) {
-                    entity.setCustomNameTag(heldItem.getDisplayName());
+                if (mob instanceof LivingEntity && heldItem.has(DataComponents.CUSTOM_NAME)) {
+                    // PORT: kept 1.12 behaviour, names the holder entity
+                    entity.setCustomName(heldItem.getHoverName());
                 }
-
-                ItemMonsterPlacer.applyItemEntityDataToEntity(entity.world, null, heldItem, mob);
             } else {
                 ICBMClassic.logger().warn("ParachuteProjectile: unknown item for entity spawning. Data: {}, Item: {}", this, heldItem);
                 spawnItemEntity(entity);
@@ -140,61 +153,68 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
     }
 
     private void spawnItemEntity(@Nonnull ENTITY entity) {
-        final EntityItem entityItem = createItemEntity(entity);
-
-        // Spawn item
-        if (!entity.world.spawnEntity(entityItem)) {
-            ICBMClassic.logger().error("CargoProjectileData: Failed to spawn held item as {}, this likely resulted in loss of items", entityItem);
-            //TODO see if we can undo cargo spawn if this fails
-        }
+        final ItemEntity entityItem = createItemEntity(entity);
 
         // Attach to host entity (parachute/balloon)
+        // PORT: 1.12 spawned then mounted, mounting first makes the item's spawn packet carry the passenger link
+        // so clients never see the cargo without its holder
         if (!entityItem.startRiding(entity)) {
             ICBMClassic.logger().error("CargoProjectileData: Failed to set {} as rider of {}, this likely resulted in loss of items", entityItem, entity);
             //TODO see if we can undo cargo spawn if this fails
         }
+
+        // Spawn item
+        if (!entity.level().addFreshEntity(entityItem)) {
+            // Don't leave a rider that isn't in the world attached to the holder
+            entityItem.stopRiding();
+            ICBMClassic.logger().error("CargoProjectileData: Failed to spawn held item as {}, this likely resulted in loss of items", entityItem);
+            //TODO see if we can undo cargo spawn if this fails
+        }
     }
 
-    private EntityItem createItemEntity(@Nonnull ENTITY entity) {
-        final EntityItem entityItem = new EntityItem(entity.world);
+    private ItemEntity createItemEntity(@Nonnull ENTITY entity) {
+        final ItemEntity entityItem = new ItemEntity(EntityType.ITEM, entity.level());
         entityItem.setItem(heldItem.copy());
-        entityItem.setPosition(entity.posX, entity.posY, entity.posZ);
-        entityItem.setDefaultPickupDelay();
+        entityItem.setPos(entity.getX(), entity.getY(), entity.getZ());
+        entityItem.setDefaultPickUpDelay();
         return entityItem;
     }
 
-    private void spawnBlockEntity(@Nonnull ENTITY entity, Entity source, EnumHand hand) {
-        if (!(heldItem.getItem() instanceof ItemBlock)) { //TODO handle blocks that have non-itemBlock entities
+    private void spawnBlockEntity(@Nonnull ENTITY entity, Entity source, InteractionHand hand) {
+        if (!(heldItem.getItem() instanceof BlockItem blockItem)) { //TODO handle blocks that have non-itemBlock entities
             spawnItemEntity(entity);
             return;
         }
-        int i = heldItem.getItem().getMetadata(heldItem.getMetadata());
-        IBlockState iblockstate = null;
+        BlockState iblockstate = null;
 
         try {
             // TODO if source is a missile try to get caused by player
-            final EntityLivingBase entityLivingBase = source instanceof EntityLivingBase ? (EntityLivingBase) source : FakePlayerFactory.getMinecraft((WorldServer) entity.world);
-            iblockstate = ((ItemBlock) heldItem.getItem()).getBlock()
-                .getStateForPlacement(entity.world, entity.getPosition(), EnumFacing.NORTH, 0.5f, 1f, 0.5f, i, entityLivingBase, hand);
+            // PORT: placement context needs a Player, 1.12 accepted any living entity
+            final Player placer = source instanceof Player ? (Player) source : FakePlayerFactory.getMinecraft((ServerLevel) entity.level());
+            final BlockPos pos = entity.blockPosition();
+            final BlockHitResult hit = new BlockHitResult(new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5), Direction.NORTH, pos, false);
+            iblockstate = blockItem.getBlock().getStateForPlacement(new BlockPlaceContext(entity.level(), placer, hand != null ? hand : InteractionHand.MAIN_HAND, heldItem, hit));
         } catch (Exception e) {
             ICBMClassic.logger().error("CargoProjectileData: Failed to use Block#getStateForPlacement to get block state. This may cause incorrect block placements", e);
-            iblockstate = ((ItemBlock) heldItem.getItem()).getBlock().getStateFromMeta(i);
+        }
+        if (iblockstate == null) {
+            iblockstate = blockItem.getBlock().defaultBlockState();
         }
 
         // TODO add itemstack to flying block for better placement and handling of TE data
         final BlockCaptureData blockCaptureData = new BlockCaptureData(iblockstate, heldItem.copy());
-        if (!FlyingBlock.spawnFlyingBlock(entity.world, entity.posX, entity.posY, entity.posZ, blockCaptureData, (flyingBlock) -> flyingBlock.startRiding(entity), null, null)) {
+        if (!FlyingBlock.spawnFlyingBlock(entity.level(), entity.getX(), entity.getY(), entity.getZ(), blockCaptureData, (flyingBlock) -> flyingBlock.startRiding(entity), null, null)) {
             spawnItemEntity(entity);
         }
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -204,3 +224,4 @@ public abstract class CargoProjectileData<T extends IBuildableObject, ENTITY ext
         .nodeEnumString("mode", CargoProjectileData::getParachuteMode, CargoProjectileData::setParachuteMode, ProjectileCargoMode::valueOf)
         .base();
 }
+// PORTED

@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:battery"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "rer",
+    "sas",
+    "sss"
+  ],
+  "key": {
+    "a": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:repulsive"
+      }
+    },
+    "e": {
+      "item": "icbmclassic:battery"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "s": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:emp"
+    }
+  }
+}

@@ -2,8 +2,8 @@ package icbm.classic.content.blocks.launcher.network;
 
 import icbm.classic.api.ICBMClassicAPI;
 import lombok.AllArgsConstructor;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,9 +38,8 @@ public class NetworkEnergyStorage implements IEnergyStorage {
     private Stream<IEnergyStorage> powerNodes() {
         return network.getComponents().stream()
             .map(LauncherNode::getSelf)
-            .filter(tile -> tile.hasCapability(CapabilityEnergy.ENERGY, null))
-            .filter(tile -> tile.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null))
-            .map(tile -> tile.getCapability(CapabilityEnergy.ENERGY, null))
+            .filter(tile -> LauncherNetwork.getTileCapability(tile, ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null) != null)
+            .map(tile -> LauncherNetwork.getTileCapability(tile, Capabilities.EnergyStorage.BLOCK, null))
             .filter(Objects::nonNull);
     }
 
@@ -70,3 +69,4 @@ public class NetworkEnergyStorage implements IEnergyStorage {
         return true;
     }
 }
+// PORTED

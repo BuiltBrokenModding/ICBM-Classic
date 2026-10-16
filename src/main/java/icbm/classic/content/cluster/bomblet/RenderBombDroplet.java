@@ -1,85 +1,67 @@
 package icbm.classic.content.cluster.bomblet;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import icbm.classic.ICBMConstants;
 import icbm.classic.client.render.entity.RenderEntityItem2;
-import icbm.classic.content.cluster.bomblet.EntityBombDroplet;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
-
-@SideOnly(Side.CLIENT)
-public class RenderBombDroplet extends Render<EntityBombDroplet>
+public class RenderBombDroplet extends EntityRenderer<EntityBombDroplet>
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "textures/entity/fragments/fragment.png");
 
-    private final EntityItem entityItem;
     private final RenderEntityItem2 renderEntityItem;
-    public RenderBombDroplet(RenderManager renderManager)
+
+    public RenderBombDroplet(EntityRendererProvider.Context context)
     {
-        super(renderManager);
-        entityItem = new EntityItem(null);
-        renderEntityItem = new RenderEntityItem2(renderManager, Minecraft.getMinecraft().getRenderItem(), ItemCameraTransforms.TransformType.NONE);
+        super(context);
+        renderEntityItem = new RenderEntityItem2(context, ItemDisplayContext.NONE);
     }
 
     @Override
-    public void doRender(EntityBombDroplet entity, double x, double y, double z, float entityYaw, float partialTicks)
+    public void render(EntityBombDroplet entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
-        this.bindEntityTexture(entity);
-
         //Setup
-        GlStateManager.pushMatrix();
+        poseStack.pushPose();
 
         //Translate to center of entity collider
-        GlStateManager.translate(x, y + 0.15, z);
+        poseStack.translate(0, 0.15, 0);
 
         //Rotate
-        float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 180;
-        float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks + 90;
-        GlStateManager.rotate(yaw, 0F, 1F, 0F);
-        GlStateManager.rotate(pitch, 1F, 0F, 0F);
+        float yaw = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 180;
+        float pitch = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90;
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+        poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
 
         //Translate to rotation point of model TODO extract from model file
-        GlStateManager.translate(0, 0.2, 0);
+        poseStack.translate(0, 0.2, 0);
 
         //Render missile
-        renderMissile(entity.toStack(),
-            entity.world, entity.posX, entity.posY, entity.posZ,
-            0, 0, 0, entityYaw, partialTicks);
+        renderMissile(entity.toStack(), entity.level(), poseStack, buffer, packedLight);
 
         //Reset
-        GlStateManager.popMatrix();
+        poseStack.popPose();
 
-
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    public void renderMissile(ItemStack missileStack, World world, double wx, double wy, double wz,
-                              double x, double y, double z, float entityYaw, float partialTicks)
+    /** PORT: 1.12 rendered through a fake EntityItem, the item renderer is now called directly */
+    public void renderMissile(ItemStack missileStack, Level world, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
-        //Set data for fake entity
-        entityItem.setWorld(world);
-        entityItem.rotationYaw = 0;
-        entityItem.setPosition(wx, wy, wz);
-        entityItem.setItem(missileStack);
-
-        //render entity item
-        renderEntityItem.doRender(entityItem, x, y, z, entityYaw, partialTicks);
+        renderEntityItem.renderStack(missileStack, world, poseStack, buffer, packedLight);
     }
 
-    @Nullable
     @Override
-    protected ResourceLocation getEntityTexture(EntityBombDroplet entity)
+    public ResourceLocation getTextureLocation(EntityBombDroplet entity)
     {
         return TEXTURE;
     }
 }
+// PORTED

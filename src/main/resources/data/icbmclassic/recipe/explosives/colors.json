@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CrC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "tag": "c:dyes"
+    },
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:repulsive"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:colors"
+    }
+  }
+}

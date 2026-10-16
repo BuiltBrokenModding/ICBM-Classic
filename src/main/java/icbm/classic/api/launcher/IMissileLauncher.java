@@ -5,8 +5,8 @@ import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -48,7 +48,7 @@ public interface IMissileLauncher
      *
      * @return status from pre-checks
      *
-     * @deprecated will be replaced with {@link icbm.classic.api.actions.IPotentialAction#checkAction(World, double, double, double, IActionSource)}
+     * @deprecated will be replaced with {@link icbm.classic.api.actions.IPotentialAction#checkAction(Level, double, double, double, IActionSource)}
      */
     IActionStatus preCheckLaunch(IMissileTarget target, @Nullable IActionCause cause);
 
@@ -64,7 +64,7 @@ public interface IMissileLauncher
      * @param simulate to do pre-flight checks and get current status
      * @return status of launch
      *
-     * @deprecated will be replaced with {@link icbm.classic.api.actions.IPotentialAction#doAction(World, double, double, double, IActionSource)}
+     * @deprecated will be replaced with {@link icbm.classic.api.actions.IPotentialAction#doAction(Level, double, double, double, IActionSource)}
      */
     IActionStatus launch(ILauncherSolution firingSolution, @Nullable IActionCause cause, boolean simulate);
 
@@ -108,7 +108,7 @@ public interface IMissileLauncher
      * @param launchers count being used in the fire mission
      * @return inaccuracy
      */
-    default float getInaccuracy(Vec3d predictedTarget, int launchers) {
+    default float getInaccuracy(Vec3 predictedTarget, int launchers) {
         return 0;
     }
 
@@ -122,3 +122,4 @@ public interface IMissileLauncher
         return ConfigMissile.DIRECT_FLIGHT_SPEED;
     }
 }
+// PORTED

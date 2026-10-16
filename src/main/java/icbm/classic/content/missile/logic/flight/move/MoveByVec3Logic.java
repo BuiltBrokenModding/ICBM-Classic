@@ -8,10 +8,11 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
  * Flight logic to move in a direction vector
  */
 public class MoveByVec3Logic extends AccelerateByVec3Logic {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "engine.move.vector");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "engine.move.vector");
 
     /** Distance to cover */
     @Getter @Setter @Accessors(chain = true)
@@ -54,9 +55,9 @@ public class MoveByVec3Logic extends AccelerateByVec3Logic {
         // Measured movement in direction, technically can run forever if something stops movement
         else
         {
-            distance -= getDirection().x * entity.motionX;
-            distance -= getDirection().y * entity.motionY;
-            distance -= getDirection().z * entity.motionZ;
+            distance -= getDirection().x * entity.getDeltaMovement().x;
+            distance -= getDirection().y * entity.getDeltaMovement().y;
+            distance -= getDirection().z * entity.getDeltaMovement().z;
         }
     }
 
@@ -71,13 +72,13 @@ public class MoveByVec3Logic extends AccelerateByVec3Logic {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -86,3 +87,4 @@ public class MoveByVec3Logic extends AccelerateByVec3Logic {
         /* */.nodeDouble("distance", MoveByVec3Logic::getDistance, MoveByVec3Logic::setDistance)
         .base();
 }
+// PORTED

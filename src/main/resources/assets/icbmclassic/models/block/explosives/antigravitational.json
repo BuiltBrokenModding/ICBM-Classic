@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "icbmclassic:block/explosive/anti_gravitational",
+    "down": "icbmclassic:block/explosive/bottom_3",
+    "up": "icbmclassic:block/explosive/bottom_3",
+    "north": "icbmclassic:block/explosive/anti_gravitational",
+    "east": "icbmclassic:block/explosive/anti_gravitational",
+    "south": "icbmclassic:block/explosive/anti_gravitational",
+    "west": "icbmclassic:block/explosive/anti_gravitational"
+  }
+}

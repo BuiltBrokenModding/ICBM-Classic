@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "icbmclassic:block/explosive/nuclear",
+    "down": "icbmclassic:block/explosive/bottom_3",
+    "up": "icbmclassic:block/explosive/bottom_3",
+    "north": "icbmclassic:block/explosive/nuclear",
+    "east": "icbmclassic:block/explosive/nuclear",
+    "south": "icbmclassic:block/explosive/nuclear",
+    "west": "icbmclassic:block/explosive/nuclear"
+  },
+  "icbmclassic:rotatable": true
+}

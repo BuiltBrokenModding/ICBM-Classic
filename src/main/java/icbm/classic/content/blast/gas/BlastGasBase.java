@@ -8,14 +8,15 @@ import icbm.classic.content.gas.ProtectiveArmorHandler;
 import icbm.classic.lib.NBTConstants;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.*;
 
@@ -42,7 +43,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     private final Queue<BlockPos> edgeBlocks = new LinkedList();
 
     /** Entities impacted by gas */
-    private final HashMap<EntityLivingBase, Integer> impactedEntityMap = new HashMap();
+    private final HashMap<LivingEntity, Integer> impactedEntityMap = new HashMap();
     //TODO turn into entity capability to prevent damage stacking of several explosives
     //TODO use weak refs to not hold instances
 
@@ -58,7 +59,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         if (callCount == 0 && !this.playShortSoundFX)
         {
             //TODO look into different sounds per type
-            ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.DEBILITATION.play(world, this.location.x(), this.location.y(), this.location.z(), 4.0F, (1.0F + (world().random.nextFloat() - world().random.nextFloat()) * 0.2F) * 0.7F, true);
         }
 
         //Do gas effect
@@ -75,18 +76,18 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
                 final double radius = this.getBlastRadius();
 
                 //Max bounds
-                final AxisAlignedBB bounds = new AxisAlignedBB(
+                final AABB bounds = new AABB(
                         location.x() - radius, location.y() - radius, location.z() - radius,
                         location.x() + radius, location.y() + radius, location.z() + radius);
 
-                final List<EntityLivingBase> entityList = world()
-                        .getEntitiesWithinAABB(EntityLivingBase.class, bounds, this::canGasEffect);
+                final List<LivingEntity> entityList = world()
+                        .getEntitiesOfClass(LivingEntity.class, bounds, this::canGasEffect);
 
                 //Loop all entities
-                for (EntityLivingBase entity : entityList)
+                for (LivingEntity entity : entityList)
                 {
                     final float protection = getProtectionRating(entity);
-                    if(protection < minGasProtection() || protection < world.rand.nextFloat()) {
+                    if(protection < minGasProtection() || protection < world.random.nextFloat()) {
                         //Track entities
                         if (!impactedEntityMap.containsKey(entity)) {
                             impactedEntityMap.put(entity, 1);
@@ -114,7 +115,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         return 0.5f;
     }
 
-    protected float getProtectionRating(EntityLivingBase entityLivingBase) {
+    protected float getProtectionRating(LivingEntity entityLivingBase) {
         return ProtectiveArmorHandler.getProtectionRating(entityLivingBase);
     }
 
@@ -131,7 +132,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
      * @param entity   to impact
      * @param hitCount level of impact
      */
-    protected void applyEffect(final EntityLivingBase entity, final int hitCount)
+    protected void applyEffect(final LivingEntity entity, final int hitCount)
     {
 
     }
@@ -142,13 +143,13 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
      * @param entity
      * @return true to effect entity
      */
-    protected boolean canGasEffect(EntityLivingBase entity)
+    protected boolean canGasEffect(LivingEntity entity)
     {
         //Ignore dead things
-        if (entity.isEntityAlive())
+        if (entity.isAlive())
         {
             //Always ignore non-gameplay characters
-            if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative())
+            if (entity instanceof Player && ((Player) entity).isCreative())
             {
                 return false;
             }
@@ -156,7 +157,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
 
             //Check that the entity is in range
-            return affectedBlocks.contains(checkPos.setPos(entity.posX, entity.posY, entity.posZ));
+            return affectedBlocks.contains(checkPos.set(entity.getX(), entity.getY(), entity.getZ()));
         }
         return false;
     }
@@ -166,7 +167,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         if (this.playShortSoundFX)
         {
             ICBMSounds.GAS_LEAK.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D,
-                    4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F), true);
+                    4.0F, (1.0F + (world().random.nextFloat() - world().random.nextFloat()) * 0.2F), true);
         }
     }
 
@@ -212,10 +213,10 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
             final BlockPos edge = edgeBlocks.poll();
 
             //Loop all 6 sides of the edge
-            for (EnumFacing facing : EnumFacing.values())
+            for (Direction facing : Direction.values())
             {
                 //Move our check pos to current target
-                checkPos.setPos(edge);
+                checkPos.set(edge);
                 checkPos.move(facing);
 
                 //Don't repath
@@ -227,7 +228,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
                         //Validate
                         if (isValidPath(checkPos, facing))
                         {
-                            final BlockPos pos = checkPos.toImmutable();
+                            final BlockPos pos = checkPos.immutable();
                             affectedBlocks.add(pos);
                             nextSet.add(pos);
 
@@ -236,7 +237,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
                         //Ignore if invalid
                         else
                         {
-                            hasPathed.add(checkPos.toImmutable());
+                            hasPathed.add(checkPos.immutable());
                         }
                     }
                 }
@@ -247,14 +248,15 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         edgeBlocks.addAll(nextSet);
     }
 
-    private boolean isValidPath(final BlockPos pos, final EnumFacing direction)
+    private boolean isValidPath(final BlockPos pos, final Direction direction)
     {
-        final IBlockState blockState = world.getBlockState(pos);
-        final AxisAlignedBB aabb = blockState.getCollisionBoundingBox(world, pos);
-        if (aabb == null) // if there is no bounding box, its pass through, so its a valid path
+        final BlockState blockState = world.getBlockState(pos);
+        final VoxelShape shape = blockState.getCollisionShape(world, pos);
+        if (shape.isEmpty()) // if there is no bounding box, its pass through, so its a valid path
         {
             return true;
         }
+        final AABB aabb = shape.bounds();
 
         // whether or not the respective axes are completely stretched (they span form one side of the block to another)
         boolean xFull = aabb.minX == 0 && aabb.maxX == 1;
@@ -262,15 +264,15 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
         boolean zFull = aabb.minZ == 0 && aabb.maxZ == 1;
 
         boolean isImpassable = false;
-        if (direction == EnumFacing.UP || direction == EnumFacing.DOWN)
+        if (direction == Direction.UP || direction == Direction.DOWN)
         {
             isImpassable = xFull && zFull;
         }
-        else if (direction == EnumFacing.NORTH || direction == EnumFacing.SOUTH)
+        else if (direction == Direction.NORTH || direction == Direction.SOUTH)
         {
             isImpassable = xFull && yFull;
         }
-        else if (direction == EnumFacing.WEST || direction == EnumFacing.EAST)
+        else if (direction == Direction.WEST || direction == Direction.EAST)
         {
             isImpassable = zFull && yFull;
         }
@@ -280,7 +282,7 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
 
     private boolean isInRange(final Vec3i pos, final int radiusSq)
     {
-        return (int) Math.floor(pos.distanceSq(xi(), yi(), zi())) <= radiusSq;
+        return (int) Math.floor(pos.distToLowCornerSqr(xi(), yi(), zi())) <= radiusSq; // 1.12 Vec3i#distanceSq used the corner too
     }
 
     protected void spawnGasParticles(final Vec3i pos)
@@ -314,18 +316,19 @@ public abstract class BlastGasBase extends Blast implements IBlastTickable
     }
 
     @Override
-    public void load(NBTTagCompound nbt)
+    public void load(CompoundTag nbt)
     {
         super.load(nbt);
-        this.duration = nbt.getInteger(NBTConstants.DURATION);
+        this.duration = nbt.getInt(NBTConstants.DURATION);
         this.playShortSoundFX = nbt.getBoolean(NBTConstants.PLAY_SHORT_SOUND_FX);
     }
 
     @Override
-    public void save(NBTTagCompound nbt)
+    public void save(CompoundTag nbt)
     {
         super.save(nbt);
-        nbt.setInteger(NBTConstants.DURATION, this.duration);
-        nbt.setBoolean(NBTConstants.PLAY_SHORT_SOUND_FX, this.playShortSoundFX);
+        nbt.putInt(NBTConstants.DURATION, this.duration);
+        nbt.putBoolean(NBTConstants.PLAY_SHORT_SOUND_FX, this.playShortSoundFX);
     }
 }
+// PORTED

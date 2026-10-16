@@ -4,13 +4,13 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.Vec3i;
 
 /**
  * Basic implementation of Pos3D that contains helper methods for interacting with MC worlds
@@ -20,12 +20,12 @@ import net.minecraft.util.math.Vec3i;
 public class Pos extends AbstractPos<Pos> implements IPos3D
 {
     public static final Pos zero = new Pos();
-    public static final Pos up = new Pos(EnumFacing.UP);
-    public static final Pos down = new Pos(EnumFacing.DOWN);
-    public static final Pos north = new Pos(EnumFacing.NORTH);
-    public static final Pos south = new Pos(EnumFacing.SOUTH);
-    public static final Pos east = new Pos(EnumFacing.EAST);
-    public static final Pos west = new Pos(EnumFacing.WEST);
+    public static final Pos up = new Pos(Direction.UP);
+    public static final Pos down = new Pos(Direction.DOWN);
+    public static final Pos north = new Pos(Direction.NORTH);
+    public static final Pos south = new Pos(Direction.SOUTH);
+    public static final Pos east = new Pos(Direction.EAST);
+    public static final Pos west = new Pos(Direction.WEST);
 
 
     public Pos()
@@ -48,14 +48,14 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
         this(-Math.sin(Math.toRadians(yaw)), Math.sin(Math.toRadians(pitch)), -Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
     }
 
-    public Pos(TileEntity tile)
+    public Pos(BlockEntity tile)
     {
-        this(tile.getPos());
+        this(tile.getBlockPos());
     }
 
     public Pos(Entity entity)
     {
-        this(entity.posX, entity.posY, entity.posZ);
+        this(entity.getX(), entity.getY(), entity.getZ());
     }
 
     public Pos(IPos3D vec)
@@ -68,7 +68,7 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
         this(vec.x(), vec.y(), vec.z());
     }
 
-    public Pos(NBTTagCompound nbt)
+    public Pos(CompoundTag nbt)
     {
         this(nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
@@ -83,12 +83,12 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
         this(par1.getX(), par1.getY(), par1.getZ());
     }
 
-    public Pos(EnumFacing dir)
+    public Pos(Direction dir)
     {
-        this(dir.getDirectionVec());
+        this(dir.getNormal());
     }
 
-    public Pos(Vec3d vec)
+    public Pos(Vec3 vec)
     {
         this(vec.x, vec.y, vec.z);
     }
@@ -113,16 +113,16 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
 
         if (distance == 1.0F)
         {
-            f1 = Math.cos(-entity.rotationYaw * 0.017453292F - Math.PI);
-            f2 = Math.sin(-entity.rotationYaw * 0.017453292F - Math.PI);
-            f3 = -Math.cos(-entity.rotationPitch * 0.017453292F);
-            f4 = Math.sin(-entity.rotationPitch * 0.017453292F);
+            f1 = Math.cos(-entity.getYRot() * 0.017453292F - Math.PI);
+            f2 = Math.sin(-entity.getYRot() * 0.017453292F - Math.PI);
+            f3 = -Math.cos(-entity.getXRot() * 0.017453292F);
+            f4 = Math.sin(-entity.getXRot() * 0.017453292F);
             return new Pos((f2 * f3), f4, (f1 * f3));
         }
         else
         {
-            f1 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * distance;
-            f2 = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * distance;
+            f1 = entity.xRotO + (entity.getXRot() - entity.xRotO) * distance;
+            f2 = entity.yRotO + (entity.getYRot() - entity.yRotO) * distance;
             f3 = Math.cos(-f2 * 0.017453292F - Math.PI);
             f4 = Math.sin(-f2 * 0.017453292F - Math.PI);
             double f5 = -Math.cos(-f1 * 0.017453292F);
@@ -176,3 +176,4 @@ public class Pos extends AbstractPos<Pos> implements IPos3D
         return (int) hash;
     }
 }
+// PORTED

@@ -1,29 +1,30 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.transform.rotation.EulerAngle;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityMinecartEmpty;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 /**
  * Used a placeholder to move riding entities around
@@ -31,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 10/31/2017.
  */
-public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnData
+public class EntityPlayerSeat extends Entity implements IEntityWithComplexSpawn
 {
     private TileLauncherBase host; //TODO save host position so we can restore from save
     private BlockPos hostPos;
@@ -39,19 +40,28 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     public float offsetX = 0;
     public float offsetY = 0;
     public float offsetZ = 0;
-    public EnumFacing prevFace;
-    public EnumFacing prevRotation;
+    public Direction prevFace;
+    public Direction prevRotation;
     public boolean prevRiding;
 
-    public EntityPlayerSeat(World world)
+    /** PORT: 1.12 width/height fields, 1.21 entity size comes from {@link #getDimensions(Pose)} */
+    private float width = 0.5f;
+    private float height = 2.5f;
+
+    public EntityPlayerSeat(EntityType<? extends EntityPlayerSeat> type, Level world)
     {
-        super(world);
+        super(type, world);
+    }
+
+    public EntityPlayerSeat(Level world)
+    {
+        this(EntityReg.MISSILE_SEAT.get(), world);
     }
 
     public void setHost(TileLauncherBase host) {
         this.host = host;
         if(host != null) {
-            this.hostPos = host.getPos();
+            this.hostPos = host.getBlockPos();
         }
         else {
             this.hostPos = null;
@@ -59,337 +69,320 @@ public class EntityPlayerSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     @Override
-    public float getEyeHeight()
-    {
-        return 0;
-    }
-
-    @Override
-    protected void entityInit()
+    protected void defineSynchedData(SynchedEntityData.Builder builder)
     {
     }
 
+    /** 1.12 getEyeHeight returned 0 */
     @Override
-    public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
-        //removePassengers();
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        return EntityDimensions.scalable(width, height).withEyeHeight(0);
     }
 
+    /** 1.12 removePassengers */
     @Override
-    public void removePassengers()
+    public void ejectPassengers()
     {
         for (int i = this.getPassengers().size() - 1; i >= 0; --i)
         {
             final Entity entity = this.getPassengers().get(i);
-            double prevX = entity.posX;
-            double prevY = entity.posY;
-            double prevZ = entity.posZ;
+            double prevX = entity.getX();
+            double prevY = entity.getY();
+            double prevZ = entity.getZ();
 
-            entity.dismountRidingEntity();
+            entity.stopRiding();
 
             // Player will sometimes warp to bottom of map when dismounting
-            if(Math.abs(prevX - entity.posX) > 2 || Math.abs(prevY - entity.posZ) > 2 || Math.abs(prevZ - entity.posZ) > 2) {
-                entity.setPosition(prevX, prevY, prevZ);
+            // PORT: 1.12 compared prevY against posZ (typo), fixed to compare against Y
+            if(Math.abs(prevX - entity.getX()) > 2 || Math.abs(prevY - entity.getY()) > 2 || Math.abs(prevZ - entity.getZ()) > 2) {
+                entity.setPos(prevX, prevY, prevZ);
             }
         }
     }
 
+    /** 1.12 onEntityUpdate, base entity tick (fire, portals, water) was skipped in 1.12 too */
     @Override
-    public void onEntityUpdate()
+    public void tick()
     {
         if(host == null && hostPos != null) {
-            final TileEntity tile = world.getTileEntity(hostPos);
-            if(tile instanceof TileLauncherBase) {
-                host = (TileLauncherBase) tile;
+            final BlockEntity tile = level().getBlockEntity(hostPos);
+            if(tile instanceof TileLauncherBase launcher) {
+                // PORT: 1.21 loads entity sections after block entities start ticking, so the launcher may have
+                // already spawned a fresh seat before this saved seat arrived. Yield to it instead of duplicating,
+                // unless this seat came back with a rider (player rejoined while seated) and the other is empty.
+                final EntityPlayerSeat other = launcher.seat;
+                if(!level().isClientSide() && other != null && other != this && !other.isRemoved()) {
+                    if(this.isVehicle() && !other.isVehicle()) {
+                        other.discard();
+                    }
+                    else {
+                        this.ejectPassengers();
+                        this.discard();
+                        return;
+                    }
+                }
+                host = launcher;
                 host.seat = this;
             }
         }
 
-        if (!world.isRemote && (host == null || host.isInvalid() || this.posY < -64.0D))
+        // PORT: also drop seats the launcher no longer owns (orphans left by older duplicated saves)
+        if (!level().isClientSide() && (host == null || host.isRemoved() || host.seat != this || this.getY() < -64.0D))
         {
-            this.removePassengers();
-            this.setDead();
+            this.ejectPassengers();
+            this.discard();
+            return;
         }
 
-        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide() || prevRiding != this.isBeingRidden())) {
+        if(host != null && (prevFace != host.getLaunchDirection() || prevRotation != host.getSeatSide() || prevRiding != this.isVehicle())) {
             prevFace = host.getLaunchDirection();
             prevRotation = host.getSeatSide();
-            prevRiding = this.isBeingRidden();
+            prevRiding = this.isVehicle();
             updatePosition(host.getLaunchDirection(), host.getSeatSide());
             updateBox(host.getLaunchDirection(), host.getSeatSide());
         }
     }
 
-    protected void updatePosition(EnumFacing face, EnumFacing rotation) {
+    protected void updatePosition(Direction face, Direction rotation) {
 
         // Rotation relative to block face
-        offsetX = rotation.getFrontOffsetX() * 0.2f; //TODO customize to match missile visuals
-        offsetY = rotation.getFrontOffsetY() * 0.2f;
-        offsetZ = rotation.getFrontOffsetZ() * 0.2f;
+        offsetX = rotation.getStepX() * 0.2f; //TODO customize to match missile visuals
+        offsetY = rotation.getStepY() * 0.2f;
+        offsetZ = rotation.getStepZ() * 0.2f;
 
         // Height relative to block rotation
-        offsetX += face.getFrontOffsetX() * 0.5f;
-        offsetY += face.getFrontOffsetY() * 0.5f;
-        offsetZ += face.getFrontOffsetZ() * 0.5f;
+        offsetX += face.getStepX() * 0.5f;
+        offsetY += face.getStepY() * 0.5f;
+        offsetZ += face.getStepZ() * 0.5f;
 
-        if(face == EnumFacing.DOWN) {
+        if(face == Direction.DOWN) {
             offsetY -= height;
         }
-        else if(face == EnumFacing.EAST) {
+        else if(face == Direction.EAST) {
             offsetX += width / 2;
             offsetY -= 0.6f;
         }
-        else if(face == EnumFacing.WEST) {
+        else if(face == Direction.WEST) {
             offsetX -= width / 2;
             offsetY -= 0.6f;
         }
-        else if(face == EnumFacing.NORTH) {
+        else if(face == Direction.NORTH) {
             offsetZ -= width / 2;
             offsetY -= 0.6f;
         }
-        else if(face == EnumFacing.SOUTH) {
+        else if(face == Direction.SOUTH) {
             offsetZ += width / 2;
             offsetY -= 0.6f;
         }
 
         // Position
-        double posX = host.getPos().getX() + 0.5 + face.getFrontOffsetX() * 0.5;
-        double posY = host.getPos().getY() + 0.5 + face.getFrontOffsetY() * 0.5;
-        double posZ = host.getPos().getZ() + 0.5 + face.getFrontOffsetZ() * 0.5;
-        setPosition(posX, posY, posZ);
+        double posX = host.getBlockPos().getX() + 0.5 + face.getStepX() * 0.5;
+        double posY = host.getBlockPos().getY() + 0.5 + face.getStepY() * 0.5;
+        double posZ = host.getBlockPos().getZ() + 0.5 + face.getStepZ() * 0.5;
+        setPos(posX, posY, posZ);
 
         final EulerAngle angle = new EulerAngle(rotation);
-        this.rotationYaw = this.prevRotationYaw = (float) angle.yaw();
-        this.rotationPitch = this.prevRotationPitch = (float) angle.pitch();
+        this.setYRot((float) angle.yaw());
+        this.yRotO = this.getYRot();
+        this.setXRot((float) angle.pitch());
+        this.xRotO = this.getXRot();
     }
 
-    protected void updateBox(EnumFacing face, EnumFacing rotation) {
+    protected void updateBox(Direction face, Direction rotation) {
+        // Size
+        if(face == Direction.UP || face == Direction.DOWN) {
+            setSize(0.5f, this.isVehicle() ? 0.5f : 2.5f);
+        }
+        else {
+            setSize(this.isVehicle() ? 0.5f : 2.5f, 0.5f);
+        }
+
+        // bounding box
+        this.setBoundingBox(this.makeBoundingBox());
+    }
+
+    /**
+     * PORT: 1.12 set a custom bounding box once in updateBox, 1.21 rebuilds the box from position on every
+     * setPos so the face based box is computed here instead.
+     */
+    @Override
+    protected AABB makeBoundingBox()
+    {
+        final Direction face = prevFace;
+        if (face == null) {
+            return super.makeBoundingBox();
+        }
 
         final float dimA;
         final float dimB;
-        // Size
-        if(face == EnumFacing.UP || face == EnumFacing.DOWN) {
-            setSize(0.5f, this.isBeingRidden() ? 0.5f : 2.5f);
+        if(face == Direction.UP || face == Direction.DOWN) {
             dimA = this.width / 2;
             dimB = this.height;
         }
         else {
-            setSize(this.isBeingRidden() ? 0.5f : 2.5f, 0.5f);
             dimA = this.height / 2;
             dimB = this.width;
         }
 
-        // bounding box
-        if(face == EnumFacing.UP) {
-            double minX = posX - dimA;
-            double minY = posY;
-            double minZ = posZ - dimA;
+        final double posX = getX();
+        final double posY = getY();
+        final double posZ = getZ();
 
-            double maxX = posX + dimA;
-            double maxY = posY + dimB;
-            double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
-        }
-        else if(face == EnumFacing.DOWN) {
-            double minX = posX - dimA;
-            double minY = posY - dimB;
-            double minZ = posZ - dimA;
-
-            double maxX = posX + dimA;
-            double maxY = posY;
-            double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
-        }
-        else if(face == EnumFacing.EAST) {
-            double minX = posX;
-            double minY = posY - dimA;
-            double minZ = posZ - dimA;
-
-            double maxX = posX + dimB;
-            double maxY = posY + dimA;
-            double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
-        }
-        else if(face == EnumFacing.WEST) {
-            double minX = posX - dimB;
-            double minY = posY - dimA;
-            double minZ = posZ - dimA;
-
-            double maxX = posX;
-            double maxY = posY + dimA;
-            double maxZ = posZ + dimA;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
-        }
-        else if(face == EnumFacing.NORTH) {
-            double minX = posX - dimA;
-            double minY = posY - dimA;
-            double minZ = posZ - dimB;
-
-            double maxX = posX + dimA;
-            double maxY = posY + dimA;
-            double maxZ = posZ;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
-        }
-
-        else if(face == EnumFacing.SOUTH) {
-            double minX = posX - dimA;
-            double minY = posY - dimA;
-            double minZ = posZ;
-
-            double maxX = posX + dimA;
-            double maxY = posY + dimA;
-            double maxZ = posZ + dimB;
-            setEntityBoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+        switch (face) {
+            case UP:
+                return new AABB(posX - dimA, posY, posZ - dimA, posX + dimA, posY + dimB, posZ + dimA);
+            case DOWN:
+                return new AABB(posX - dimA, posY - dimB, posZ - dimA, posX + dimA, posY, posZ + dimA);
+            case EAST:
+                return new AABB(posX, posY - dimA, posZ - dimA, posX + dimB, posY + dimA, posZ + dimA);
+            case WEST:
+                return new AABB(posX - dimB, posY - dimA, posZ - dimA, posX, posY + dimA, posZ + dimA);
+            case NORTH:
+                return new AABB(posX - dimA, posY - dimA, posZ - dimB, posX + dimA, posY + dimA, posZ);
+            case SOUTH:
+            default:
+                return new AABB(posX - dimA, posY - dimA, posZ, posX + dimA, posY + dimA, posZ + dimB);
         }
     }
 
     @Override
-    public void setPosition(double x, double y, double z)
-    {
-        this.posX = x;
-        this.posY = y;
-        this.posZ = z;
-        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
-    }
-
-    @Override
-    public void move(MoverType type, double x, double y, double z)
+    public void move(MoverType type, Vec3 motion)
     {
         // Can't move
     }
 
-
+    /** 1.12 processInitialInteract */
     @Override
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
+    public InteractionResult interact(Player player, InteractionHand hand)
     {
-        if (player.isSneaking())
+        if (player.isShiftKeyDown())
         {
-            return false;
+            return InteractionResult.PASS;
         }
-        else if (this.isBeingRidden())
+        else if (this.isVehicle())
         {
-            return true;
+            return InteractionResult.SUCCESS;
         }
         else
         {
-            if (!this.world.isRemote)
+            if (!this.level().isClientSide())
             {
                 if(player.isCreative()) {
-                    final ItemStack itemStack = player.getHeldItem(hand);
+                    final ItemStack itemStack = player.getItemInHand(hand);
                     if (itemStack.getItem() == Items.MINECART) {
-                        final EntityMinecart cart = new EntityMinecartEmpty(world);
-                        cart.setPosition(posX, posY, posZ);
-                        world.spawnEntity(cart);
+                        final AbstractMinecart cart = new Minecart(level(), getX(), getY(), getZ());
+                        level().addFreshEntity(cart);
 
                         cart.startRiding(this);
-                        return true;
+                        return InteractionResult.SUCCESS;
                     }
                 }
                 player.startRiding(this);
             }
 
-            return true;
+            return InteractionResult.SUCCESS;
         }
     }
 
+    /** 1.12 canBeCollidedWith (ray trace / interaction) */
+    @Override
+    public boolean isPickable()
+    {
+        return !this.isRemoved();
+    }
+
+    /** 1.12 getCollisionBoundingBox, solid only while empty */
     @Override
     public boolean canBeCollidedWith()
     {
-        return !this.isDead;
+        return this.getPassengers().isEmpty();
     }
 
-    @Override //make method public
     public void setSize(float width, float height)
     {
-        this.width = width;
-        this.height = height;
+        if (width != this.width || height != this.height) {
+            this.width = width;
+            this.height = height;
+            this.refreshDimensions();
+        }
     }
 
-    @Override
     public double getMountedYOffset()
     {
         return offsetY;
     }
 
     @Override
-    @Nullable
-    public AxisAlignedBB getCollisionBox(Entity entityIn)
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback)
     {
-        if(getPassengers().contains(entityIn)) {
-            return null;
-        }
-        return super.getEntityBoundingBox(); //TODO might be needed for interaction
-    }
-
-    @Nullable
-    public AxisAlignedBB getCollisionBoundingBox()
-    {
-        if(!this.getPassengers().isEmpty()) {
-            return null;
-        }
-        return this.getEntityBoundingBox();
-    }
-
-    @Override
-    public void updatePassenger(Entity passenger)
-    {
-        if (this.isPassenger(passenger) && host != null)
+        if (this.hasPassenger(passenger) && host != null)
         {
-            double x = this.posX + offsetX + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetX() : 0);
-            double y = this.posY + offsetY + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetY() : 0);
-            double z = this.posZ + offsetZ + passenger.getYOffset() * (prevFace != null ? prevFace.getFrontOffsetZ() : 0);
-            passenger.setPosition(x, y, z);
+            // PORT-CHECK: 1.12 passenger.getYOffset() (player -0.35) approximated by the negated vehicle attachment point
+            final double yOffset = -passenger.getVehicleAttachmentPoint(this).y;
+            double x = this.getX() + offsetX + yOffset * (prevFace != null ? prevFace.getStepX() : 0);
+            double y = this.getY() + offsetY + yOffset * (prevFace != null ? prevFace.getStepY() : 0);
+            double z = this.getZ() + offsetZ + yOffset * (prevFace != null ? prevFace.getStepZ() : 0);
+            callback.accept(passenger, x, y, z);
         }
     }
 
+    /** 1.12 applyEntityCollision */
     @Override
-    public void applyEntityCollision(Entity p_70108_1_)
+    public void push(Entity entity)
     {
         //disable collision
     }
 
+    /** 1.12 addVelocity */
     @Override
-    public void addVelocity(double p_70024_1_, double p_70024_3_, double p_70024_5_)
+    public void push(double x, double y, double z)
     {
         //disable velocity
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound save)
+    protected void readAdditionalSaveData(CompoundTag save)
     {
-        if(save.hasKey("pos")) {
-            this.hostPos = NBTUtil.getPosFromTag(save.getCompoundTag("pos"));
+        if(save.contains("pos")) {
+            // Same layout as 1.12 NBTUtil.createPosTag
+            final CompoundTag pos = save.getCompound("pos");
+            this.hostPos = new BlockPos(pos.getInt("X"), pos.getInt("Y"), pos.getInt("Z"));
         }
-
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound save)
+    protected void addAdditionalSaveData(CompoundTag save)
     {
         if(hostPos != null) {
-            save.setTag("pos", NBTUtil.createPosTag(hostPos));
+            final CompoundTag pos = new CompoundTag();
+            pos.putInt("X", hostPos.getX());
+            pos.putInt("Y", hostPos.getY());
+            pos.putInt("Z", hostPos.getZ());
+            save.put("pos", pos);
         }
     }
 
     @Override
-    public void writeSpawnData(ByteBuf buffer)
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer)
     {
         buffer.writeBoolean(host != null);
         if(host != null) {
-            buffer.writeInt(host.getPos().getX());
-            buffer.writeInt(host.getPos().getY());
-            buffer.writeInt(host.getPos().getZ());
+            buffer.writeInt(host.getBlockPos().getX());
+            buffer.writeInt(host.getBlockPos().getY());
+            buffer.writeInt(host.getBlockPos().getZ());
         }
     }
 
     @Override
-    public void readSpawnData(ByteBuf additionalData)
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData)
     {
         if(additionalData.readBoolean()) {
-            final TileEntity tile = world.getTileEntity(new BlockPos(additionalData.readInt(), additionalData.readInt(), additionalData.readInt()));
+            final BlockEntity tile = level().getBlockEntity(new BlockPos(additionalData.readInt(), additionalData.readInt(), additionalData.readInt()));
             if(tile instanceof TileLauncherBase) {
                 host = (TileLauncherBase) tile;
             }
         }
     }
 }
+// PORTED

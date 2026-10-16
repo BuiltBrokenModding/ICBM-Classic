@@ -11,19 +11,22 @@ import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.actions.PotentialAction;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
+import icbm.classic.content.reg.EntityReg;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.translation.I18n;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -38,7 +41,7 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
         .withProvider(new ActionFieldProvider()
             .field(ActionFields.IMPACTED, () -> hasImpacted)
             .field(ActionFields.HOST_ENTITY, () -> this)
-            .field(ActionFields.HOST_POSITION, this::getPositionVector) //TODO may need to cache once conditionals get more common
+            .field(ActionFields.HOST_POSITION, this::position) //TODO may need to cache once conditionals get more common
             .field(ActionFields.TARGET_POSITION, () -> this.getMissileCapability().getTargetData() != null ? this.getMissileCapability().getTargetData().getPosition(): null)
         );
 
@@ -47,13 +50,23 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     private ItemStack originalStack = ItemStack.EMPTY;
 
 
-    public EntityMissileActionable(World w)
+    public EntityMissileActionable(EntityType<? extends EntityMissileActionable> type, Level w)
     {
-        super(w);
-        this.setSize(.5F, .5F);
+        super(type, w);
         this.inAirKillTime = 144000 /* 2 hours */;
-        this.isImmuneToFire = true;
-        this.ignoreFrustumCheck = true;
+        this.noCulling = true;
+    }
+
+    public EntityMissileActionable(Level w)
+    {
+        this(EntityReg.MISSILE_GENERIC.get(), w);
+    }
+
+    /** 1.12 isImmuneToFire */
+    @Override
+    public boolean fireImmune()
+    {
+        return true;
     }
 
     public EntityMissileActionable setActionData(IActionData actionData) {
@@ -66,69 +79,73 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     {
        // TODO add config
        // TODO add random chance modifier
-       if(source.isExplosion() || source.isFireDamage()) {
-           final IActionStatus status = this.mainAction.doAction(getEntityWorld(), posX, posY, posZ, new EntityCause(this)); // Add damage source cause
+       if(source.is(DamageTypeTags.IS_EXPLOSION) || source.is(DamageTypeTags.IS_FIRE)) {
+           final IActionStatus status = this.mainAction.doAction(level(), getX(), getY(), getZ(), new EntityCause(this)); // Add damage source cause
            if(!status.isType(ActionStatusTypes.BLOCKING)) {
                super.onDestroyedBy(source, damage);
            }
        }
     }
 
+    /** PORT: 1.12 getName() used client I18n */
     @Override
-    public String getName()
+    protected Component getTypeName()
     {
         final IActionData data = mainAction.getActionData();
         if (data != null)
         {
-            return I18n.translateToLocal("missile." + data.getRegistryKey().toString() + ".name");
+            return Component.translatable("missile." + data.getRegistryKey().toString() + ".name");
         }
-        return I18n.translateToLocal("missile.icbmclassic:generic.name");
+        return Component.translatable("missile.icbmclassic:generic.name");
     }
 
     @Override
-    public void writeSpawnData(ByteBuf additionalMissileData)
+    public void writeSpawnData(RegistryFriendlyByteBuf additionalMissileData)
     {
-        final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
-        ByteBufUtils.writeTag(additionalMissileData, saveData);
+        final CompoundTag saveData = SAVE_LOGIC.save(this, new CompoundTag());
+        additionalMissileData.writeNbt(saveData);
         super.writeSpawnData(additionalMissileData);
     }
 
     @Override
-    public void readSpawnData(ByteBuf additionalMissileData)
+    public void readSpawnData(RegistryFriendlyByteBuf additionalMissileData)
     {
-        final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
-        SAVE_LOGIC.load(this, saveData);
+        final CompoundTag saveData = additionalMissileData.readNbt();
+        if (saveData != null)
+        {
+            SAVE_LOGIC.load(this, saveData);
+        }
         super.readSpawnData(additionalMissileData);
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
-        super.onUpdate();
-        this.mainAction.update(ticksExisted, !this.getEntityWorld().isRemote);
+        super.tick();
+        this.mainAction.update(tickCount, !this.level().isClientSide());
 
         // Ticking trigger
-        final IActionStatus status = mainAction.doAction(getEntityWorld(), posX, posY, posZ, new EntityCause(this));
+        final IActionStatus status = mainAction.doAction(level(), getX(), getY(), getZ(), new EntityCause(this));
         if(!status.isType(ActionStatusTypes.BLOCKING)) {
             this.destroy();
         }
     }
 
     @Override
-    public boolean processInitialInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand)
+    public InteractionResult interact(@Nonnull Player player, @Nonnull InteractionHand hand)
     {
         //Allow missile to override interaction
         if (ICBMClassicAPI.EX_MISSILE_REGISTRY.onInteraction(this, player, hand))
         {
-            return true;
+            return InteractionResult.SUCCESS;
         }
-        return super.processInitialInteract(player, hand);
+        return super.interact(player, hand);
     }
 
     @Override
-    protected void actionOnImpact(RayTraceResult impactLocation) {
+    protected void actionOnImpact(HitResult impactLocation) {
         // TODO add impact cause
-        final IActionStatus status = mainAction.doAction(getEntityWorld(), impactLocation.hitVec.x, impactLocation.hitVec.y, impactLocation.hitVec.z, new EntityCause(this));
+        final IActionStatus status = mainAction.doAction(level(), impactLocation.getLocation().x, impactLocation.getLocation().y, impactLocation.getLocation().z, new EntityCause(this));
         if(!status.isType(ActionStatusTypes.BLOCKING)) {
             super.actionOnImpact(impactLocation);
         }
@@ -140,16 +157,16 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
+    protected void readAdditionalSaveData(CompoundTag nbt)
     {
-        super.readEntityFromNBT(nbt);
+        super.readAdditionalSaveData(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
+    protected void addAdditionalSaveData(CompoundTag nbt)
     {
-        super.writeEntityToNBT(nbt);
+        super.addAdditionalSaveData(nbt);
         SAVE_LOGIC.save(this, nbt);
     }
 
@@ -159,3 +176,4 @@ public class EntityMissileActionable extends EntityMissile<EntityMissileActionab
         /* */.nodeItemStack("original_stack", EntityMissileActionable::getOriginalStack, EntityMissileActionable::setOriginalStack)
         .base();
 }
+// PORTED

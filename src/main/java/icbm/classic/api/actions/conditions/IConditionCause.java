@@ -19,3 +19,4 @@ import icbm.classic.api.actions.cause.IActionCause;
 public interface IConditionCause extends ICondition {
     IActionCause getCause();
 }
+// PORTED

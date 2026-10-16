@@ -1,7 +1,7 @@
 package icbm.classic.lib.transform;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import java.util.Comparator;
 
@@ -53,3 +53,4 @@ public class PosDistanceSorter implements Comparator<BlockPos>
         SQRT
     }
 }
+// PORTED

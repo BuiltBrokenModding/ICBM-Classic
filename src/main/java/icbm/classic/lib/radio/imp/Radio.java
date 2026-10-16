@@ -4,12 +4,13 @@ import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.radio.IRadioChannelAccess;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.RandomStringUtils;
 
 
-public abstract class Radio implements IRadio, INBTSerializable<NBTTagCompound>, IRadioChannelAccess {
+public abstract class Radio implements IRadio, INBTSerializable<CompoundTag>, IRadioChannelAccess {
 
     private String channel;
 
@@ -29,18 +30,19 @@ public abstract class Radio implements IRadio, INBTSerializable<NBTTagCompound>,
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound tag = new NBTTagCompound();
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag tag = new CompoundTag();
         if(channel != null) {
-            tag.setString("channel", channel);
+            tag.putString("channel", channel);
         }
-        tag.setBoolean("disabled", isDisabled);
+        tag.putBoolean("disabled", isDisabled);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         this.channel = nbt.getString("channel");
         this.isDisabled = nbt.getBoolean("disabled");
     }
 }
+// PORTED

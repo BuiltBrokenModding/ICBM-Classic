@@ -1,27 +1,24 @@
 package icbm.classic.lib.capability.ex;
 
-import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.NBTConstants;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
+ * <p>
+ * PORT: no longer an ICapabilitySerializable/provider, NeoForge capabilities are exposed by the holder
  */
-public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<NBTTagCompound>
+public class CapabilityExplosive implements IExplosive, INBTSerializable<CompoundTag>
 {
     public int explosiveID; //TODO change over to resource location or include in save to check for issues using ID only for in memory
 
@@ -59,70 +56,29 @@ public class CapabilityExplosive implements IExplosive, ICapabilitySerializable<
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+    public final CompoundTag serializeNBT(HolderLookup.Provider provider)
     {
-        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
-        {
-            return (T) this;
-        }
-        return null;
-    }
-
-    @Override
-    public final NBTTagCompound serializeNBT()
-    {
-        final NBTTagCompound tagCompound = new NBTTagCompound();
+        final CompoundTag tagCompound = new CompoundTag();
         serializeNBT(tagCompound);
 
-        tagCompound.setInteger(NBTConstants.EXPLOSIVE_ID, explosiveID);
+        tagCompound.putInt(NBTConstants.EXPLOSIVE_ID, explosiveID);
         return tagCompound;
     }
 
-    protected void serializeNBT(NBTTagCompound tag)
+    protected void serializeNBT(CompoundTag tag)
     {
 
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt)
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt)
     {
-        if (nbt.hasKey(NBTConstants.EXPLOSIVE_ID))
+        if (nbt.contains(NBTConstants.EXPLOSIVE_ID))
         {
-            explosiveID = nbt.getInteger(NBTConstants.EXPLOSIVE_ID);
+            explosiveID = nbt.getInt(NBTConstants.EXPLOSIVE_ID);
         }
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IExplosive.class, new Capability.IStorage<IExplosive>()
-        {
-            @Nullable
-            @Override
-            public NBTBase writeNBT(Capability<IExplosive> capability, IExplosive instance, EnumFacing side)
-            {
-                if (instance instanceof CapabilityExplosive)
-                {
-                    return ((CapabilityExplosive) instance).serializeNBT();
-                }
-                return null;
-            }
-
-            @Override
-            public void readNBT(Capability<IExplosive> capability, IExplosive instance, EnumFacing side, NBTBase nbt)
-            {
-                if (instance instanceof CapabilityExplosive && nbt instanceof NBTTagCompound)
-                {
-                    ((CapabilityExplosive) instance).deserializeNBT((NBTTagCompound) nbt);
-                }
-            }
-        },
-        () -> new CapabilityExplosive(-1));
-    }
+    // PORT: register() (CapabilityManager storage) removed, not needed in NeoForge
 }
+// PORTED

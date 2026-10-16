@@ -7,15 +7,26 @@ import icbm.classic.lib.transform.vector.Location;
 import icbm.classic.lib.transform.vector.Pos;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -25,12 +36,17 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
 
     @Getter
     @Setter
-    private Vec3d teleportTarget;
+    private Vec3 teleportTarget;
+
+    /** PORT: dimension of {@link #teleportTarget}, 1.12 stored it on the customization but never used it. Null for the blast's own level. */
+    @Getter
+    @Setter
+    private ResourceKey<Level> teleportDim;
 
     @Override
     public boolean doExplode(int callCount) //TODO break into smaller methods
     {
-        if (this.world().isRemote)
+        if (this.world().isClientSide())
         {
             int r = (int) (this.getBlastRadius() - ((double) this.callCount / (double) this.duration) * this.getBlastRadius());
 
@@ -46,18 +62,18 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
 
                         if (distance < r && distance > r - 1)
                         {
-                            if (!targetPosition.getBlock(world()).isAir(targetPosition.getBlockState(world()), world(), targetPosition.toBlockPos()))
+                            if (!targetPosition.getBlockState(world()).isAir())
                             {
                                 continue;
                             }
 
-                            if (this.world().rand.nextFloat() < Math.max(0.001 * r, 0.01))
+                            if (this.world().random.nextFloat() < Math.max(0.001 * r, 0.01))
                             {
                                 float velX = (float) ((targetPosition.x() - location.x()) * 0.6);
                                 float velY = (float) ((targetPosition.y() - location.y()) * 0.6);
                                 float velZ = (float) ((targetPosition.z() - location.z()) * 0.6);
 
-                                world.spawnParticle(EnumParticleTypes.PORTAL, targetPosition.x(), targetPosition.y(), targetPosition.z(), velX, velY, velZ);
+                                world.addParticle(ParticleTypes.PORTAL, targetPosition.x(), targetPosition.y(), targetPosition.z(), velX, velY, velZ);
                             }
                         }
                     }
@@ -66,8 +82,8 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
         }
 
         int radius = (int) this.getBlastRadius();
-        AxisAlignedBB bounds = new AxisAlignedBB(location.x() - radius, location.y() - radius, location.z() - radius, location.x() + radius, location.y() + radius, location.z() + radius);
-        List<Entity> allEntities = world().getEntitiesWithinAABB(Entity.class, bounds);
+        AABB bounds = new AABB(location.x() - radius, location.y() - radius, location.z() - radius, location.x() + radius, location.y() + radius, location.z() + radius);
+        List<Entity> allEntities = world().getEntitiesOfClass(Entity.class, bounds);
         boolean explosionCreated = false;
 
         for (Entity entity : allEntities)
@@ -75,9 +91,10 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
             if (entity != this.controller)
             {
 
-                double xDifference = entity.posX - location.x();
-                double yDifference = entity.posY - location.y();
-                double zDifference = entity.posZ - location.z();
+                double xDifference = entity.getX() - location.x();
+                double yDifference = entity.getY() - location.y();
+                double zDifference = entity.getZ() - location.z();
+                double motionX = 0, motionY = 0, motionZ = 0;
 
                 int r = (int) this.getBlastRadius();
                 if (xDifference < 0)
@@ -85,14 +102,14 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                     r = (int) -this.getBlastRadius();
                 }
 
-                entity.motionX -= (r - xDifference) * Math.abs(xDifference) * 0.0006;
+                motionX -= (r - xDifference) * Math.abs(xDifference) * 0.0006;
 
                 r = (int) this.getBlastRadius();
-                if (entity.posY > location.y())
+                if (entity.getY() > location.y())
                 {
                     r = (int) -this.getBlastRadius();
                 }
-                entity.motionY += (r - yDifference) * Math.abs(yDifference) * 0.0011;
+                motionY += (r - yDifference) * Math.abs(yDifference) * 0.0011;
 
                 r = (int) this.getBlastRadius();
                 if (zDifference < 0)
@@ -100,13 +117,19 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                     r = (int) -this.getBlastRadius();
                 }
 
-                entity.motionZ -= (r - zDifference) * Math.abs(zDifference) * 0.0006;
+                motionZ -= (r - zDifference) * Math.abs(zDifference) * 0.0006;
+                entity.setDeltaMovement(entity.getDeltaMovement().add(motionX, motionY, motionZ));
+                markVelocityChanged(entity);
 
-                if (new Pos(entity.posX, entity.posY, entity.posZ).distance(location) < 4)
+                if (new Pos(entity.getX(), entity.getY(), entity.getZ()).distance(location) < 4)
                 {
                     if (!explosionCreated && callCount % 5 == 0)
                     {
-                        world().spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
+                        // PORT: 1.12 spawned the particle with World#spawnParticle, which does nothing on the server
+                        if (world() instanceof ServerLevel serverLevel)
+                        {
+                            serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER, entity.getX(), entity.getY(), entity.getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+                        }
                         explosionCreated = true;
                     }
 
@@ -115,33 +138,54 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
                         // If a target doesn't exist, search for a random one within 100 block range
                         if (this.teleportTarget == null)
                         {
-                            int checkY = (int) Math.floor(this.controller.posY);
-                            int checkX = this.world().rand.nextInt(300) - 150 + (int) this.controller.posX;
-                            int checkZ = this.world().rand.nextInt(300) - 150 + (int) this.controller.posZ;
+                            final double centerX = this.controller != null ? this.controller.getX() : location.x();
+                            final double centerZ = this.controller != null ? this.controller.getZ() : location.z();
+                            final int checkX = this.world().random.nextInt(300) - 150 + (int) centerX;
+                            final int checkZ = this.world().random.nextInt(300) - 150 + (int) centerZ;
 
-                            //Look for space with air gap
-                            BlockPos pos;
-                            BlockPos pos2;
-                            do
+                            // PORT: 1.12 searched up from the blast y while the block was air and the block above was
+                            //  solid, which stopped on the first block and left targets inside terrain or in the air.
+                            //  Uses the surface instead, loading or generating the chunk first so the height is known.
+                            final LevelChunk chunk = this.world().getChunk(SectionPos.blockToSectionCoord(checkX), SectionPos.blockToSectionCoord(checkZ));
+                            int topY = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, checkX & 15, checkZ & 15) + 1;
+
+                            // Surface of a level with a roof (nether) is the roof, look for a two block gap below the blast instead
+                            if (this.world().dimensionType().hasCeiling())
                             {
-                                pos = new BlockPos(checkX, checkY, checkZ);
-                                pos2 = pos.up();
-                                checkY++;
+                                final int minY = this.world().getMinBuildHeight();
+                                final int startY = Math.min(location.yi(), minY + this.world().dimensionType().logicalHeight() - 2);
+                                final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(checkX, startY, checkZ);
+                                for (; pos.getY() > minY; pos.move(Direction.DOWN))
+                                {
+                                    final BlockPos below = pos.below();
+                                    if (chunk.getBlockState(pos).isAir() && chunk.getBlockState(pos.above()).isAir()
+                                        && chunk.getBlockState(below).isFaceSturdy(chunk, below, Direction.UP))
+                                    {
+                                        topY = pos.getY();
+                                        break;
+                                    }
+                                }
                             }
-                            while (this.world().isAirBlock(pos) && !this.world().isAirBlock(pos2) && checkY < 254);
 
-                            this.teleportTarget = new Vec3d(checkX + 0.5, checkY + 0.5, checkZ + 0.5);
+                            this.teleportTarget = new Vec3(checkX + 0.5, topY, checkZ + 0.5);
+                            this.teleportDim = null; // random target is always in this level
                         }
 
-                        this.world().playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ENDERMEN_TELEPORT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                        this.world().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-                        if (entity instanceof EntityPlayerMP)
+                        final ServerLevel targetLevel = getTeleportLevel();
+                        if (targetLevel != null)
                         {
-                            ((EntityPlayerMP) entity).connection.setPlayerLocation(this.teleportTarget.x, this.teleportTarget.y, this.teleportTarget.z, entity.rotationYaw, entity.rotationPitch);
+                            // PORT: 1.12 ignored the dimension of the target and teleported inside the current one
+                            entity.changeDimension(new DimensionTransition(targetLevel, this.teleportTarget, Vec3.ZERO, entity.getYRot(), entity.getXRot(), DimensionTransition.DO_NOTHING));
+                        }
+                        else if (entity instanceof ServerPlayer)
+                        {
+                            ((ServerPlayer) entity).connection.teleport(this.teleportTarget.x, this.teleportTarget.y, this.teleportTarget.z, entity.getYRot(), entity.getXRot());
                         }
                         else
                         {
-                            entity.setPosition(this.teleportTarget.x, this.teleportTarget.y, this.teleportTarget.z);
+                            entity.setPos(this.teleportTarget.x, this.teleportTarget.y, this.teleportTarget.z);
                         }
 
                     } catch (Exception e)
@@ -152,9 +196,22 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
             }
         }
 
-        this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 2F, world().rand.nextFloat() * 0.4F + 0.8F);
+        this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 2F, world().random.nextFloat() * 0.4F + 0.8F);
 
         return this.callCount > this.duration;
+    }
+
+    /**
+     * @return level to move entities to when the target is in another dimension, null to teleport inside this level
+     */
+    @Nullable
+    private ServerLevel getTeleportLevel()
+    {
+        if (teleportDim != null && world() instanceof ServerLevel serverLevel && !teleportDim.equals(serverLevel.dimension()))
+        {
+            return serverLevel.getServer().getLevel(teleportDim);
+        }
+        return null;
     }
 
     @Override
@@ -162,13 +219,13 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
     {
         super.onBlastCompleted();
 
-        if (!this.world().isRemote)
+        if (!this.world().isClientSide())
         {
             for (int i = 0; i < 8; i++) //TODO check for safe location to spawn
             {
-                EntityEnderman enderman = new EntityEnderman(world());
-                enderman.setPosition(this.location.x(), this.location.y(), this.location.z());
-                this.world().spawnEntity(enderman);
+                EnderMan enderman = new EnderMan(EntityType.ENDERMAN, world());
+                enderman.setPos(this.location.x(), this.location.y(), this.location.z());
+                this.world().addFreshEntity(enderman);
             }
         }
     }
@@ -185,3 +242,4 @@ public class BlastEnder extends Blast implements IBlastTickable //TODO handle sa
         return true;
     }
 }
+// PORTED

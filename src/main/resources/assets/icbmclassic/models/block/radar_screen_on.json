@@ -1,0 +1,6 @@
+{
+  "parent": "icbmclassic:block/radar_screen",
+  "textures": {
+    "north": "icbmclassic:block/screen/radar"
+  }
+}

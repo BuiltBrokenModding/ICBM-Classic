@@ -1,14 +1,17 @@
 package icbm.classic.content.missile.logic.flight.prefab;
 
+import icbm.classic.content.missile.logic.flight.MotionHelper;
+
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Consumer;
 
@@ -19,7 +22,7 @@ public abstract class AccelerateByVec3Logic extends FlightLogic {
 
     /** Direction to move */
     @Getter @Setter @Accessors(chain = true)
-    private Vec3d direction;
+    private Vec3 direction;
 
     /** Acceleration to move at per tick */
     @Getter @Setter @Accessors(chain = true)
@@ -40,9 +43,9 @@ public abstract class AccelerateByVec3Logic extends FlightLogic {
         super.onEntityTick(entity, missile, ticksInAir);
         if(isValid() && !isDone()) {
             // Move missile
-            entity.motionX += direction.x * acceleration;
-            entity.motionY += direction.y * acceleration;
-            entity.motionZ += direction.z * acceleration;
+            MotionHelper.addMotionX(entity, direction.x * acceleration);
+            MotionHelper.addMotionY(entity, direction.y * acceleration);
+            MotionHelper.addMotionZ(entity, direction.z * acceleration);
 
             // Track acceleration added
             velocityAdded += acceleration;
@@ -55,13 +58,13 @@ public abstract class AccelerateByVec3Logic extends FlightLogic {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -71,3 +74,4 @@ public abstract class AccelerateByVec3Logic extends FlightLogic {
         /* */.nodeVec3d("direction", AccelerateByVec3Logic::getDirection, AccelerateByVec3Logic::setDirection)
         .base();
 }
+// PORTED

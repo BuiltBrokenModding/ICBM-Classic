@@ -1,5 +1,7 @@
 package icbm.classic.command.sub.blast;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.actions.data.ActionFields;
 import icbm.classic.api.actions.status.IActionStatus;
@@ -9,15 +11,19 @@ import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.SyntaxErrorException;
-import net.minecraft.command.WrongUsageException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by Robin Seifert on 1/6/20.
@@ -57,15 +63,15 @@ public class CommandBlastTrigger extends SubCommand
     }
 
     @Override
-    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
         if (args.length <= 0 || !doCommand(server, sender, args))
         {
-            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
+            throw CommandUtils.error(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
         }
     }
 
-    private boolean doCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws SyntaxErrorException
+    private boolean doCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
         //Get explosive from user
         final IExplosiveData explosiveData = getExplosive(args[0]);
@@ -75,7 +81,7 @@ public class CommandBlastTrigger extends SubCommand
             longVersion(sender, explosiveData, args);
             return true;
         }
-        else if (!(sender instanceof MinecraftServer) && args.length == 2)
+        else if (!CommandUtils.isConsole(sender) && args.length == 2)
         {
             shortVersion(sender, explosiveData, args);
             return true;
@@ -83,37 +89,37 @@ public class CommandBlastTrigger extends SubCommand
         return false;
     }
 
-    private void shortVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws SyntaxErrorException
+    private void shortVersion(CommandSourceStack sender, IExplosiveData explosiveData, String[] args) throws CommandSyntaxException
     {
-        final float scale = Float.parseFloat(args[1]);
+        final float scale = CommandUtils.parseFloat(args[1]);
         if (scale <= 0)
         {
-            throw new SyntaxErrorException(TRANSLATION_ERROR_SCALE_ZERO);
+            throw CommandUtils.error(TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         //Get position data
-        final World world = sender.getEntityWorld();
-        final double x = sender.getPositionVector().x;
-        final double y = sender.getPositionVector().y;
-        final double z = sender.getPositionVector().z;
+        final Level world = sender.getLevel();
+        final double x = sender.getPosition().x;
+        final double y = sender.getPosition().y;
+        final double z = sender.getPosition().z;
 
         //Trigger blast
         trigger(sender, world, x, y, z, explosiveData, scale);
     }
 
-    private void longVersion(ICommandSender sender, IExplosiveData explosiveData, String[] args) throws SyntaxErrorException
+    private void longVersion(CommandSourceStack sender, IExplosiveData explosiveData, String[] args) throws CommandSyntaxException
     {
-        final float size = Float.parseFloat(args[5]);
+        final float size = CommandUtils.parseFloat(args[5]);
         if (size <= 0)
         {
-            throw new SyntaxErrorException(TRANSLATION_ERROR_SCALE_ZERO);
+            throw CommandUtils.error(TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         //Get position data
-        final World world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
-        final double x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
-        final double y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
-        final double z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
+        final Level world = CommandUtils.getWorld(sender, args[1], sender.getLevel());
+        final double x = CommandUtils.getNumber(sender, args[2], sender.getPosition().x);
+        final double y = CommandUtils.getNumber(sender, args[3], sender.getPosition().y);
+        final double z = CommandUtils.getNumber(sender, args[4], sender.getPosition().z);
 
         //Trigger blast
         trigger(sender, world, x, y, z, explosiveData, size);
@@ -124,16 +130,33 @@ public class CommandBlastTrigger extends SubCommand
      *
      * @param explosive_id - ID from user
      * @return explosive data
-     * @throws WrongUsageException - if ID is not found
+     * @throws CommandSyntaxException - if ID is not found
      */
-    public static IExplosiveData getExplosive(String explosive_id) throws SyntaxErrorException
+    public static IExplosiveData getExplosive(String explosive_id) throws CommandSyntaxException
     {
-        final IExplosiveData explosiveData = ICBMClassicHelpers.getExplosive(explosive_id, true);
+        // PORT: ResourceLocation.parse throws on invalid characters in 1.21, treat as not found
+        final IExplosiveData explosiveData = ResourceLocation.tryParse(explosive_id) != null ? ICBMClassicHelpers.getExplosive(explosive_id, true) : null;
         if (explosiveData == null)
         {
-            throw new SyntaxErrorException(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
+            throw CommandUtils.error(TRANSLATION_ERROR_EXPLOSIVE_ID, explosive_id);
         }
         return explosiveData;
+    }
+
+    /**
+     * @return explosive names for tab completion
+     */
+    public static List<String> getExplosiveNames()
+    {
+        if (ICBMClassicAPI.EXPLOSIVE_REGISTRY == null || ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives() == null)
+        {
+            return Collections.emptyList();
+        }
+        return ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives().stream()
+                .map(IExplosiveData::getRegistryKey)
+                .map(ResourceLocation::toString)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     /**
@@ -147,11 +170,28 @@ public class CommandBlastTrigger extends SubCommand
      * @param explosiveData - explosive to run
      * @param size          - size to set
      */
-    private void trigger(ICommandSender sender, World world, double x, double y, double z, IExplosiveData explosiveData, float size)
+    private void trigger(CommandSourceStack sender, Level world, double x, double y, double z, IExplosiveData explosiveData, float size)
     {
         final IActionStatus result = explosiveData.create(world, x, y, z,  new ActionSource(),new ActionFieldProvider().field(ActionFields.AREA_SIZE, () -> size)).doAction();
 
         //Send translated message to user
-        sender.sendMessage(result.getTooltip());
+        // PORT: 1.12 sent getTooltip(), which resolves to an untranslated `action.status.*` key. message() is the status text
+        sender.sendSystemMessage(result.message());
+    }
+
+    @Override
+    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
+    {
+        // PORT: 1.12 had no suggestions here, added explosive ids and dimension names for Brigadier
+        if (args.length == 1)
+        {
+            return CommandUtils.getListOfStringsMatchingLastWord(args, getExplosiveNames());
+        }
+        else if (args.length == 2)
+        {
+            return CommandUtils.getListOfStringsMatchingLastWord(args, CommandUtils.getDimensionNames(server));
+        }
+        return Collections.emptyList();
     }
 }
+// PORTED

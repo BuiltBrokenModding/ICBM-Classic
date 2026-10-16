@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "sss",
+    "sss",
+    "sss"
+  ],
+  "key": {
+    "s": [
+      {
+        "item": "minecraft:melon_seeds"
+      },
+      {
+        "item": "minecraft:pumpkin_seeds"
+      },
+      {
+        "item": "minecraft:wheat_seeds"
+      }
+    ]
+  },
+  "result": {
+    "id": "icbmclassic:antidote",
+    "count": 6
+  }
+}

@@ -1,8 +1,8 @@
 package icbm.classic.api.radio;
 
 import icbm.classic.api.data.IBoundBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Applied to tiles to note they are capable of doing radio
@@ -22,11 +22,11 @@ public interface IRadio {
     BlockPos getBlockPos(); //TODO move to IRadioTile so we can have itemstack version
 
     /**
-     * World of the radio
+     * Level of the radio
      *
      * @return
      */
-    World getWorld();
+    Level getWorld();
 
     /**
      * Range of the radio
@@ -44,3 +44,4 @@ public interface IRadio {
         return false;
     }
 }
+// PORTED

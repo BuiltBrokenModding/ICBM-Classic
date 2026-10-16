@@ -10,17 +10,16 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 public class FiringWithDelay extends BuildableObject<FiringWithDelay, IBuilderRegistry<IActionStatus>> implements IActionStatus {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "firing.delayed");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "firing.delayed");
 
     @Getter @Setter(AccessLevel.PROTECTED)
     private int delay;
-    private ITextComponent message;
+    private Component message;
 
     public FiringWithDelay() {
         super(REG_NAME, ICBMClassicAPI.ACTION_STATUS_REGISTRY, SAVE_LOGIC);
@@ -41,9 +40,9 @@ public class FiringWithDelay extends BuildableObject<FiringWithDelay, IBuilderRe
     }
 
     @Override
-    public ITextComponent message() {
+    public Component message() {
         if(message == null) {
-            message = new TextComponentTranslation(LauncherLangs.STATUS_FIRING_DELAYED, delay);
+            message = Component.translatable(LauncherLangs.STATUS_FIRING_DELAYED, delay);
         }
         return message;
     }
@@ -53,3 +52,4 @@ public class FiringWithDelay extends BuildableObject<FiringWithDelay, IBuilderRe
         /* */.nodeInteger("delay", FiringWithDelay::getDelay, FiringWithDelay::setDelay)
         .base();
 }
+// PORTED

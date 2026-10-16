@@ -1,6 +1,6 @@
 package icbm.classic.api.actions.cause;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
@@ -17,3 +17,4 @@ public interface ICausedByEntity extends IActionCause {
     @Nullable
     Entity getEntity();
 }
+// PORTED

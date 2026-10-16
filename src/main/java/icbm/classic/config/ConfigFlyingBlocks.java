@@ -1,7 +1,7 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 @Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/flying_blocks")
 @Config.LangKey("config.icbmclassic:flying_blocks")

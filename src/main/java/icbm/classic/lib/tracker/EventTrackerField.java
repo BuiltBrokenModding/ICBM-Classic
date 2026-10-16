@@ -3,7 +3,7 @@ package icbm.classic.lib.tracker;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -75,3 +75,4 @@ public class EventTrackerField<DATA> {
         return new EventTrackerField<>(key, type, accessor);
     }
 }
+// PORTED

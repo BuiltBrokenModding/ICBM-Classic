@@ -2,8 +2,8 @@ package icbm.classic.api.reg.content;
 
 import icbm.classic.api.data.WorldPosIntSupplier;
 import icbm.classic.api.data.WorldTickFunction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 /**
  * @deprecated being removed in 1.13
@@ -44,7 +44,8 @@ public interface IExFuseBlockRegistry
      * @param posZ
      * @param ticksExisted
      */
-    void tickFuse(World world, double posX, double posY, double posZ, int ticksExisted, int explosiveID);
+    void tickFuse(Level world, double posX, double posY, double posZ, int ticksExisted, int explosiveID);
 
-    int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID);
+    int getFuseTime(Level world, double posX, double posY, double posZ, int explosiveID);
 }
+// PORTED

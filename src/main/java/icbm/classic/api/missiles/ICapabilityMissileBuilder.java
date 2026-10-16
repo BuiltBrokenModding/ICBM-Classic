@@ -1,6 +1,6 @@
 package icbm.classic.api.missiles;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 /**
  * Applied to objects that have the ability to build missiles
@@ -15,7 +15,7 @@ public interface ICapabilityMissileBuilder
      * Unique id to represent the missile and it's subtype
      *
      * This is often used by other mods to represent the missile
-     * without calling {@link #newMissile(World)} to check type
+     * without calling {@link #newMissile(Level)} to check type
      *
      * Example: 'icbmclassic:missile.redmatter'
      *
@@ -28,5 +28,6 @@ public interface ICapabilityMissileBuilder
      * @param world to spawn inside
      * @return missile capability with contained entity
      */
-    IMissile newMissile(World world);
+    IMissile newMissile(Level world);
 }
+// PORTED

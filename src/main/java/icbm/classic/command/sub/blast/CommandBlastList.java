@@ -3,11 +3,10 @@ package icbm.classic.command.sub.blast;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.command.system.SubCommand;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
 import java.util.stream.Collectors;
@@ -23,7 +22,7 @@ public class CommandBlastList extends SubCommand
     }
 
     @Override
-    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args)
     {
         //Convert list of explosives to string registry names
         String names = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives().stream()
@@ -33,6 +32,7 @@ public class CommandBlastList extends SubCommand
                 .collect(Collectors.joining(", "));
 
         //Output message TODO translate if possible?
-        sender.sendMessage(new TextComponentString("Explosive Types: " + names));
+        sender.sendSystemMessage(Component.literal("Explosive Types: " + names));
     }
 }
+// PORTED

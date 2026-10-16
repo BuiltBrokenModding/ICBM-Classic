@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "r  ",
+    " c ",
+    "  h"
+  ],
+  "key": {
+    "r": {
+      "item": "icbmclassic:radargun"
+    },
+    "h": {
+      "item": "icbmclassic:remotedetonator"
+    },
+    "c": {
+      "tag": "c:circuits/elite"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:laserdetonator",
+    "count": 1
+  }
+}

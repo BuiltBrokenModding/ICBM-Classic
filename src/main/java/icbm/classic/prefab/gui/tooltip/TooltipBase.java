@@ -4,7 +4,8 @@ import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import lombok.Getter;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 /**
  * Simple tooltip component for showing users additional information
@@ -23,7 +24,7 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
     @Getter
     private float hoverDelay;
 
-    private GuiContainerBase container;
+    private GuiContainerBase<?> container;
 
     /**
      * Is mouse over component
@@ -45,19 +46,17 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
     }
 
     @Override
-    public void draw(int mouseX, int mouseY, float partialTicks) {
+    public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         isHovering = isWithin(mouseX, mouseY);
         if (isHovering) {
             hoveringTicks += partialTicks;
         } else {
             hoveringTicks = 0;
         }
-
-        //Gui.drawRect(bounds.getMin().xi() + container.getGuiLeft(), bounds.getMin().yi() + container.getGuiTop(), bounds.getMax().xi() + container.getGuiLeft(), bounds.getMax().yi() + container.getGuiTop(), -6250336);
     }
 
     @Override
-    public void onAddedToHost(GuiContainerBase container) {
+    public void onAddedToHost(GuiContainerBase<?> container) {
         this.container = container;
     }
 
@@ -67,12 +66,13 @@ public abstract class TooltipBase implements IToolTip, IGuiComponent {
     }
 
     @Override
-    public final ITextComponent getTooltip() {
+    public final Component getToolTip() {
         if (hoveringTicks < hoverDelay) {
             return null;
         }
         return getActualTooltip();
     }
 
-    protected abstract ITextComponent getActualTooltip();
+    protected abstract Component getActualTooltip();
 }
+// PORTED

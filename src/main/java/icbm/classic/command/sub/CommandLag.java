@@ -1,12 +1,14 @@
 package icbm.classic.command.sub;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import icbm.classic.command.CommandUtils;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.lib.actions.WorkTickingActionHandler;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.Entity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.function.Predicate;
 public class CommandLag extends SubCommand
 {
     public static final String TRANSLATION_LAG_REMOVE = "command.icbmclassic:icbm.lag.remove";
-    private final Predicate<Entity> icbmEntitySelector = (entity) -> entity.isEntityAlive() && CommandUtils.isICBMEntity(entity);
+    private final Predicate<Entity> icbmEntitySelector = (entity) -> entity.isAlive() && CommandUtils.isICBMEntity(entity);
 
     public CommandLag()
     {
@@ -39,24 +41,28 @@ public class CommandLag extends SubCommand
     }
 
     @Override
-    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args)
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
         //Parse range
-        double range = args.length > 1 ? Double.parseDouble(args[1]) : 1000;
+        // PORT: 1.12 read args[1], but the sub-command name is already stripped so `/icbm lag 50` ignored the radius
+        double range = args.length > 0 ? CommandUtils.parseDouble(args[0]) : 1000;
+
+        final Vec3 pos = sender.getPosition();
 
         //Remove ICBM entities
-        final List<Entity> entities = CommandUtils.getEntities(sender.getEntityWorld(),
-                sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z,
+        final List<Entity> entities = CommandUtils.getEntities(sender.getLevel(),
+                pos.x, pos.y, pos.z,
                 range,
                 icbmEntitySelector);
-        entities.forEach(Entity::setDead);
+        entities.forEach(Entity::discard);
 
         //Remove blasts queue to run or currently running
-        final int blastRemoveCount = WorkTickingActionHandler.removeNear(sender.getEntityWorld(),
-                sender.getPositionVector().x, sender.getPositionVector().y, sender.getPositionVector().z,
+        final int blastRemoveCount = WorkTickingActionHandler.removeNear(sender.getLevel(),
+                pos.x, pos.y, pos.z,
                 range);
 
         //Update user with data
-        sender.sendMessage(new TextComponentTranslation(TRANSLATION_LAG_REMOVE, blastRemoveCount, entities.size(), range));
+        sender.sendSystemMessage(Component.translatable(TRANSLATION_LAG_REMOVE, blastRemoveCount, entities.size(), range));
     }
 }
+// PORTED

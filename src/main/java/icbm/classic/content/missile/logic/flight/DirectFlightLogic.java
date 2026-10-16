@@ -4,10 +4,10 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.parts.IMissileTarget;
 import icbm.classic.config.missile.ConfigMissile;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  */
 public class DirectFlightLogic extends DeadFlightLogic
 {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "direct");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "direct");
     private double motionX; //TODO do we need to save?
     private double motionY;
     private double motionZ;
@@ -31,7 +31,7 @@ public class DirectFlightLogic extends DeadFlightLogic
     }
 
     @Override
-    public void calculateFlightPath(World world, double startX, double startY, double startZ, IMissileTarget targetData)
+    public void calculateFlightPath(Level world, double startX, double startY, double startZ, IMissileTarget targetData)
     {
         if(targetData != null) //TODO if we have no target data have missile fly around in random directions until it hits something
         {
@@ -40,7 +40,7 @@ public class DirectFlightLogic extends DeadFlightLogic
             motionZ = targetData.getZ() - startZ;
 
             //Normalize
-            float velocity = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
+            float velocity = (float) Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
             motionX /= velocity;
             motionY /= velocity;
             motionZ /= velocity;
@@ -56,14 +56,14 @@ public class DirectFlightLogic extends DeadFlightLogic
     public void start(Entity entity, IMissile missile)
     {
         //Set motion
-        entity.motionX = motionX;
-        entity.motionY = motionY;
-        entity.motionZ = motionZ;
+        MotionHelper.setMotionX(entity, motionX);
+        MotionHelper.setMotionY(entity, motionY);
+        MotionHelper.setMotionZ(entity, motionZ);
 
         //Update rotation
-        float f3 = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);
-        entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(motionX, motionZ) * 180.0D / Math.PI);
-        entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(motionY, (double) f3) * 180.0D / Math.PI);
+        float f3 = (float) Math.sqrt(motionX * motionX + motionZ * motionZ);
+        MotionHelper.setYawAndPrev(entity, (float) (Math.atan2(motionX, motionZ) * 180.0D / Math.PI));
+        MotionHelper.setPitchAndPrev(entity, (float) (Math.atan2(motionY, (double) f3) * 180.0D / Math.PI));
     }
 
     //TODO rework to use current pitch and yaw to set motion
@@ -88,3 +88,4 @@ public class DirectFlightLogic extends DeadFlightLogic
         return false;
     }
 }
+// PORTED

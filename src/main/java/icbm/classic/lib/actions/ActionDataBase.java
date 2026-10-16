@@ -4,65 +4,67 @@ import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.data.ActionField;
 import icbm.classic.api.actions.data.IActionFieldProvider;
 import icbm.classic.api.actions.data.IActionFieldReceiver;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ActionDataBase implements IActionData, IActionFieldProvider, IActionFieldReceiver, INBTSerializable<NBTTagCompound> {
+public abstract class ActionDataBase implements IActionData, IActionFieldProvider, IActionFieldReceiver, INBTSerializable<CompoundTag> {
 
     private final Map<ActionField, Object> fieldValueMap = new HashMap<>();
 
     @Override
-    public <VALUE, TAG extends NBTBase> void setValue(ActionField<VALUE, TAG> key, VALUE value) {
+    public <VALUE, TAG extends Tag> void setValue(ActionField<VALUE, TAG> key, VALUE value) {
        if(this.getFields().contains(key)) {
            this.fieldValueMap.put(key, value);
        }
     }
 
     @Override
-    public <VALUE, TAG extends NBTBase> VALUE getValue(ActionField<VALUE, TAG> key) {
+    public <VALUE, TAG extends Tag> VALUE getValue(ActionField<VALUE, TAG> key) {
         return key.cast(this.fieldValueMap.get(key));
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound tag = new NBTTagCompound();
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag tag = new CompoundTag();
         if(!fieldValueMap.isEmpty()) {
-            final NBTTagList list = new NBTTagList();
+            final ListTag list = new ListTag();
             for(Map.Entry<ActionField, Object> entry : fieldValueMap.entrySet()) {
-                final NBTTagCompound entryTag = new NBTTagCompound();
-                entryTag.setString("key", entry.getKey().getKey()); //save key even if value is null
+                final CompoundTag entryTag = new CompoundTag();
+                entryTag.putString("key", entry.getKey().getKey()); //save key even if value is null
                 //TODO see if we can save ActionField#type
                 if(entry.getValue() != null) {
-                    NBTBase valueSave = entry.getKey().save(entry.getValue());
+                    Tag valueSave = entry.getKey().save(entry.getValue());
                     if(valueSave != null) {
-                        entryTag.setTag("value", valueSave);
+                        entryTag.put("value", valueSave);
                     }
                 }
-                list.appendTag(entryTag);
+                list.add(entryTag);
             }
-            tag.setTag("fields", list);
+            tag.put("fields", list);
         }
         return tag;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        if(nbt.hasKey("fields")) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        if(nbt.contains("fields")) {
             this.fieldValueMap.clear();
-            final NBTTagList list = nbt.getTagList("fields", 10);
-            for(int i = 0; i < list.tagCount(); i++) {
-                final NBTTagCompound entryTag = list.getCompoundTagAt(i);
+            final ListTag list = nbt.getList("fields", 10);
+            for(int i = 0; i < list.size(); i++) {
+                final CompoundTag entryTag = list.getCompound(i);
                 final String key = entryTag.getString("key");
                 final ActionField actionField = ActionField.find(key, null);
-                if(actionField != null && entryTag.hasKey("value")) {
-                    this.fieldValueMap.put(actionField, actionField.load(entryTag.getTag("value")));
+                if(actionField != null && entryTag.contains("value")) {
+                    this.fieldValueMap.put(actionField, actionField.load(entryTag.get("value")));
                 }
             }
         }
     }
 }
+// PORTED

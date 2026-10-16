@@ -4,8 +4,8 @@ import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.data.IActionFieldProvider;
 import icbm.classic.api.actions.data.IActionFieldReceiver;
 import icbm.classic.api.actions.status.IActionStatus;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -59,16 +59,17 @@ public interface IAction extends IActionFieldProvider, IActionFieldReceiver {
     IActionData getActionData();
 
     /**
-     * World the action was triggered
+     * Level the action was triggered
      *
      * @return world
      */
-    World getWorld();
+    Level getWorld();
 
     /**
      * Position the action was triggered
      *
      * @return position
      */
-    Vec3d getPosition();
+    Vec3 getPosition();
 }
+// PORTED

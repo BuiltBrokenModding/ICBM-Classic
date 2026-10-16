@@ -3,7 +3,7 @@ package icbm.classic.api.actions.data;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.Tag;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import java.util.function.Function;
  */
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActionField<VALUE, TAG extends NBTBase> {
+public class ActionField<VALUE, TAG extends Tag> {
 
     private static Map<String, ActionField> fields = new HashMap<>();
 
@@ -24,7 +24,7 @@ public class ActionField<VALUE, TAG extends NBTBase> {
     private final Function<VALUE, TAG> save;
     private final Function<TAG, VALUE> load;
 
-    public static <VALUE, TAG extends NBTBase> ActionField<VALUE, TAG> getOrCreate(String key, Type type, Function<VALUE, TAG> save, Function<TAG, VALUE> load) {
+    public static <VALUE, TAG extends Tag> ActionField<VALUE, TAG> getOrCreate(String key, Type type, Function<VALUE, TAG> save, Function<TAG, VALUE> load) {
         final ActionField field = find(key, null);
         if(field != null && field.type != type) {
             throw new IllegalArgumentException("Key " + key + " was requested with different type " + type + " when it already uses " + field.type);
@@ -32,7 +32,7 @@ public class ActionField<VALUE, TAG extends NBTBase> {
         return fields.computeIfAbsent(key, (k) -> new ActionField<>(key, type, save, load));
     }
 
-    public static <VALUE, TAG extends NBTBase> ActionField<VALUE, TAG> find(String key, Type type) {
+    public static <VALUE, TAG extends Tag> ActionField<VALUE, TAG> find(String key, Type type) {
         final ActionField field = fields.get(key);
         if(field != null && (type == null || field.type == type)) {
             return field;
@@ -52,3 +52,4 @@ public class ActionField<VALUE, TAG extends NBTBase> {
         return load != null ? load.apply(v): null;
     }
 }
+// PORTED

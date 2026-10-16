@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "ara",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:anvil"
+    },
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:repulsive"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 10,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:anvil"
+    }
+  }
+}

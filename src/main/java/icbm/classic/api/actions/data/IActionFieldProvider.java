@@ -1,6 +1,6 @@
 package icbm.classic.api.actions.data;
 
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.Tag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +12,7 @@ import java.util.Collections;
  * Wrapper to access fields dynamically. Keeps action instances seperated from caller. Allowing dynamic generation
  * and switching based on data provided. To figure out which keys to use see documentation for each IActionData registered.
  *
- * It is recommended to cache this accessor in each action user. For example, if the action user is a TileEntity then a field
+ * It is recommended to cache this accessor in each action user. For example, if the action user is a BlockEntity then a field
  * should be created as a wrapper/adapter pattern. With the field access being redirected to internal fields and functions. Using
  * lambda expressions to ensure the values are accessed with minimal performance impact.
  *
@@ -28,7 +28,7 @@ public interface IActionFieldProvider {
      * @return value
      * @param <VALUE> to allow generic assign, this isn't checked so have fun
      */
-    default <VALUE, TAG extends NBTBase> VALUE getValue(ActionField<VALUE, TAG> key) {
+    default <VALUE, TAG extends Tag> VALUE getValue(ActionField<VALUE, TAG> key) {
         return null;
     }
 
@@ -59,7 +59,8 @@ public interface IActionFieldProvider {
      * @param key to use for lookups
      * @return true if has the field
      */
-    default <VALUE, TAG extends NBTBase> boolean hasField(ActionField<VALUE, TAG> key) {
+    default <VALUE, TAG extends Tag> boolean hasField(ActionField<VALUE, TAG> key) {
         return getFields().contains(key);
     }
 }
+// PORTED

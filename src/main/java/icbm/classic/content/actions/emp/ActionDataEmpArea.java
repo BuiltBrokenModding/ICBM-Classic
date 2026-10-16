@@ -7,9 +7,9 @@ import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.data.*;
 import icbm.classic.api.data.meta.MetaTag;
 import icbm.classic.config.blast.ConfigBlast;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ActionDataEmpArea implements IActionData {
     public static final ImmutableList<MetaTag> ACTION_TAGS = ImmutableList.of(BlockActionTypes.BLOCK_EDIT, EntityActionTypes.ENTITY_EDIT, ActionTypes.DESTRUCTIVE, WorldActionTypes.WORLD_AREA, EntityActionTypes.ENTITY_AREA);
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "emp.area");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "emp.area");
     /** @deprecated This is temp until registered */
     public static IActionData INSTANCE = new ActionDataEmpArea();
 
@@ -29,8 +29,8 @@ public class ActionDataEmpArea implements IActionData {
 
     @Nonnull
     @Override
-    public ActionEmpArea create(World world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor) {
-        final ActionEmpArea actionEmpArea = new ActionEmpArea(world, new Vec3d(x, y, z), source, this);
+    public ActionEmpArea create(Level world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor) {
+        final ActionEmpArea actionEmpArea = new ActionEmpArea(world, new Vec3(x, y, z), source, this);
         if(fieldAccessor != null && fieldAccessor.hasField(ActionFields.AREA_SIZE)) {
             actionEmpArea.setSize((int)Math.floor(fieldAccessor.getValue(ActionFields.AREA_SIZE))); //TODO allow changing x, y, z size
         }
@@ -51,3 +51,4 @@ public class ActionDataEmpArea implements IActionData {
         return REG_NAME;
     }
 }
+// PORTED

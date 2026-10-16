@@ -3,17 +3,20 @@ package icbm.classic.lib.world;
 import icbm.classic.ICBMClassic;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityEndGateway;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Portal;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.HashMap;
 
@@ -23,13 +26,14 @@ import java.util.HashMap;
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ProjectileBlockInteraction {
 
-    private static final HashMap<IBlockState, IProjectileBlockInteraction> stateToInteraction = new HashMap();
+    private static final HashMap<BlockState, IProjectileBlockInteraction> stateToInteraction = new HashMap();
     private static final HashMap<Block, IProjectileBlockInteraction> blockToInteraction = new HashMap();
-    private static final HashMap<Material, IProjectileBlockInteraction> materialToInteraction = new HashMap();
+    /** PORT: block materials are gone in 1.21, material interactions are keyed by block tag instead */
+    private static final HashMap<TagKey<Block>, IProjectileBlockInteraction> materialToInteraction = new HashMap();
 
     // TODO once on 1.19 use TAG system to easily ID blocks "CollisionBasedPortal"
 
-    public static void addBlockStateInteraction(IBlockState state, IProjectileBlockInteraction function) {
+    public static void addBlockStateInteraction(BlockState state, IProjectileBlockInteraction function) {
         if(stateToInteraction.containsKey(state)) {
             ICBMClassic.logger().warn("interaction already exists for " + state + " replacing", new RuntimeException());
         }
@@ -43,7 +47,7 @@ public final class ProjectileBlockInteraction {
         blockToInteraction.put(block, function);
     }
 
-    public static void addMaterialInteraction(Material material, IProjectileBlockInteraction function) {
+    public static void addMaterialInteraction(TagKey<Block> material, IProjectileBlockInteraction function) {
         if(materialToInteraction.containsKey(material)) {
             ICBMClassic.logger().warn("interaction already exists for " + material + " replacing", new RuntimeException());
         }
@@ -63,7 +67,7 @@ public final class ProjectileBlockInteraction {
         });
     }
 
-    public static void breakMaterialInteraction(Material material) {
+    public static void breakMaterialInteraction(TagKey<Block> material) {
         addMaterialInteraction(material, (world, pos, hit, side, state, entity) -> {
             if(breakBlock(world, pos, state, entity)) {
                 return IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT;
@@ -72,18 +76,24 @@ public final class ProjectileBlockInteraction {
         });
     }
 
-    private static boolean breakBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+    private static boolean breakBlock(Level world, BlockPos pos, BlockState state, Entity entity) {
         final Block block = state.getBlock();
-        if (block.canEntityDestroy(state, world, pos, entity))
+        if (state.canEntityDestroy(world, pos, entity)) // PORT-CHECK: NeoForge IBlockStateExtension#canEntityDestroy
         {
-            block.dropBlockAsItem(world, pos, state, 0);
-            world.setBlockToAir(pos);
+            // PORT: 1.12 also removed the block on the client. Projectiles tick on both sides and the client copy can
+            //  hit a different block than the server, leaving an unsynced ghost hole. Only the server edits the world,
+            //  the client copy still passes through like the server one does.
+            if (!world.isClientSide())
+            {
+                Block.dropResources(state, world, pos);
+                world.removeBlock(pos, false);
+            }
             return true;
         }
         return false;
     }
 
-    public static IProjectileBlockInteraction.EnumHitReactions handleSpecialInteraction(World world, BlockPos pos, Vec3d hit, EnumFacing side, IBlockState state, Entity entity) {
+    public static IProjectileBlockInteraction.EnumHitReactions handleSpecialInteraction(Level world, BlockPos pos, Vec3 hit, Direction side, BlockState state, Entity entity) {
 
         IProjectileBlockInteraction func = stateToInteraction.get(state);
         if(func != null) {
@@ -99,9 +109,11 @@ public final class ProjectileBlockInteraction {
                 return result;
             }
         }
-        func = materialToInteraction.get(state.getMaterial());
-        if(func != null) {
-            final IProjectileBlockInteraction.EnumHitReactions result = func.apply(world, pos, hit, side, state, entity);
+        for(java.util.Map.Entry<TagKey<Block>, IProjectileBlockInteraction> entry : materialToInteraction.entrySet()) {
+            if(!state.is(entry.getKey())) {
+                continue;
+            }
+            final IProjectileBlockInteraction.EnumHitReactions result = entry.getValue().apply(world, pos, hit, side, state, entity);
             if(result != null && result != IProjectileBlockInteraction.EnumHitReactions.PASS) {
                 return result;
             }
@@ -112,20 +124,34 @@ public final class ProjectileBlockInteraction {
     public static void register() {
 
         // Portal handling
-        addCollisionInteraction(Blocks.PORTAL);
+        addCollisionInteraction(Blocks.NETHER_PORTAL);
         addCollisionInteraction(Blocks.END_PORTAL);
         addBlockInteraction(Blocks.END_GATEWAY, (world, pos, hit, side, state, entity) -> {
-            final TileEntity tile = world.getTileEntity(pos);
-            if(tile instanceof TileEntityEndGateway) {
-                ((TileEntityEndGateway) tile).teleportEntity(entity);
-                return IProjectileBlockInteraction.EnumHitReactions.TELEPORTED;
+            final BlockEntity tile = world.getBlockEntity(pos);
+            if(tile instanceof TheEndGatewayBlockEntity gateway && state.getBlock() instanceof Portal portal) {
+                // PORT: 1.21 teleports through the portal system instead of TileEntityEndGateway#teleportEntity
+                if(!gateway.isCoolingDown() && entity.canUsePortal(false)) { // PORT-CHECK: Entity#canUsePortal/setAsInsidePortal names in 1.21.1
+                    // Matches 1.12 TileEntityEndGateway#teleportEntity and 1.21 TheEndGatewayBlock#entityInside:
+                    //  server side only, and starts the gateway cooldown (beam + no instant re-use)
+                    if(!world.isClientSide()) {
+                        entity.setAsInsidePortal(portal, pos);
+                        TheEndGatewayBlockEntity.triggerCooldown(world, pos, state, gateway);
+                    }
+                    return IProjectileBlockInteraction.EnumHitReactions.TELEPORTED;
+                }
             }
             return IProjectileBlockInteraction.EnumHitReactions.CONTINUE_NO_IMPACT;
         });
 
         // Break as pass through handling
-        breakMaterialInteraction(Material.LEAVES);
-        breakMaterialInteraction(Material.SNOW);
-        breakMaterialInteraction(Material.GLASS);
+        // PORT: Material.LEAVES/SNOW/GLASS mapped to tags and the blocks that used those materials
+        breakMaterialInteraction(BlockTags.LEAVES);
+        breakBlockInteraction(Blocks.SNOW);
+        breakMaterialInteraction(Tags.Blocks.GLASS_BLOCKS);
+        breakMaterialInteraction(Tags.Blocks.GLASS_PANES);
+        breakBlockInteraction(Blocks.GLOWSTONE);
+        breakBlockInteraction(Blocks.SEA_LANTERN);
+        breakBlockInteraction(Blocks.BEACON);
     }
 }
+// PORTED

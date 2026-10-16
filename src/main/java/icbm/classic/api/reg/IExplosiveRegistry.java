@@ -3,7 +3,7 @@ package icbm.classic.api.reg;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -95,3 +95,4 @@ public interface IExplosiveRegistry
      */
     Set<IExplosiveData> getExplosives();
 }
+// PORTED

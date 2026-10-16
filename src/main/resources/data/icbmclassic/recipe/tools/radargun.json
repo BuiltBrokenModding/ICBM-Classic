@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "gci",
+    " bw"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "b": {
+      "item": "minecraft:stone_button"
+    },
+    "i": {
+      "tag": "c:ingots/steel"
+    },
+    "c": {
+      "tag": "c:circuits/basic"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:radargun",
+    "count": 1
+  }
+}

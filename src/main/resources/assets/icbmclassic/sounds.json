@@ -5,7 +5,7 @@
     "sounds": [
       {
         "name": "icbmclassic:antimatter",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -15,7 +15,7 @@
     "sounds": [
       {
         "name": "icbmclassic:beamcharging",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -25,35 +25,35 @@
     "sounds": [
       {
         "name": "icbmclassic:collapse1",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse2",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse3",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse4",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse5",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse6",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse7",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:collapse8",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -63,7 +63,7 @@
     "sounds": [
       {
         "name": "icbmclassic:debilitation",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -73,7 +73,7 @@
     "sounds": [
       {
         "name": "icbmclassic:emp",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -83,7 +83,7 @@
     "sounds": [
       {
         "name": "icbmclassic:explosion1",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -93,7 +93,7 @@
     "sounds": [
       {
         "name": "icbmclassic:explosionfire",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -103,7 +103,7 @@
     "sounds": [
       {
         "name": "icbmclassic:gasleak",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -113,7 +113,7 @@
     "sounds": [
       {
         "name": "icbmclassic:machinehum",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -123,7 +123,7 @@
     "sounds": [
       {
         "name": "icbmclassic:missileinair_short",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -133,11 +133,11 @@
     "sounds": [
       {
         "name": "icbmclassic:missilelaunch1",
-        "sream": false
+        "stream": false
       },
       {
         "name": "icbmclassic:missilelaunch2",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -147,7 +147,7 @@
     "sounds": [
       {
         "name": "icbmclassic:powerdown",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -157,7 +157,7 @@
     "sounds": [
       {
         "name": "icbmclassic:redmatter",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -167,7 +167,7 @@
     "sounds": [
       {
         "name": "icbmclassic:sonicwave",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -177,7 +177,7 @@
     "sounds": [
       {
         "name": "icbmclassic:meep",
-        "sream": false
+        "stream": false
       }
     ]
   },
@@ -187,7 +187,7 @@
     "sounds": [
       {
         "name": "icbmclassic:radioactive_tick",
-        "sream": false
+        "stream": false
       }
     ]
   }

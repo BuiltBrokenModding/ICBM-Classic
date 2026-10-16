@@ -5,25 +5,30 @@ import icbm.classic.api.reg.obj.IBuilderRegistry;
 import icbm.classic.lib.saving.nodes.*;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.CollectionTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import icbm.classic.lib.RegistryHelper;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagCompound>
+public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, CompoundTag>
 {
     private final String name;
     private final NbtSaveHandler<SaveObject> handler;
@@ -55,43 +60,43 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
     }
 
     @Override
-    public NBTTagCompound save(SaveObject objectToSave)
+    public CompoundTag save(SaveObject objectToSave)
     {
         if(!shouldSave) {
             return null;
         }
-        return save(objectToSave, new NBTTagCompound());
+        return save(objectToSave, new CompoundTag());
     }
 
     /**
-     * Entry point for {@link NbtSaveHandler#save(Object, NBTTagCompound)} to save directly to main root. Shouldn't
+     * Entry point for {@link NbtSaveHandler#save(Object, CompoundTag)} to save directly to main root. Shouldn't
      * be used by anything else.
      *
      * @param objectToSave used to save
      * @param tagCompound  to save against
      * @return save
      */
-    protected NBTTagCompound save(SaveObject objectToSave, NBTTagCompound tagCompound)
+    protected CompoundTag save(SaveObject objectToSave, CompoundTag tagCompound)
     {
         nodes.forEach(node -> {
-            final NBTBase tag = node.save(objectToSave);
-            if (tag != null && !tag.hasNoTags())
+            final Tag tag = node.save(objectToSave);
+            if (tag != null && !isEmptyTag(tag))
             {
-                tagCompound.setTag(node.getSaveKey(), tag);
+                tagCompound.put(node.getSaveKey(), tag);
             }
         });
         return tagCompound;
     }
 
     @Override
-    public void load(SaveObject objectToLoad, NBTTagCompound save)
+    public void load(SaveObject objectToLoad, CompoundTag save)
     {
-        if (save != null && !save.hasNoTags())
+        if (save != null && !save.isEmpty())
         {
             nodes.forEach(node -> {
-                if (save.hasKey(node.getSaveKey()))
+                if (save.contains(node.getSaveKey()))
                 {
-                    node.load(objectToLoad, save.getTag(node.getSaveKey()));
+                    node.load(objectToLoad, save.get(node.getSaveKey()));
                 }
             });
         }
@@ -104,7 +109,7 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
         return root;
     }
 
-    public <O extends NBTBase> NbtSaveRoot<SaveObject> node(NbtSaveNode<SaveObject, O> node)
+    public <O extends Tag> NbtSaveRoot<SaveObject> node(NbtSaveNode<SaveObject, O> node)
     {
         nodes.add(node);
         return this;
@@ -120,7 +125,7 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
         return node(new SaveNodeResourceLocation<SaveObject>(name, save, load));
     }
 
-    public NbtSaveRoot<SaveObject> nodeCompoundTag(final String name, Function<SaveObject, NBTTagCompound> save, BiConsumer<SaveObject, NBTTagCompound> load)
+    public NbtSaveRoot<SaveObject> nodeCompoundTag(final String name, Function<SaveObject, CompoundTag> save, BiConsumer<SaveObject, CompoundTag> load)
     {
         return node(new SaveNodeCompoundTag<SaveObject>(name, save, load));
     }
@@ -155,28 +160,40 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
         return node(new SaveNodeBlockPos<SaveObject>(name, save, load));
     }
 
-    public NbtSaveRoot<SaveObject> nodeVec3d(final String name, Function<SaveObject, Vec3d> save, BiConsumer<SaveObject, Vec3d> load)
+    public NbtSaveRoot<SaveObject> nodeVec3d(final String name, Function<SaveObject, Vec3> save, BiConsumer<SaveObject, Vec3> load)
     {
         return node(new SaveNodeVec3d<SaveObject>(name, save, load));
     }
 
-    public NbtSaveRoot<SaveObject> nodeWorldDim(final String name, Function<SaveObject, World> save, BiConsumer<SaveObject, World> load)
+    public NbtSaveRoot<SaveObject> nodeWorldDim(final String name, Function<SaveObject, Level> save, BiConsumer<SaveObject, Level> load)
     {
-        return node(new NbtSaveNode<SaveObject, NBTTagInt>(name,
+        return node(new NbtSaveNode<SaveObject, StringTag>(name,
             (saveObject) -> {
-                final World world = save.apply(saveObject);
-                if (world != null && world.provider != null)
+                final Level world = save.apply(saveObject);
+                if (world != null)
                 {
-                    return new NBTTagInt(world.provider.getDimension());
+                    return StringTag.valueOf(world.dimension().location().toString());
                 }
                 return null;
             },
             (saveObject, data) -> {
-                final int dim = data.getInt();
-                final World world = DimensionManager.getWorld(dim);
-                load.accept(saveObject, world);
+                final ResourceKey<Level> dim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(data.getAsString()));
+                final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                load.accept(saveObject, server != null ? server.getLevel(dim) : null);
             }
         ));
+    }
+
+    /**
+     * Mirrors 1.12 {@code NBTBase#hasNoTags}: compounds and lists are empty without entries, strings are empty when
+     * blank ({@code NBTTagString#hasNoTags} returned {@code data.isEmpty()}), everything else counts as non-empty
+     */
+    private static boolean isEmptyTag(Tag tag)
+    {
+        if (tag instanceof CompoundTag compound) return compound.isEmpty();
+        if (tag instanceof CollectionTag<?> list) return list.isEmpty();
+        if (tag instanceof StringTag string) return string.getAsString().isEmpty();
+        return false;
     }
 
     @Deprecated
@@ -188,7 +205,7 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
     @Deprecated
     public NbtSaveRoot<SaveObject> nodeEulerAngle(final String name, Function<SaveObject, EulerAngle> save, BiConsumer<SaveObject, EulerAngle> load)
     {
-        return node(new NbtSaveNode<SaveObject, NBTTagCompound>(name,
+        return node(new NbtSaveNode<SaveObject, CompoundTag>(name,
             (saveObject) -> {
                 final EulerAngle angle = save.apply(saveObject);
                 if (angle != null)
@@ -208,12 +225,12 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
     }
 
     @Deprecated //switch to nodeEnumString for better human readability of save data
-    public NbtSaveRoot<SaveObject> nodeFacing(final String name, Function<SaveObject, EnumFacing> save, BiConsumer<SaveObject, EnumFacing> load)
+    public NbtSaveRoot<SaveObject> nodeFacing(final String name, Function<SaveObject, Direction> save, BiConsumer<SaveObject, Direction> load)
     {
         return node(new SaveNodeFacing<SaveObject>(name, save, load));
     }
 
-    public NbtSaveRoot<SaveObject> nodeBlockState(final String name, Function<SaveObject, IBlockState> save, BiConsumer<SaveObject, IBlockState> load)
+    public NbtSaveRoot<SaveObject> nodeBlockState(final String name, Function<SaveObject, BlockState> save, BiConsumer<SaveObject, BlockState> load)
     {
         return node(new SaveNodeBlockState<SaveObject>(name, save, load));
     }
@@ -237,26 +254,26 @@ public class NbtSaveRoot<SaveObject> implements INbtSaveNode<SaveObject, NBTTagC
 
 
 
-    public <SerializableObject extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<SaveObject> nodeINBTSerializable(final String name,
-                                                                                                                      Function<SaveObject, SerializableObject> accessor) { //TODO recode to allow any NBTBase
-        return node(new NbtSaveNode<SaveObject, NBTTagCompound>(name,
-            (source) -> Optional.ofNullable(accessor.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
+    public <SerializableObject extends INBTSerializable<CompoundTag>> NbtSaveRoot<SaveObject> nodeINBTSerializable(final String name,
+                                                                                                                      Function<SaveObject, SerializableObject> accessor) { //TODO recode to allow any Tag
+        return node(new NbtSaveNode<SaveObject, CompoundTag>(name,
+            (source) -> Optional.ofNullable(accessor.apply(source)).map(o -> o.serializeNBT(RegistryHelper.access())).orElse(null),
             (source, data) -> {
                 final SerializableObject object = accessor.apply(source);
                 if(object != null) {
-                    object.deserializeNBT(data);
+                    object.deserializeNBT(RegistryHelper.access(), data);
                 }
             }
         ));
     }
 
-    public <C extends INBTSerializable<NBTTagCompound>> NbtSaveRoot<SaveObject> nodeINBTSerializable(final String name, Function<SaveObject, C> save, BiConsumer<SaveObject, C> load, Supplier<C> builder) {
-        return node(new NbtSaveNode<SaveObject, NBTTagCompound>(name,
-            (source) -> Optional.ofNullable(save.apply(source)).map(INBTSerializable::serializeNBT).orElse(null),
+    public <C extends INBTSerializable<CompoundTag>> NbtSaveRoot<SaveObject> nodeINBTSerializable(final String name, Function<SaveObject, C> save, BiConsumer<SaveObject, C> load, Supplier<C> builder) {
+        return node(new NbtSaveNode<SaveObject, CompoundTag>(name,
+            (source) -> Optional.ofNullable(save.apply(source)).map(o -> o.serializeNBT(RegistryHelper.access())).orElse(null),
             (source, data) -> {
                 final C object = builder.get();
                 if(object != null) {
-                    object.deserializeNBT(data);
+                    object.deserializeNBT(RegistryHelper.access(), data);
                 }
                 load.accept(source, object);
             }

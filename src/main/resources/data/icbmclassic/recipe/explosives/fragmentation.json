@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "ara",
+    " a "
+  ],
+  "key": {
+    "a": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:shrapnel"
+      }
+    },
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:incendiary"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:fragmentation"
+    }
+  }
+}

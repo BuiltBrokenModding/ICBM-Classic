@@ -2,8 +2,8 @@ package icbm.classic.api.missiles.parts;
 
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.reg.obj.IBuildableObject;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +24,7 @@ public interface IMissileFlightLogic extends IBuildableObject
      *
      * Once call the implementation should lock and ignore additional calls.
      */
-    default void calculateFlightPath(final World world, final double startX, final double startY, final double startZ, final IMissileTarget targetData) {
+    default void calculateFlightPath(final Level world, final double startX, final double startY, final double startZ, final IMissileTarget targetData) {
 
     }
 
@@ -69,7 +69,7 @@ public interface IMissileFlightLogic extends IBuildableObject
      * doesn't understand the exact flight logic and only understands motion vector.
      * This way we get a fair gameplay mechanic of anti-missile systems missing.
      *
-     * @param builder - function to build position, {@link net.minecraft.util.math.Vec3d#Vec3d(double, double, double)}
+     * @param builder - function to build position, {@link net.minecraft.world.phys.Vec3#Vec3(double, double, double)}
      * @param <V>     - return type of the builder
      * @return return of the builder function or null if feature is not supported, not all flight logics move the missile
      */
@@ -136,3 +136,4 @@ public interface IMissileFlightLogic extends IBuildableObject
         V apply(double x, double y, double z);
     }
 }
+// PORTED

@@ -1,14 +1,13 @@
 package icbm.classic.config.util;
 
-import com.google.common.collect.ImmutableMap;
 import icbm.classic.ICBMClassic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -42,9 +41,9 @@ public class BlockStateConfigListOld {
     final Map<String, List<Function<Block, Boolean>>> fuzzyBlockChecks = new HashMap<>();
 
     // Block lists
-    final HashSet<IBlockState> blockStates = new HashSet();
+    final HashSet<BlockState> blockStates = new HashSet();
     final HashSet<Block> blocks = new HashSet();
-    final Map<Block, List<Function<IBlockState, Boolean>>> blockStateMatchers = new HashMap();
+    final Map<Block, List<Function<BlockState, Boolean>>> blockStateMatchers = new HashMap();
 
     // States
     @Getter
@@ -66,6 +65,8 @@ public class BlockStateConfigListOld {
     private void reset() {
         blockStates.clear();
         blocks.clear();
+        // PORT: 1.12 never cleared these, so removed [prop] entries stayed active and reloads stacked duplicates
+        blockStateMatchers.clear();
     }
 
     private void lock() {
@@ -83,10 +84,10 @@ public class BlockStateConfigListOld {
         }
 
         // Handle mods by looping entire registry
-        ForgeRegistries.BLOCKS.forEach(block -> {
+        BuiltInRegistries.BLOCK.forEach(block -> {
 
             // Mods
-            final String modId = Objects.requireNonNull(block.getRegistryName()).getResourceDomain();
+            final String modId = BuiltInRegistries.BLOCK.getKey(block).getNamespace();
             if (mods.contains(modId)) {
                 blocks.add(block);
             }
@@ -102,7 +103,7 @@ public class BlockStateConfigListOld {
         lock();
     }
 
-    public boolean contains(IBlockState state) {
+    public boolean contains(BlockState state) {
         if (state == null) {
             return false;
         }
@@ -200,12 +201,12 @@ public class BlockStateConfigListOld {
             return false;
         }
 
-        if(!ForgeRegistries.BLOCKS.containsKey(blockKey)) {
+        if(!BuiltInRegistries.BLOCK.containsKey(blockKey)) {
             ICBMClassic.logger().error(name + ": Failed to find block matching entry `" + entry + "`");
             return false;
         }
 
-        return blocks.add(ForgeRegistries.BLOCKS.getValue(blockKey));
+        return blocks.add(BuiltInRegistries.BLOCK.get(blockKey));
     }
 
     ResourceLocation getBlockKey(String entry) {
@@ -216,51 +217,14 @@ public class BlockStateConfigListOld {
         if (keySplit.length != 2 || domain.isEmpty() || key.isEmpty()) {
             return null;
         }
-        return new ResourceLocation(domain, key);
+        return ResourceLocation.tryBuild(domain.toLowerCase(java.util.Locale.ROOT), key.toLowerCase(java.util.Locale.ROOT)); // PORT: null if invalid in 1.21
     }
 
     boolean handleMetaData(String entry) {
-        // TODO replace validation sections with regex for cleaner extraction and linting
-
-        // Validate general format
-        final String[] metaSplit = entry.split("@");
-        if (metaSplit.length != 2 || !metaSplit[1].matches("\\d+") || !metaSplit[0].contains(":")) {
-            ICBMClassic.logger().error(name + ": Detected invalid metadata format for `" + entry + "`  for banAllow list. Expected `mod:key@number` example: `minecraft:stone@2`");
-            return false; //TODO maybe throw instead so we can unit test the errors?
-        }
-
-        // Validate key format
-        final ResourceLocation blockKey = this.getBlockKey(metaSplit[0]);
-        if (blockKey == null) {
-            ICBMClassic.logger().error(name + ": Detected invalid metadata format for `" + entry + "`  for banAllow list. Expected `mod:key@number` example: `minecraft:stone@2`");
-            return false;
-        }
-
-        // Get block from provided key
-        if (!ForgeRegistries.BLOCKS.containsKey(blockKey)) {
-            ICBMClassic.logger().error(name + ": Failed to find block matching entry `" + entry + "` for banAllow list.");
-            return false;
-        }
-        final Block block = ForgeRegistries.BLOCKS.getValue(blockKey);
-
-        // Get state from meta value
-        final int desiredMetadata = Integer.parseInt(metaSplit[1]);
-        final IBlockState state = block.getStateFromMeta(desiredMetadata);
-
-        // Null state is a sign of a buggy mod-block
-        if (state == null) {
-            ICBMClassic.logger().error(name + ": Failed to find state matching entry `" + entry + "` for banAllow list. This is a bug in '" + blockKey.getResourceDomain() + "'!");
-            return false;
-        }
-
-        // Validate metadata, default implementation is to return meta value of 0 for unknowns
-        final int metaActual = block.getMetaFromState(state);
-        if (desiredMetadata != metaActual) {
-            ICBMClassic.logger().error(name + ": Block returned a state with metadata[" + metaActual + "] but it didn't match metadata[" + desiredMetadata + "] for entry `" + entry + "` for banAllow list.");
-            return false;
-        }
-
-        return blockStates.add(state);
+        // PORT: block metadata does not exist in 1.21. Entries like `minecraft:stone@2` must be rewritten
+        // using block properties, Ex: `minecraft:stone[variant:granite]` or as separate blocks `minecraft:granite`
+        ICBMClassic.logger().error(name + ": Metadata entries are not supported anymore, `" + entry + "` was ignored. Use `mod:block[property:value]` instead.");
+        return false;
     }
 
     boolean handleBlockState(String entry) {
@@ -274,24 +238,23 @@ public class BlockStateConfigListOld {
             return false;
         }
 
-        final Block block = ForgeRegistries.BLOCKS.getValue(regName);
-
-        if (block == null) {
+        if (!BuiltInRegistries.BLOCK.containsKey(regName)) {
             ICBMClassic.logger().error("Config Flying Block: Failed to find block '" + regName + "' matching entry `" + entry + "` for banAllow list.");
             return false;
         }
+        final Block block = BuiltInRegistries.BLOCK.get(regName);
 
         // Properties
         final String[] properties = nameVsPropSplit[1].replace("]", "").split(",");
 
-        final Map<IProperty, Function<Comparable, Boolean>> matchers = new HashMap();
+        final Map<Property, Function<Comparable, Boolean>> matchers = new HashMap();
 
         for (String propEntry : properties) {
             final String[] stateSplit = propEntry.split(":");
             final String propName = stateSplit[0].trim();
             final String propValue = stateSplit[1].trim();
 
-            final IProperty property = block.getBlockState().getProperty(propName);
+            final Property property = block.getStateDefinition().getProperty(propName);
             if (property == null) {
                 ICBMClassic.logger().error("Config Flying Block: Failed to find property '" + propName + "' for block '" + regName + "' matching entry `" + entry + "` for banAllow list.");
                 return false;
@@ -301,7 +264,7 @@ public class BlockStateConfigListOld {
                 matchers.put(property, (o) -> true);
             } else if (propValue.startsWith("~")) {
                 final String stringMatch = propValue.substring(1).trim();
-                final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getAllowedValues().stream()
+                final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getPossibleValues().stream()
                     .filter(o -> property.getName((Comparable) o).endsWith(stringMatch)).collect(Collectors.toList());
                 if(valuesToMatch.isEmpty()) {
                     ICBMClassic.logger().error("Config Flying Block: Failed to find values matching '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
@@ -310,7 +273,7 @@ public class BlockStateConfigListOld {
                 matchers.put(property, valuesToMatch::contains);
             } else if (propValue.endsWith("~")) {
                 final String stringMatch = propValue.substring(0, propValue.length() - 1).trim();
-                final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getAllowedValues().stream()
+                final List<Comparable<?>> valuesToMatch = (List<Comparable<?>>) property.getPossibleValues().stream()
                     .filter(o -> property.getName((Comparable) o).startsWith(stringMatch)).collect(Collectors.toList());
                 if(valuesToMatch.isEmpty()) {
                     ICBMClassic.logger().error("Config Flying Block: Failed to find values matching '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
@@ -319,7 +282,7 @@ public class BlockStateConfigListOld {
                 matchers.put(property, valuesToMatch::contains);
             } else {
                 // Simple value matcher
-                final Optional value = property.getAllowedValues().stream().filter(o -> property.getName((Comparable) o).equalsIgnoreCase(propValue)).findFirst();
+                final Optional value = property.getPossibleValues().stream().filter(o -> property.getName((Comparable) o).equalsIgnoreCase(propValue)).findFirst();
                 if (!value.isPresent()) {
                     ICBMClassic.logger().error("Config Flying Block: Failed to find value '" + propValue + "' for property '" + propName + "' and block '" + regName + "' matching entry `" + entry + "`");
                     return false;
@@ -338,15 +301,14 @@ public class BlockStateConfigListOld {
         return blockStateMatchers.get(block).add((blockState) -> matchesFuzzyState(blockState, matchers));
     }
 
-    boolean matchesFuzzyState(IBlockState state, Map<IProperty, Function<Comparable, Boolean>> matchers) {
-        final ImmutableMap<IProperty<?>, Comparable<?>> stateProps = state.getProperties();
-        for(IProperty propKey: matchers.keySet()) {
-            if(!stateProps.containsKey(propKey)) {
+    boolean matchesFuzzyState(BlockState state, Map<Property, Function<Comparable, Boolean>> matchers) {
+        for(Property propKey: matchers.keySet()) {
+            if(!state.hasProperty(propKey)) {
                 return false;
             }
 
             final Function<Comparable, Boolean> check = matchers.get(propKey);
-            if(check != null && !check.apply(stateProps.get(propKey))) {
+            if(check != null && !check.apply(state.getValue(propKey))) {
                 return false;
             }
         }
@@ -388,11 +350,11 @@ public class BlockStateConfigListOld {
     }
 
     boolean blockPathStartsWith(Block block, String value) {
-        return Objects.requireNonNull(block.getRegistryName()).getResourcePath().startsWith(value);
+        return BuiltInRegistries.BLOCK.getKey(block).getPath().startsWith(value);
     }
 
     boolean blockPathEndsWith(Block block, String value) {
-        return Objects.requireNonNull(block.getRegistryName()).getResourcePath().endsWith(value);
+        return BuiltInRegistries.BLOCK.getKey(block).getPath().endsWith(value);
     }
 
     void addFuzzyForBlock(String domain, Function<Block, Boolean> check) {
@@ -404,11 +366,12 @@ public class BlockStateConfigListOld {
 
     public List<String> dumpBlocksContained() {
         final List<String> list = new ArrayList<>();
-        ForgeRegistries.BLOCKS.forEach(block -> {
-            if(this.contains(block.getDefaultState())) {
-                list.add(block.getRegistryName().toString());
+        BuiltInRegistries.BLOCK.forEach(block -> {
+            if(this.contains(block.defaultBlockState())) {
+                list.add(block.builtInRegistryHolder().key().location().toString());
             }
         });
         return list;
     }
 }
+// PORTED

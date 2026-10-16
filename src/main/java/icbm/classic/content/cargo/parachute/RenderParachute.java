@@ -1,18 +1,19 @@
 package icbm.classic.content.cargo.parachute;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import icbm.classic.client.render.entity.item.RenderItemImp;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.world.item.ItemStack;
 
 public class RenderParachute extends RenderItemImp<EntityParachute> {
-    public RenderParachute(RenderManager renderManagerIn) {
-        super(renderManagerIn);
+    public RenderParachute(EntityRendererProvider.Context context) {
+        super(context);
     }
 
     @Override
-    protected void rotate(EntityParachute entity, ItemStack itemstack, float entityYaw, float entityPitch, float partialTicks, int index) {
-        GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+    protected void rotate(EntityParachute entity, ItemStack itemstack, PoseStack poseStack, float entityYaw, float entityPitch, float partialTicks, int index) {
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - this.entityRenderDispatcher.camera.getYRot()));
         // TODO add wiggle to simulate wind
     }
 
@@ -22,10 +23,11 @@ public class RenderParachute extends RenderItemImp<EntityParachute> {
     }
 
     @Override
-    protected void scale(EntityParachute e, ItemStack itemstack, float partialTicks, int index) {
+    protected void scale(EntityParachute e, ItemStack itemstack, PoseStack poseStack, float partialTicks, int index) {
         if(e != null) {
             final float scale = e.getRenderScale();
-            GlStateManager.scale(scale, scale, scale);
+            poseStack.scale(scale, scale, scale);
         }
     }
 }
+// PORTED

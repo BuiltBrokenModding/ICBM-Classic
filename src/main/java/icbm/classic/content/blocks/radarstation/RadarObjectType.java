@@ -23,3 +23,4 @@ public enum RadarObjectType
         return OTHER;
     }
 }
+// PORTED

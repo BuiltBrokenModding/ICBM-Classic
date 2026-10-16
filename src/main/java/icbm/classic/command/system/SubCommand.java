@@ -1,9 +1,10 @@
 package icbm.classic.command.system;
 
-import net.minecraft.command.ICommandSender;
+import icbm.classic.command.CommandUtils;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +33,7 @@ public abstract class SubCommand implements ISubCommand
     }
 
     @Override
-    public String getUsage(ICommandSender sender)
+    public String getUsage(CommandSourceStack sender)
     {
         if (parent == null)
         {
@@ -42,25 +43,25 @@ public abstract class SubCommand implements ISubCommand
     }
 
     @Override
-    public void displayHelp(ICommandSender sender)
+    public void displayHelp(CommandSourceStack sender)
     {
         collectHelpForAll((string) -> sendHelpMessage(sender, string));
 
         //If we have a command sender entity then we can run world based commands
-        if (sender.getCommandSenderEntity() != null)
+        if (sender.getEntity() != null)
         {
             collectHelpWorldOnly((string) -> sendHelpMessage(sender, string));
         }
 
-        if (sender instanceof MinecraftServer)
+        if (CommandUtils.isConsole(sender))
         {
             collectHelpServerOnly((string) -> sendHelpMessage(sender, string));
         }
     }
 
-    private void sendHelpMessage(ICommandSender sender, String message)
+    private void sendHelpMessage(CommandSourceStack sender, String message)
     {
-        sender.sendMessage(new TextComponentString((getUsage(sender) + " " + message).trim()));
+        sender.sendSystemMessage(Component.literal((getUsage(sender) + " " + message).trim()));
     }
 
     /**
@@ -94,13 +95,15 @@ public abstract class SubCommand implements ISubCommand
     }
 
     @Override
-    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
+    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
     {
         return Collections.<String>emptyList();
     }
 
+    @Override
     public void setParent(ICommandGroup parent)
     {
         this.parent = parent;
     }
 }
+// PORTED

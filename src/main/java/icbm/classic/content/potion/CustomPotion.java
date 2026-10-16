@@ -1,11 +1,19 @@
 package icbm.classic.content.potion;
 
-import icbm.classic.ICBMConstants;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
-public abstract class CustomPotion extends Potion
+/**
+ * Base for ICBM mob effects.
+ * <p>
+ * PORT: 1.12 registered the potion directly into the registry from the constructor with the name
+ * {@code icbmclassic:<name>} and translation key {@code potion.<name>}. Registration now goes through
+ * {@code ICBMClassic.EFFECTS}; the id and name arguments are kept for compatibility only.
+ */
+public abstract class CustomPotion extends MobEffect
 {
+    protected final String potionName;
+
     /**
      * Creates a new type of potion
      *
@@ -15,22 +23,8 @@ public abstract class CustomPotion extends Potion
      */
     public CustomPotion(boolean isBadEffect, int color, int id, String name)
     {
-        super(isBadEffect, color);
-        this.setPotionName("potion." + name);
-        REGISTRY.register(id, new ResourceLocation(ICBMConstants.PREFIX + name), this);
-    }
-
-    @Override
-    public Potion setIconIndex(int par1, int par2)
-    {
-        super.setIconIndex(par1, par2);
-        return this;
-    }
-
-    @Override
-    protected Potion setEffectiveness(double par1)
-    {
-        super.setEffectiveness(par1);
-        return this;
+        super(isBadEffect ? MobEffectCategory.HARMFUL : MobEffectCategory.BENEFICIAL, color);
+        this.potionName = "potion." + name;
     }
 }
+// PORTED

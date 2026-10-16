@@ -1,7 +1,7 @@
 package icbm.classic.config.blast.types;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 public class ConfigChemical {
 

@@ -1,16 +1,20 @@
 package icbm.classic.prefab.gui;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NumericField extends GuiTextField
+/**
+ * Text box limited to numeric input. Client only.
+ */
+public class NumericField extends EditBox
 {
     NumericType type = NumericType.INT;
-    static List charsA = new ArrayList();
-    static List charsB = new ArrayList();
+    static List<Character> charsA = new ArrayList<>();
+    static List<Character> charsB = new ArrayList<>();
 
     static
     {
@@ -24,18 +28,19 @@ public class NumericField extends GuiTextField
         charsB.add('.');
     }
 
-    public NumericField(int id, FontRenderer fontRender, int xPos, int yPos, int width, int height)
+    public NumericField(int id, Font fontRender, int xPos, int yPos, int width, int height)
     {
         this(id, fontRender, NumericType.DOUBLE, xPos, yPos, width, height);
     }
 
-    public NumericField(int id, FontRenderer fontRender, NumericType type, int xPos, int yPos, int width, int height)
+    public NumericField(int id, Font fontRender, NumericType type, int xPos, int yPos, int width, int height)
     {
-        super(id, fontRender, xPos, yPos, width, height);
+        super(fontRender, xPos, yPos, width, height, Component.empty());
         this.type = type;
     }
 
-    public void writeText(String str)
+    @Override
+    public void insertText(String str)
     {
         try
         {
@@ -54,7 +59,7 @@ public class NumericField extends GuiTextField
                     return;
                 }
             }
-            super.writeText(str);
+            super.insertText(str);
         }
         catch (Exception e)
         {
@@ -62,9 +67,15 @@ public class NumericField extends GuiTextField
         }
     }
 
+    /** 1.12 name */
+    public void writeText(String str)
+    {
+        insertText(str);
+    }
+
     public int getTextAsInt()
     {
-        String text = this.getText();
+        String text = this.getValue();
         if (text != null && !text.isEmpty())
         {
             try
@@ -73,7 +84,7 @@ public class NumericField extends GuiTextField
             }
             catch (Exception e)
             {
-                this.setText("" + 0);
+                this.setValue("" + 0);
             }
         }
         return 0;
@@ -81,7 +92,7 @@ public class NumericField extends GuiTextField
 
     public double getTextAsDouble()
     {
-        String text = this.getText();
+        String text = this.getValue();
         if (text != null && !text.isEmpty())
         {
             try
@@ -90,7 +101,7 @@ public class NumericField extends GuiTextField
             }
             catch (Exception e)
             {
-                this.setText("" + 0);
+                this.setValue("" + 0);
             }
         }
         return 0;
@@ -98,7 +109,7 @@ public class NumericField extends GuiTextField
 
     public float getTextAsFloat()
     {
-        String text = this.getText();
+        String text = this.getValue();
         if (text != null && !text.isEmpty())
         {
             try
@@ -107,7 +118,7 @@ public class NumericField extends GuiTextField
             }
             catch (Exception e)
             {
-                this.setText("" + 0);
+                this.setValue("" + 0);
             }
         }
         return 0;
@@ -121,3 +132,4 @@ public class NumericField extends GuiTextField
     }
 
 }
+// PORTED

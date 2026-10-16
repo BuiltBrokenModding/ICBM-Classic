@@ -2,7 +2,7 @@ package icbm.classic.content.cluster.bomblet;
 
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Supplier;
 
@@ -19,3 +19,4 @@ public class BombletProjectileStack implements IProjectileStack<EntityBombDrople
         return new BombletProjectileData().setExplosiveStack(stack.get());
     }
 }
+// PORTED

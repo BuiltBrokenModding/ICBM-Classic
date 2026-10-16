@@ -2,19 +2,16 @@ package icbm.classic.content.cluster.missile;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.api.missiles.projectile.IProjectileStack;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.cargo.CargoProjectileData;
-import icbm.classic.lib.projectile.ProjectileStack;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import icbm.classic.content.reg.RecipeReg;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,35 +21,33 @@ import java.util.function.Supplier;
 /**
  * Recipe for adding cargo to cargo projectile item
  */
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@Data
-public class RecipeCluster extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+public class RecipeCluster extends CustomRecipe {
 
-    private final ItemStack recipeOutput;
+    private final Supplier<ItemStack> recipeOutput;
 
-    @Override
-    public boolean isDynamic() {
-        return true;
+    public RecipeCluster(CraftingBookCategory category, Supplier<ItemStack> recipeOutput) {
+        super(category);
+        this.recipeOutput = recipeOutput;
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput inv) {
         // Don't leave container items, since we store the entire item
-        return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+        return NonNullList.withSize(inv.size(), ItemStack.EMPTY);
     }
 
     @Override
-    public boolean matches(InventoryCrafting inv, World worldIn) {
+    public boolean matches(CraftingInput inv, Level worldIn) {
+        final ItemStack output = recipeOutput.get();
         ItemStack cluster = ItemStack.EMPTY;
         int newItemSize = 0;
 
-        for (int slot = 0; slot < inv.getSizeInventory(); slot++) {
-            final ItemStack slotStack = inv.getStackInSlot(slot);
+        for (int slot = 0; slot < inv.size(); slot++) {
+            final ItemStack slotStack = inv.getItem(slot);
             if(slotStack.isEmpty()) {
                 continue;
             }
-            else if (cluster.isEmpty() && slotStack.isItemEqual(recipeOutput)) {
+            else if (cluster.isEmpty() && slotStack.is(output.getItem())) {
                 cluster = slotStack;
             }
             else if(!ClusterMissileHandler.isAllowed(slotStack)) {
@@ -72,23 +67,24 @@ public class RecipeCluster extends IForgeRegistryEntry.Impl<IRecipe> implements 
     }
 
     private CapabilityClusterMissileStack getCap(ItemStack itemStack) {
-        if (!itemStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
+        if (itemStack.isEmpty()) {
             return null;
         }
-        ICapabilityMissileStack cap = itemStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        ICapabilityMissileStack cap = itemStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
         return cap instanceof CapabilityClusterMissileStack ? (CapabilityClusterMissileStack) cap : null;
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
+        final ItemStack output = recipeOutput.get();
         ItemStack cluster = ItemStack.EMPTY;
         List<ItemStack> newItems = new ArrayList<>();
 
-        for (int slot = 0; slot < inv.getSizeInventory(); slot++) {
-            final ItemStack slotStack = inv.getStackInSlot(slot);
-            if (slotStack.isItemEqual(recipeOutput)) {
+        for (int slot = 0; slot < inv.size(); slot++) {
+            final ItemStack slotStack = inv.getItem(slot);
+            if (!slotStack.isEmpty() && slotStack.is(output.getItem())) {
                 if (!cluster.isEmpty()) {
-                    return null; // Can't nest clusters
+                    return ItemStack.EMPTY; // Can't nest clusters
                 }
                 cluster = slotStack.copy();
                 cluster.setCount(1);
@@ -101,15 +97,22 @@ public class RecipeCluster extends IForgeRegistryEntry.Impl<IRecipe> implements 
 
         CapabilityClusterMissileStack cap = getCap(cluster);
         if (cap == null) {
-            return null;
+            return ItemStack.EMPTY;
         }
         cap.getActionDataCluster().getClusterSpawnEntries().addAll(newItems);
+        cap.saveToStack();
 
         return cluster;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width * height >= 2;
     }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return RecipeReg.CLUSTER_MISSILE.get();
+    }
 }
+// PORTED

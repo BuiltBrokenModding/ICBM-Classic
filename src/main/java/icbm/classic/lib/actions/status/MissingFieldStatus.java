@@ -6,15 +6,15 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public final class MissingFieldStatus extends ImmutableStatus implements INBTSerializable<NBTTagCompound> {
+public final class MissingFieldStatus extends ImmutableStatus implements INBTSerializable<CompoundTag> {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "missing.field");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "missing.field");
 
     @Setter @Getter @Accessors(chain = true)
     private String source;
@@ -32,20 +32,20 @@ public final class MissingFieldStatus extends ImmutableStatus implements INBTSer
     }
 
     @Override
-    public ITextComponent message() {
+    public Component message() {
         if(textComponent == null) {
-            textComponent = new TextComponentTranslation(translationKey, source, field);
+            textComponent = Component.translatable(translationKey, source, field);
         }
         return textComponent;
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -55,3 +55,4 @@ public final class MissingFieldStatus extends ImmutableStatus implements INBTSer
         /* */.nodeString("field", MissingFieldStatus::getField, MissingFieldStatus::setField)
         .base();
 }
+// PORTED

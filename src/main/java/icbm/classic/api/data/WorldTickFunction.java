@@ -1,6 +1,6 @@
 package icbm.classic.api.data;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 /**
  *
@@ -9,5 +9,6 @@ import net.minecraft.world.World;
 @FunctionalInterface
 public interface WorldTickFunction
 {
-    void onTick(World world, double x, double y, double z, int tick);
+    void onTick(Level world, double x, double y, double z, int tick);
 }
+// PORTED

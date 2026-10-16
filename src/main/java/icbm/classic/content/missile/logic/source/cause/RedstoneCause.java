@@ -5,12 +5,13 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -19,11 +20,11 @@ import javax.annotation.Nonnull;
 @NoArgsConstructor
 public class RedstoneCause extends CausedByBlock {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block.redstone");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "block.redstone");
 
-    private EnumFacing side;
+    private Direction side;
 
-    public RedstoneCause(World world, BlockPos pos, IBlockState state, EnumFacing side) {
+    public RedstoneCause(Level world, BlockPos pos, BlockState state, Direction side) {
         super(world, pos, state);
         this.side = side;
     }
@@ -35,13 +36,13 @@ public class RedstoneCause extends CausedByBlock {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -50,3 +51,4 @@ public class RedstoneCause extends CausedByBlock {
         /* */.nodeFacing("side", RedstoneCause::getSide, RedstoneCause::setSide)
         .base();
 }
+// PORTED

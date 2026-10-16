@@ -1,13 +1,15 @@
 package icbm.classic.lib.energy.system;
 
 import icbm.classic.ICBMClassic;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
+import icbm.classic.content.reg.ComponentReg;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import java.lang.reflect.Field;
 
@@ -21,42 +23,39 @@ public class EnergySystemFE implements IEnergySystem
     private boolean failedEnergyStorageField;
 
     @Override
-    public boolean canSupport(Object object, EnumFacing side)
+    public boolean canSupport(Object object, Direction side)
     {
-        if (object instanceof TileEntity)
-        {
-            return ((TileEntity) object).hasCapability(CapabilityEnergy.ENERGY, side);
-        }
-        else if (object instanceof Entity)
-        {
-            return ((Entity) object).hasCapability(CapabilityEnergy.ENERGY, side);
-        }
-        else if (object instanceof ItemStack)
-        {
-            return ((ItemStack) object).hasCapability(CapabilityEnergy.ENERGY, side);
-        }
-        return false;
+        return getCapability(object, side) != null;
     }
 
-    public IEnergyStorage getCapability(Object object, EnumFacing side)
+    public IEnergyStorage getCapability(Object object, Direction side)
     {
-        if (object instanceof TileEntity)
+        if (object instanceof BlockEntity tile)
         {
-            return ((TileEntity) object).getCapability(CapabilityEnergy.ENERGY, side);
+            final Level level = tile.getLevel();
+            if (level == null)
+            {
+                return null;
+            }
+            return level.getCapability(Capabilities.EnergyStorage.BLOCK, tile.getBlockPos(), tile.getBlockState(), tile, side);
         }
-        else if (object instanceof Entity)
+        else if (object instanceof Entity entity)
         {
-            return ((Entity) object).getCapability(CapabilityEnergy.ENERGY, side);
+            return entity.getCapability(Capabilities.EnergyStorage.ENTITY, side); // PORT-CHECK: EnergyStorage.ENTITY is sided (@Nullable Direction context) in 21.1
         }
-        else if (object instanceof ItemStack)
+        else if (object instanceof ItemStack stack)
         {
-            return ((ItemStack) object).getCapability(CapabilityEnergy.ENERGY, side);
+            if (stack.isEmpty())
+            {
+                return null;
+            }
+            return stack.getCapability(Capabilities.EnergyStorage.ITEM);
         }
         return null;
     }
 
     @Override
-    public int setEnergy(Object object, EnumFacing side, int energy, boolean simulate)
+    public int setEnergy(Object object, Direction side, int energy, boolean simulate)
     {
         IEnergyStorage storage = getCapability(object, side);
 
@@ -65,7 +64,15 @@ public class EnergySystemFE implements IEnergySystem
             int energyLimited = Math.max(0, Math.min(storage.getMaxEnergyStored(), energy));
 
             //Edge case work around to help remove all energy, yes this will need to be done per mod
-            if (storage instanceof EnergyStorage)
+            if (object instanceof ItemStack stack && stack.has(ComponentReg.ENERGY.get()))
+            {
+                // PORT: 1.21 item energy (ComponentEnergyStorage) lives in a data component, set it directly
+                if (!simulate)
+                {
+                    stack.set(ComponentReg.ENERGY.get(), energyLimited);
+                }
+            }
+            else if (storage instanceof EnergyStorage)
             {
                 if (!failedEnergyStorageField)
                 {
@@ -91,13 +98,17 @@ public class EnergySystemFE implements IEnergySystem
     }
 
     @Override
-    public boolean canSetEnergyDirectly(Object object, EnumFacing side)
+    public boolean canSetEnergyDirectly(Object object, Direction side)
     {
+        if (object instanceof ItemStack stack && stack.has(ComponentReg.ENERGY.get()))
+        {
+            return true;
+        }
         return !failedEnergyStorageField && getCapability(object, side) instanceof EnergyStorage;
     }
 
     @Override
-    public int getEnergy(Object object, EnumFacing side)
+    public int getEnergy(Object object, Direction side)
     {
         IEnergyStorage storage = getCapability(object, side);
         if (storage != null)
@@ -108,7 +119,7 @@ public class EnergySystemFE implements IEnergySystem
     }
 
     @Override
-    public int getCapacity(Object object, EnumFacing side)
+    public int getCapacity(Object object, Direction side)
     {
         IEnergyStorage storage = getCapability(object, side);
         if (storage != null)
@@ -119,7 +130,7 @@ public class EnergySystemFE implements IEnergySystem
     }
 
     @Override
-    public int addEnergy(Object object, EnumFacing side, int energyToAdd, boolean simulate)
+    public int addEnergy(Object object, Direction side, int energyToAdd, boolean simulate)
     {
         IEnergyStorage storage = getCapability(object, side);
         if (storage != null)
@@ -130,7 +141,7 @@ public class EnergySystemFE implements IEnergySystem
     }
 
     @Override
-    public int removeEnergy(Object object, EnumFacing side, int energyToRemove, boolean simulate)
+    public int removeEnergy(Object object, Direction side, int energyToRemove, boolean simulate)
     {
         IEnergyStorage storage = getCapability(object, side);
         if (storage != null)
@@ -140,3 +151,4 @@ public class EnergySystemFE implements IEnergySystem
         return 0;
     }
 }
+// PORTED

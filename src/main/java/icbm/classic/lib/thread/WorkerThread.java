@@ -4,6 +4,7 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigDebug;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -11,11 +12,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class WorkerThread extends Thread
 {
-    public boolean doRun = true;
+    /** Written by the server thread on shutdown, volatile so the worker sees it */
+    public volatile boolean doRun = true;
 
     private IThreadWork activateTask;
     private final ConcurrentLinkedQueue<IThreadWork> queue = new ConcurrentLinkedQueue();
-    private int workCount = 0;
+    /** Updated by the server thread (add) and the worker (poll) */
+    private final AtomicInteger workCount = new AtomicInteger();
 
     public WorkerThread(int index)
     {
@@ -43,15 +46,40 @@ public class WorkerThread extends Thread
             //IF task is set run
             if (activateTask != null)
             {
-                //Run step
-                if (!activateTask.doRun(1))
+                // PORT: 1.12 had no error handling here, a single failing task (modded block, chunk access) ended
+                //  run() and every later threaded blast was queued to a dead thread and never finished.
+                try
                 {
-                    //Complete
-                    activateTask.onCompleted();
-                    ICBMClassic.logger().debug(toString() + " complete work task " + activateTask);
+                    //Run step
+                    if (!activateTask.doRun(1))
+                    {
+                        // PORT: threads are stopped on ServerStoppingEvent, results of a task that finishes after that
+                        //  would be applied to levels that are being saved and closed, so the task is dropped
+                        if (doRun)
+                        {
+                            //Complete
+                            finishTask();
+                        }
+                        else
+                        {
+                            activateTask = null;
+                        }
+                    }
+                }
+                catch (Throwable t)
+                {
+                    ICBMClassic.logger().error(toString() + " work task failed " + activateTask, t);
 
-                    //Clear
-                    activateTask = null;
+                    // Still complete so the work rejoins the world with what it has and the owner can end,
+                    //  unless the threads were stopped for server shutdown (see above)
+                    if (doRun)
+                    {
+                        finishTask();
+                    }
+                    else
+                    {
+                        activateTask = null;
+                    }
                 }
             }
 
@@ -77,13 +105,42 @@ public class WorkerThread extends Thread
         }
     }
 
+    /** Completes the active task and clears it, errors are logged so the thread keeps running */
+    private void finishTask()
+    {
+        final IThreadWork task = activateTask;
+        try
+        {
+            task.onCompleted();
+            ICBMClassic.logger().debug(toString() + " complete work task " + task);
+        }
+        catch (Throwable t)
+        {
+            ICBMClassic.logger().error(toString() + " failed to complete work task " + task, t);
+        }
+        finally
+        {
+            //Clear
+            activateTask = null;
+        }
+    }
+
     protected void nextTask()
     {
         activateTask = queue.poll();
         if (activateTask != null)
         {
-            workCount--;
-            activateTask.onStarted();
+            workCount.decrementAndGet();
+            try
+            {
+                activateTask.onStarted();
+            }
+            catch (Throwable t)
+            {
+                ICBMClassic.logger().error(toString() + " failed to start work task " + activateTask, t);
+                finishTask();
+                return;
+            }
             if (ICBMClassic.runningAsDev)
             {
                 ICBMClassic.logger().info(toString() + " starting work task " + activateTask);
@@ -99,12 +156,12 @@ public class WorkerThread extends Thread
     public void addWork(IThreadWork work)
     {
         queue.add(work);
-        workCount++;
+        workCount.incrementAndGet();
     }
 
     public int getWorkCount()
     {
-        return workCount;
+        return workCount.get();
     }
 
     public void stopTasks()
@@ -112,3 +169,4 @@ public class WorkerThread extends Thread
         doRun = false;
     }
 }
+// PORTED

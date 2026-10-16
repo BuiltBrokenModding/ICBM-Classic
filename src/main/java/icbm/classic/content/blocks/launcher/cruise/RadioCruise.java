@@ -17,14 +17,14 @@ import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.RadioTranslations;
 import icbm.classic.lib.radio.messages.TextMessage;
 import icbm.classic.prefab.FakeRadioSender;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadioReceiver, INBTSerializable<NBTTagCompound> {
+public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadioReceiver, INBTSerializable<CompoundTag> {
 
     public RadioCruise(TileCruiseLauncher host) {
         super(host);
@@ -37,7 +37,7 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
             // Set target packet, run first as laser-det triggers both (set & fire) from the same packet
             if(packet instanceof ITargetMessage) {
                 final double vel = host.launcher.getPayloadVelocity();
-                final Vec3d target = ((ITargetMessage) packet).getIntercept(host.getPos().getX() + 0.5, host.getPos().getY() + 0.5, host.getPos().getZ() + 0.5, vel);
+                final Vec3 target = ((ITargetMessage) packet).getIntercept(host.getBlockPos().getX() + 0.5, host.getBlockPos().getY() + 0.5, host.getBlockPos().getZ() + 0.5, vel);
                 if(target != null) {
                     host.setTarget(target);
 
@@ -81,3 +81,4 @@ public class RadioCruise extends RadioTile<TileCruiseLauncher> implements IRadio
         return firingPackage;
     }
 }
+// PORTED

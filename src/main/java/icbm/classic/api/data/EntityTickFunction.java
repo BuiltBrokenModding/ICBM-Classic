@@ -1,6 +1,6 @@
 package icbm.classic.api.data;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  *
@@ -11,3 +11,4 @@ public interface EntityTickFunction
 {
     void onTick(Entity entity, int tick);
 }
+// PORTED

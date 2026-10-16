@@ -7,10 +7,11 @@ import icbm.classic.api.data.WorldEntityIntSupplier;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.content.reg.ItemReg;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IntHashMap;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import icbm.classic.lib.explosive.ExplosiveStacks;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 
@@ -23,8 +24,8 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
     private final HashMap<ResourceLocation, WorldEntityIntSupplier> fuseSetSupplierMap = new HashMap();
     private final HashMap<ResourceLocation, EntityTickFunction> fuseTickCallbackMap = new HashMap();
 
-    private final IntHashMap<WorldEntityIntSupplier> fuseSetSupplier = new IntHashMap();
-    private final IntHashMap<EntityTickFunction> fuseTickCallback = new IntHashMap();
+    private final Int2ObjectOpenHashMap<WorldEntityIntSupplier> fuseSetSupplier = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<EntityTickFunction> fuseTickCallback = new Int2ObjectOpenHashMap<>();
 
     public ExGrenadeContentReg()
     {
@@ -37,7 +38,7 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
         IExplosiveData ex = ICBMClassicHelpers.getExplosive(regName, false);
         if(ex != null)
         {
-            return new ItemStack(ItemReg.itemGrenade, 1, ex.getRegistryID());
+            return ExplosiveStacks.create(ItemReg.itemGrenade.get(), ex);
         }
         return null;
     }
@@ -52,14 +53,14 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    fuseSetSupplier.addKey(data.getRegistryID(), func);
+                    fuseSetSupplier.put(data.getRegistryID(), func);
                 }
             });
             fuseTickCallbackMap.forEach((regName, func) -> {
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    fuseTickCallback.addKey(data.getRegistryID(), func);
+                    fuseTickCallback.put(data.getRegistryID(), func);
                 }
             });
         }
@@ -82,7 +83,7 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
     @Override
     public void tickFuse(Entity entity, IExplosiveData data, int ticksExisted)
     {
-        final EntityTickFunction function = fuseTickCallback.lookup(data != null ? data.getRegistryID() : 0);
+        final EntityTickFunction function = fuseTickCallback.get(data != null ? data.getRegistryID() : 0);
         if (function != null)
         {
             function.onTick(entity, ticksExisted);
@@ -92,7 +93,7 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
     @Override
     public int getFuseTime(Entity entity, IExplosiveData data)
     {
-        final WorldEntityIntSupplier function = fuseSetSupplier.lookup(data != null ? data.getRegistryID() : 0);
+        final WorldEntityIntSupplier function = fuseSetSupplier.get(data != null ? data.getRegistryID() : 0);
         if (function != null)
         {
             return function.get(entity);
@@ -100,3 +101,4 @@ public class ExGrenadeContentReg extends ExplosiveContentRegistry implements IEx
         return 100;
     }
 }
+// PORTED

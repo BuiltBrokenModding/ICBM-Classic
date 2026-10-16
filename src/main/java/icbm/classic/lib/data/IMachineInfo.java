@@ -20,3 +20,4 @@ public interface IMachineInfo {
      */
     void provideInformation(BiConsumer<String, Object> consumer);
 }
+// PORTED

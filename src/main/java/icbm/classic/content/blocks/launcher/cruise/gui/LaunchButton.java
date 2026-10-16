@@ -1,8 +1,7 @@
 package icbm.classic.content.blocks.launcher.cruise.gui;
 
 import icbm.classic.prefab.gui.button.GuiButtonBase;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Supplier;
 
@@ -25,47 +24,37 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
     public void onUpdate() {
         super.onUpdate();
         if(enabledCheck != null) {
-            this.enabled = enabledCheck.get();
+            this.active = enabledCheck.get();
         }
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        if (this.visible) {
-            // Set color and texture
-            mc.getTextureManager().bindTexture(GuiCruiseLauncher.TEXTURE);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        // Check if mouse is over button TODO check for circle
+        final boolean hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 
-            // Check if mouse is over button TODO check for circle
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+        final int UV_WIDTH = 182;
 
+        // Disabled state
+        if(!this.active) {
+            graphics.blit(GuiCruiseLauncher.TEXTURE, this.getX(), this.getY(), UV_WIDTH, 111, this.width, this.height);
+        }
+        // Pressed state
+        else if (this.wasPressed) {
+            graphics.blit(GuiCruiseLauncher.TEXTURE, this.getX(), this.getY(), UV_WIDTH, 76, this.width, this.height);
+        }
+        // Hover state
+        else if (hovered) {
+            graphics.blit(GuiCruiseLauncher.TEXTURE, this.getX(), this.getY(), UV_WIDTH, 41, this.width, this.height);
+        }
+        // Default state
+        else {
+            graphics.blit(GuiCruiseLauncher.TEXTURE, this.getX(), this.getY(), UV_WIDTH, 6, this.width, this.height);
+        }
 
-            final int UV_WIDTH = 182;
-
-            // Disabled state
-            if(!this.enabled) {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 111, this.width, this.height);
-            }
-            // Pressed state
-            else if (this.wasPressed) {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 76, this.width, this.height);
-            }
-            // Hover state
-            else if (this.hovered) {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 41, this.width, this.height);
-            }
-            // Default state
-            else {
-                this.drawTexturedModalRect(this.x, this.y, UV_WIDTH, 6, this.width, this.height);
-            }
-
-            // Draw button cover
-            if(!enabled && doDrawGlass) {
-                this.drawTexturedModalRect(this.x - 4, this.y - 4, 220, 5, 36, 36);
-            }
-
-            // Not sure why this is here
-            this.mouseDragged(mc, mouseX, mouseY);
+        // Draw button cover
+        if(!active && doDrawGlass) {
+            graphics.blit(GuiCruiseLauncher.TEXTURE, this.getX() - 4, this.getY() - 4, 220, 5, 36, 36);
         }
     }
 
@@ -75,16 +64,18 @@ public class LaunchButton extends GuiButtonBase<LaunchButton> {
     }
 
     @Override
-    public void mouseReleased(int mouseX, int mouseY) {
+    public void onRelease(double mouseX, double mouseY) {
         this.wasPressed = false;
+        super.onRelease(mouseX, mouseY);
     }
 
     @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (super.mousePressed(mc, mouseX, mouseY)) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
             this.wasPressed = true;
             return true;
         }
         return false;
     }
 }
+// PORTED

@@ -1,33 +1,32 @@
 package icbm.classic.client.render.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import icbm.classic.content.entity.EntityPlayerSeat;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
 
-@SideOnly(Side.CLIENT)
-public class RenderSeat extends Render<EntityPlayerSeat>
+public class RenderSeat extends EntityRenderer<EntityPlayerSeat>
 {
-    public RenderSeat(RenderManager renderManager)
+    public RenderSeat(EntityRendererProvider.Context context)
     {
-        super(renderManager);
-        this.shadowSize = 0.0F;
+        super(context);
+        this.shadowRadius = 0.0F;
     }
 
     @Override
-    public void doRender(EntityPlayerSeat seat, double x, double y, double z, float entityYaw, float partialTicks)
+    public void render(EntityPlayerSeat seat, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
-        super.doRender(seat, x, y, z, entityYaw, partialTicks);
-        //GlStateManager.pushMatrix();
-        //renderOffsetAABB(seat.getEntityBoundingBox(), x - seat.lastTickPosX, y - seat.lastTickPosY, z - seat.lastTickPosZ);
-        //GlStateManager.popMatrix();
+        super.render(seat, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
+    /** 1.12 returned null, 1.21 requires a non-null texture which is never bound since nothing is drawn */
     @Override
-    protected ResourceLocation getEntityTexture(EntityPlayerSeat entity)
+    public ResourceLocation getTextureLocation(EntityPlayerSeat entity)
     {
-        return null;
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 }
+// PORTED

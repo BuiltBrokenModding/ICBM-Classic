@@ -10,15 +10,15 @@ import icbm.classic.lib.actions.ActionBase;
 import icbm.classic.lib.actions.status.ActionResponses;
 import icbm.classic.lib.actions.status.MissingFieldStatus;
 import icbm.classic.lib.projectile.EntityProjectile;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -32,12 +32,12 @@ public class ActionSpawnEntity extends ActionBase {
         ActionFields.ENTITY_REG_NAME, ActionFields.ENTITY_DATA);
 
     private ResourceLocation entityID;
-    private NBTTagCompound entityData;
-    private Vec3d motion;
+    private CompoundTag entityData;
+    private Vec3 motion;
     private Float yaw;
     private Float pitch;
 
-    public ActionSpawnEntity(World world, Vec3d position, IActionSource source, IActionData actionData) {
+    public ActionSpawnEntity(Level world, Vec3 position, IActionSource source, IActionData actionData) {
         super(world, position, source, actionData);
     }
 
@@ -47,61 +47,68 @@ public class ActionSpawnEntity extends ActionBase {
         if (entityID == null) {
             return new MissingFieldStatus().setSource("ActionSpawnEntity").setField("entityId");
         }
-        final Entity entity = EntityList.createEntityByIDFromName(entityID, getWorld());
+        final Entity entity = BuiltInRegistries.ENTITY_TYPE.getOptional(entityID)
+            .map(type -> (Entity) type.create(getWorld()))
+            .orElse(null);
         if (entity == null) {
             return new MissingFieldStatus().setSource("ActionSpawnEntity#doAction()").setField("entityInstance");
         }
 
-        entity.setPosition(getPosition().x, getPosition().y, getPosition().z);
+        entity.setPos(getPosition().x, getPosition().y, getPosition().z);
         if (motion != null) {
             if(entity instanceof EntityProjectile) {
                 ((EntityProjectile<?>) entity).setMotionVector(motion.x, motion.y, motion.z);
             }
             else {
-                entity.motionX = motion.x;
-                entity.motionY = motion.y;
-                entity.motionZ = motion.z;
+                entity.setDeltaMovement(motion.x, motion.y, motion.z);
             }
         }
 
         // Apply yaw
         if (yaw != null) {
-            entity.rotationYaw = entity.prevRotationYaw = yaw;
+            entity.setYRot(yaw);
+            entity.yRotO = yaw;
         } else {
-            entity.rotationYaw = entity.prevRotationYaw = MathHelper.wrapDegrees(getWorld().rand.nextFloat() * 360.0F);
+            final float randomYaw = Mth.wrapDegrees(getWorld().random.nextFloat() * 360.0F);
+            entity.setYRot(randomYaw);
+            entity.yRotO = randomYaw;
         }
-        if (entity instanceof EntityLivingBase) {
-            ((EntityLivingBase) entity).rotationYawHead = entity.rotationYaw;
-            ((EntityLivingBase) entity).renderYawOffset = entity.rotationYaw;
+        if (entity instanceof LivingEntity) {
+            ((LivingEntity) entity).setYHeadRot(entity.getYRot());
+            ((LivingEntity) entity).setYBodyRot(entity.getYRot());
         }
 
         // Apply pitch
         if (pitch != null) {
-            entity.rotationPitch = entity.prevRotationPitch = pitch;
+            entity.setXRot(pitch);
+            entity.xRotO = pitch;
         } else {
-            entity.rotationYaw = entity.prevRotationYaw = MathHelper.wrapDegrees(getWorld().rand.nextFloat() * 360.0F);
+            // Note: 1.12 applied the random value to yaw here (likely a bug), kept as-is
+            final float randomYaw = Mth.wrapDegrees(getWorld().random.nextFloat() * 360.0F);
+            entity.setYRot(randomYaw);
+            entity.yRotO = randomYaw;
         }
 
         // Handle data loading
         if (entityData != null) {
-            final UUID uuid = entity.getUniqueID();
+            final UUID uuid = entity.getUUID();
 
-            NBTTagCompound mergedData = entity.writeToNBT(new NBTTagCompound());
+            CompoundTag mergedData = entity.saveWithoutId(new CompoundTag());
             mergedData.merge(entityData);
-            entity.readFromNBT(mergedData);
+            entity.load(mergedData);
 
-            entity.setUniqueId(uuid);
+            entity.setUUID(uuid);
 
         }
 
-        if (!getWorld().spawnEntity(entity)) {
+        if (!getWorld().addFreshEntity(entity)) {
             return ActionResponses.ENTITY_SPAWN_FAILED;
         }
         return ActionResponses.COMPLETED;
     }
 
     @Override
-    public <VALUE, TAG extends NBTBase> void setValue(ActionField<VALUE, TAG> key, VALUE value) {
+    public <VALUE, TAG extends Tag> void setValue(ActionField<VALUE, TAG> key, VALUE value) {
         if (key == ActionFields.YAW) {
             this.yaw = ActionFields.YAW.cast(value);
         }
@@ -109,18 +116,18 @@ public class ActionSpawnEntity extends ActionBase {
             this.pitch = ActionFields.PITCH.cast(value);
         }
         if (key == ActionFields.MOTION_VECTOR) {
-            this.motion = (Vec3d) value;
+            this.motion = (Vec3) value;
         }
         if (key == ActionFields.ENTITY_REG_NAME) {
             this.entityID = (ResourceLocation) value;
         }
         if (key == ActionFields.ENTITY_DATA) {
-            this.entityData = (NBTTagCompound) value;
+            this.entityData = (CompoundTag) value;
         }
     }
 
     @Override
-    public <VALUE, TAG extends NBTBase> VALUE getValue(ActionField<VALUE, TAG> key) {
+    public <VALUE, TAG extends Tag> VALUE getValue(ActionField<VALUE, TAG> key) {
         if (key == ActionFields.YAW) {
             return key.cast(yaw);
         }
@@ -145,3 +152,4 @@ public class ActionSpawnEntity extends ActionBase {
         return FIELDS;
     }
 }
+// PORTED

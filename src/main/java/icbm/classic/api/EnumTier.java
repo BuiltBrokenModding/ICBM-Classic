@@ -1,29 +1,29 @@
 package icbm.classic.api;
 
 import icbm.classic.lib.LanguageUtility;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.ChatFormatting;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/31/2018.
  */
-public enum EnumTier implements IStringSerializable
+public enum EnumTier implements StringRepresentable
 {
-    ONE(TextFormatting.GREEN),
-    TWO(TextFormatting.YELLOW),
-    THREE(TextFormatting.GOLD),
-    FOUR(TextFormatting.RED),
-    NONE(TextFormatting.WHITE); //TODO we should move the colors to the translations directly
+    ONE(ChatFormatting.GREEN),
+    TWO(ChatFormatting.YELLOW),
+    THREE(ChatFormatting.GOLD),
+    FOUR(ChatFormatting.RED),
+    NONE(ChatFormatting.WHITE); //TODO we should move the colors to the translations directly
 
-    private TextFormatting tooltipColor;
+    private ChatFormatting tooltipColor;
 
-    EnumTier(TextFormatting tooltipColor)
+    EnumTier(ChatFormatting tooltipColor)
     {
         this.tooltipColor = tooltipColor;
     }
 
-    public TextFormatting getTooltipColor()
+    public ChatFormatting getTooltipColor()
     {
         return tooltipColor;
     }
@@ -39,10 +39,15 @@ public enum EnumTier implements IStringSerializable
         return LanguageUtility.getLocal("tier.icbmclassic." + getName());
     }
 
-    @Override
     public String getName()
     {
         return name().toLowerCase();
+    }
+
+    @Override
+    public String getSerializedName()
+    {
+        return getName();
     }
 
     public static EnumTier get(int itemDamage)
@@ -54,3 +59,4 @@ public enum EnumTier implements IStringSerializable
         return ONE;
     }
 }
+// PORTED

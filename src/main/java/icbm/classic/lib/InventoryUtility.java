@@ -1,20 +1,26 @@
 package icbm.classic.lib;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
+import icbm.classic.lib.capability.holder.ICapabilityHolderTile;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Series of helper classes for dealing with any kind of inventory
@@ -31,20 +37,21 @@ public class InventoryUtility
      * @param pos
      * @param destroy - will break the block
      */
-    public static List<EntityItem> dropBlockAsItem(World world, BlockPos pos, boolean destroy)
+    public static List<ItemEntity> dropBlockAsItem(Level world, BlockPos pos, boolean destroy)
     {
-        List<EntityItem> entities = new ArrayList();
-        if (!world.isRemote)
+        List<ItemEntity> entities = new ArrayList();
+        if (!world.isClientSide())
         {
-            IBlockState state = world.getBlockState(pos);
+            BlockState state = world.getBlockState(pos);
 
-            if (state != null && !state.getBlock().isAir(state, world, pos))
+            if (state != null && !state.isAir() && world instanceof ServerLevel serverLevel)
             {
-                List<ItemStack> items = state.getBlock().getDrops(world, pos, state, 0);
+                // PORT: 1.12 getDrops(world, pos, state, fortune=0) -> loot table drops without tool
+                List<ItemStack> items = Block.getDrops(state, serverLevel, pos, world.getBlockEntity(pos));
 
                 for (ItemStack itemStack : items)
                 {
-                    EntityItem entityItem = dropItemStack(world, new Pos(pos), itemStack, 10);
+                    ItemEntity entityItem = dropItemStack(world, new Pos(pos), itemStack, 10);
                     if (entityItem != null)
                     {
                         entities.add(entityItem);
@@ -53,27 +60,50 @@ public class InventoryUtility
             }
             if (destroy)
             {
-                world.setBlockToAir(pos);
+                world.removeBlock(pos, false);
             }
         }
         return entities;
     }
 
-    public static EntityItem dropItemStack(World world, IPos3D position, ItemStack itemStack, int delay)
+    public static ItemEntity dropItemStack(Level world, IPos3D position, ItemStack itemStack, int delay)
     {
         return dropItemStack(world, position, itemStack, delay, 0f);
     }
 
-    public static EntityItem dropItemStack(World world, IPos3D position, ItemStack itemStack, int delay, float randomAmount)
+    public static ItemEntity dropItemStack(Level world, IPos3D position, ItemStack itemStack, int delay, float randomAmount)
     {
         return dropItemStack(world, position.x(), position.y(), position.z(), itemStack, delay, randomAmount);
     }
 
-    public static void dropInventory(World world, BlockPos pos) {
-        final TileEntity tile = world.getTileEntity(pos);
-        if (tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+    public static void dropInventory(Level world, BlockPos pos) {
+        dropInventory(world, pos, null);
+    }
+
+    /**
+     * Drops the contents of the block entity's item handler at the position.
+     *
+     * @param world    containing the block
+     * @param pos      of the block
+     * @param oldState state of the block being removed, null to use the block entity's cached state
+     */
+    public static void dropInventory(Level world, BlockPos pos, @Nullable BlockState oldState) {
+        final BlockEntity tile = world.getBlockEntity(pos);
+        if (tile != null)
         {
-            final IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            // PORT: Block#onRemove runs after the chunk already holds the new state (air), so a lookup through
+            //  Level#getCapability(cap, pos, ctx) would read air and find no provider. Ask the still present
+            //  block entity directly like 1.12 did with TileEntity#getCapability.
+            final IItemHandler handler;
+            if (tile instanceof ICapabilityHolderTile holder)
+            {
+                handler = holder.getCapability(Capabilities.ItemHandler.BLOCK, null);
+            }
+            else
+            {
+                final BlockState state = oldState != null ? oldState : tile.getBlockState();
+                handler = world.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, tile, null);
+            }
             if(handler != null) {
 
                 final double x = pos.getX() + 0.5;
@@ -91,11 +121,11 @@ public class InventoryUtility
         }
     }
 
-    public static EntityItem dropItemStack(World world, double x, double y, double z, ItemStack itemStack, int delay, float randomAmount)
+    public static ItemEntity dropItemStack(Level world, double x, double y, double z, ItemStack itemStack, int delay, float randomAmount)
     {
         //TODO fire drop events if not already done by forge
         //TODO add banned item filtering, prevent creative mode only items from being dropped
-        if (world != null && !world.isRemote && !itemStack.isEmpty())
+        if (world != null && !world.isClientSide() && !itemStack.isEmpty())
         {
             double randomX = 0;
             double randomY = 0;
@@ -103,27 +133,22 @@ public class InventoryUtility
 
             if (randomAmount > 0)
             {
-                randomX = world.rand.nextFloat() * randomAmount + (1.0F - randomAmount) * 0.5D;
-                randomY = world.rand.nextFloat() * randomAmount + (1.0F - randomAmount) * 0.5D;
-                randomZ = world.rand.nextFloat() * randomAmount + (1.0F - randomAmount) * 0.5D;
+                randomX = world.random.nextFloat() * randomAmount + (1.0F - randomAmount) * 0.5D;
+                randomY = world.random.nextFloat() * randomAmount + (1.0F - randomAmount) * 0.5D;
+                randomZ = world.random.nextFloat() * randomAmount + (1.0F - randomAmount) * 0.5D;
             }
 
-            EntityItem entityitem = new EntityItem(world, x + randomX, y + randomY, z + randomZ, itemStack);
+            ItemEntity entityitem = new ItemEntity(world, x + randomX, y + randomY, z + randomZ, itemStack);
 
             if (randomAmount <= 0)
             {
-                entityitem.motionX = 0;
-                entityitem.motionY = 0;
-                entityitem.motionZ = 0;
+                entityitem.setDeltaMovement(Vec3.ZERO);
             }
 
-            if (itemStack.hasTagCompound())
-            {
-                entityitem.getItem().setTagCompound(itemStack.getTagCompound().copy());
-            }
+            // PORT: 1.12 copied the stack NBT onto the entity's stack here, 1.21 components already travel with the stack
 
-            entityitem.setPickupDelay(delay);
-            world.spawnEntity(entityitem);
+            entityitem.setPickUpDelay(delay);
+            world.addFreshEntity(entityitem);
             return entityitem;
         }
         return null;
@@ -140,7 +165,7 @@ public class InventoryUtility
     {
         if (!stackA.isEmpty() && !stackB.isEmpty())
         {
-            return stackA.isItemEqual(stackB) && doesStackNBTMatch(stackA, stackB) && stackA.getCount() == stackB.getCount();
+            return ItemStack.isSameItem(stackA, stackB) && doesStackNBTMatch(stackA, stackB) && stackA.getCount() == stackB.getCount();
         }
         return stackA.isEmpty() && stackB.isEmpty();
     }
@@ -156,7 +181,7 @@ public class InventoryUtility
     {
         if (!stackA.isEmpty() && !stackB.isEmpty())
         {
-            return stackA.isItemEqual(stackB) && doesStackNBTMatch(stackA, stackB);
+            return ItemStack.isSameItem(stackA, stackB) && doesStackNBTMatch(stackA, stackB);
         }
         return stackA.isEmpty() && stackB.isEmpty();
     }
@@ -171,13 +196,14 @@ public class InventoryUtility
      */
     public static boolean doesStackNBTMatch(ItemStack stackA, ItemStack stackB)
     {
-        return doTagsMatch(stackA.getTagCompound(), stackB.getTagCompound());
+        // PORT: stack NBT is now data components, compare the changes applied on top of the item defaults
+        return Objects.equals(stackA.getComponentsPatch(), stackB.getComponentsPatch());
     }
 
-    public static boolean doTagsMatch(final NBTTagCompound tag, final NBTTagCompound tag2)
+    public static boolean doTagsMatch(final CompoundTag tag, final CompoundTag tag2)
     {
-        boolean firstTagEmpty = tag == null || tag.hasNoTags();
-        boolean firstTagEmpty2 = tag2 == null || tag2.hasNoTags();
+        boolean firstTagEmpty = tag == null || tag.isEmpty();
+        boolean firstTagEmpty2 = tag2 == null || tag2.isEmpty();
         if (firstTagEmpty && firstTagEmpty2)
         {
             return true;
@@ -193,3 +219,4 @@ public class InventoryUtility
         return tag.equals(tag2);
     }
 }
+// PORTED

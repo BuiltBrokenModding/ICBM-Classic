@@ -1,19 +1,19 @@
 package icbm.classic.lib.network.lambda.entity;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.lib.network.TargetPoint;
 import icbm.classic.lib.network.lambda.PacketCodex;
-import net.minecraft.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * Codex for creating packets specific to TileEntity data
+ * Codex for creating packets specific to Entity data
  *
  * @param <R> raw object, usually a TileEntity or Entity that may contain stuff
  * @param <T> target type for read/write
@@ -21,7 +21,7 @@ import java.util.function.Function;
 public class PacketCodexEntity<R extends Entity, T> extends PacketCodex<R, T> {
 
     public PacketCodexEntity(ResourceLocation parent, String name, Function<R, T> converter) {
-        this(parent, new ResourceLocation(ICBMConstants.DOMAIN, name), converter);
+        this(parent, ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, name), converter);
     }
     public PacketCodexEntity(ResourceLocation parent, ResourceLocation name, Function<R, T> converter) {
         super(parent, name, converter);
@@ -31,14 +31,14 @@ public class PacketCodexEntity<R extends Entity, T> extends PacketCodex<R, T> {
         this(parent, name, (tile) -> (T) tile);
     }
     public PacketCodexEntity(ResourceLocation parent, String name) {
-        this(parent, new ResourceLocation(ICBMConstants.DOMAIN, name));
+        this(parent, ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, name));
     }
     public void sendToAllAround(R tile){
         double range = 200;
         // TODO consider getting player's chunk map instead
-        if(tile.world instanceof WorldServer) {
-            final WorldServer worldServer = (WorldServer) tile.world;
-            range = Optional.ofNullable(worldServer.getMinecraftServer())
+        if(tile.level() instanceof ServerLevel) {
+            final ServerLevel worldServer = (ServerLevel) tile.level();
+            range = Optional.ofNullable(worldServer.getServer())
                 .map(MinecraftServer::getPlayerList)
                 .map(PlayerList::getViewDistance)
                 .map(d -> d * 16 + 1.0)
@@ -48,18 +48,18 @@ public class PacketCodexEntity<R extends Entity, T> extends PacketCodex<R, T> {
     }
 
     public void sendToAllAround(R tile, double range){
-        super.sendToAllAround(tile, new NetworkRegistry.TargetPoint(
-            tile.world.provider.getDimension(),
-            tile.posX,
-            tile.posY,
-            tile.posZ,
+        super.sendToAllAround(tile, new TargetPoint(
+            tile.level().dimension(),
+            tile.getX(),
+            tile.getY(),
+            tile.getZ(),
             range
         ));
     }
 
     @Override
     public boolean isValid(Entity tile) {
-        return tile != null && tile.isEntityAlive();
+        return tile != null && tile.isAlive();
     }
 
     public PacketLambdaEntity<T> build(R tile) {

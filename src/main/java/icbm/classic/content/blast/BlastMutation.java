@@ -1,12 +1,12 @@
 package icbm.classic.content.blast;
 
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntityZombieVillager;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -15,39 +15,35 @@ public class BlastMutation extends Blast
     @Override
     public boolean doExplode(int callCount)
     {
-        if (!this.world().isRemote)
+        if (!this.world().isClientSide())
         {
-            final AxisAlignedBB bounds = new AxisAlignedBB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
-            final List<EntityLiving> entitiesNearby = world().getEntitiesWithinAABB(EntityLiving.class, bounds);
+            final AABB bounds = new AABB(location.x() - this.getBlastRadius(), location.y() - this.getBlastRadius(), location.z() - this.getBlastRadius(), location.x() + this.getBlastRadius(), location.y() + this.getBlastRadius(), location.z() + this.getBlastRadius());
+            final List<Mob> entitiesNearby = world().getEntitiesOfClass(Mob.class, bounds);
 
-            for (EntityLiving entity : entitiesNearby)
+            for (Mob entity : entitiesNearby)
             {
                 applyMutationEffect(entity);
             }
         }
-        return false;
+        // PORT: one-shot blast, return true so completeBlast runs and the blast leaves WorkTickingActionHandler.activeBlasts
+        return true;
     }
 
-    public static boolean applyMutationEffect(final EntityLivingBase entity)
+    public static boolean applyMutationEffect(final LivingEntity entity)
     {
-        if (entity instanceof EntityPig)
+        // PORT: 1.12 spawned a new entity by hand, 1.21 Mob#convertTo copies position, name and equipment then discards the old one
+        if (entity instanceof Pig pig)
         {
-            final EntityPigZombie newEntity = new EntityPigZombie(entity.world);
-            newEntity.preventEntitySpawning = true;
-            newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
-            entity.setDead();
-            entity.world.spawnEntity(newEntity);
-            return true;
+            return pig.convertTo(EntityType.ZOMBIFIED_PIGLIN, false) != null;
         }
-        else if (entity instanceof EntityVillager)
+        else if (entity instanceof Villager villager)
         {
-            final EntityZombieVillager newEntity = new EntityZombieVillager(entity.world);
-            newEntity.preventEntitySpawning = true;
-            newEntity.setPosition(entity.posX, entity.posY, entity.posZ);
-            newEntity.setForgeProfession(((EntityVillager) entity).getProfessionForge());
-            entity.setDead();
-            entity.world.spawnEntity(newEntity);
-            return true;
+            final ZombieVillager newEntity = villager.convertTo(EntityType.ZOMBIE_VILLAGER, false);
+            if (newEntity != null)
+            {
+                newEntity.setVillagerData(villager.getVillagerData());
+                return true;
+            }
         }
         return false;
     }
@@ -57,3 +53,4 @@ public class BlastMutation extends Blast
     {
     }
 }
+// PORTED

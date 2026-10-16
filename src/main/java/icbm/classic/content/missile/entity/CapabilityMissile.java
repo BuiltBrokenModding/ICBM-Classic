@@ -11,23 +11,19 @@ import icbm.classic.config.ConfigDebug;
 import icbm.classic.lib.CalculationHelpers;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
  */
-public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompound>
+public class CapabilityMissile implements IMissile, INBTSerializable<CompoundTag>
 {
     private final EntityMissile missile;
     private IMissileTarget targetData;
@@ -124,15 +120,15 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
 
         //Play audio
         ICBMSounds.MISSILE_LAUNCH.play(world(), x(), y(), z(),
-            1F, (1.0F + CalculationHelpers.randFloatRange(world().rand, 0.2F)) * 0.7F, true);
+            1F, (1.0F + CalculationHelpers.randFloatRange(world().random, 0.2F)) * 0.7F, true);
 
 
         if (ConfigDebug.DEBUG_MISSILE_LAUNCHES)
         {
             ICBMClassic.logger().info(
                 String.format("Missile(%s): Launch triggered of type[%s] starting from '%s' and aimed at `%s`",
-                    this.missile.getEntityId(),
-                    this.missile.getName(),
+                    this.missile.getId(),
+                    this.missile.getName().getString(),
                     Optional.ofNullable(this.getMissileSource()).map(Objects::toString).orElse("'null'"),
                     Optional.ofNullable(this.getTargetData()).map(Objects::toString).orElse("'null'")
                 )
@@ -141,58 +137,40 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
     }
 
     @Override
-    public World world()
+    public Level world()
     {
-        return missile != null ? missile.world : null;
+        return missile != null ? missile.level() : null;
     }
 
     @Override
     public double z()
     {
-        return missile != null ? missile.posZ : 0;
+        return missile != null ? missile.getZ() : 0;
     }
 
     @Override
     public double x()
     {
-        return missile != null ? missile.posX : 0;
+        return missile != null ? missile.getX() : 0;
     }
 
     @Override
     public double y()
     {
-        return missile != null ? missile.posY : 0;
+        return missile != null ? missile.getY() : 0;
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IMissile.class, new Capability.IStorage<IMissile>()
-                {
-                    @Nullable
-                    @Override
-                    public NBTBase writeNBT(Capability<IMissile> capability, IMissile instance, EnumFacing side)
-                    {
-                        return null;
-                    }
-
-                    @Override
-                    public void readNBT(Capability<IMissile> capability, IMissile instance, EnumFacing side, NBTBase nbt)
-                    {
-
-                    }
-                },
-                () -> new CapabilityMissile(null));
-    }
+    // PORT: register() (CapabilityManager storage) removed, not needed in NeoForge
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound saveData = new NBTTagCompound();
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag saveData = new CompoundTag();
         SAVE_LOGIC.save(this, saveData);
         return saveData;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
        SAVE_LOGIC.load(this, nbt);
     }
 
@@ -226,3 +204,4 @@ public class CapabilityMissile implements IMissile, INBTSerializable<NBTTagCompo
         return false;
     }
 }
+// PORTED

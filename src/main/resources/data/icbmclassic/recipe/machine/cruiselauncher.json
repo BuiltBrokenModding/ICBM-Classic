@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CLP",
+    "SBS"
+  ],
+  "key": {
+    "L": {
+      "item": "icbmclassic:launcherbase"
+    },
+    "B": {
+      "item": "icbmclassic:launcherscreen"
+    },
+    "S": {
+      "tag": "c:ingots/steel"
+    },
+    "C": {
+      "tag": "c:circuits/advanced"
+    },
+    "P": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:cruiselauncher",
+    "count": 1
+  }
+}

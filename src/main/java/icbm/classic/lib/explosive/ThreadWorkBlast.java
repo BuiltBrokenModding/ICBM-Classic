@@ -2,7 +2,7 @@ package icbm.classic.lib.explosive;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.thread.IThreadWork;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,3 +47,4 @@ public class ThreadWorkBlast implements IThreadWork
         onComplete.accept(editPositions);
     }
 }
+// PORTED

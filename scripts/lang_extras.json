@@ -1,0 +1,58 @@
+{
+  "en_us": {
+    "itemGroup.icbmclassic": "ICBM-Classic",
+    "entity.icbmclassic.block.gravity": "Flying Block",
+    "entity.icbmclassic.block.fragment": "Fragment",
+    "entity.icbmclassic.block.explosive": "Primed Explosive",
+    "entity.icbmclassic.explosive_missile": "Missile",
+    "entity.icbmclassic.generic_missile": "Missile",
+    "entity.icbmclassic.surface_to_air_missile": "Surface to Air Missile",
+    "entity.icbmclassic.held_item_missile": "Item Holder Missile",
+    "entity.icbmclassic.holder.explosion": "Explosion",
+    "entity.icbmclassic.beam.light": "Light Beam",
+    "entity.icbmclassic.item.grenade": "Grenade",
+    "entity.icbmclassic.cart.bomb": "Bomb Cart",
+    "entity.icbmclassic.holder.seat": "Missile Seat",
+    "entity.icbmclassic.bomb_droplet": "Bomblet",
+    "entity.icbmclassic.parachute": "Payload Parachute",
+    "entity.icbmclassic.balloon": "Payload Balloon",
+    "entity.icbmclassic.redmatter": "Red Matter",
+    "entity.icbmclassic.smoke": "Smoke",
+    "effect.icbmclassic.chemical": "Chemical",
+    "effect.icbmclassic.contagious": "Contagious",
+    "death.attack.icbm.redmatter.player": "%1$s was crushed by the immense mass of the mighty black hole whilst fighting %2$s.",
+    "death.attack.icbm.chemical.player": "%1$s suddenly started feeling not so well whilst fighting %2$s.",
+    "death.attack.icbm.contagious.player": "%1$s breathed in too much of the green stuff whilst fighting %2$s.",
+    "death.attack.icbmclassic:spikes.player": "%1$s died to spikes whilst fighting %2$s",
+    "death.attack.icbmclassic:projectile.player": "%1$s died to a projectile whilst fighting %2$s",
+    "death.attack.icbmclassic:bomblet.player": "%1$s got smacked in the head with a bomb whilst fighting %2$s",
+    "death.attack.icbmclassic:radioactive_block.player": "%1$s died to radioactive fallout whilst fighting %2$s",
+    "death.attack.missile": "%1$s was hit by a missile",
+    "death.attack.missile.player": "%1$s was hit by a missile whilst fighting %2$s",
+    "gui.icbmclassic:empTower.range": "EMP Range: \\n \\t  Radius in blocks of the EMP blast, limited by the max shown to the right.",
+    "info.icbmclassic:launcher.error.missile.invalid": "Firing Safety; Invalid missile",
+    "info.icbmclassic:launcher.error.missile.queued": "Firing Safety; Launch already queued",
+    "info.icbmclassic:launcher.error.group.empty": "Self Check; No launchers in group",
+    "tile.icbmclassic:explosives": "Explosives",
+    "tile.emptower.radio.success": "EMP Tower fired",
+    "death.attack.icbmclassic:projectile.item": "%1$s was shot by %2$s using %3$s",
+    "chat.launcher.toolTargetSet": "Target data transferred from tool.",
+    "chat.launcher.noTargetInTool": "Tool contains no target data!",
+    "message.defuser.nopower": "Defuse kit is out of power!",
+    "item.icbmclassic:laserDetonator.info": "Sends a radio signal to trigger devices with the target information"
+  },
+  "de_de": {
+    "item.icbmclassic:laserDetonator.info": "Zündet Raketen fern"
+  },
+  "ko_kr": {
+    "item.icbmclassic:laserDetonator.info": "대상 정보를 포함한 신호를 보내 장치를 작동시킵니다"
+  },
+  "zh_cn": {
+    "item.icbmclassic:laserDetonator.info": "远程发射导弹"
+  },
+  "override": {
+    "en_us": {
+      "info.icbmclassic:gps.set.all": "Transfered data: (%1$sx, %2$sy, %3$sz) W: %4$s"
+    }
+  }
+}

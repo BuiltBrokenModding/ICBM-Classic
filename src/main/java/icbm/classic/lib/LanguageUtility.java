@@ -1,16 +1,19 @@
 package icbm.classic.lib;
 
 import icbm.classic.ICBMClassic;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.ChatFormatting;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
@@ -43,7 +46,7 @@ public class LanguageUtility
         }
 
         //Get translation
-        String translation = I18n.translateToLocal(key);
+        String translation = translate(key);
         if (translation == null || translation.isEmpty())
         {
             if (ICBMClassic.runningAsDev)
@@ -53,6 +56,19 @@ public class LanguageUtility
             return key;
         }
         return translation;
+    }
+
+    /**
+     * PORT: 1.12 used the side independent {@code I18n.translateToLocal}. {@link Language} is loaded on both
+     * the dedicated server (en_us only) and the client (selected language).
+     *
+     * @param key to translate
+     * @return translation or null if the key is unknown
+     */
+    private static String translate(String key)
+    {
+        final Language language = Language.getInstance();
+        return language.has(key) ? language.getOrDefault(key) : null;
     }
 
     /**
@@ -78,7 +94,7 @@ public class LanguageUtility
         }
 
         //Get translation
-        String translation = I18n.translateToLocal(key);
+        String translation = translate(key);
         if (translation == null || translation.isEmpty())
         {
             if (ICBMClassic.runningAsDev)
@@ -128,9 +144,9 @@ public class LanguageUtility
      * @param key
      * @return
      */
-    public static ITextComponent getLocalChat(String key)
+    public static Component getLocalChat(String key)
     {
-        return new TextComponentTranslation(key);
+        return Component.translatable(key);
     }
 
     /**
@@ -140,11 +156,11 @@ public class LanguageUtility
      * @param player - player who will receive the message
      * @param key    - - translation key, Example 'tile.sometile.name' or 'tile.modname:sometile.name'
      */
-    public static void addChatToPlayer(EntityPlayer player, String key)
+    public static void addChatToPlayer(Player player, String key)
     {
         if (player != null)
         {
-            player.sendMessage(getLocalChat(key));
+            player.sendSystemMessage(getLocalChat(key));
         }
         else if (ICBMClassic.runningAsDev)
         {
@@ -235,33 +251,71 @@ public class LanguageUtility
         return str.substring(0, 1).toLowerCase() + str.substring(1, str.length());
     }
 
-    public static String posFormatted(Vec3d pos) {
-        return String.format("%.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
+    public static String posFormatted(Vec3 pos) {
+        // Locale.ROOT so comma decimal locales still produce text GuiFormatHelpers#parseVec3d can read back
+        return String.format(Locale.ROOT, "%.2f, %.2f, %.2f", pos.x, pos.y, pos.z);
     }
 
     public static String posFormatted(BlockPos pos) {
-        return String.format("%d, %d, %d", pos.getX(), pos.getX(), pos.getZ());
+        // PORT: 1.12 printed X twice (getX, getX, getZ)
+        return String.format(Locale.ROOT, "%d, %d, %d", pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static void outputLines(ITextComponent textComponent, Consumer<String> lines) {
+    public static void outputLines(Component textComponent, Consumer<String> lines) {
         final String formatted = buildToolTipString(textComponent);
         splitByLine(formatted, toolTipLineLength, lines);
     }
 
-    public static String buildToolTipString(ITextComponent textComponent) {
-        StringBuilder stringbuilder = new StringBuilder();
+    public static String buildToolTipString(Component textComponent) {
+        final StringBuilder stringbuilder = new StringBuilder();
 
-        for (ITextComponent itextcomponent : textComponent)
-        {
-            String s = itextcomponent.getUnformattedComponentText();
-
+        // PORT: 1.12 iterated each sibling with getUnformattedComponentText + Style#getFormattingCode
+        textComponent.visit((style, s) -> {
             if (!s.isEmpty())
             {
-                stringbuilder.append(itextcomponent.getStyle().getFormattingCode());
+                stringbuilder.append(getFormattingCode(style));
                 stringbuilder.append(s);
             }
-        }
+            return java.util.Optional.empty();
+        }, Style.EMPTY);
 
         return stringbuilder.toString();
     }
+
+    /**
+     * Rebuilds the legacy formatting code prefix of a style, replacement for 1.12 Style#getFormattingCode
+     *
+     * @param style to convert
+     * @return legacy formatting codes
+     */
+    public static String getFormattingCode(Style style) {
+        if (style == null || style.isEmpty()) {
+            return "";
+        }
+        final StringBuilder builder = new StringBuilder();
+        final TextColor color = style.getColor();
+        if (color != null) {
+            final ChatFormatting formatting = ChatFormatting.getByName(color.serialize());
+            if (formatting != null) {
+                builder.append(formatting);
+            }
+        }
+        if (style.isBold()) {
+            builder.append(ChatFormatting.BOLD);
+        }
+        if (style.isItalic()) {
+            builder.append(ChatFormatting.ITALIC);
+        }
+        if (style.isUnderlined()) {
+            builder.append(ChatFormatting.UNDERLINE);
+        }
+        if (style.isObfuscated()) {
+            builder.append(ChatFormatting.OBFUSCATED);
+        }
+        if (style.isStrikethrough()) {
+            builder.append(ChatFormatting.STRIKETHROUGH);
+        }
+        return builder.toString();
+    }
 }
+// PORTED

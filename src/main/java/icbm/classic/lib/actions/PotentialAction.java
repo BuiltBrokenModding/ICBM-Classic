@@ -7,8 +7,9 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
@@ -18,19 +19,19 @@ import javax.annotation.Nonnull;
  */
 public final class PotentialAction extends PotentialActionImp<PotentialAction> {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "basic");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "basic");
 
     @Setter() @Getter @Accessors(chain = true)
     private IActionData actionData;
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -45,3 +46,4 @@ public final class PotentialAction extends PotentialActionImp<PotentialAction> {
         return REG_NAME;
     }
 }
+// PORTED

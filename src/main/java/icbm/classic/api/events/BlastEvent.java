@@ -2,9 +2,9 @@ package icbm.classic.api.events;
 
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.explosion.IBlast;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.Event;
 
 /**
  *
@@ -25,7 +25,7 @@ public abstract class BlastEvent<B extends IBlast> extends Event
     /**
      * Source of the blast.
      */
-    public World world()
+    public Level world()
     {
         return blast.getWorld();
     }
@@ -69,3 +69,4 @@ public abstract class BlastEvent<B extends IBlast> extends Event
         return null;
     }
 }
+// PORTED

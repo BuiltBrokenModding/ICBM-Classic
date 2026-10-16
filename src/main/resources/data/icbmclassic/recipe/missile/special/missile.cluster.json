@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:circuits/basic"
+      }
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "c",
+    "e",
+    "m"
+  ],
+  "key": {
+    "m": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosive_missile",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:missile"
+      }
+    },
+    "e": {
+      "item": "minecraft:dispenser"
+    },
+    "c": {
+      "tag": "c:circuits/basic"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:cluster_missile",
+    "count": 1
+  }
+}

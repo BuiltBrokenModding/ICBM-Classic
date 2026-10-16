@@ -4,14 +4,14 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 /**
  * Stores data about position, side, and block projectile is inside
@@ -19,7 +19,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InGroundData implements INBTSerializable<NBTTagCompound> {
+public class InGroundData implements INBTSerializable<CompoundTag> {
     /**
      * Block position projectile is stuck inside
      */
@@ -28,30 +28,28 @@ public class InGroundData implements INBTSerializable<NBTTagCompound> {
     /**
      * Face of tile we are stuck inside
      */
-    private EnumFacing side;
+    private Direction side;
 
     /**
      * Block state we are stuck inside
      */
-    private IBlockState state;
+    private BlockState state;
 
-    public InGroundData(World world, RayTraceResult hit) {
+    public InGroundData(Level world, BlockHitResult hit) {
         this.pos = hit.getBlockPos();
-        this.side = hit.sideHit;
+        this.side = hit.getDirection();
         this.state = world.getBlockState(pos);
     }
 
-    public Material getMaterial() {
-        return state.getMaterial();
-    }
+    // PORT: getMaterial() removed, Material no longer exists. Use state.isAir() etc.
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -62,3 +60,4 @@ public class InGroundData implements INBTSerializable<NBTTagCompound> {
         .nodeBlockState("state", InGroundData::getState, InGroundData::setState)
         .base();
 }
+// PORTED

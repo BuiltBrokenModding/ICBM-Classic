@@ -6,10 +6,10 @@ import icbm.classic.lib.transform.region.Rectangle;
 import icbm.classic.prefab.gui.textbox.GuiTextFieldBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import lombok.Setter;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +18,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Text input bound to a data source. Client only.
+ */
 public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGuiComponent {
 
     private final static int ERROR_COLOR = ColorHelper.toARGB(255, 1, 1, 255);
@@ -31,7 +34,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     private Function<Output, String> parseOutput;
 
     // Error handling
-    private ITextComponent errorFeedback = null;
+    private Component errorFeedback = null;
 
     // Data watcher to know when we update our display text
     @Setter
@@ -45,22 +48,22 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     @Deprecated
     private final Rectangle boundBox;
 
-    public TextInput(int componentId, FontRenderer fontrendererObj, int x, int y, int width, int height) {
-        super(componentId, fontrendererObj, x, y, width, height);
+    public TextInput(int componentId, Font font, int x, int y, int width, int height) {
+        super(componentId, font, x, y, width, height);
         boundBox = new Rectangle(x, y, x + width + 1, y + height + 1); //TODO replace with internal check using data stored
     }
 
-    public static TextInput<Vec3d> vec3dField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
-                                              Supplier<Vec3d> getter, Consumer<Vec3d> setter, Consumer<Vec3d> network
+    public static TextInput<Vec3> vec3dField(int id, Font fontRenderer, int x, int y, int width, int height,
+                                              Supplier<Vec3> getter, Consumer<Vec3> setter, Consumer<Vec3> network
     ) {
-        final TextInput<Vec3d> fieldTarget = new TextInput<Vec3d>(id, fontRenderer, x, y, width, height);
+        final TextInput<Vec3> fieldTarget = new TextInput<Vec3>(id, fontRenderer, x, y, width, height);
         fieldTarget.simpleHandler(getter, setter, GuiFormatHelpers::parseVec3d);
         fieldTarget.setParseOutput(LanguageUtility::posFormatted);
         fieldTarget.setOnSourceChange(network);
         return fieldTarget;
     }
 
-    public static TextInput<Integer> intField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
+    public static TextInput<Integer> intField(int id, Font fontRenderer, int x, int y, int width, int height,
                                               Supplier<Integer> getter, Consumer<Integer> setter, Consumer<Integer> network
     ) {
         final TextInput<Integer> fieldTarget = new TextInput<Integer>(id, fontRenderer, x, y, width, height);
@@ -69,7 +72,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         return fieldTarget;
     }
 
-    public static TextInput<String> textField(int id, FontRenderer fontRenderer, int x, int y, int width, int height,
+    public static TextInput<String> textField(int id, Font fontRenderer, int x, int y, int width, int height,
                                               Supplier<String> getter, Consumer<String> setter, Consumer<String> network
     ) {
         final TextInput<String> fieldTarget = new TextInput<String>(id, fontRenderer, x, y, width, height);
@@ -86,7 +89,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
             // Handle string changes, but source didn't change... reset to source
             //  this likely happens when user inputs data but the source didn't take it
             //  examples of this could be numeric values greater than allowed
-            if(!Objects.equals(previousText, getText())) {
+            if(!Objects.equals(previousText, getValue())) {
                 setTextFromWatcher();
             }
         }
@@ -108,14 +111,17 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         else {
             previousText = Optional.ofNullable(previousData).map(Object::toString).orElse("");
         }
-        setText(previousText);
+        setValue(previousText);
     }
 
     @Override
     public void setFocused(boolean isFocusedIn) {
+        // PORT: 1.12 compared after calling super, which made the callback unreachable. Compare against the
+        //  state before the change so focus loss commits the value as intended.
+        final boolean wasFocused = this.isFocused();
         super.setFocused(isFocusedIn);
 
-        if(isFocusedIn == this.isFocused()) {
+        if(isFocusedIn == wasFocused) {
             return;
         }
 
@@ -132,7 +138,7 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         }
 
         // Handle source change caused by user
-        if(!isFocusedIn && detectForChange() && onSourceChange != null) {
+        if(!isFocusedIn && sourceWatcher != null && detectForChange() && onSourceChange != null) {
             // Notify systems of the change, this often triggers network calls
             onSourceChange.accept(previousData);
         }
@@ -143,9 +149,9 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         focusChangedCallback = (state) -> {
             if(!state) {
                 // Parse input from user and store into tile client side
-                final String error = validator.apply(getText(), setter);
+                final String error = validator.apply(getValue(), setter);
                 if(error != null) {
-                    errorFeedback = new TextComponentTranslation(error);
+                    errorFeedback = Component.translatable(error);
                 }
             }
         };
@@ -156,17 +162,17 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         sourceWatcher = (Supplier<Output>) getter;
         focusChangedCallback = (state) -> {
             if(!state) {
-                setter.accept(getText());
+                setter.accept(getValue());
             }
         };
         return (TextInput<String>) this;
     }
 
     @Override
-    public void drawTextBox() {
-        super.drawTextBox();
-        if (this.getVisible() && this.getEnableBackgroundDrawing() && isErrored()) {
-            drawHorizontalLine(this.x, this.x + this.width, this.y + this.height, ERROR_COLOR);
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+        if (this.isVisible() && this.hasBorder() && isErrored()) { // PORT-CHECK: hasBorder() mirrors EditBox border flag
+            graphics.hLine(this.getX(), this.getX() + this.width, this.getY() + this.height, ERROR_COLOR);
         }
     }
 
@@ -176,15 +182,15 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
     }
 
     @Override
-    public ITextComponent getTooltip() {
+    public Component getToolTip() {
         return getErrorFeedback();
     }
 
-    public ITextComponent getErrorFeedback() {
+    public Component getErrorFeedback() {
         return errorFeedback;
     }
 
-    public void setError(ITextComponent error) {
+    public void setError(Component error) {
         this.errorFeedback = error;
     }
 
@@ -192,3 +198,4 @@ public class TextInput<Output> extends GuiTextFieldBase implements IToolTip, IGu
         return errorFeedback != null;
     }
 }
+// PORTED

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "iwi",
+    "whw",
+    "iwi"
+  ],
+  "key": {
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "tag": "c:ingots/steel"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:launcher_connector",
+    "count": 4
+  }
+}

@@ -6,8 +6,8 @@ import icbm.classic.api.radio.messages.IIncomingMissileMessage;
 import icbm.classic.content.blocks.launcher.status.LaunchedWithMissile;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import lombok.Data;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 @Data
 public class IncomingMissileMessage implements IIncomingMissileMessage {
@@ -16,14 +16,15 @@ public class IncomingMissileMessage implements IIncomingMissileMessage {
     private final boolean trigger;
 
     @Override
-    public Vec3d getIntercept(double x, double y, double z, double velocity) {
+    public Vec3 getIntercept(double x, double y, double z, double velocity) {
         if(missile != null && missile.getMissileEntity() != null) {
             final Entity entity = missile.getMissileEntity();
             final int maxTime = 20;
             for(int time = 1; time <= maxTime; time++) { //TODO replace with alg equation that can calculate fn(t)
-                final double tX = entity.posX + entity.motionX * time;
-                final double tY = entity.posY + entity.motionY * time;
-                final double tZ = entity.posZ + entity.motionZ * time;
+                final Vec3 motion = entity.getDeltaMovement();
+                final double tX = entity.getX() + motion.x * time;
+                final double tY = entity.getY() + motion.y * time;
+                final double tZ = entity.getZ() + motion.z * time;
 
                 final double mag = Math.sqrt(tX * tX + tY * tY + tZ * tZ); //TODO remove need for sqrt
 
@@ -37,7 +38,7 @@ public class IncomingMissileMessage implements IIncomingMissileMessage {
     }
 
     @Override
-    public Vec3d getTarget() {
+    public Vec3 getTarget() {
         if(missile != null) {
             return missile.getVec3d();
         }
@@ -60,3 +61,4 @@ public class IncomingMissileMessage implements IIncomingMissileMessage {
         }
     }
 }
+// PORTED

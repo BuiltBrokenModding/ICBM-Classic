@@ -1,12 +1,12 @@
 package icbm.classic.api.caps;
 
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * Capability used to access GPS data from an item
@@ -18,15 +18,15 @@ public interface IGPSData {
      *
      * @param position to set, can be set to null to clear
      */
-    void setPosition(@Nullable Vec3d position);
+    void setPosition(@Nullable Vec3 position);
 
     /**
      * Sets the dimension
      *
      * @param world to set, can be set to null to clear
      */
-    default void setWorld(World world) {
-        setWorld(Optional.ofNullable(world).map(w -> w.provider).map(WorldProvider::getDimension).orElse(null));
+    default void setWorld(@Nullable Level world) {
+        setWorld(world != null ? world.dimension() : null);
     }
 
     /**
@@ -34,7 +34,7 @@ public interface IGPSData {
      *
      * @param dimension to set, can be set to null to clear
      */
-    void setWorld(@Nullable Integer dimension);
+    void setWorld(@Nullable ResourceKey<Level> dimension);
 
     /**
      * Gets the position component of the GPS data
@@ -42,18 +42,21 @@ public interface IGPSData {
      * @return position
      */
     @Nullable
-    Vec3d getPosition();
+    Vec3 getPosition();
 
     /**
      * Gets the world instance, if client side use {@link #getWorldId()}
      *
-     * @return world
+     * @return world, server side only
      */
     @Nullable
-    default World getWorld() {
-        final Integer id = getWorldId();
+    default Level getWorld() {
+        final ResourceKey<Level> id = getWorldId();
         if(id != null) {
-            return DimensionManager.getWorld(id);
+            final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if(server != null) {
+                return server.getLevel(id);
+            }
         }
         return null;
     }
@@ -64,5 +67,6 @@ public interface IGPSData {
      * @return id
      */
     @Nullable
-    Integer getWorldId();
+    ResourceKey<Level> getWorldId();
 }
+// PORTED

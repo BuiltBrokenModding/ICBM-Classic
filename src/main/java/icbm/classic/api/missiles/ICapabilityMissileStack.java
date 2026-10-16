@@ -1,6 +1,6 @@
 package icbm.classic.api.missiles;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Version of capability to apply specific to ItemStacks for additional features
@@ -24,3 +24,4 @@ public interface ICapabilityMissileStack extends ICapabilityMissileBuilder
         return ItemStack.EMPTY;
     }
 }
+// PORTED

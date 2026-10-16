@@ -1,42 +1,67 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "icbmclassic:frame_middle"
-  },
   "variants": {
-    "inventory": {
-      "model": "icbmclassic:frame_middle"
+    "rotation=down,type=top": {
+      "model": "icbmclassic:block/frame_top"
     },
-    "type": {
-      "top" :
-      {
-        "model": "icbmclassic:frame_top"
-      },
-      "middle" :
-      {
-        "model": "icbmclassic:frame_middle"
-      },
-      "bottom" :
-      {
-        "model": "icbmclassic:frame_bottom"
-      }
+    "rotation=up,type=top": {
+      "model": "icbmclassic:block/frame_top"
     },
-    "rotation": {
-      "up": {},
-      "down": {},
-      "north": {
-        "y": 0
-      },
-      "south": {
-        "y": 180
-      },
-      "east": {
-        "y": 90
-      },
-      "west": {
-        "y": 270
-      }
+    "rotation=north,type=top": {
+      "model": "icbmclassic:block/frame_top"
+    },
+    "rotation=south,type=top": {
+      "model": "icbmclassic:block/frame_top",
+      "y": 180
+    },
+    "rotation=west,type=top": {
+      "model": "icbmclassic:block/frame_top",
+      "y": 270
+    },
+    "rotation=east,type=top": {
+      "model": "icbmclassic:block/frame_top",
+      "y": 90
+    },
+    "rotation=down,type=middle": {
+      "model": "icbmclassic:block/frame_middle"
+    },
+    "rotation=up,type=middle": {
+      "model": "icbmclassic:block/frame_middle"
+    },
+    "rotation=north,type=middle": {
+      "model": "icbmclassic:block/frame_middle"
+    },
+    "rotation=south,type=middle": {
+      "model": "icbmclassic:block/frame_middle",
+      "y": 180
+    },
+    "rotation=west,type=middle": {
+      "model": "icbmclassic:block/frame_middle",
+      "y": 270
+    },
+    "rotation=east,type=middle": {
+      "model": "icbmclassic:block/frame_middle",
+      "y": 90
+    },
+    "rotation=down,type=bottom": {
+      "model": "icbmclassic:block/frame_bottom"
+    },
+    "rotation=up,type=bottom": {
+      "model": "icbmclassic:block/frame_bottom"
+    },
+    "rotation=north,type=bottom": {
+      "model": "icbmclassic:block/frame_bottom"
+    },
+    "rotation=south,type=bottom": {
+      "model": "icbmclassic:block/frame_bottom",
+      "y": 180
+    },
+    "rotation=west,type=bottom": {
+      "model": "icbmclassic:block/frame_bottom",
+      "y": 270
+    },
+    "rotation=east,type=bottom": {
+      "model": "icbmclassic:block/frame_bottom",
+      "y": 90
     }
   }
 }
-

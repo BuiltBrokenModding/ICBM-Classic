@@ -1,58 +1,41 @@
 package icbm.classic.lib.capability.emp;
 
 import icbm.classic.ICBMConstants;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IEMPReceiver;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Creeper;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
+/**
+ * PORT: 1.12 registered the capability with CapabilityManager and attached wrappers to item entities and
+ * creepers with AttachCapabilitiesEvent. The capabilities are declared in {@link ICBMClassicAPI}
+ * (EMP_ENTITY/BLOCK/ITEM_CAPABILITY) and vanilla providers are registered in {@link #registerCapabilities}.
+ * The wrappers held no state, so a new instance is returned for each lookup.
+ */
 public class CapabilityEMP
 {
-    @CapabilityInject(IEMPReceiver.class)
-    public static Capability<IEMPReceiver> EMP = null;
+    /** @deprecated alias for {@link ICBMClassicAPI#EMP_ENTITY_CAPABILITY}, kept for code comparing against the 1.12 field */
+    @Deprecated
+    public static final EntityCapability<IEMPReceiver, Void> EMP = ICBMClassicAPI.EMP_ENTITY_CAPABILITY;
 
-    public static final ResourceLocation ENTITY_ITEM_CAP = new ResourceLocation(ICBMConstants.DOMAIN, "emp.wrapper.entity.item");
-    public static final ResourceLocation CREEPER_CAP = new ResourceLocation(ICBMConstants.DOMAIN, "emp.wrapper.entity.creeper");
+    public static final ResourceLocation ENTITY_ITEM_CAP = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "emp.wrapper.entity.item");
+    public static final ResourceLocation CREEPER_CAP = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "emp.wrapper.entity.creeper");
 
-    public static void register()
+    /**
+     * Registers EMP handling for vanilla objects, called from CapabilityReg on the mod bus.
+     * <p>
+     * 1.12 only attached EMP wrappers to item entities and creepers. Energy storages (tiles, entities, items)
+     * are drained by {@link icbm.classic.content.actions.emp.ActionEmpArea} through the energy system and
+     * inventories are wrapped on demand by {@link CapabilityEmpInventory}, neither needs a registered provider.
+     */
+    public static void registerCapabilities(RegisterCapabilitiesEvent event)
     {
-        CapabilityManager.INSTANCE.register(IEMPReceiver.class, new Capability.IStorage<IEMPReceiver>()
-                {
-                    @Override
-                    public NBTBase writeNBT(Capability<IEMPReceiver> capability, IEMPReceiver instance, EnumFacing side)
-                    {
-                        return null;
-                    }
-
-                    @Override
-                    public void readNBT(Capability<IEMPReceiver> capability, IEMPReceiver instance, EnumFacing side, NBTBase nbt)
-                    {
-
-                    }
-                },
-                () -> new CapabilityEmpChecker());
-    }
-
-    @SubscribeEvent
-    public static void attachCapabilityItem(AttachCapabilitiesEvent<Entity> event)
-    {
-        if (event.getObject() instanceof EntityItem)
-        {
-            event.addCapability(ENTITY_ITEM_CAP, new CapabilityEmpEntityItem((EntityItem) event.getObject()));
-        }
-        else if (event.getObject() instanceof EntityCreeper)
-        {
-            event.addCapability(CREEPER_CAP, new CapabilityEmpCreeper((EntityCreeper) event.getObject()));
-        }
+        event.registerEntity(ICBMClassicAPI.EMP_ENTITY_CAPABILITY, EntityType.ITEM, (entity, ctx) -> new CapabilityEmpEntityItem((ItemEntity) entity));
+        event.registerEntity(ICBMClassicAPI.EMP_ENTITY_CAPABILITY, EntityType.CREEPER, (entity, ctx) -> new CapabilityEmpCreeper((Creeper) entity));
     }
 }
+// PORTED

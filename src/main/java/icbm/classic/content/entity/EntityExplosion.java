@@ -10,17 +10,20 @@ import icbm.classic.content.blast.Blast;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.content.missile.logic.source.cause.EntityCause;
 import icbm.classic.lib.NBTConstants;
-import io.netty.buffer.ByteBuf;
+import icbm.classic.lib.actions.WorkTickingActionHandler;
 import lombok.Getter;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.EntityType;
+import icbm.classic.content.reg.EntityReg;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import java.lang.reflect.Constructor;
 
@@ -30,20 +33,26 @@ import java.lang.reflect.Constructor;
  * @author Calclavia
  */
 @Deprecated //TODO replace all usage with more focused entities per explosive
-public class EntityExplosion extends Entity implements IEntityAdditionalSpawnData
+public class EntityExplosion extends Entity implements IEntityWithComplexSpawn
 {
     @Getter
     private IAction blast;
     private double blastYOffset = 0;
 
-    public EntityExplosion(World world)
+    public EntityExplosion(EntityType<? extends EntityExplosion> type, Level world)
     {
-        super(world);
-        this.preventEntitySpawning = true;
-        this.noClip = true;
-        this.setSize(0.98F, 0.98F);
-        this.ignoreFrustumCheck = true;
-        this.ticksExisted = 0;
+        super(type, world);
+        // PORT: 1.12 parked non-movable blasts at y=-1 below the world, since 1.18 that is buildable space so the
+        // invisible controller must not block block placement
+        this.blocksBuilding = false;
+        this.noPhysics = true;
+        this.noCulling = true;
+        this.tickCount = 0;
+    }
+
+    public EntityExplosion(Level world)
+    {
+        this(EntityReg.EXPLOSION.get(), world);
     }
 
     public EntityExplosion(Blast blast)
@@ -57,26 +66,26 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public String getName()
+    public Component getName()
     {
-        return "Explosion[" + blast + "]";
+        return Component.literal("Explosion[" + blast + "]");
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(RegistryFriendlyByteBuf data)
     {
-        ByteBufUtils.writeUTF8String(data, blast.getActionData().getRegistryKey().toString());
+        data.writeUtf(blast.getActionData().getRegistryKey().toString());
         data.writeDouble(blastYOffset);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(RegistryFriendlyByteBuf data)
     {
-        constructBlast(ByteBufUtils.readUTF8String(data), data.readDouble());
+        constructBlast(data.readUtf(), data.readDouble());
     }
 
     @Override
-    protected void entityInit()
+    protected void defineSynchedData(SynchedEntityData.Builder builder)
     {
     }
 
@@ -85,89 +94,92 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
      * spiders and wolves to prevent them from trampling crops
      */
     @Override
-    protected boolean canTriggerWalking()
+    protected Entity.MovementEmission getMovementEmission()
     {
-        return false;
+        return Entity.MovementEmission.NONE;
     }
 
     /** Returns true if other Entities should be prevented from moving through this Entity. */
     @Override
-    public boolean canBeCollidedWith()
+    public boolean isPickable()
     {
         return false;
     }
 
     /** Called to update the entity's position/logic. */
     @Override
-    public void onUpdate()
+    public void tick()
     {
         if (!(this.getBlast() instanceof IBlastTickable) || ((IBlastTickable)this.getBlast()).getEntity() != this || ((IBlastTickable)this.getBlast()).isCompleted())
         {
-            this.setDead();
+            this.discard();
             return;
         }
 
-        if (this.getBlast() instanceof IBlastMovable && (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0))
+        if (this.getBlast() instanceof IBlastMovable && !this.getDeltaMovement().equals(Vec3.ZERO))
         {
             //Slow entity down
-            this.motionX *= .98;
-            this.motionY *= .98;
-            this.motionZ *= .98;
+            Vec3 motion = this.getDeltaMovement().scale(.98);
 
             //Normalize
-            float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
-            this.motionX /= (double) speed;
-            this.motionY /= (double) speed;
-            this.motionZ /= (double) speed;
+            float speed = (float) motion.length();
+            motion = motion.scale(1.0 / speed);
 
             //Apply Speed
             speed = Math.min(speed, 0.5f);
-            this.motionX *= (double) speed;
-            this.motionY *= (double) speed;
-            this.motionZ *= (double) speed;
+            motion = motion.scale(speed);
+            this.setDeltaMovement(motion);
 
-            //Move box
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(motionX, motionY, motionZ));
-
-            //Reset position based on box
-            this.posX = (this.getEntityBoundingBox().minX + this.getEntityBoundingBox().maxX) / 2.0D;
-            this.posY = (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D;
-            this.posZ = (this.getEntityBoundingBox().minZ + this.getEntityBoundingBox().maxZ) / 2.0D;
+            //Move, 1.12 offset the bounding box then centered the position on it
+            this.setPos(this.getX() + motion.x, this.getY() + motion.y, this.getZ() + motion.z);
 
             //Update blast
-            ((IBlastMovable) getBlast()).onPositionUpdate(posX, posY + blastYOffset, posZ);
+            ((IBlastMovable) getBlast()).onPositionUpdate(getX(), getY() + blastYOffset, getZ());
         }
 
-        if (blast instanceof IBlastTickable && ((IBlastTickable) blast).onBlastTick(ticksExisted))
+        if (blast instanceof IBlastTickable && ((IBlastTickable) blast).onBlastTick(tickCount))
         {
-            setDead();
+            discard();
         }
     }
 
     @Override
-    public void move(MoverType type, double p_70091_1_, double p_70091_3_, double p_70091_5_)
+    public void move(MoverType type, Vec3 movement)
     {
         //Remove default movement
     }
 
+    @Override
+    public void onRemovedFromLevel()
+    {
+        super.onRemovedFromLevel();
+        // PORT: an explosion unloaded with its chunk rebuilds a new Blast from save on load, drop the old one from the
+        // static tracker so it does not leak until the server stops. Client guard: in single player both threads share
+        // the static, unsynchronised list. Removing a blast that is not tracked does nothing.
+        if (!level().isClientSide() && blast instanceof Blast b && b.getEntity() == this)
+        {
+            WorkTickingActionHandler.remove(b);
+        }
+    }
+
     /** (abstract) Protected helper method to read subclass entity data from NBT. */
     @Override
-    protected void readEntityFromNBT(NBTTagCompound nbt)
+    protected void readAdditionalSaveData(CompoundTag nbt)
     {
         try
         {
-            NBTTagCompound blastSave = nbt.getCompoundTag(NBTConstants.BLAST);
+            CompoundTag blastSave = nbt.getCompound(NBTConstants.BLAST);
             this.blastYOffset = nbt.getDouble(NBTConstants.BLAST_POS_Y);
             if (getBlast() == null)
             {
-                if (blastSave.hasKey(NBTConstants.EX_ID))
+                if (blastSave.contains(NBTConstants.EX_ID))
                 {
                     constructBlast(blastSave.getString(NBTConstants.EX_ID), blastYOffset);
                 }
                 else
                 {
                     ICBMClassic.logger().error("EntityExplosion: Failed to read save state for explosion!");
-                    setDead();
+                    discard();
                 }
             }
 
@@ -184,23 +196,23 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
 
     /** (abstract) Protected helper method to write subclass entity data to NBT. */
     @Override
-    protected void writeEntityToNBT(NBTTagCompound nbt)
+    protected void addAdditionalSaveData(CompoundTag nbt)
     {
         if (getBlast() != null) //TODO add save/load mechanic to bypass need for ex data
         {
             //Save position
-            nbt.setDouble(NBTConstants.BLAST_POS_Y, blastYOffset);
+            nbt.putDouble(NBTConstants.BLAST_POS_Y, blastYOffset);
 
             //Save explosive data
-            NBTTagCompound blastSave = new NBTTagCompound();
+            CompoundTag blastSave = new CompoundTag();
             if (getBlast() instanceof IBlastRestore)
             {
                 ((IBlastRestore) getBlast()).save(blastSave);
             }
-            blastSave.setString(NBTConstants.EX_ID, getBlast().getActionData().getRegistryKey().toString());
+            blastSave.putString(NBTConstants.EX_ID, getBlast().getActionData().getRegistryKey().toString());
 
             //Encode into NBT
-            nbt.setTag(NBTConstants.BLAST, blastSave);
+            nbt.put(NBTConstants.BLAST, blastSave);
         }
     }
 
@@ -210,7 +222,7 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         if (blast != null)
         {
             ((Blast) this.blast).setEntityController(this);
-            this.setPosition(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
+            this.setPos(blast.location.x(), !blast.isMovable() ? -1 : blast.y(), blast.location.z());
             blastYOffset = blast.isMovable() ? 0 : blast.y() + 1;
         }
     }
@@ -220,17 +232,17 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
      */
     private void constructBlast(String exId, double yOffset)
     {
-        ResourceLocation id = new ResourceLocation(exId);
+        ResourceLocation id = ResourceLocation.parse(exId);
         IExplosiveData exData = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(id, true);
 
         if(exData == null) {
             ICBMClassic.logger().error("EntityExplosion: Failed to locate explosive with id '{}'!", id);
-            this.setDead();
+            this.discard();
             return;
         }
 
-        ActionSource actionSource = new ActionSource(world, new Vec3d(posX, posY + yOffset, posZ), new EntityCause(this)); //TODO provide additional cause information such as fire, lighter, player, etc
-        blast = exData.create(world, posX, posY + yOffset, posZ, actionSource, null);
+        ActionSource actionSource = new ActionSource(level(), new Vec3(getX(), getY() + yOffset, getZ()), new EntityCause(this)); //TODO provide additional cause information such as fire, lighter, player, etc
+        blast = exData.create(level(), getX(), getY() + yOffset, getZ(), actionSource, null);
 
         if(blast instanceof IBlastInit) {
             ((IBlastInit) blast).setEntityController(this);
@@ -238,3 +250,4 @@ public class EntityExplosion extends Entity implements IEntityAdditionalSpawnDat
         }
     }
 }
+// PORTED

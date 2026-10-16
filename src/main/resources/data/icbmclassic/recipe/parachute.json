@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "CGC",
+    "SSS"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:white_carpet"
+    },
+    "G": {
+      "item": "minecraft:slime_ball"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:parachute",
+    "count": 4
+  }
+}

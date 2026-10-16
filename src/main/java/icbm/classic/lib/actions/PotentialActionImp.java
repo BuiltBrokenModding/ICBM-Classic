@@ -18,12 +18,13 @@ import icbm.classic.lib.tile.ITick;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +32,7 @@ import javax.annotation.Nullable;
 /**
  * Pre-built action for general purpose implementation where all components are known.
  */
-public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> implements IPotentialAction, ITick, INBTSerializable<NBTTagCompound> {
+public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> implements IPotentialAction, ITick, INBTSerializable<CompoundTag> {
 
     @Getter @Setter(AccessLevel.PRIVATE)
     private ICondition preCheck;
@@ -39,8 +40,12 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
     @Getter @Setter
     private IActionFieldProvider fieldProvider;
 
+    /** True when {@link #preCheck} was loaded from save and has not been given the field provider yet */
+    private boolean preCheckNeedsInit = false;
+
     public SELF withCondition(ICondition check) {
         this.preCheck = check;
+        this.preCheckNeedsInit = false;
         if(check != null) {
             check.init(fieldProvider);
         }
@@ -50,14 +55,38 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
     public SELF withProvider(IActionFieldProvider provider) {
         this.fieldProvider = provider;
         if(preCheck != null) {
+            this.preCheckNeedsInit = false;
             preCheck.init(fieldProvider);
         }
         return (SELF) this;
     }
 
+    /**
+     * PORT: 1.12 never init'd a pre_check loaded from save, so a reloaded cluster missile reported a missing
+     * field forever and never deployed. Init it on first server use. Kept server only on purpose: the client copy
+     * of a missile (spawn data) must stay blocked, it would otherwise run the action and remove itself.
+     */
+    private void setLoadedPreCheck(ICondition check) {
+        this.preCheck = check;
+        this.preCheckNeedsInit = check != null;
+    }
+
+    private void initLoadedPreCheck() {
+        if(preCheckNeedsInit) {
+            preCheckNeedsInit = false;
+            if(preCheck != null) {
+                preCheck.init(fieldProvider);
+            }
+        }
+    }
+
     @Nonnull
     @Override
-    public IActionStatus checkAction(World world, double x, double y, double z, @Nullable IActionCause cause) {
+    public IActionStatus checkAction(Level world, double x, double y, double z, @Nullable IActionCause cause) {
+        if(world != null && !world.isClientSide()) {
+            initLoadedPreCheck();
+        }
+
         // Edge case: lazy init failed to get action data
         if(this.getActionData() == null) {
             return ActionResponses.MISSING_ACTION_DATA;
@@ -65,18 +94,18 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
         return preCheck == null ? ActionResponses.READY : preCheck.getCondition();
     }
 
-    public IActionStatus doAction(TileEntity tile, @Nullable IActionCause cause) {
-        final IActionCause selfCause = new CausedByBlock(tile.getWorld(), tile.getPos(), tile.getWorld().getBlockState(tile.getPos())).setPreviousCause(cause);
-        return doAction(tile.getWorld(), tile.getPos(), selfCause);
+    public IActionStatus doAction(BlockEntity tile, @Nullable IActionCause cause) {
+        final IActionCause selfCause = new CausedByBlock(tile.getLevel(), tile.getBlockPos(), tile.getBlockState()).setPreviousCause(cause);
+        return doAction(tile.getLevel(), tile.getBlockPos(), selfCause);
     }
 
-    public IActionStatus doAction(World world, BlockPos pos, @Nullable IActionCause cause) {
+    public IActionStatus doAction(Level world, BlockPos pos, @Nullable IActionCause cause) {
         return doAction(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, cause);
     }
 
     @Nonnull
     @Override
-    public IActionStatus doAction(World world, double x, double y, double z, @Nullable IActionCause cause) {
+    public IActionStatus doAction(Level world, double x, double y, double z, @Nullable IActionCause cause) {
         final IActionData actionData = this.getActionData();
 
         // Edge case: lazy init failed to get action data
@@ -100,29 +129,31 @@ public abstract class PotentialActionImp<SELF extends PotentialActionImp<SELF>> 
             preCheck.reset();
         }
 
-        final IActionSource actionSource = new ActionSource(world, new Vec3d(x, y, z), causeToUse);
+        final IActionSource actionSource = new ActionSource(world, new Vec3(x, y, z), causeToUse);
         return ICBMClassicAPI.ACTION_LISTENER.runAction(actionData.create(world, x, y, z, actionSource, this.fieldProvider));
     }
 
     @Override
     public void update(int tick, boolean isServer) {
         if(isServer && preCheck != null) {
+            initLoadedPreCheck();
             preCheck.onTick();
         }
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<PotentialActionImp> SAVE_LOGIC = new NbtSaveHandler<PotentialActionImp>()
         .mainRoot()
-        /* */.nodeBuildableObject("pre_check", () -> ICBMClassicAPI.CONDITION_REGISTRY, PotentialActionImp::getPreCheck, PotentialActionImp::setPreCheck)
+        /* */.nodeBuildableObject("pre_check", () -> ICBMClassicAPI.CONDITION_REGISTRY, PotentialActionImp::getPreCheck, PotentialActionImp::setLoadedPreCheck)
         .base();
 }
+// PORTED

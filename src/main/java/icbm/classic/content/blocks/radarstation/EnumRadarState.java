@@ -1,8 +1,8 @@
 package icbm.classic.content.blocks.radarstation;
 
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.StringRepresentable;
 
-public enum EnumRadarState implements IStringSerializable {
+public enum EnumRadarState implements StringRepresentable {
     ON,
     OFF,
     WARNING,
@@ -16,7 +16,13 @@ public enum EnumRadarState implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getSerializedName() {
         return name().toLowerCase();
     }
+
+    /** 1.12 name */
+    public String getName() {
+        return getSerializedName();
+    }
 }
+// PORTED

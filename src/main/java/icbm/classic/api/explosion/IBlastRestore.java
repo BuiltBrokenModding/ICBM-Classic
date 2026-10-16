@@ -1,6 +1,6 @@
 package icbm.classic.api.explosion;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 /** Version of the blast that can be restored from save
  * Created by Dark(DarkGuardsman, Robin) on 2/10/2019.
@@ -10,7 +10,8 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public interface IBlastRestore extends IBlast
 {
-    void load(NBTTagCompound nbt);
+    void load(CompoundTag nbt);
 
-    void save(NBTTagCompound nbt);
+    void save(CompoundTag nbt);
 }
+// PORTED

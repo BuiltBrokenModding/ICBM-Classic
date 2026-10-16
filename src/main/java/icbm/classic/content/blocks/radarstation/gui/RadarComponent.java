@@ -7,7 +7,8 @@ import icbm.classic.content.blocks.radarstation.data.RadarRenderDot;
 import icbm.classic.lib.colors.ColorHelper;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class RadarComponent implements IGuiComponent {
     private final int x;
     private final int y;
 
-    private GuiContainerBase container;
+    private GuiContainerBase<?> container;
 
     int meterSpacing = 0;
 
@@ -33,7 +34,7 @@ public class RadarComponent implements IGuiComponent {
     }
 
     @Override
-    public void onAddedToHost(GuiContainerBase container) {
+    public void onAddedToHost(GuiContainerBase<?> container) {
         this.container = container;
     }
 
@@ -43,24 +44,24 @@ public class RadarComponent implements IGuiComponent {
     }
 
     @Override
-    public void drawForegroundLayer(int mouseX, int mouseY) {
+    public void drawForegroundLayer(GuiGraphics graphics, int mouseX, int mouseY) {
 
         final List<RadarRenderDot> dots = this.tile.getRadarRenderData().getDots();
 
-        container.drawString(container.mc.fontRenderer, String.format("%dm", meterSpacing), x + 56, y + 46, MARKER_COLOR);
-        container.drawString(container.mc.fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.HOSTILE).count()), x + 56, y + 2, HOSTILE_COLOR);
-        container.drawString(container.mc.fontRenderer, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.INCOMING).count()), x + 56, y + 14, INCOMING_COLOR);
+        graphics.drawString(Minecraft.getInstance().font, String.format("%dm", meterSpacing), x + 56, y + 46, MARKER_COLOR);
+        graphics.drawString(Minecraft.getInstance().font, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.HOSTILE).count()), x + 56, y + 2, HOSTILE_COLOR);
+        graphics.drawString(Minecraft.getInstance().font, String.format("%d", dots.stream().filter(d -> d.getType() == RadarDotType.INCOMING).count()), x + 56, y + 14, INCOMING_COLOR);
     }
 
     @Override
-    public void drawBackgroundLayer(float f, int mouseX, int mouseY) {
+    public void drawBackgroundLayer(GuiGraphics graphics, float f, int mouseX, int mouseY) {
 
         final int halfUV = RadarRenderData.UV_SIZE / 2;
         final int left = container.getGuiLeft() + x;
         final int top = container.getGuiTop() + y;
 
         // Background
-        Gui.drawRect(left, top, left + RadarRenderData.UV_SIZE + 1, top + RadarRenderData.UV_SIZE + 1, -16777216);
+        graphics.fill(left, top, left + RadarRenderData.UV_SIZE + 1, top + RadarRenderData.UV_SIZE + 1, -16777216);
 
 
         final int gx = left + halfUV;
@@ -75,28 +76,28 @@ public class RadarComponent implements IGuiComponent {
 
         for(int i = 0; i < lineCount; i++) {
             final int x = lx + (int)Math.floor(i * lineSpacing);
-            Gui.drawRect(x, gy + halfUV, x + 1, gy - halfUV, MARKER_COLOR);
+            graphics.fill(x, gy + halfUV, x + 1, gy - halfUV, MARKER_COLOR);
         }
 
         for(int i = 0; i < lineCount; i++) {
             final int y = ly + (int)Math.floor(i * lineSpacing);
-            Gui.drawRect(gx + halfUV, y, gx - halfUV, y + 1, MARKER_COLOR);
+            graphics.fill(gx + halfUV, y, gx - halfUV, y + 1, MARKER_COLOR);
         }
 
         // Trigger area
         int triggerRange = (int)Math.ceil((this.tile.getTriggerRange() / (float)this.tile.getDetectionRange()) * halfUV);
 
         // Trigger bottom line
-        Gui.drawRect(gx - triggerRange, gy + triggerRange, gx + triggerRange, gy + triggerRange + 1, TRIGGER_RANGE);
+        graphics.fill(gx - triggerRange, gy + triggerRange, gx + triggerRange, gy + triggerRange + 1, TRIGGER_RANGE);
 
         // Trigger top line
-        Gui.drawRect(gx - triggerRange, gy - triggerRange -1, gx + triggerRange, gy - triggerRange, TRIGGER_RANGE);
+        graphics.fill(gx - triggerRange, gy - triggerRange -1, gx + triggerRange, gy - triggerRange, TRIGGER_RANGE);
 
         // Trigger left line
-        Gui.drawRect(gx - triggerRange - 1, gy - triggerRange, gx - triggerRange, gy + triggerRange, TRIGGER_RANGE);
+        graphics.fill(gx - triggerRange - 1, gy - triggerRange, gx - triggerRange, gy + triggerRange, TRIGGER_RANGE);
 
         // Trigger right line
-        Gui.drawRect(gx + triggerRange, gy - triggerRange, gx + triggerRange + 1, gy + triggerRange, TRIGGER_RANGE);
+        graphics.fill(gx + triggerRange, gy - triggerRange, gx + triggerRange + 1, gy + triggerRange, TRIGGER_RANGE);
 
         // Target data
 
@@ -106,14 +107,15 @@ public class RadarComponent implements IGuiComponent {
             final int x = gx + dot.getX();
             final int y = gy + dot.getY();
             if(dot.getType() == RadarDotType.MARKER) {
-                Gui.drawRect(x, y, x + 1, y + 1, MARKER_COLOR);
+                graphics.fill(x, y, x + 1, y + 1, MARKER_COLOR);
             }
             else if(dot.getType() == RadarDotType.HOSTILE) {
-                Gui.drawRect(x, y, x + 2, y + 2, HOSTILE_COLOR);
+                graphics.fill(x, y, x + 2, y + 2, HOSTILE_COLOR);
             }
             else if(dot.getType() == RadarDotType.INCOMING) {
-                Gui.drawRect(x, y, x + 2, y + 2, INCOMING_COLOR);
+                graphics.fill(x, y, x + 2, y + 2, INCOMING_COLOR);
             }
         }
     }
 }
+// PORTED

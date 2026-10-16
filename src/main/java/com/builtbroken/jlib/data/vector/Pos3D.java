@@ -2,6 +2,7 @@ package com.builtbroken.jlib.data.vector;
 
 
 import icbm.classic.lib.CalculationHelpers;
+import net.minecraft.util.RandomSource;
 
 import java.util.Random;
 
@@ -25,6 +26,15 @@ public abstract class Pos3D<R extends Pos3D> extends Pos2D<R>
     }
 
     public R addRandom(Random rand, double r)
+    {
+        double i = CalculationHelpers.randDoubleRange(rand, r);
+        double j = CalculationHelpers.randDoubleRange(rand, r);
+        double k = CalculationHelpers.randDoubleRange(rand, r);
+        return newPos(i + x(), j + y(), k + z());
+    }
+
+    /** PORT: overload for 1.21 level/entity random sources */
+    public R addRandom(RandomSource rand, double r)
     {
         double i = CalculationHelpers.randDoubleRange(rand, r);
         double j = CalculationHelpers.randDoubleRange(rand, r);
@@ -292,3 +302,4 @@ public abstract class Pos3D<R extends Pos3D> extends Pos2D<R>
         return "Pos3D [" + this.x() + "," + this.y() + "," + this.z() + "]";
     }
 }
+// PORTED

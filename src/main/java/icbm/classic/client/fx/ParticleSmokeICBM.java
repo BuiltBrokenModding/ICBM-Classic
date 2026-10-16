@@ -1,38 +1,36 @@
 package icbm.classic.client.fx;
 
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.client.particle.ParticleSmokeNormal;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.SmokeParticle;
 
-@SideOnly(Side.CLIENT)
-public class ParticleSmokeICBM extends ParticleSmokeNormal
+public class ParticleSmokeICBM extends SmokeParticle
 {
-    public ParticleSmokeICBM(World worldIn, Pos pos, double vx, double vy, double vz, float scale)
+    public ParticleSmokeICBM(ClientLevel worldIn, Pos pos, double vx, double vy, double vz, float scale)
     {
-        super(worldIn, pos.x(), pos.y(), pos.z(), vx, vy, vz, scale);
+        super(worldIn, pos.x(), pos.y(), pos.z(), vx, vy, vz, scale, SmokeSprites.INSTANCE);
     }
 
     public ParticleSmokeICBM setAge(int age)
     {
-        this.particleMaxAge = age;
+        this.lifetime = age;
         return this;
     }
 
     public ParticleSmokeICBM setColor(float r, float g, float b, boolean addColorVariant)
     {
-        this.particleRed = r;
-        this.particleGreen = g;
-        this.particleBlue = b;
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
 
         if (addColorVariant)
         {
             float colorVariant = (float) (Math.random() * 0.90000001192092896D);
-            this.particleRed *= colorVariant;
-            this.particleBlue *= colorVariant;
-            this.particleGreen *= colorVariant;
+            this.rCol *= colorVariant;
+            this.bCol *= colorVariant;
+            this.gCol *= colorVariant;
         }
         return this;
     }
 }
+// PORTED

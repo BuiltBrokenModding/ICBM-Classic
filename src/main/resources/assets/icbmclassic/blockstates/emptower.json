@@ -1,29 +1,16 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "icbmclassic:emp_tower"
-  },
   "variants": {
-    "inventory_0": {
-      "model": "icbmclassic:emp_tower"
+    "type=base": {
+      "model": "icbmclassic:block/emp_tower_base"
     },
-    "inventory_1": {
-      "model": "icbmclassic:emp_tower_1"
+    "type=coil": {
+      "model": "icbmclassic:block/emp_tower_coil"
     },
-    "type": {
-      "base": {
-        "model": "icbmclassic:emp_tower_base"
-      },
-      "electric": {
-        "model": "icbmclassic:emp_tower_electric"
-      },
-      "coil": {
-        "model": "icbmclassic:emp_tower_coil"
-      },
-      "spin": {
-        "model": "icbmclassic:emp_tower_spin"
-      }
+    "type=electric": {
+      "model": "icbmclassic:block/emp_tower_electric"
+    },
+    "type=spin": {
+      "model": "icbmclassic:block/emp_tower_spin"
     }
   }
 }
-

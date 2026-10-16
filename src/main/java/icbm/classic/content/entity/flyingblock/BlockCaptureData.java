@@ -4,46 +4,46 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 @Data
 @NoArgsConstructor
-public class BlockCaptureData implements INBTSerializable<NBTTagCompound> {
+public class BlockCaptureData implements INBTSerializable<CompoundTag> {
     //TODO maybe replace with BlockSnapshot?
 
-    /** Pulled from {@link World#getBlockState(BlockPos)} */
-    private IBlockState blockState;
-    /** Pulled from {@link net.minecraft.block.Block#getItem(World, BlockPos, IBlockState)} */
+    /** Pulled from {@link Level#getBlockState(BlockPos)} */
+    private BlockState blockState;
+    /** Pulled from {@link net.minecraft.world.level.block.Block#getCloneItemStack} */
     private ItemStack sourceStack;
     /** Saved tile data */
-    private NBTTagCompound tileEntityData;
+    private CompoundTag tileEntityData;
 
-    public BlockCaptureData(IBlockState state, ItemStack stack) {
+    public BlockCaptureData(BlockState state, ItemStack stack) {
         this.blockState = state;
         this.sourceStack = stack;
     }
 
-    public BlockCaptureData(World world, BlockPos blockPos) {
+    public BlockCaptureData(Level world, BlockPos blockPos) {
         this.blockState = world.getBlockState(blockPos);
-        this.sourceStack = blockState.getBlock().getItem(world, blockPos, blockState);
+        this.sourceStack = blockState.getBlock().getCloneItemStack(world, blockPos, blockState);
 
-        final TileEntity tileEntity = world.getTileEntity(blockPos); //TODO add config to disable this for specific blocks
+        final BlockEntity tileEntity = world.getBlockEntity(blockPos); //TODO add config to disable this for specific blocks
         if(tileEntity != null) {
-            this.tileEntityData = new NBTTagCompound();
-            tileEntity.writeToNBT(this.tileEntityData);
+            this.tileEntityData = tileEntity.saveWithFullMetadata(world.registryAccess());
         }
     }
 
-    public IBlockState getBlockState() {
+    public BlockState getBlockState() {
         if(blockState == null) {
-            this.blockState = Blocks.STONE.getDefaultState();
+            this.blockState = Blocks.STONE.defaultBlockState();
         }
         return blockState;
     }
@@ -56,12 +56,12 @@ public class BlockCaptureData implements INBTSerializable<NBTTagCompound> {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -73,3 +73,4 @@ public class BlockCaptureData implements INBTSerializable<NBTTagCompound> {
         .nodeCompoundTag("block_entity", BlockCaptureData::getTileEntityData, BlockCaptureData::setTileEntityData)
         .base();
 }
+// PORTED

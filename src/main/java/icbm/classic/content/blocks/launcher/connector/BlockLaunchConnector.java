@@ -1,155 +1,214 @@
 package icbm.classic.content.blocks.launcher.connector;
 
-import icbm.classic.ICBMClassic;
+import com.mojang.serialization.MapCodec;
 import icbm.classic.ICBMConstants;
+import icbm.classic.content.blocks.launcher.frame.TileLauncherFrame;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
+import icbm.classic.lib.capability.holder.ICapabilityHolderTile;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nullable;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
+ * <p>
+ * PORT: 1.12 computed the connection booleans in getActualState, they are now stored properties updated on
+ * placement, on neighbour shape updates and on neighbour block updates.
  */
-public class BlockLaunchConnector extends BlockContainer
+public class BlockLaunchConnector extends BaseEntityBlock
 {
-    public static final PropertyBool UP = PropertyBool.create("up");
-    public static final PropertyBool DOWN = PropertyBool.create("down");
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
+    public static final MapCodec<BlockLaunchConnector> CODEC = simpleCodec(p -> new BlockLaunchConnector());
+
+    public static final BooleanProperty UP = BooleanProperty.create("up");
+    public static final BooleanProperty DOWN = BooleanProperty.create("down");
+    public static final BooleanProperty NORTH = BooleanProperty.create("north");
+    public static final BooleanProperty EAST = BooleanProperty.create("east");
+    public static final BooleanProperty SOUTH = BooleanProperty.create("south");
+    public static final BooleanProperty WEST = BooleanProperty.create("west");
 
     public BlockLaunchConnector()
     {
-        super(Material.IRON);
-        blockHardness = 10f;
-        blockResistance = 10f;
-        setRegistryName(ICBMConstants.DOMAIN, "launcher_connector");
-        setUnlocalizedName(ICBMConstants.PREFIX + "launcher_connector");
-        setCreativeTab(ICBMClassic.CREATIVE_TAB);
+        // 1.12 Material.IRON, hardness 10, resistance field 10 (= 2), isOpaqueCube false, cutout (model json render_type)
+        // PORT: 1.12 Material.IRON needed a pickaxe to drop -> requiresCorrectToolForDrops (+ mineable/pickaxe tag)
+        super(Properties.of().mapColor(MapColor.METAL).strength(10f, 2f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+        registerDefaultState(stateDefinition.any()
+            .setValue(UP, false).setValue(DOWN, false)
+            .setValue(NORTH, false).setValue(EAST, false)
+            .setValue(SOUTH, false).setValue(WEST, false));
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    protected MapCodec<? extends BaseEntityBlock> codec()
     {
-        final boolean upConnection = isConnection(worldIn, pos, EnumFacing.UP);
-        final boolean downConnection = isConnection(worldIn, pos, EnumFacing.DOWN);
-        final boolean northConnection = isConnection(worldIn, pos, EnumFacing.NORTH);
-        final boolean eastConnection = isConnection(worldIn, pos, EnumFacing.EAST);
-        final boolean southConnection = isConnection(worldIn, pos, EnumFacing.SOUTH);
-        final boolean westConnection = isConnection(worldIn, pos, EnumFacing.WEST);
-
-        return state
-            .withProperty(UP, upConnection)
-            .withProperty(DOWN, downConnection)
-            .withProperty(NORTH, northConnection)
-            .withProperty(EAST, eastConnection)
-            .withProperty(SOUTH, southConnection)
-            .withProperty(WEST, westConnection);
-    }
-
-    private boolean isConnection(IBlockAccess worldIn, BlockPos selfPos, EnumFacing side) {
-        final BlockPos pos = selfPos.offset(side);
-        final TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile != null) {
-            return tile.hasCapability(CapabilityEnergy.ENERGY, side.getOpposite())
-                || tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side.getOpposite());
-        }
-        return false;
-    }
-
-
-    @Override
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return getDefaultState();
+        return CODEC;
     }
 
     @Override
-    public int getMetaFromState(IBlockState state)
+    public String getDescriptionId()
     {
-        return 0;
+        return "tile." + ICBMConstants.PREFIX + "launcher_connector";
     }
 
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public static BooleanProperty getProperty(Direction side)
     {
-        final TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof icbm.classic.content.blocks.launcher.frame.TileLauncherFrame)
+        switch (side)
         {
-            if(playerIn.getHeldItem(hand).getItem() == Items.STONE_AXE) {
-                if(!worldIn.isRemote) {
-                    final LauncherNetwork network = ((icbm.classic.content.blocks.launcher.frame.TileLauncherFrame) tile).getNetworkNode().getNetwork();
-                    playerIn.sendMessage(new TextComponentString("Network: " + network));
-                    playerIn.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
-                }
+            case UP: return UP;
+            case DOWN: return DOWN;
+            case NORTH: return NORTH;
+            case EAST: return EAST;
+            case SOUTH: return SOUTH;
+            default: return WEST;
+        }
+    }
+
+    /** 1.12 getActualState logic */
+    protected BlockState getConnectedState(BlockState state, BlockGetter worldIn, BlockPos pos)
+    {
+        for (Direction side : Direction.values())
+        {
+            state = state.setValue(getProperty(side), isConnection(worldIn, pos, side));
+        }
+        return state;
+    }
+
+    private boolean isConnection(BlockGetter worldIn, BlockPos selfPos, Direction side) {
+        final BlockPos pos = selfPos.relative(side);
+        final BlockEntity tile = worldIn.getBlockEntity(pos);
+        if(tile != null) {
+            // PORT: 1.12 recomputed this every render (getActualState), now the state is stored. A launcher component
+            //  placed next to us has no network (so no caps) until its onLoad runs on the next tick, and nothing
+            //  refreshes the state afterwards. Any adjacent component always ends up in our network, which in the
+            //  1.12 steady state exposes energy + item caps, so count it as connected directly.
+            if (tile instanceof ILauncherComponent) {
                 return true;
             }
+            return getCap(worldIn, tile, Capabilities.EnergyStorage.BLOCK, side.getOpposite()) != null
+                || getCap(worldIn, tile, Capabilities.ItemHandler.BLOCK, side.getOpposite()) != null;
         }
         return false;
     }
 
-    @Deprecated
-    public boolean isOpaqueCube(IBlockState state)
+    @Nullable
+    private static <T> T getCap(BlockGetter worldIn, BlockEntity tile, BlockCapability<T, Direction> cap, Direction side)
     {
-        return false;
+        if (tile instanceof ICapabilityHolderTile)
+        {
+            return ((ICapabilityHolderTile) tile).getCapability(cap, side);
+        }
+        if (worldIn instanceof Level)
+        {
+            return ((Level) worldIn).getCapability(cap, tile.getBlockPos(), tile.getBlockState(), tile, side);
+        }
+        return null;
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        return new BlockStateContainer(this, UP, DOWN, NORTH, EAST, WEST, SOUTH);
+        return getConnectedState(defaultBlockState(), context.getLevel(), context.getClickedPos());
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
+    protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos)
     {
-        return EnumBlockRenderType.MODEL;
+        return state.setValue(getProperty(facing), isConnection(level, currentPos, facing));
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving)
     {
-        return BlockRenderLayer.CUTOUT;
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+        // PORT: launcher components count as connected without checking caps (see isConnection), so a network join
+        //  doesn't need a refresh. Other mods' tiles gaining caps without a block update still won't refresh the state
+        final BlockState newState = getConnectedState(state, level, pos);
+        if (newState != state)
+        {
+            level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
+        }
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit)
+    {
+        final BlockEntity tile = worldIn.getBlockEntity(pos);
+        if (tile instanceof TileLauncherFrame)
+        {
+            if(heldItem.getItem() == Items.STONE_AXE) {
+                if(!worldIn.isClientSide()) {
+                    final LauncherNetwork network = ((TileLauncherFrame) tile).getNetworkNode().getNetwork();
+                    playerIn.sendSystemMessage(Component.literal("Network: " + network));
+                    // PORT: 1.12 crashed here (NPE) when the component had no network yet, ex. a single block placed alone
+                    playerIn.sendSystemMessage(Component.literal("L: " + (network != null ? network.getLaunchers().size() : 0)));
+                }
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos)
+    {
+        return true;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
+    {
+        builder.add(UP, DOWN, NORTH, EAST, WEST, SOUTH);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state)
+    {
+        return RenderShape.MODEL;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new TileLauncherConnector();
+        return new TileLauncherConnector(pos, state);
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean movedByPiston)
     {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ILauncherComponent)
+        if (!state.is(newState.getBlock()))
         {
-            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            final BlockEntity tile = world.getBlockEntity(pos);
+            if (tile instanceof ILauncherComponent)
+            {
+                ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            }
         }
-        super.breakBlock(world, pos, state);
+        super.onRemove(state, world, pos, newState, movedByPiston);
     }
 }
+// PORTED

@@ -1,118 +1,79 @@
 package icbm.classic.lib.capability.chicken;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import icbm.classic.content.reg.AttachmentReg;
+import icbm.classic.lib.network.lambda.PacketCodexReg;
+import icbm.classic.lib.network.lambda.entity.PacketCodexEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.animal.Chicken;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
-public class CapSpaceChicken implements ICapabilityProvider, INBTSerializable<NBTTagByte> {
+/**
+ * Space chicken state (helmet render + missile seat interaction).
+ * <p>
+ * PORT: 1.12 attached a capability and a DataParameter to every chicken. Now the state lives in the
+ * {@link AttachmentReg#SPACE_CHICKEN} data attachment (saved with the entity). NeoForge 21.1 attachments
+ * do not sync, so changes and start-tracking send {@link #PACKET_SYNC} to clients.
+ */
+@EventBusSubscriber(modid = ICBMConstants.DOMAIN)
+public class CapSpaceChicken {
 
-    @CapabilityInject(CapSpaceChicken.class)
-    public static Capability<CapSpaceChicken> INSTANCE;
+    public static final ResourceLocation CHICKEN_CAP = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "space_chicken");
 
-    public static final ResourceLocation CHICKEN_CAP = new ResourceLocation(ICBMConstants.DOMAIN, "space_chicken");
-    private static final DataParameter<Boolean> SPACE = EntityDataManager.<Boolean>createKey(EntityAgeable.class, DataSerializers.BOOLEAN);
+    public static final PacketCodexEntity<Chicken, Chicken> PACKET_SYNC = (PacketCodexEntity<Chicken, Chicken>) new PacketCodexEntity<Chicken, Chicken>(CHICKEN_CAP, "sync")
+        .fromServer()
+        .nodeBoolean(CapSpaceChicken::isSpace, (chicken, space) -> chicken.setData(AttachmentReg.SPACE_CHICKEN, space));
 
-    private final EntityChicken chicken;
+    private static boolean registered = false;
 
-    public CapSpaceChicken(EntityChicken chicken) {
+    private final Chicken chicken;
+
+    public CapSpaceChicken(Chicken chicken) {
         this.chicken = chicken;
     }
 
-    public static boolean isSpace(EntityChicken chicken) {
-        if(chicken.hasCapability(CapSpaceChicken.INSTANCE, null)) {
-            final CapSpaceChicken cap = chicken.getCapability(CapSpaceChicken.INSTANCE, null);
-            if(cap != null) {
-                return cap.isSpace();
-            }
+    /** Registers the sync packet codex, must be called during mod construction in a fixed order */
+    public static void register() {
+        if (!registered) {
+            registered = true;
+            PacketCodexReg.register(PACKET_SYNC);
         }
-        return false;
+    }
+
+    public static boolean isSpace(Chicken chicken) {
+        // hasData first, getData would create and save the default attachment on every chicken that is only looked at
+        return chicken != null && chicken.hasData(AttachmentReg.SPACE_CHICKEN.get()) && chicken.getData(AttachmentReg.SPACE_CHICKEN);
+    }
+
+    public static void setSpace(Chicken chicken, boolean space) {
+        if (chicken == null) {
+            return;
+        }
+        chicken.setData(AttachmentReg.SPACE_CHICKEN, space);
+        if (!chicken.level().isClientSide()) {
+            PACKET_SYNC.sendToAllAround(chicken);
+        }
     }
 
     @SubscribeEvent
-    public static void attachCap(AttachCapabilitiesEvent<Entity> event) {
-       if(event.getObject() instanceof EntityChicken) {
-           event.addCapability(CHICKEN_CAP, new CapSpaceChicken((EntityChicken) event.getObject()));
-       }
-    }
-
-    @SubscribeEvent
-    public static void createEntityEvent(EntityEvent.EntityConstructing event) {
-        if(event.getEntity() instanceof EntityChicken) {
-            event.getEntity().getDataManager().register(SPACE, false);
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof Chicken chicken && event.getEntity() instanceof ServerPlayer player && isSpace(chicken)) {
+            ICBMClassic.packetHandler.sendToPlayer(PACKET_SYNC.build(chicken), player);
         }
-    }
-
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == INSTANCE;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        if(capability == INSTANCE) {
-            return (T) this;
-        }
-        return null;
-    }
-
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(CapSpaceChicken.class, new Capability.IStorage<CapSpaceChicken>()
-            {
-                @Nullable
-                @Override
-                public NBTBase writeNBT(Capability<CapSpaceChicken> capability, CapSpaceChicken instance, EnumFacing side) {
-                    return new NBTTagByte(instance.isSpace() ? (byte)1 : (byte)0);
-                }
-
-                @Override
-                public void readNBT(Capability<CapSpaceChicken> capability, CapSpaceChicken instance, EnumFacing side, NBTBase nbt) {
-                    if(nbt instanceof NBTTagByte) {
-                        instance.setSpace(((NBTTagByte) nbt).getByte() == 1);
-                    }
-                }
-            },
-            () -> new CapSpaceChicken(null));
-    }
-
-    @Override
-    public NBTTagByte serializeNBT() {
-        return new NBTTagByte(isSpace() ? (byte)1 : (byte)0);
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagByte nbt) {
-        setSpace(nbt.getByte() == 1);
     }
 
     public boolean isSpace() {
-        return Optional.ofNullable(chicken).map(c -> c.getDataManager().get(SPACE)).orElse(false);
+        return Optional.ofNullable(chicken).map(CapSpaceChicken::isSpace).orElse(false);
     }
 
     public void setSpace(boolean space) {
-       Optional.ofNullable(chicken).ifPresent(c -> c.getDataManager().set(SPACE, space));
+        setSpace(chicken, space);
     }
 }
+// PORTED

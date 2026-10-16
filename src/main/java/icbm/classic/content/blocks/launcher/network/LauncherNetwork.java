@@ -1,16 +1,16 @@
 package icbm.classic.content.blocks.launcher.network;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.api.launcher.ILauncherSolution;
 import icbm.classic.api.launcher.IMissileLauncher;
-import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.content.blocks.launcher.FiringPackage;
+import icbm.classic.lib.capability.holder.ICapabilityHolderTile;
 import lombok.Getter;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LauncherNetwork implements ICapabilityProvider {
+/**
+ * PORT: no longer an ICapabilityProvider, tiles forward {@link #getCapability(BlockCapability, Direction)}
+ * from their {@link ICapabilityHolderTile#getCapability(BlockCapability, Direction)}.
+ */
+public class LauncherNetwork {
 
     @Getter
     private final HashSet<LauncherNode> components = new HashSet<LauncherNode>();
@@ -82,12 +86,10 @@ public class LauncherNetwork implements ICapabilityProvider {
             node.setNetwork(this);
 
             // Adding if launcher
-            if (node.getSelf().hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null)) {
-                final IMissileLauncher launcher = node.getSelf().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null);
-                if(launcher != null) {
-                    launchers.add(new LauncherEntry(launcher, node.getSelf(), null));
-                    onNetworkUpdated();
-                }
+            final IMissileLauncher launcher = getTileCapability(node.getSelf(), ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, null);
+            if(launcher != null) {
+                launchers.add(new LauncherEntry(launcher, node.getSelf(), null));
+                onNetworkUpdated();
             }
         }
     }
@@ -96,20 +98,33 @@ public class LauncherNetwork implements ICapabilityProvider {
         inventory.buildInventory();
     }
 
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityEnergy.ENERGY || capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
+    @Nullable
+    public <T> T getCapability(@Nonnull BlockCapability<T, Direction> capability, @Nullable Direction facing) {
+        if(capability == Capabilities.EnergyStorage.BLOCK) {
+            return (T) energyStorage;
+        }
+        else if(capability == Capabilities.ItemHandler.BLOCK) {
+            return (T) inventory;
+        }
+        return null;
     }
 
+    /**
+     * Gets a capability from a tile, uses the ICBM holder directly when possible to avoid the cap cache
+     * and falls back to the level lookup for other mods' tiles.
+     */
     @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-        if(capability == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.cast(energyStorage);
+    public static <T> T getTileCapability(@Nullable BlockEntity tile, BlockCapability<T, Direction> capability, @Nullable Direction side) {
+        if(tile == null) {
+            return null;
         }
-        else if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
+        if(tile instanceof ICapabilityHolderTile) {
+            return ((ICapabilityHolderTile) tile).getCapability(capability, side);
+        }
+        if(tile.getLevel() != null) {
+            return tile.getLevel().getCapability(capability, tile.getBlockPos(), tile.getBlockState(), tile, side);
         }
         return null;
     }
 }
+// PORTED

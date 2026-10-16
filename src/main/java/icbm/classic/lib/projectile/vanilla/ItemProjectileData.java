@@ -8,14 +8,15 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
-public class ItemProjectileData extends BuildableObject<ItemProjectileData, IProjectileDataRegistry> implements IProjectileData<EntityItem> {
+public class ItemProjectileData extends BuildableObject<ItemProjectileData, IProjectileDataRegistry> implements IProjectileData<ItemEntity> {
 
-    public static final ResourceLocation NAME = new ResourceLocation("minecraft", "item");
+    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath("minecraft", "item");
 
     @Getter @Setter @Accessors(chain = true)
     private ItemStack itemStack = ItemStack.EMPTY;
@@ -25,11 +26,11 @@ public class ItemProjectileData extends BuildableObject<ItemProjectileData, IPro
     }
 
     @Override
-    public EntityItem newEntity(World world, boolean allowItemPickup) {
-        final EntityItem entityItem = new EntityItem(world);
+    public ItemEntity newEntity(Level world, boolean allowItemPickup) {
+        final ItemEntity entityItem = new ItemEntity(EntityType.ITEM, world);
         entityItem.setItem(itemStack);
         if(!allowItemPickup) {
-            entityItem.setInfinitePickupDelay();
+            entityItem.setNeverPickUp();
         }
         return entityItem;
     }
@@ -39,3 +40,4 @@ public class ItemProjectileData extends BuildableObject<ItemProjectileData, IPro
         /* */.nodeItemStack("item", ItemProjectileData::getItemStack, ItemProjectileData::setItemStack)
         .base();
 }
+// PORTED

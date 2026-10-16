@@ -1,8 +1,8 @@
 package icbm.classic.api.data.meta;
 
 import icbm.classic.ICBMClassic;
-import lombok.Data;
-import net.minecraft.util.NonNullList;
+import lombok.Getter;
+import net.minecraft.core.NonNullList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,7 +36,8 @@ import java.util.Map;
  * Used with {@link icbm.classic.api.actions.IActionData} to describe type of action and
  * {@link icbm.classic.api.missiles.projectile.IProjectileData} to describe type of projectile
  */
-@Data
+// PORT: was @Data in 1.12, whose generated hashCode/toString recursed forever through parent <-> children
+@Getter
 public final class MetaTag {
     private static final Map<String, MetaTag> TAG_MAP = new HashMap<>();
 
@@ -115,7 +116,8 @@ public final class MetaTag {
         }
 
         final MetaTag metaTag = new MetaTag(namespace, path, parent);
-        TAG_MAP.put(path, metaTag);
+        // PORT: 1.12 stored by path while find() looks up namespace:path, so find() and dedup never matched
+        TAG_MAP.put(metaTag.getKey(), metaTag);
 
         ICBMClassic.logger().debug("MetaTag[{}] parent={}", metaTag.getKey(), parent != null ? parent.getKey() : "nil");
 
@@ -186,4 +188,20 @@ public final class MetaTag {
         }
         return this.parent.getTopParent(stop);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || (o instanceof MetaTag m && key.equals(m.key));
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "MetaTag[" + key + "]";
+    }
 }
+// PORTED

@@ -1,40 +1,43 @@
 package icbm.classic.content.items.behavior;
 
 import icbm.classic.content.entity.EntityGrenade;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
-import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 
-public class GrenadeDispenseBehavior implements IBehaviorDispenseItem
+public class GrenadeDispenseBehavior implements DispenseItemBehavior
 {
     @Override
-    public ItemStack dispense(IBlockSource blockSource, ItemStack itemStack)
+    public ItemStack dispense(BlockSource blockSource, ItemStack itemStack)
     {
         if (itemStack.getCount() > 0)
         {
-            final World world = blockSource.getWorld();
-            if (!world.isRemote)
+            final Level world = blockSource.level();
+            if (!world.isClientSide())
             {
-                world.spawnEntity(create(world, blockSource, itemStack));
+                world.addFreshEntity(create(world, blockSource, itemStack));
             }
 
-            return itemStack.splitStack(itemStack.getCount() - 1);
+            // 1.12 returned splitStack(count - 1), same as removing one
+            itemStack.shrink(1);
+            return itemStack;
         }
         return ItemStack.EMPTY;
     }
 
-    private Entity create(World world, IBlockSource blockSource, ItemStack itemStack)
+    private Entity create(Level world, BlockSource blockSource, ItemStack itemStack)
     {
-        final EnumFacing enumFacing = blockSource.getBlockState().getValue(BlockDispenser.FACING);
+        final Direction enumFacing = blockSource.state().getValue(DispenserBlock.FACING);
 
         final EntityGrenade entity = new EntityGrenade(world);
-        entity.setPosition(blockSource.getX(), blockSource.getY(), blockSource.getZ());
+        entity.setPos(blockSource.center().x, blockSource.center().y, blockSource.center().z);
         entity.setItemStack(itemStack);
-        entity.setThrowableHeading(enumFacing.getFrontOffsetX(), 0.10000000149011612D, enumFacing.getFrontOffsetZ(), 0.5F, 1.0F);
+        entity.setThrowableHeading(enumFacing.getStepX(), 0.10000000149011612D, enumFacing.getStepZ(), 0.5F, 1.0F);
         return entity;
     }
 }
+// PORTED

@@ -1,11 +1,11 @@
 package icbm.classic.lib.saving;
 
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.Tag;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class NbtSaveNode<SaveObject, NbtData extends NBTBase> implements INbtSaveNode<SaveObject, NbtData>
+public class NbtSaveNode<SaveObject, NbtData extends Tag> implements INbtSaveNode<SaveObject, NbtData>
 {
     private final String name;
     private final Function<SaveObject, NbtData> save;

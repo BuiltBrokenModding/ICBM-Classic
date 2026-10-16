@@ -6,8 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.JsonParser;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.EnumTier;
 import icbm.classic.api.explosion.IBlastFactory;
@@ -15,7 +14,7 @@ import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -228,8 +227,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
         {
             try (FileReader reader = new FileReader(file))
             {
-                JsonReader jsonReader = new JsonReader(reader);
-                JsonElement element = Streams.parse(jsonReader);
+                JsonElement element = JsonParser.parseReader(reader);
                 if (element.isJsonObject())
                 {
                     loadReg(element.getAsJsonObject());
@@ -265,7 +263,7 @@ public class ExplosiveRegistry implements IExplosiveRegistry
                 checkDuplicate(id, key);
 
                 //Store value
-                setReg(new ResourceLocation(key), id);
+                setReg(ResourceLocation.parse(key), id);
             }
         }
     }
@@ -320,3 +318,4 @@ public class ExplosiveRegistry implements IExplosiveRegistry
         }
     }
 }
+// PORTED

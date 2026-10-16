@@ -2,18 +2,20 @@ package icbm.classic.content.blast;
 
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.potion.CustomPotionEffect;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockSnow;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.server.level.ServerLevel;
+import icbm.classic.content.blast.helpers.BlastBlockHelpers;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,86 +43,87 @@ public class BlastEndothermic extends BlastBeam
             final double distance = Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
             final double distanceScale = 1 - (distance / radius);
 
-            IBlockState blockState = world.getBlockState(targetPosition);
+            BlockState blockState = world.getBlockState(targetPosition);
 
             //Closer to center the better the chance of spawning blocks
             if (distance <= radiusDecay || Math.random() < distanceScale)
             {
                 //Turn fluids and liquid like blocks to air
-                if (blockState.getMaterial() == Material.WATER)
+                if (BlastBlockHelpers.isWaterMaterial(blockState))
                 {
-                    this.world().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
+                    this.world().setBlock(targetPosition, Blocks.ICE.defaultBlockState(), 3);
                 }
 
                 else if (blockState.getBlock() == Blocks.FIRE)
                 {
-                    world.setBlockToAir(targetPosition);
+                    world.removeBlock(targetPosition, false);
+                }
+                // PORT: 1.12 LAVA was the still block and FLOWING_LAVA the flowing one, 1.21 has one block, level 0 is a source
+                else if (blockState.getBlock() == Blocks.LAVA && blockState.getValue(LiquidBlock.LEVEL) == 0)
+                {
+                    world.setBlock(targetPosition, Blocks.OBSIDIAN.defaultBlockState(), 3);
                 }
                 else if (blockState.getBlock() == Blocks.LAVA)
                 {
-                    world.setBlockState(targetPosition, Blocks.OBSIDIAN.getDefaultState());
+                    int level = Math.min(8, Math.max(1, blockState.getValue(LiquidBlock.LEVEL) / 2));
+                    world.setBlock(targetPosition, Blocks.SNOW.defaultBlockState()
+                            .setValue(SnowLayerBlock.LAYERS, level), 3);
                 }
-                else if (blockState.getBlock() == Blocks.FLOWING_LAVA)
+                else if (blockState.getBlock() == Blocks.MAGMA_BLOCK)
                 {
-                    int level = Math.min(8, Math.max(1, blockState.getValue(BlockLiquid.LEVEL) / 2));
-                    world.setBlockState(targetPosition, Blocks.SNOW_LAYER.getDefaultState()
-                            .withProperty(BlockSnow.LAYERS, level), 3);
-                }
-                else if (blockState.getBlock() == Blocks.MAGMA)
-                {
-                    world.setBlockState(targetPosition, Blocks.STONE.getDefaultState(), 3);
+                    world.setBlock(targetPosition, Blocks.STONE.defaultBlockState(), 3);
                 }
                 else if (blockState.getBlock() == Blocks.NETHERRACK)
                 {
-                    world.setBlockState(targetPosition, Blocks.DIRT.getDefaultState(), 3);
+                    world.setBlock(targetPosition, Blocks.DIRT.defaultBlockState(), 3);
                 }
                 else if (blockState.getBlock() == Blocks.SOUL_SAND)
                 {
-                    if (world.rand.nextBoolean())
+                    if (world.random.nextBoolean())
                     {
-                        world.setBlockState(targetPosition, Blocks.SAND.getDefaultState(), 3);
+                        world.setBlock(targetPosition, Blocks.SAND.defaultBlockState(), 3);
                     }
                     else
                     {
-                        world.setBlockState(targetPosition, Blocks.GRAVEL.getDefaultState(), 3);
+                        world.setBlock(targetPosition, Blocks.GRAVEL.defaultBlockState(), 3);
                     }
                 }
 
                 //Ground replacement
-                else if (blockState.getMaterial() == Material.GROUND || blockState.getMaterial() == Material.GRASS)
+                else if (BlastBlockHelpers.isGroundMaterial(blockState))
                 {
-                    if (world.rand.nextBoolean())
+                    if (world.random.nextBoolean())
                     {
-                        this.world().setBlockState(targetPosition, Blocks.ICE.getDefaultState(), 3);
+                        this.world().setBlock(targetPosition, Blocks.ICE.defaultBlockState(), 3);
                     }
                     else
                     {
-                        this.world().setBlockState(targetPosition, Blocks.SNOW.getDefaultState(), 3);
+                        this.world().setBlock(targetPosition, Blocks.SNOW_BLOCK.defaultBlockState(), 3);
                     }
                 }
 
                 //Randomly place fire TODO move to outside mutate so we always place snow while charging up
                 if (Math.random() < distanceScale)
                 {
-                    tryPlaceSnow(world, targetPosition.up(), false);
+                    tryPlaceSnow(world, targetPosition.above(), false);
                 }
             }
         }
     }
 
-    private static void tryPlaceSnow(World world, BlockPos pos, boolean random)
+    private static void tryPlaceSnow(Level world, BlockPos pos, boolean random)
     {
-        if (!random || world.rand.nextBoolean())
+        if (!random || world.random.nextBoolean())
         {
             //Place fire
-            final IBlockState blockState = world.getBlockState(pos);
-            final IBlockState blockStateUnder = world.getBlockState(pos.down());
-            if (blockState.getBlock().isReplaceable(world, pos)
-                    && Blocks.SNOW_LAYER.canPlaceBlockAt(world, pos)
-                    && blockStateUnder.isSideSolid(world, pos.down(), EnumFacing.UP))
+            final BlockState blockState = world.getBlockState(pos);
+            final BlockState blockStateUnder = world.getBlockState(pos.below());
+            if (blockState.canBeReplaced()
+                    && Blocks.SNOW.defaultBlockState().canSurvive(world, pos)
+                    && blockStateUnder.isFaceSturdy(world, pos.below(), Direction.UP))
             {
-                world.setBlockState(pos, Blocks.SNOW_LAYER.getDefaultState()
-                        .withProperty(BlockSnow.LAYERS, 1 + world.rand.nextInt(7)), 3);
+                world.setBlock(pos, Blocks.SNOW.defaultBlockState()
+                        .setValue(SnowLayerBlock.LAYERS, 1 + world.random.nextInt(7)), 3);
 
             }
         }
@@ -132,24 +135,25 @@ public class BlastEndothermic extends BlastBeam
         super.onBlastCompleted();
 
         //Freeze all nearby entities.
-        final List<EntityLiving> livingEntities = world().getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(location.x() - getBlastRadius(), location.y() - getBlastRadius(), location.z() - getBlastRadius(), location.x() + getBlastRadius(), location.y() + getBlastRadius(), location.z() + getBlastRadius()));
+        final List<Mob> livingEntities = world().getEntitiesOfClass(Mob.class, new AABB(location.x() - getBlastRadius(), location.y() - getBlastRadius(), location.z() - getBlastRadius(), location.x() + getBlastRadius(), location.y() + getBlastRadius(), location.z() + getBlastRadius()));
 
         if (livingEntities != null && !livingEntities.isEmpty())
         {
-            for (EntityLiving entity : livingEntities) {
-                if (entity != null && entity.isEntityAlive()) {
-                    //entity.addPotionEffect(new CustomPotionEffect(PoisonFrostBite.INSTANCE, 60 * 20, 1, null));
-                    entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 10 * 20, 2));
-                    entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 120 * 20, 2));
-                    entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 120 * 20, 4));
+            for (Mob entity : livingEntities) {
+                if (entity != null && entity.isAlive()) {
+                    //entity.addEffect(new CustomPotionEffect(PoisonFrostBite.INSTANCE, 60 * 20, 1, null));
+                    entity.addEffect(new MobEffectInstance(MobEffects.POISON, 10 * 20, 2));
+                    entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 120 * 20, 2));
+                    entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120 * 20, 4));
                 }
             }
         }
 
         //Change to time
-        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean("doDaylightCycle"))
+        if (ConfigBlast.ALLOW_DAY_NIGHT && world().getGameRules().getBoolean(GameRules.RULE_DAYLIGHT) && world() instanceof ServerLevel serverLevel)
         {
-            this.world().setWorldTime(1200);
+            serverLevel.setDayTime(1200);
         }
     }
 }
+// PORTED

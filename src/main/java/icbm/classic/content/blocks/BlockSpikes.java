@@ -1,154 +1,94 @@
 package icbm.classic.content.blocks;
 
-import com.google.common.collect.Lists;
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.blocks.ConfigBlocks;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
+/**
+ * Spikes, flattened from the 1.12 meta variants (spikes, spikes_poison, spikes_fire).
+ * <p>
+ * PORT: cutout render layer comes from the block model ("render_type": "cutout").
+ */
 public class BlockSpikes extends Block
 {
-    public static final SpikeProperty SPIKE_PROPERTY = new SpikeProperty();
+    /** PORT: 1.12 DamageSource("icbmclassic:spikes") is a data driven damage type, needs data/icbmclassic/damage_type/spikes.json */
+    public static final ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "spikes"));
 
-    public static final DamageSource DAMAGE_SOURCE = new DamageSource("icbmclassic:spikes");
+    private final EnumSpikes spikeType;
 
-    public BlockSpikes()
+    public BlockSpikes(EnumSpikes spikeType)
     {
-        super(Material.IRON);
-        this.setRegistryName(ICBMConstants.PREFIX + "spikes");
-        this.setUnlocalizedName(ICBMConstants.PREFIX + "spikes");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setHardness(1.0F);
+        // PORT: 1.12 Material.IRON hardness 1 (resistance 5 internal = 1), IRON needed a pickaxe to drop
+        super(Properties.of()
+            .mapColor(MapColor.METAL)
+            .requiresCorrectToolForDrops()
+            .strength(1.0F, 1.0F)
+            .sound(SoundType.METAL)
+            .noCollission()
+            .noOcclusion()
+            .pushReaction(PushReaction.DESTROY));
+        this.spikeType = spikeType;
+    }
+
+    public EnumSpikes getSpikeType()
+    {
+        return spikeType;
     }
 
     @Override
-    public int damageDropped(IBlockState state)
+    public String getDescriptionId()
     {
-        return getMetaFromState(state);
+        return "tile." + ICBMConstants.PREFIX + "spikes." + spikeType.ordinal();
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
     {
-        return null;
+        return Shapes.empty();
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, SPIKE_PROPERTY);
-    }
-
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
-    {
-        return getDefaultState().withProperty(SPIKE_PROPERTY, EnumSpikes.get(meta));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        return state.getValue(SPIKE_PROPERTY).ordinal();
-    }
-
-    @Deprecated
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(SPIKE_PROPERTY, EnumSpikes.get(meta));
-    }
-
-    @Override
-    public boolean isBlockNormalCube(IBlockState blockState)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState blockState)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
-        return BlockFaceShape.UNDEFINED;
-    }
-
-    @Override
-    public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity)
+    protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity)
     {
         // If the entity is a living entity
-        if (entity instanceof EntityLivingBase)
+        if (entity instanceof LivingEntity)
         {
-            if (world.getBlockState(pos).getValue(SPIKE_PROPERTY) == EnumSpikes.POISON) //TODO replace with state
+            if (spikeType == EnumSpikes.POISON)
             {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.poisonDamage);
-                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.POISON, 7 * 20, 0));
+                entity.hurt(world.damageSources().source(DAMAGE_TYPE), ConfigBlocks.spikes.poisonDamage);
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 7 * 20, 0));
             }
-            else if (world.getBlockState(pos).getValue(SPIKE_PROPERTY) == EnumSpikes.FIRE)
+            else if (spikeType == EnumSpikes.FIRE)
             {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.fireDamage);
-                entity.setFire(7);
+                entity.hurt(world.damageSources().source(DAMAGE_TYPE), ConfigBlocks.spikes.fireDamage);
+                entity.igniteForSeconds(7);
             }
             else {
-                entity.attackEntityFrom(DAMAGE_SOURCE, ConfigBlocks.spikes.normalDamage);
+                entity.hurt(world.damageSources().source(DAMAGE_TYPE), ConfigBlocks.spikes.normalDamage);
             }
         }
     }
 
-    @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (tab == this.getCreativeTabToDisplayOn())
-        {
-            for (EnumSpikes spikes : EnumSpikes.values())
-            {
-                items.add(new ItemStack(this, 1, spikes.ordinal()));
-            }
-        }
-    }
-
-    public static class SpikeProperty extends PropertyEnum<EnumSpikes>
-    {
-        protected SpikeProperty()
-        {
-            super("type", EnumSpikes.class, Lists.newArrayList(EnumSpikes.values()));
-        }
-    }
-
-    public static enum EnumSpikes implements IStringSerializable
+    public static enum EnumSpikes implements StringRepresentable
     {
         NORMAL,
         POISON,
@@ -157,13 +97,19 @@ public class BlockSpikes extends Block
         @Override
         public String toString()
         {
-            return this.getName();
+            return this.getSerializedName();
         }
 
         @Override
-        public String getName()
+        public String getSerializedName()
         {
             return name().toLowerCase();
+        }
+
+        /** 1.12 name */
+        public String getName()
+        {
+            return getSerializedName();
         }
 
         public static EnumSpikes get(int meta)
@@ -172,3 +118,4 @@ public class BlockSpikes extends Block
         }
     }
 }
+// PORTED

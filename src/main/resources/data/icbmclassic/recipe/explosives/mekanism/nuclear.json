@@ -1,0 +1,52 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:and",
+      "values": [
+        {
+          "type": "neoforge:and",
+          "values": [
+            {
+              "type": "neoforge:tag_empty",
+              "tag": "c:ingots/uranium"
+            },
+            {
+              "type": "neoforge:tag_empty",
+              "tag": "c:pellets/uranium_235"
+            }
+          ]
+        },
+        {
+          "type": "neoforge:item_exists",
+          "item": "mekanism:alloy_atomic"
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "tit",
+    "iii",
+    "tit"
+  ],
+  "key": {
+    "t": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:thermobaric"
+      }
+    },
+    "i": {
+      "item": "mekanism:alloy_atomic"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:nuclear"
+    }
+  }
+}

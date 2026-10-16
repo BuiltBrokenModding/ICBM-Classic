@@ -1,5 +1,11 @@
 package icbm.classic.api;
 
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.caps.IGPSData;
@@ -7,12 +13,6 @@ import icbm.classic.api.launcher.IMissileLauncher;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
@@ -49,7 +49,7 @@ public final class ICBMClassicHelpers
      */
     public static IExplosiveData getExplosive(String name, boolean returnNull)
     {
-        return getExplosive(new ResourceLocation(name), returnNull);
+        return getExplosive(ResourceLocation.parse(name), returnNull);
     }
 
     /**
@@ -77,12 +77,12 @@ public final class ICBMClassicHelpers
      */
     public static boolean isMissile(Entity entity)
     {
-        return entity != null && entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+        return entity != null && entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY) != null;
     }
 
     public static boolean isMissile(ItemStack stack)
     {
-        return !stack.isEmpty() && stack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        return !stack.isEmpty() && stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY) != null;
     }
 
     /**
@@ -93,36 +93,40 @@ public final class ICBMClassicHelpers
      */
     public static IMissile getMissile(Entity entity)
     {
-        return entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null);
+        return entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY);
     }
 
     public static boolean isExplosive(Entity entity)
     {
-        return entity != null && entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+        return entity != null && entity.getCapability(ICBMClassicAPI.EXPLOSIVE_ENTITY_CAPABILITY) != null;
     }
 
     public static IExplosive getExplosive(Entity entity)
     {
-        return entity.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+        return entity.getCapability(ICBMClassicAPI.EXPLOSIVE_ENTITY_CAPABILITY);
     }
 
-    public static boolean isLauncher(TileEntity tileEntity, EnumFacing side)
+    public static boolean isLauncher(BlockEntity tileEntity, Direction side)
     {
-        return tileEntity != null && tileEntity.hasCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, side);
+        return getLauncher(tileEntity, side) != null;
     }
 
-    public static IMissileLauncher getLauncher(TileEntity tileEntity, EnumFacing side)
+    public static IMissileLauncher getLauncher(BlockEntity tileEntity, Direction side)
     {
-        return tileEntity.getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, side);
+        if (tileEntity == null || tileEntity.getLevel() == null)
+        {
+            return null;
+        }
+        return tileEntity.getLevel().getCapability(ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY, tileEntity.getBlockPos(), tileEntity.getBlockState(), tileEntity, side);
     }
 
     public static IExplosive getExplosive(ItemStack stack)
     {
-        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        if (stack.isEmpty())
         {
-            return stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
+            return null;
         }
-        return null;
+        return stack.getCapability(ICBMClassicAPI.EXPLOSIVE_ITEM_CAPABILITY);
     }
 
     /**
@@ -131,9 +135,25 @@ public final class ICBMClassicHelpers
      * @return data if present, or null otherwise
      */
     public static IGPSData getGPSData(ItemStack stack) {
-        if(stack.hasCapability(ICBMClassicAPI.GPS_CAPABILITY, null)) {
-            return stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY, null);
+        if(stack.isEmpty()) {
+            return null;
         }
-        return null;
+        return stack.getCapability(ICBMClassicAPI.GPS_CAPABILITY);
+    }
+
+    /**
+     * Gets the explosive capability of a block entity
+     *
+     * @param tile to access
+     * @param side to access from, may be null
+     * @return explosive or null
+     */
+    public static IExplosive getExplosive(BlockEntity tile, Direction side)
+    {
+        if (tile == null || tile.getLevel() == null)
+        {
+            return null;
+        }
+        return tile.getLevel().getCapability(ICBMClassicAPI.EXPLOSIVE_BLOCK_CAPABILITY, tile.getBlockPos(), tile.getBlockState(), tile, side);
     }
 }

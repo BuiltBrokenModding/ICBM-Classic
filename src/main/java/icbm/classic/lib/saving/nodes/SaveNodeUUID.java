@@ -1,14 +1,14 @@
 package icbm.classic.lib.saving.nodes;
 
 import icbm.classic.lib.saving.NbtSaveNode;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.NbtUtils;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class SaveNodeUUID<E> extends NbtSaveNode<E, NBTTagCompound>
+public class SaveNodeUUID<E> extends NbtSaveNode<E, IntArrayTag>
 {
     public SaveNodeUUID(final String name, Function<E, UUID> save, BiConsumer<E, UUID> load)
     {
@@ -17,12 +17,12 @@ public class SaveNodeUUID<E> extends NbtSaveNode<E, NBTTagCompound>
                 final UUID blockState = save.apply(obj);
                 if (blockState != null)
                 {
-                    return NBTUtil.createUUIDTag(blockState);
+                    return NbtUtils.createUUID(blockState);
                 }
                 return null;
             },
             (obj, data) -> {
-                load.accept(obj, NBTUtil.getUUIDFromTag(data));
+                load.accept(obj, NbtUtils.loadUUID(data));
             }
         );
     }

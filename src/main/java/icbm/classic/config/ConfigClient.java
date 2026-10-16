@@ -1,12 +1,12 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 /**
  * Client only settings
  */
-@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/client")
+@Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/client", type = Config.Type.CLIENT)
 @Config.LangKey("config.icbmclassic:client.title")
 public class ConfigClient
 {

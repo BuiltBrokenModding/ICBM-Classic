@@ -11,13 +11,12 @@ import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.lib.transform.vector.Pos;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -42,10 +41,10 @@ public class BlastBreach extends BlastTNT
     private float energyCostDistance;
 
     @Setter @Accessors(chain = true)
-    private EnumFacing direction; //TODO recode to be angle based
+    private Direction direction; //TODO recode to be angle based
 
     @Override
-    public <VALUE, TAG extends NBTBase> void setValue(ActionField<VALUE, TAG> key, VALUE value) {
+    public <VALUE, TAG extends Tag> void setValue(ActionField<VALUE, TAG> key, VALUE value) {
         if(key == ActionFields.HOST_DIRECTION) {
             direction = ActionFields.HOST_DIRECTION.cast(value);
         }
@@ -65,27 +64,27 @@ public class BlastBreach extends BlastTNT
             super.calculateDamage();
         }
         //TODO add some smoke and block particles for wow effect of a breaching a building
-        else if (!this.world().isRemote)
+        else if (!this.world().isClientSide())
         {
             if(direction == null) {
                 //Guess direction from entity rotation
                 if (this.exploder != null) {
                     // TODO move this logic to projectile and provide via ActionField.HOST_DIRECTION
-                    if (this.exploder.rotationPitch > 45) {
-                        direction = this.exploder instanceof EntityMissile ? EnumFacing.UP : EnumFacing.DOWN;
-                    } else if (this.exploder.rotationPitch < -45) {
-                        direction = this.exploder instanceof EntityMissile ? EnumFacing.DOWN : EnumFacing.UP;
+                    if (this.exploder.getXRot() > 45) {
+                        direction = this.exploder instanceof EntityMissile ? Direction.UP : Direction.DOWN;
+                    } else if (this.exploder.getXRot() < -45) {
+                        direction = this.exploder instanceof EntityMissile ? Direction.DOWN : Direction.UP;
                     } else {
-                        direction = this.exploder.getAdjustedHorizontalFacing();
+                        direction = this.exploder.getMotionDirection(); // PORT: 1.12 getAdjustedHorizontalFacing
 
                         // fixes explosion going backwards when the missile flies east or west.
-                        if (direction == EnumFacing.EAST || direction == EnumFacing.WEST) {
+                        if (direction == Direction.EAST || direction == Direction.WEST) {
                             direction = direction.getOpposite();
                         }
                     }
                 }
                 else {
-                    direction = EnumFacing.DOWN;
+                    direction = Direction.DOWN;
                 }
             }
 
@@ -102,21 +101,21 @@ public class BlastBreach extends BlastTNT
                     //Loop depth
                     for (int depthIndex = 0; depthIndex < this.depth && energyRemaining > 0; depthIndex++)
                     {
-                        int x = this.xi() + direction.getFrontOffsetX() * depthIndex;
-                        int y = this.yi() + direction.getFrontOffsetY() * depthIndex;
-                        int z = this.zi() + direction.getFrontOffsetZ() * depthIndex;
+                        int x = this.xi() + direction.getStepX() * depthIndex;
+                        int y = this.yi() + direction.getStepY() * depthIndex;
+                        int z = this.zi() + direction.getStepZ() * depthIndex;
 
-                        if (direction == EnumFacing.DOWN || direction == EnumFacing.UP)
+                        if (direction == Direction.DOWN || direction == Direction.UP)
                         {
                             x += h;
                             z += w;
                         }
-                        else if (direction == EnumFacing.EAST || direction == EnumFacing.WEST)
+                        else if (direction == Direction.EAST || direction == Direction.WEST)
                         {
                             y += h;
                             z += w;
                         }
-                        else if (direction == EnumFacing.NORTH || direction == EnumFacing.SOUTH)
+                        else if (direction == Direction.NORTH || direction == Direction.SOUTH)
                         {
                             y += h;
                             x += w;
@@ -128,13 +127,12 @@ public class BlastBreach extends BlastTNT
 
                         //Get block
                         final BlockPos pos = new BlockPos(x, y, z);
-                        final IBlockState state = world.getBlockState(pos);
-                        final Block block = state.getBlock();
+                        final BlockState state = world.getBlockState(pos);
 
-                        if (!block.isAir(state, world(), pos))
+                        if (!state.isAir())
                         {
                             // Stop at unbreakable
-                            if(block.getBlockHardness(state, world, pos) < 0) {
+                            if(state.getDestroySpeed(world, pos) < 0) {
                                 break;
                             }
 
@@ -149,7 +147,7 @@ public class BlastBreach extends BlastTNT
                             //R = unbreakable(6M) -> fuck that
 
 
-                            final float cost = block.getExplosionResistance(world(), pos, this.exploder, this);
+                            final float cost = getBlockResistance(pos, state);
                             if (cost < energyRemaining)
                             {
                                 energyRemaining -= cost;
@@ -166,7 +164,8 @@ public class BlastBreach extends BlastTNT
             }
 
             //Play some audio
-            this.world().playSound(null, location.x(), location.y(), location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 5.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 0.7F);
+            this.world().playSound(null, location.x(), location.y(), location.z(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 5.0F, (1.0F + (world().random.nextFloat() - world().random.nextFloat()) * 0.2F) * 0.7F);
         }
     }
 }
+// PORTED

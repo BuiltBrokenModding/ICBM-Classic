@@ -7,10 +7,12 @@ import icbm.classic.api.radio.IRadio;
 import icbm.classic.api.radio.IRadioMessage;
 import icbm.classic.api.radio.IRadioReceiver;
 import icbm.classic.api.radio.IRadioSender;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +26,8 @@ import java.util.List;
  */
 public class RadioMap
 {
-    /** DIM ID, never change */
-    protected final int dimID;
+    /** Dimension key, never change */
+    protected final ResourceKey<Level> dimID;
 
     /** Map of chunk positions to receive, mainly used by short range radio gear */
     protected HashMap<ChunkPos, List<IRadioReceiver>> chunk_to_entities = new HashMap();
@@ -44,14 +46,14 @@ public class RadioMap
      *
      * @param dimID - unique dimension that is not already tracked
      */
-    public RadioMap(int dimID)
+    public RadioMap(ResourceKey<Level> dimID)
     {
         this.dimID = dimID;
     }
 
     public boolean add(IRadioReceiver receiver)
     {
-        if(receiver.getWorld() == null || receiver.getWorld().isRemote)
+        if(receiver.getWorld() == null || receiver.getWorld().isClientSide())
         {
             return false;
         }
@@ -171,7 +173,7 @@ public class RadioMap
 
     public boolean remove(IRadioReceiver receiver)
     {
-        if(receiver.getWorld() == null || receiver.getWorld().isRemote)
+        if(receiver.getWorld() == null || receiver.getWorld().isClientSide())
         {
             return false;
         }
@@ -292,8 +294,8 @@ public class RadioMap
      * <p>
      * Make sure if you call this you clear your
      * cache when the sender is no longer valid
-     * use {@link TileEntity#invalidate()}
-     * or {@link Entity#setDead()} to
+     * use {@link BlockEntity#setRemoved()}
+     * or {@link Entity#discard()} to
      * clear the cache.
      * <p>
      * As well make sure to call this method
@@ -308,7 +310,7 @@ public class RadioMap
      *
      * @param sender - object that needs to
      *               have receivers cache. Needs
-     *               to have a valid {@link IRadioWaveSender#getRadioSenderRange()}
+     *               to have a valid {@link IRadioSender#getRange()}
      *               value in order to be cached.
      */
     public void updateCache(IRadioSender sender)
@@ -379,7 +381,7 @@ public class RadioMap
      *
      * @return valid dim ID.
      */
-    public int dimID()
+    public ResourceKey<Level> dimID()
     {
         return dimID;
     }
@@ -393,7 +395,7 @@ public class RadioMap
         }
         else if (object instanceof RadioMap)
         {
-            return ((RadioMap) object).dimID == dimID;
+            return ((RadioMap) object).dimID.equals(dimID);
         }
         return false;
     }
@@ -405,3 +407,4 @@ public class RadioMap
     }
 
 }
+// PORTED

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
 
@@ -32,3 +32,4 @@ public class ResourceConfigEntry<CONTENT, VALUE> implements Function<CONTENT, VA
         return function.apply(content);
     }
 }
+// PORTED

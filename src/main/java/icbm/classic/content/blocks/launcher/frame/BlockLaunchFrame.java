@@ -1,120 +1,146 @@
 package icbm.classic.content.blocks.launcher.frame;
 
+import com.mojang.serialization.MapCodec;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.prefab.tile.BlockICBM;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/16/2018.
+ * <p>
+ * PORT: 1.12 computed FRAME_STATE in getActualState, it is now a stored property updated on placement and
+ * whenever the block above or below changes.
  */
 public class BlockLaunchFrame extends BlockICBM
 {
+    public static final MapCodec<BlockLaunchFrame> CODEC = simpleCodec(p -> new BlockLaunchFrame());
+
     public static final PropertyFrameState FRAME_STATE = new PropertyFrameState();
 
     public BlockLaunchFrame()
     {
-        super("launcherframe");
+        // 1.12 isOpaqueCube false, cutout layer (render_type in the model json)
+        super("launcherframe", machineProperties().noOcclusion());
+        registerDefaultState(defaultBlockState().setValue(FRAME_STATE, EnumFrameState.MIDDLE));
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    protected MapCodec<? extends BaseEntityBlock> codec()
     {
-        final boolean frameAbove = isConnection(worldIn, pos.offset(EnumFacing.UP));
-        final boolean frameUnder = isConnection(worldIn, pos.offset(EnumFacing.DOWN));
+        return CODEC;
+    }
+
+    /** 1.12 getActualState logic */
+    protected BlockState getConnectedState(BlockState state, BlockGetter worldIn, BlockPos pos)
+    {
+        final boolean frameAbove = isConnection(worldIn, pos.relative(Direction.UP));
+        final boolean frameUnder = isConnection(worldIn, pos.relative(Direction.DOWN));
         if(frameAbove && frameUnder) {
-            return state.withProperty(FRAME_STATE, EnumFrameState.MIDDLE);
+            return state.setValue(FRAME_STATE, EnumFrameState.MIDDLE);
         }
         else if(frameUnder) {
-            return state.withProperty(FRAME_STATE, EnumFrameState.TOP);
+            return state.setValue(FRAME_STATE, EnumFrameState.TOP);
         }
         else if(frameAbove) {
-            return state.withProperty(FRAME_STATE, EnumFrameState.BOTTOM);
+            return state.setValue(FRAME_STATE, EnumFrameState.BOTTOM);
         }
-        return state.withProperty(FRAME_STATE, EnumFrameState.MIDDLE);
+        return state.setValue(FRAME_STATE, EnumFrameState.MIDDLE);
     }
 
-    private boolean isConnection(IBlockAccess worldIn, BlockPos pos) {
-        final IBlockState state = worldIn.getBlockState(pos);
-        return state.getBlock() == this || state.getBlock() == BlockReg.blockLaunchScreen;
+    private boolean isConnection(BlockGetter worldIn, BlockPos pos) {
+        final BlockState state = worldIn.getBlockState(pos);
+        return state.getBlock() == this || state.getBlock() == BlockReg.blockLaunchScreen.get();
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        final TileEntity tile = worldIn.getTileEntity(pos);
+        return getConnectedState(super.getStateForPlacement(context), context.getLevel(), context.getClickedPos());
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos)
+    {
+        if (facing.getAxis() == Direction.Axis.Y)
+        {
+            return getConnectedState(state, level, currentPos);
+        }
+        return state;
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit)
+    {
+        final BlockEntity tile = worldIn.getBlockEntity(pos);
         if (tile instanceof TileLauncherFrame)
         {
-            if(playerIn.getHeldItem(hand).getItem() == Items.STONE_AXE) {
-                if(!worldIn.isRemote) {
+            if(heldItem.getItem() == Items.STONE_AXE) {
+                if(!worldIn.isClientSide()) {
                     final LauncherNetwork network = ((TileLauncherFrame) tile).getNetworkNode().getNetwork();
-                    playerIn.sendMessage(new TextComponentString("Network: " + network));
-                    playerIn.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
+                    playerIn.sendSystemMessage(Component.literal("Network: " + network));
+                    // PORT: 1.12 crashed here (NPE) when the component had no network yet, ex. a single block placed alone
+                    playerIn.sendSystemMessage(Component.literal("L: " + (network != null ? network.getLaunchers().size() : 0)));
                 }
-                return true;
+                return ItemInteractionResult.SUCCESS;
             }
         }
-        return false;
-    }
-
-    @Deprecated
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos)
     {
-        return new BlockStateContainer(this, ROTATION_PROP, FRAME_STATE);
+        return true;
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-        return EnumBlockRenderType.MODEL;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
+        super.createBlockStateDefinition(builder);
+        builder.add(FRAME_STATE);
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new TileLauncherFrame();
+        return new TileLauncherFrame(pos, state);
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean movedByPiston)
     {
-        final TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ILauncherComponent)
+        if (!state.is(newState.getBlock()))
         {
-            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            final BlockEntity tile = world.getBlockEntity(pos);
+            if (tile instanceof ILauncherComponent)
+            {
+                ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            }
         }
-        super.breakBlock(world, pos, state);
+        super.onRemove(state, world, pos, newState, movedByPiston);
     }
 }
+// PORTED

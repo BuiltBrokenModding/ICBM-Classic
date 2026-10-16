@@ -200,3 +200,4 @@ public abstract class Pos2D<R extends Pos2D> extends Pos2DBean
 
     public abstract R newPos(double x, double y);
 }
+// PORTED

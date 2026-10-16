@@ -1,6 +1,6 @@
 package icbm.classic.lib.saving;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,13 +35,13 @@ import java.util.List;
  *      .base();
  *
  *
- *     public void readEntityFromNBT(NBTTagCompound nbt)
+ *     public void readEntityFromNBT(CompoundTag nbt)
  *     {
  *         super.readEntityFromNBT(nbt);
  *         SAVE_LOGIC.load(this, nbt); *
  *     }
  *
- *     public void writeEntityToNBT(NBTTagCompound nbt)
+ *     public void writeEntityToNBT(CompoundTag nbt)
  *     {
  *         SAVE_LOGIC.save(this, nbt);
  *         super.writeEntityToNBT(nbt);
@@ -67,8 +67,8 @@ public class NbtSaveHandler<E>
      * @param objectToSave to pull data from
      * @return save object
      */
-    public NBTTagCompound save(E objectToSave) {
-        return save(objectToSave, new NBTTagCompound());
+    public CompoundTag save(E objectToSave) {
+        return save(objectToSave, new CompoundTag());
     }
     /**
      * Called to save data
@@ -77,12 +77,12 @@ public class NbtSaveHandler<E>
      * @param save to push data into
      * @return save object
      */
-    public NBTTagCompound save(E objectToSave, NBTTagCompound save)
+    public CompoundTag save(E objectToSave, CompoundTag save)
     {
         roots.forEach(root -> {
-            final NBTTagCompound saveData = root.save(objectToSave);
-            if(saveData != null && !saveData.hasNoTags()) {
-                save.setTag(root.getSaveKey(), saveData);
+            final CompoundTag saveData = root.save(objectToSave);
+            if(saveData != null && !saveData.isEmpty()) {
+                save.put(root.getSaveKey(), saveData);
             }
         });
         mainRoot.save(objectToSave, save);
@@ -95,14 +95,14 @@ public class NbtSaveHandler<E>
      * @param objectToLoad to push data back into
      * @param save from minecraft
      */
-    public void load(E objectToLoad, NBTTagCompound save)
+    public void load(E objectToLoad, CompoundTag save)
     {
-        if (save != null && !save.hasNoTags())
+        if (save != null && !save.isEmpty())
         {
             roots.forEach(root -> {
-                if(save.hasKey(root.getSaveKey()))
+                if(save.contains(root.getSaveKey()))
                 {
-                    root.load(objectToLoad, save.getCompoundTag(root.getSaveKey()));
+                    root.load(objectToLoad, save.getCompound(root.getSaveKey()));
                 }
             });
             mainRoot.load(objectToLoad, save);

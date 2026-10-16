@@ -8,25 +8,27 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.core.registries.BuiltInRegistries;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class EntitySpawnProjectileData extends BuildableObject<EntitySpawnProjectileData, IProjectileDataRegistry> implements IProjectileData<Entity> {
 
-    public static final ResourceLocation NAME = new ResourceLocation("minecraft", "entity");
+    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath("minecraft", "entity");
 
     private ResourceLocation entityKey;
 
     @Getter @Setter @Accessors(chain = true)
     private String entityDisplayTag;
     @Getter @Setter @Accessors(chain = true)
-    private NBTTagCompound entityData;
+    private CompoundTag entityData;
 
     public EntitySpawnProjectileData() {
         super(NAME, ICBMClassicAPI.PROJECTILE_DATA_REGISTRY, SAVE_LOGIC);
@@ -38,25 +40,25 @@ public class EntitySpawnProjectileData extends BuildableObject<EntitySpawnProjec
     }
 
     public EntitySpawnProjectileData(String name) {
-        this(new ResourceLocation(name));
+        this(ResourceLocation.parse(name));
     }
 
     @Override
-    public Entity newEntity(World world, boolean allowItemPickup) {
+    public Entity newEntity(Level world, boolean allowItemPickup) {
         if(entityKey != null) {
-            final EntityEntry entry = ForgeRegistries.ENTITIES.getValue(entityKey);
-            if(entry != null) {
-                final Entity entity = entry.newInstance(world);
+            final Optional<EntityType<?>> entry = BuiltInRegistries.ENTITY_TYPE.getOptional(entityKey);
+            if(entry.isPresent()) {
+                final Entity entity = entry.get().create(world);
                 if(entity != null) {
                     if(entityDisplayTag != null) {
-                        entity.setCustomNameTag(entityDisplayTag);
+                        entity.setCustomName(Component.literal(entityDisplayTag));
                     }
                     if(entityData != null) {
-                        final NBTTagCompound entityExistingSave = entity.writeToNBT(new NBTTagCompound());
-                        final UUID uuid = entity.getUniqueID();
+                        final CompoundTag entityExistingSave = entity.saveWithoutId(new CompoundTag());
+                        final UUID uuid = entity.getUUID();
                         entityExistingSave.merge(entityData);
-                        entity.setUniqueId(uuid);
-                        entity.readFromNBT(entityExistingSave);
+                        entity.load(entityExistingSave);
+                        entity.setUUID(uuid);
                     }
                 }
                 return entity;
@@ -72,3 +74,4 @@ public class EntitySpawnProjectileData extends BuildableObject<EntitySpawnProjec
         /* */.nodeCompoundTag("entity_data", EntitySpawnProjectileData::getEntityData, EntitySpawnProjectileData::setEntityData)
         .base();
 }
+// PORTED

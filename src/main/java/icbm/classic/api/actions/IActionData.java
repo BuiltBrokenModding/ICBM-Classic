@@ -7,7 +7,7 @@ import icbm.classic.api.actions.data.IActionFieldProvider;
 import icbm.classic.api.data.meta.ITypeTaggable;
 import icbm.classic.api.reg.obj.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ public interface IActionData extends IBuildableObject, ITypeTaggable {
      * @return action
      */
     @Nonnull
-    IAction create(World world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor);
+    IAction create(Level world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor);
 
     /**
      * List of supported fields for use in {@link IActionFieldProvider}
@@ -50,3 +50,4 @@ public interface IActionData extends IBuildableObject, ITypeTaggable {
         return ICBMClassicAPI.ACTION_REGISTRY;
     }
 }
+// PORTED

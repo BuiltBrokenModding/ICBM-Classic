@@ -5,7 +5,7 @@ import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.missiles.parts.IMissileTarget;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Capability added to entities to define them as missiles
@@ -79,3 +79,4 @@ public interface IMissile extends IWorldPosition // TODO add registry and requir
      */
     void launch();
 }
+// PORTED

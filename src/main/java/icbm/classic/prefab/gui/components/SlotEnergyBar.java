@@ -3,10 +3,9 @@ package icbm.classic.prefab.gui.components;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -36,7 +35,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     private Supplier<Integer> actionCostGetter;
 
     /** Parent */
-    private GuiContainerBase container;
+    private GuiContainerBase<?> container;
 
     private float energyPercent = 0;
 
@@ -44,7 +43,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     private int prevMaxEnergy = 0;
     private boolean prevShift = false;
 
-    private ITextComponent tooltip;
+    private Component tooltip;
 
 
     public SlotEnergyBar(int x, int y, Supplier<Integer> energyGetter, Supplier<Integer> energyMaxGetter) {
@@ -71,9 +70,9 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         final int maxEnergy = energyMaxGetter.get();
         final int tickingCost = Optional.ofNullable(tickingCostGetter).map(Supplier::get).orElse(0);
         final int actionCost = Optional.ofNullable(actionCostGetter).map(Supplier::get).orElse(0);
-        final boolean shift = GuiScreen.isShiftKeyDown();
+        final boolean shift = Screen.hasShiftDown();
 
-        if(energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift) {
+        if(energy != prevEnergy || maxEnergy != prevMaxEnergy || shift != prevShift || tooltip == null) {
             prevEnergy = energy;
             prevMaxEnergy = maxEnergy;
             prevShift = shift;
@@ -92,10 +91,10 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
             }
 
             if(shift) {
-                tooltip = new TextComponentTranslation(translationToUse, energy, maxEnergy, -tickingCost, -actionCost);
+                tooltip = Component.translatable(translationToUse, energy, maxEnergy, -tickingCost, -actionCost);
             }
             else {
-                tooltip = new TextComponentTranslation(translationToUse, formatEnergy(energy), formatEnergy(maxEnergy), formatEnergy(-tickingCost),formatEnergy(-actionCost));
+                tooltip = Component.translatable(translationToUse, formatEnergy(energy), formatEnergy(maxEnergy), formatEnergy(-tickingCost),formatEnergy(-actionCost));
             }
         }
     }
@@ -123,15 +122,12 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     }
 
     @Override
-    public void onAddedToHost(GuiContainerBase container) {
+    public void onAddedToHost(GuiContainerBase<?> container) {
         this.container = container;
     }
 
     @Override
-    public void drawBackgroundLayer(float f, int mouseX, int mouseY) {
-
-        container.mc.renderEngine.bindTexture(container.getBackground());
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    public void drawBackgroundLayer(GuiGraphics graphics, float f, int mouseX, int mouseY) {
 
         // Calculate bar ratio
         final float barRatio = (float)Math.floor(ENERGY_BAR_WIDTH * energyPercent);
@@ -141,7 +137,7 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
         int renderWidth = (int)Math.min(Math.max(minBar, barRatio), ENERGY_BAR_WIDTH);
 
         // Render box
-        container.drawTexturedModalRect(container.getGuiLeft() + x, container.getGuiTop() + y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
+        graphics.blit(container.getBackground(), container.getGuiLeft() + x, container.getGuiTop() + y, 256 - ENERGY_BAR_WIDTH, 0, renderWidth, ENERGY_BAR_HEIGHT);
     }
 
     @Override
@@ -152,7 +148,8 @@ public class SlotEnergyBar implements IGuiComponent, IToolTip {
     }
 
     @Override
-    public ITextComponent getTooltip() {
+    public Component getToolTip() {
         return tooltip;
     }
 }
+// PORTED

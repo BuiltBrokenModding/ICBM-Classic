@@ -4,7 +4,7 @@ import icbm.classic.api.actions.IPotentialAction;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,3 +76,4 @@ public interface IExplosive
 
     }
 }
+// PORTED

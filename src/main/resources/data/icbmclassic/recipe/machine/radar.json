@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "gcs",
+    "pcp"
+  ],
+  "key": {
+    "s": {
+      "item": "icbmclassic:launcherscreen"
+    },
+    "g": {
+      "tag": "c:ingots/gold"
+    },
+    "c": {
+      "tag": "c:circuits/advanced"
+    },
+    "p": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:radarstation",
+    "count": 1
+  }
+}

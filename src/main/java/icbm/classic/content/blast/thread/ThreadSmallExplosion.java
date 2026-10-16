@@ -2,11 +2,12 @@ package icbm.classic.content.blast.thread;
 
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.transform.vector.Location;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Used for small explosions.
@@ -22,7 +23,7 @@ public class ThreadSmallExplosion extends ThreadExplosion
     }
 
     @Override
-    public void doRun(World world, Location center)
+    public void doRun(Level world, Location center)
     {
         for (int x = 0; x < this.radius; ++x)
         {
@@ -43,32 +44,32 @@ public class ThreadSmallExplosion extends ThreadExplosion
                         xStep /= diagonalDistance;
                         yStep /= diagonalDistance;
                         zStep /= diagonalDistance;
-                        float power = this.radius * (0.7F + this.position.world().rand.nextFloat() * 0.6F);
+                        float power = this.radius * (0.7F + ThreadLocalRandom.current().nextFloat() /* PORT: worker thread, 1.21 level random throws when used from several threads */ * 0.6F);
                         double var15 = position.x();
                         double var17 = position.y();
                         double var19 = position.z();
 
                         for (float var21 = 0.3F; power > 0.0F; power -= var21 * 0.75F)
                         {
-                            BlockPos targetPosition = new BlockPos(var15, var17, var19);
+                            BlockPos targetPosition = BlockPos.containing(var15, var17, var19);
 
-                            if(!position.world().isBlockLoaded(targetPosition)) //TODO: find better fix for non main thread loading
+                            // PORT: reads the chunks captured on the server thread
+                            if(!snapshot.isLoaded(targetPosition)) //TODO: find better fix for non main thread loading
                                 continue;
 
-                            IBlockState state = this.position.world().getBlockState(targetPosition);
-                            Block block = state.getBlock();
+                            BlockState state = snapshot.getBlockState(targetPosition);
 
-                            if (!block.isAir(state, world, targetPosition))
+                            if (!state.isAir())
                             {
                                 float resistance = 0;
 
-                                if (state.getBlockHardness(world, targetPosition) < 0)
+                                if (state.getDestroySpeed(world, targetPosition) < 0)
                                 {
                                     break;
                                 }
                                 else
                                 {
-                                    resistance = block.getExplosionResistance(world, targetPosition, source, blast);
+                                    resistance = blast.getBlockResistance(targetPosition, state);
                                 }
                                 // TODO rather than remove power divert a percentage to the
                                 // sides, and then calculate how much is absorbed by the block
@@ -90,3 +91,4 @@ public class ThreadSmallExplosion extends ThreadExplosion
         }
     }
 }
+// PORTED

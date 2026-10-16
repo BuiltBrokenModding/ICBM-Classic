@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "cg",
+    "sw"
+  ],
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "c": {
+      "tag": "c:circuits/basic"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    },
+    "s": {
+      "tag": "c:ingots/steel"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:launcherscreen",
+    "count": 1
+  }
+}

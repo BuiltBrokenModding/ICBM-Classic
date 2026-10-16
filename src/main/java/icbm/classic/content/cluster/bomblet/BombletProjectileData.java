@@ -11,19 +11,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
 @NoArgsConstructor
-public class BombletProjectileData implements IProjectileData<EntityBombDroplet>, INBTSerializable<NBTTagCompound> {
+public class BombletProjectileData implements IProjectileData<EntityBombDroplet>, INBTSerializable<CompoundTag> {
 
-    public static final ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "bomblet");
+    public static final ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "bomblet");
     public static final ImmutableList<MetaTag> TYPES = ImmutableList.of(ProjectileTypes.TYPE_EXPLOSIVE);
 
     @Setter @Getter @Accessors(chain = true)
@@ -47,21 +48,22 @@ public class BombletProjectileData implements IProjectileData<EntityBombDroplet>
     }
 
     @Override
-    public EntityBombDroplet newEntity(World world, boolean allowItemPickup) {
+    public EntityBombDroplet newEntity(Level world, boolean allowItemPickup) {
         final EntityBombDroplet bombDroplet = new EntityBombDroplet(world);
         bombDroplet.explosive.setStack(explosiveStack);
         return bombDroplet;
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound save = new NBTTagCompound();
-        save.setTag("explosive", explosiveStack.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag save = new CompoundTag();
+        save.put("explosive", explosiveStack.saveOptional(provider));
         return save;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound save) {
-        explosiveStack = new ItemStack(save.getCompoundTag("explosive"));
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag save) {
+        explosiveStack = ItemStack.parseOptional(provider, save.getCompound("explosive"));
     }
 }
+// PORTED

@@ -1,8 +1,7 @@
 package icbm.classic.prefab.gui.button;
 
 import icbm.classic.prefab.gui.GuiContainerBase;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Supplier;
 
@@ -16,32 +15,23 @@ public class RedstoneButton extends GuiButtonBase<RedstoneButton> {
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.visible)
-        {
-            // Reset and bind texture
-            mc.getTextureManager().bindTexture(GuiContainerBase.COMPONENTS_TEXTURE);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        // Get state
+        final boolean redstoneEnabled = redstoneState.get();
+        final boolean hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 
-            // Get state
-            final boolean redstoneEnabled = redstoneState.get();
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-
-            // Handle state
-            int offset = 0;
-            if(!this.enabled) {
-                offset = 1;
-            }
-            else if(this.hovered) {
-                offset = 2;
-            }
-
-            // Render UV
-            this.drawTexturedModalRect(this.x, this.y, (!redstoneEnabled ? 12 : 0), offset * 12, 12, 12);
-
-
-            this.mouseDragged(mc, mouseX, mouseY);
+        // Handle state
+        int offset = 0;
+        if(!this.active) {
+            offset = 1;
         }
+        else if(hovered) {
+            offset = 2;
+        }
+
+        // Render UV
+        graphics.blit(GuiContainerBase.COMPONENTS_TEXTURE, this.getX(), this.getY(), (!redstoneEnabled ? 12 : 0), offset * 12, 12, 12);
     }
 }
+// PORTED

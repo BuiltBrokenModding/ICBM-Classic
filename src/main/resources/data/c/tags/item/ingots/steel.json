@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "icbmclassic:steel_ingot",
+      "required": false
+    }
+  ]
+}

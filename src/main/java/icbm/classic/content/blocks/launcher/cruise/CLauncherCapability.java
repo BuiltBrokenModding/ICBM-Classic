@@ -22,9 +22,9 @@ import icbm.classic.content.reg.ItemReg;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -95,20 +95,20 @@ public class CLauncherCapability extends LauncherBaseCapability {
             return LauncherStatus.FIRING_AIMING; // TODO return aiming status, with callback to check if did fire
         }
 
-        final CausedByBlock selfCause = new CausedByBlock(host.getWorld(), host.getPos(), host.getBlockState());
+        final CausedByBlock selfCause = new CausedByBlock(host.getLevel(), host.getBlockPos(), host.getBlockState());
         selfCause.setPreviousCause(cause);
-        final IActionSource missileSource = new ActionSource(getHost().getWorld(), new Vec3d(host.getPos().getX() + 0.5, host.getPos().getY() + TileCruiseLauncher.MISSILE__HOLDER_Y, host.getPos().getZ() + 0.5), selfCause);
+        final IActionSource missileSource = new ActionSource(getHost().getLevel(), new Vec3(host.getBlockPos().getX() + 0.5, host.getBlockPos().getY() + TileCruiseLauncher.MISSILE__HOLDER_Y, host.getBlockPos().getZ() + 0.5), selfCause);
 
         final ItemStack inventoryStack = host.missileHolder.getMissileStack();
 
-        if (inventoryStack.hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null)) {
-            final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        {
+            final ICapabilityMissileStack capabilityMissileStack = inventoryStack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
             if (capabilityMissileStack != null) {
 
                 if (host.isServer()) {
-                    final IMissile missile = capabilityMissileStack.newMissile(host.getWorld());
+                    final IMissile missile = capabilityMissileStack.newMissile(host.getLevel());
                     final Entity entity = missile.getMissileEntity();
-                    entity.setPosition(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);
+                    entity.setPos(missileSource.getPosition().x, missileSource.getPosition().y, missileSource.getPosition().z);
 
                     // Should always work but in rare cases capability might have failed
                     if (!host.missileHolder.consumeMissile()) {
@@ -127,7 +127,7 @@ public class CLauncherCapability extends LauncherBaseCapability {
                     missile.setFlightLogic(new DirectFlightLogic(ConfigMissile.CRUISE_FUEL));
                     missile.launch();
 
-                    if (!host.getWorld().spawnEntity(entity)) {
+                    if (!host.getLevel().addFreshEntity(entity)) {
                         return LauncherStatus.ERROR_SPAWN;
                     }
                     return new LaunchedWithMissile().setMissile(missile);
@@ -141,7 +141,8 @@ public class CLauncherCapability extends LauncherBaseCapability {
     @Override
     public float getPayloadVelocity() {
         // TODO find a way to get this from the missile stack
-        return host.getMissileHolder().getMissileStack().getItem() == ItemReg.itemSAM
+        return host.getMissileHolder().getMissileStack().getItem() == ItemReg.itemSAM.get()
             ? ConfigMissile.SAM_MISSILE.FLIGHT_SPEED : ConfigMissile.DIRECT_FLIGHT_SPEED;
     }
 }
+// PORTED

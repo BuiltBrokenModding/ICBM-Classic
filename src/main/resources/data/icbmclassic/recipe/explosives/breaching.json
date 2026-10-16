@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "grg",
+    "grg",
+    "grg"
+  ],
+  "key": {
+    "r": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:condensed"
+      }
+    },
+    "g": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 2,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:breaching"
+    }
+  }
+}

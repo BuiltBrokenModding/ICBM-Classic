@@ -1,15 +1,15 @@
 package icbm.classic.lib.saving.nodes;
 
 import icbm.classic.lib.saving.NbtSaveNode;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.core.Direction;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class SaveNodeFacing<E> extends NbtSaveNode<E, NBTTagByte> //TODO convert to enum save/load (small enums can do short, large can do ints)
+public class SaveNodeFacing<E> extends NbtSaveNode<E, ByteTag> //TODO convert to enum save/load (small enums can do short, large can do ints)
 {
-    public SaveNodeFacing(String name, Function<E, EnumFacing> save, BiConsumer<E, EnumFacing> load)
+    public SaveNodeFacing(String name, Function<E, Direction> save, BiConsumer<E, Direction> load)
     {
         super(name,
             (obj) -> save(save.apply(obj)),
@@ -17,15 +17,15 @@ public class SaveNodeFacing<E> extends NbtSaveNode<E, NBTTagByte> //TODO convert
         );
     }
 
-    public static NBTTagByte save(EnumFacing facing) {
+    public static ByteTag save(Direction facing) {
         if (facing != null)
         {
-            final byte b = (byte) facing.getIndex();
-            return new NBTTagByte(b);
+            final byte b = (byte) facing.get3DDataValue();
+            return ByteTag.valueOf(b);
         }
         return null;
     }
-    public static EnumFacing load(NBTTagByte save) {
-        return EnumFacing.getFront(save.getByte());
+    public static Direction load(ByteTag save) {
+        return Direction.from3DDataValue(save.getAsByte());
     }
 }

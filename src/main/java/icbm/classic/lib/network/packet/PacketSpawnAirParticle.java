@@ -2,21 +2,21 @@ package icbm.classic.lib.network.packet;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import icbm.classic.lib.network.TargetPoint;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
 {
     /*
     Id of the dimension that this particle should be placed in.
      */
-    private int dimId;
+    private ResourceKey<Level> dimId;
 
     // x y and z positions
     private double posX;
@@ -44,7 +44,7 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
         //Needed for forge to construct the packet
     }
 
-    public PacketSpawnAirParticle(int dimId, double posX, double posY, double posZ, double v, double v1, double v2,
+    public PacketSpawnAirParticle(ResourceKey<Level> dimId, double posX, double posY, double posZ, double v, double v1, double v2,
                                   float red, float green, float blue, float scale, int ticksToLive)
     {
         this.dimId = dimId;
@@ -62,9 +62,9 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     }
 
     @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void encodeInto(RegistryFriendlyByteBuf buffer)
     {
-        buffer.writeInt(dimId);
+        buffer.writeResourceKey(dimId);
         buffer.writeDouble(posX);
         buffer.writeDouble(posY);
         buffer.writeDouble(posZ);
@@ -79,9 +79,9 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     }
 
     @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void decodeInto(RegistryFriendlyByteBuf buffer)
     {
-        dimId = buffer.readInt();
+        dimId = buffer.readResourceKey(Registries.DIMENSION);
         posX = buffer.readDouble();
         posY = buffer.readDouble();
         posZ = buffer.readDouble();
@@ -96,20 +96,19 @@ public class PacketSpawnAirParticle implements IPacket<PacketSpawnAirParticle>
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, Player player)
     {
-        if (minecraft.world != null && player.world.provider.getDimension() == dimId)
+        if (minecraft.level != null && player.level().dimension().equals(dimId))
         {
-            ICBMClassic.proxy.spawnAirParticle(player.world, posX, posY, posZ, v, v1, v2, red, green, blue, scale, ticksToLive);
+            ICBMClassic.proxy.spawnAirParticle(player.level(), posX, posY, posZ, v, v1, v2, red, green, blue, scale, ticksToLive);
         }
     }
 
-    public static void sendToAllClients(World world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
+    public static void sendToAllClients(Level world, double x, double y, double z, double v, double v1, double v2, float red, float green, float blue, float scale, int ticksToLive)
     {
-        final int dimid = world.provider.getDimension();
+        final ResourceKey<Level> dimid = world.dimension();
         final PacketSpawnAirParticle packet = new PacketSpawnAirParticle(dimid, x, y, z, v, v1, v2, red, green, blue, scale, ticksToLive);
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(dimid, x, y, z, 256);
+        final TargetPoint point = new TargetPoint(dimid, x, y, z, 256);
         ICBMClassic.packetHandler.sendToAllAround(packet, point);
     }
 }

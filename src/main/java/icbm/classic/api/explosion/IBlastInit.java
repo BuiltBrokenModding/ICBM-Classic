@@ -2,9 +2,9 @@ package icbm.classic.api.explosion;
 
 import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  * <p>
  * <p>
  * Created by Dark(DarkGuardsman, Robin) on 1/3/19.
- * @deprecated being replaced with {@link icbm.classic.api.actions.IActionData#create(World, double, double, double, IActionSource)} and likely a customization provider
+ * @deprecated being replaced with {@link icbm.classic.api.actions.IActionData#create(Level, double, double, double, IActionSource)} and likely a customization provider
  */
 public interface IBlastInit extends IBlast
 {
@@ -64,10 +64,10 @@ public interface IBlastInit extends IBlast
      *
      * @param world
      * @return this
-     * @deprecated replaced with {@link icbm.classic.api.actions.IActionData#create(World, double, double, double, IActionSource)}
+     * @deprecated replaced with {@link icbm.classic.api.actions.IActionData#create(Level, double, double, double, IActionSource)}
      */
     @Deprecated
-    IBlastInit setBlastWorld(World world);
+    IBlastInit setBlastWorld(Level world);
 
     /**
      * Sets the blast's position. Should only be called
@@ -78,7 +78,7 @@ public interface IBlastInit extends IBlast
      * @param y
      * @param z
      * @return this
-     * @deprecated replaced with {@link icbm.classic.api.actions.IActionData#create(World, double, double, double, IActionSource)}
+     * @deprecated replaced with {@link icbm.classic.api.actions.IActionData#create(Level, double, double, double, IActionSource)}
      */
     @Deprecated
     IBlastInit setBlastPosition(double x, double y, double z);
@@ -91,7 +91,7 @@ public interface IBlastInit extends IBlast
      * @return this
      */
     @Deprecated
-    default IBlastInit setCustomData(@Nonnull NBTTagCompound customData) {
+    default IBlastInit setCustomData(@Nonnull CompoundTag customData) {
         return this;
     }
 
@@ -128,3 +128,4 @@ public interface IBlastInit extends IBlast
      */
     IBlastInit buildBlast();
 }
+// PORTED

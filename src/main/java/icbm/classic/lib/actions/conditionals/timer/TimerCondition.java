@@ -9,15 +9,16 @@ import icbm.classic.lib.actions.conditionals.Condition;
 import icbm.classic.lib.actions.status.ActionResponses;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.*;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
 @NoArgsConstructor
 @AllArgsConstructor
 public class TimerCondition extends Condition implements IConditionCause {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "timer");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "timer");
 
     @Getter @Setter
     private int target = 0;
@@ -59,13 +60,13 @@ public class TimerCondition extends Condition implements IConditionCause {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -80,3 +81,4 @@ public class TimerCondition extends Condition implements IConditionCause {
         return new CauseByTimer(this.getName(), target);
     }
 }
+// PORTED

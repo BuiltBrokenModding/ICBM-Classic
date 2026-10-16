@@ -1,10 +1,10 @@
 package icbm.classic.api.missiles.projectile;
 
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -60,7 +60,7 @@ public interface IProjectileDataRegistry extends IBuilderRegistry<IProjectileDat
      *
      * @deprecated being replaced with {@link icbm.classic.api.actions.IAction}
      */
-    default Entity spawnProjectile(ResourceLocation key, World world, double x, double y, double z, boolean allowItemPickup, @Nullable Entity source) {
+    default Entity spawnProjectile(ResourceLocation key, Level world, double x, double y, double z, boolean allowItemPickup, @Nullable Entity source) {
         //TODO return spawn event with more details
         //TODO consider adding a settings object in place of allowItemPickup
         return spawnProjectile(key, world, x, y, z, source, allowItemPickup, null);
@@ -81,14 +81,14 @@ public interface IProjectileDataRegistry extends IBuilderRegistry<IProjectileDat
      *
      * @deprecated being replaced with {@link icbm.classic.api.actions.IAction}
      */
-    Entity spawnProjectile(ResourceLocation key, World world, double x, double y, double z,
+    Entity spawnProjectile(ResourceLocation key, Level world, double x, double y, double z,
                                    @Nullable Entity source, boolean allowItemPickup,
                                    @Nullable Consumer<Entity> preSpawnCallback);
 
     /**
      * Spawns a projectile
      *
-     * @param item to attempt to spawn, will try to find matching projectile data... if not will spawn an EntityItem
+     * @param item to attempt to spawn, will try to find matching projectile data... if not will spawn an ItemEntity
      * @param world to spawn into
      * @param x axis
      * @param y axis
@@ -100,7 +100,7 @@ public interface IProjectileDataRegistry extends IBuilderRegistry<IProjectileDat
      *
      * @deprecated being replaced with {@link icbm.classic.api.actions.IAction}
      */
-    Entity spawnProjectile(ItemStack item, World world, double x, double y, double z, @Nullable Entity source,
+    Entity spawnProjectile(ItemStack item, Level world, double x, double y, double z, @Nullable Entity source,
                            boolean allowItemPickup, @Nullable Consumer<Entity> preSpawnCallback);
 
     /**
@@ -118,6 +118,7 @@ public interface IProjectileDataRegistry extends IBuilderRegistry<IProjectileDat
      *
      * @deprecated being replaced with {@link icbm.classic.api.actions.IAction}
      */
-    <E extends Entity> E spawnProjectile(IProjectileData<E> data, World world, double x, double y, double z, @Nullable Entity source,
+    <E extends Entity> E spawnProjectile(IProjectileData<E> data, Level world, double x, double y, double z, @Nullable Entity source,
                            boolean allowItemPickup, @Nullable Consumer<E> preSpawnCallback);
 }
+// PORTED

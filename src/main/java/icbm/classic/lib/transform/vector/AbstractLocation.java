@@ -4,36 +4,41 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.dispenser.ILocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 /**
  * Prefab for location data that doesn't implement IWorldPosition
  * Created by Robin on 1/13/2015.
  */
-public abstract class AbstractLocation<R extends AbstractLocation> extends AbstractPos<R> implements ILocation
+// PORT: 1.12 implemented net.minecraft.dispenser.ILocation, which has no 1.21 equivalent
+public abstract class AbstractLocation<R extends AbstractLocation> extends AbstractPos<R>
 {
     /** Minecraft world for this location */
-    public World world;
+    public Level world;
 
-    public AbstractLocation(World world, double x, double y, double z)
+    public AbstractLocation(Level world, double x, double y, double z)
     {
         super(x, y, z);
         this.world = world;
     }
 
-    public AbstractLocation(World world, BlockPos pos)
+    public AbstractLocation(Level world, BlockPos pos)
     {
         super(pos.getX(), pos.getY(), pos.getZ());
         this.world = world;
@@ -42,21 +47,62 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
     /**
      * Creates a location from NBT data
      *
+     * PORT: dimension is stored as the dimension's resource location string instead of an int id
+     *
      * @param nbt - valid data, can't be null
      */
-    public AbstractLocation(NBTTagCompound nbt)
+    public AbstractLocation(CompoundTag nbt)
     {
-        this(DimensionManager.getWorld(nbt.getInteger(NBTConstants.DIMENSION)), nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
+        this(lookupWorld(readDimension(nbt)), nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
 
     /**
      * Creates a location from a ByteBuf
      *
-     * @param data - data, should contain int, double, double, double
+     * PORT: dimension is sent as a resource key instead of an int id
+     *
+     * @param data - data, should contain dimension key, double, double, double
      */
     public AbstractLocation(ByteBuf data)
     {
-        this(DimensionManager.getWorld(data.readInt()), data.readDouble(), data.readDouble(), data.readDouble());
+        this(lookupWorld(new FriendlyByteBuf(data).readResourceKey(Registries.DIMENSION)), data.readDouble(), data.readDouble(), data.readDouble());
+    }
+
+    /**
+     * Replacement for 1.12 DimensionManager#getWorld. Only works when a server is running (dedicated or integrated)
+     *
+     * @param key of the dimension
+     * @return level or null if not found
+     */
+    public static Level lookupWorld(ResourceKey<Level> key)
+    {
+        final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (key != null && server != null)
+        {
+            return server.getLevel(key);
+        }
+        return null;
+    }
+
+    /**
+     * Reads the dimension key saved by {@link #writeNBT(CompoundTag)}
+     *
+     * @param nbt to read
+     * @return key or null if missing/invalid
+     */
+    public static ResourceKey<Level> readDimension(CompoundTag nbt)
+    {
+        final ResourceLocation location = ResourceLocation.tryParse(nbt.getString(NBTConstants.DIMENSION));
+        if (location != null && nbt.contains(NBTConstants.DIMENSION))
+        {
+            return ResourceKey.create(Registries.DIMENSION, location);
+        }
+        return null;
+    }
+
+    private ResourceKey<Level> dimensionOrDefault()
+    {
+        return world != null ? world.dimension() : Level.OVERWORLD;
     }
 
     /**
@@ -66,7 +112,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      */
     public AbstractLocation(Entity entity)
     {
-        this(entity.world, entity.posX, entity.posY, entity.posZ);
+        this(entity.level(), entity.getX(), entity.getY(), entity.getZ());
     }
 
     /**
@@ -74,9 +120,9 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      *
      * @param tile - valid tile with a world
      */
-    public AbstractLocation(TileEntity tile)
+    public AbstractLocation(BlockEntity tile)
     {
-        this(tile.getWorld(), tile.getPos());
+        this(tile.getLevel(), tile.getBlockPos());
     }
 
     /**
@@ -95,31 +141,31 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      * @param world  - valid world, can be null but not recommended
      * @param vector - location data, should be valid
      */
-    public AbstractLocation(World world, IPos3D vector)
+    public AbstractLocation(Level world, IPos3D vector)
     {
         this(world, vector.x(), vector.y(), vector.z());
     }
 
     /**
-     * Creates a location from a world and {@link Vec3d} combo
+     * Creates a location from a world and {@link Vec3} combo
      *
      * @param world - valid world, can be null but not recommended
      * @param vec   - minecraft vector
      */
-    public AbstractLocation(World world, Vec3d vec)
+    public AbstractLocation(Level world, Vec3 vec)
     {
         this(world, vec.x, vec.y, vec.z);
     }
 
     /**
-     * Creates a location from a world and {@link RayTraceResult} combo
+     * Creates a location from a world and {@link HitResult} combo
      *
      * @param world  - valid world, can be null but not recommended
      * @param target - miencraft moving object position
      */
-    public AbstractLocation(World world, RayTraceResult target)
+    public AbstractLocation(Level world, HitResult target)
     {
-        this(world, target.hitVec);
+        this(world, target.getLocation());
     }
 
     /**
@@ -127,7 +173,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      *
      * @return a world
      */
-    public World world()
+    public Level world()
     {
         return world;
     }
@@ -137,7 +183,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      *
      * @return a world
      */
-    public World getWorld()
+    public Level getWorld()
     {
         return world;
     }
@@ -146,19 +192,19 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      * Conversions
      */
     @Override
-    public NBTTagCompound writeNBT(NBTTagCompound nbt)
+    public CompoundTag writeNBT(CompoundTag nbt)
     {
-        nbt.setInteger(NBTConstants.DIMENSION, world != null && world.provider != null ? world.provider.getDimension() : 0);
-        nbt.setDouble(NBTConstants.X, x());
-        nbt.setDouble(NBTConstants.Y, y());
-        nbt.setDouble(NBTConstants.Z, z());
+        nbt.putString(NBTConstants.DIMENSION, dimensionOrDefault().location().toString());
+        nbt.putDouble(NBTConstants.X, x());
+        nbt.putDouble(NBTConstants.Y, y());
+        nbt.putDouble(NBTConstants.Z, z());
         return nbt;
     }
 
     @Override
     public ByteBuf writeByteBuf(ByteBuf data)
     {
-        data.writeInt(world != null && world.provider != null ? world.provider.getDimension() : 0);
+        new FriendlyByteBuf(data).writeResourceKey(dimensionOrDefault());
         data.writeDouble(x());
         data.writeDouble(y());
         data.writeDouble(z());
@@ -192,7 +238,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
     @Deprecated //Use getBlockState()
     public Block getBlock()
     {
-        if (world != null && world.getChunkProvider().isChunkGeneratedAt(xi() / 16, zi() / 16))
+        if (world != null && world.hasChunk(xi() / 16, zi() / 16))
         {
             return super.getBlock(world);
         }
@@ -202,9 +248,9 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
         }
     }
 
-    public IBlockState getBlockState()
+    public BlockState getBlockState()
     {
-        if (world != null && world.getChunkProvider().isChunkGeneratedAt(xi() / 16, zi() / 16))
+        if (world != null && world.hasChunk(xi() / 16, zi() / 16))
         {
             return super.getBlockState(world);
         }
@@ -219,12 +265,12 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      *
      * @return tile entity, can be null
      */
-    public TileEntity getTileEntity()
+    public BlockEntity getTileEntity()
     {
         if (world != null)
         {
-            TileEntity tile = world.getTileEntity(toBlockPos());
-            return tile == null || tile.isInvalid() ? null : tile;
+            BlockEntity tile = world.getBlockEntity(toBlockPos());
+            return tile == null || tile.isRemoved() ? null : tile;
         }
         return null;
     }
@@ -260,7 +306,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      * @param notify   - notification level to use when placing the block
      * @return true if it was repalced
      */
-    public boolean setBlock(IBlockState block, int notify)
+    public boolean setBlock(BlockState block, int notify)
     {
         return super.setBlock(world, block, notify);
     }
@@ -270,7 +316,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      *
      * @return true if it was repalced
      */
-    public boolean setBlock(IBlockState state)
+    public boolean setBlock(BlockState state)
     {
         return super.setBlock(world, state, 3);
     }
@@ -354,12 +400,8 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      */
     public boolean isChunkLoaded()
     {
-        //For some reason the server has it's own chunk provider that actually checks if the chunk exists
-        if (world instanceof WorldServer)
-        {
-            return ((WorldServer) world).getChunkProvider().chunkExists(xi() >> 4, zi() >> 4) && getChunk().isLoaded();
-        }
-        return world.getChunkProvider().isChunkGeneratedAt(xi() >> 4, zi() >> 4) && getChunk().isLoaded();
+        // PORT: 1.21 hasChunk only reports chunks that are loaded, which covers both 1.12 checks
+        return world.hasChunk(xi() >> 4, zi() >> 4);
     }
 
     /**
@@ -367,9 +409,9 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
      *
      * @return chunk the location is in
      */
-    public Chunk getChunk()
+    public LevelChunk getChunk()
     {
-        return world.getChunkFromBlockCoords(toBlockPos());
+        return world.getChunkAt(toBlockPos());
     }
 
     /** Marks a block for update */
@@ -387,6 +429,7 @@ public abstract class AbstractLocation<R extends AbstractLocation> extends Abstr
     @Override
     public String toString()
     {
-        return "WorldLocation [" + this.x() + "x," + this.y() + "y," + this.z() + "z," + (this.world == null ? "n" : this.world.provider == null ? "p" : this.world.provider.getDimension()) + "d]";
+        return "WorldLocation [" + this.x() + "x," + this.y() + "y," + this.z() + "z," + (this.world == null ? "n" : this.world.dimension().location()) + "d]";
     }
 }
+// PORTED

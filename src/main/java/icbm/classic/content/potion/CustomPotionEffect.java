@@ -1,34 +1,30 @@
 package icbm.classic.content.potion;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class CustomPotionEffect extends PotionEffect
+public class CustomPotionEffect extends MobEffectInstance
 {
 
-    public CustomPotionEffect(Potion potion, int duration, int amplifier)
+    public CustomPotionEffect(Holder<MobEffect> potion, int duration, int amplifier)
     {
         super(potion, duration, amplifier);
     }
 
     /** Creates a potion effect with custom curable items.
      *
-     * @param curativeItems - ItemStacks that can cure this potion effect */
-    public CustomPotionEffect(Potion potionID, int duration, int amplifier, List<ItemStack> curativeItems)
+     * @param curativeItems - ItemStacks that can cure this potion effect, null or empty for none */
+    public CustomPotionEffect(Holder<MobEffect> potionID, int duration, int amplifier, List<ItemStack> curativeItems)
     {
         super(potionID, duration, amplifier);
 
-        if (curativeItems == null)
-        {
-            this.setCurativeItems(new ArrayList<ItemStack>());
-        }
-        else
-        {
-            this.setCurativeItems(curativeItems);
-        }
+        // PORT: 1.12 curative items became NeoForge EffectCures. Every ICBM caller passes null (no cure),
+        // so all cures (milk, honey...) are removed. A non-empty item list can't be mapped and is ignored.
+        this.getCures().clear(); // PORT-CHECK: NeoForge 21.1 MobEffectInstance#getCures() returns the mutable cure set
     }
 }
+// PORTED

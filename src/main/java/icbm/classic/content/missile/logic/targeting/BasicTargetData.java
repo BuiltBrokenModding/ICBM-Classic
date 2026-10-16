@@ -7,11 +7,12 @@ import icbm.classic.api.missiles.parts.IMissileTargetDelayed;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -19,11 +20,11 @@ import java.util.Objects;
 /**
  * Simple 3D position targeting data
  */
-public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, INBTSerializable<NBTTagCompound> {
+public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, INBTSerializable<CompoundTag> {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "basic");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "basic");
     @Getter @Setter
-    private Vec3d position;
+    private Vec3 position;
     private int firingDelay = 0;
 
     public BasicTargetData() {
@@ -31,15 +32,15 @@ public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, I
     }
 
     public BasicTargetData(double x, double y, double z) {
-        this.position = new Vec3d(x, y, z);
+        this.position = new Vec3(x, y, z);
     }
 
-    public BasicTargetData(Vec3d position) {
+    public BasicTargetData(Vec3 position) {
         this.position = position;
     }
 
     public BasicTargetData(BlockPos pos) {
-        this.position = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        this.position = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     public BasicTargetData withFiringDelay(int ticks) {
@@ -94,22 +95,22 @@ public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, I
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound saveData = new NBTTagCompound();
-        saveData.setDouble("x", position.x);
-        saveData.setDouble("y", position.y);
-        saveData.setDouble("z", position.z);
-        saveData.setInteger("firingDelay", firingDelay);
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag saveData = new CompoundTag();
+        saveData.putDouble("x", position.x);
+        saveData.putDouble("y", position.y);
+        saveData.putDouble("z", position.z);
+        saveData.putInt("firingDelay", firingDelay);
         return saveData;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         double x = nbt.getDouble("x");
         double y = nbt.getDouble("y");
         double z = nbt.getDouble("z");
-        this.position = new Vec3d(x, y, z);
-        this.firingDelay = nbt.getInteger("firingDelay");
+        this.position = new Vec3(x, y, z);
+        this.firingDelay = nbt.getInt("firingDelay");
     }
 
     @Override
@@ -120,3 +121,4 @@ public class BasicTargetData implements IMissileTarget, IMissileTargetDelayed, I
         return false;
     }
 }
+// PORTED

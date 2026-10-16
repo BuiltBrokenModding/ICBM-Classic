@@ -1,8 +1,8 @@
 package icbm.classic.api.radio.messages;
 
 import icbm.classic.api.radio.IRadioMessage;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +24,7 @@ public interface ITargetMessage extends IRadioMessage {
      * @return position of target for intercept
      */
     @Nullable
-    default Vec3d getIntercept(double x, double y, double z, double velocity) {
+    default Vec3 getIntercept(double x, double y, double z, double velocity) {
         return getTarget();
     }
 
@@ -37,7 +37,7 @@ public interface ITargetMessage extends IRadioMessage {
      * @return position of target
      */
     @Nullable
-    Vec3d getTarget();
+    Vec3 getTarget();
 
     /**
      * Possible entity target, not all target messages
@@ -50,3 +50,4 @@ public interface ITargetMessage extends IRadioMessage {
         return null;
     }
 }
+// PORTED

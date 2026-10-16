@@ -2,7 +2,7 @@ package icbm.classic.lib.projectile;
 
 import icbm.classic.api.missiles.projectile.IProjectileData;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -15,9 +15,11 @@ public class CachedProjectileData implements Function<ItemStack, IProjectileData
     private IProjectileData instance;
     @Override
     public IProjectileData apply(ItemStack itemStack) {
-        if(instance != null) {
+        // PORT: 1.12 checked instance != null, so the instance was never built and snowball/egg conversions returned null
+        if(instance == null) {
             instance = builder.get();
         }
         return instance;
     }
 }
+// PORTED

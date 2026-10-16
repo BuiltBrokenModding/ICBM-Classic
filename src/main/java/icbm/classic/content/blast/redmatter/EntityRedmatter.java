@@ -6,23 +6,25 @@ import icbm.classic.content.blast.redmatter.caps.BlastRedmatterWrapper;
 import icbm.classic.content.blast.redmatter.caps.CapRedmatterPull;
 import icbm.classic.content.blast.redmatter.logic.RedmatterLogic;
 import icbm.classic.content.blast.redmatter.render.RedmatterClientLogic;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.phys.Vec3;
+import icbm.classic.content.reg.EntityReg;
+import icbm.classic.lib.capability.holder.ICapabilityHolderEntity;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 4/19/2020.
  */
-public class EntityRedmatter extends Entity
+public class EntityRedmatter extends Entity implements ICapabilityHolderEntity
 {
     public static final String NBT_BLAST_SIZE = "blast_size";
     public static final String NBT_BLAST_SIZE_MAX = "blast_size_max";
@@ -40,42 +42,46 @@ public class EntityRedmatter extends Entity
     public final RedmatterLogic redmatterLogic = new RedmatterLogic(this);
 
     /** Actual size of the redmatter */
-    private static final DataParameter<Float> SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SIZE_DATA = SynchedEntityData.defineId(EntityRedmatter.class, EntityDataSerializers.FLOAT);
     /** Largest possible size of the redmatter */
-    private static final DataParameter<Float> MAX_SIZE_DATA = EntityDataManager.createKey(EntityRedmatter.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> MAX_SIZE_DATA = SynchedEntityData.defineId(EntityRedmatter.class, EntityDataSerializers.FLOAT);
 
-    public EntityRedmatter(World world)
+    public EntityRedmatter(EntityType<? extends EntityRedmatter> type, Level world)
     {
-        super(world);
-        this.setSize(0.98F, 0.98F);
-        this.preventEntitySpawning = true;
-        this.ignoreFrustumCheck = true;
-        this.ticksExisted = 0;
-        this.noClip = true;
+        super(type, world);
+        this.blocksBuilding = true;
+        this.noCulling = true;
+        this.tickCount = 0;
+        this.noPhysics = true;
+    }
+
+    public EntityRedmatter(Level world)
+    {
+        this(EntityReg.REDMATTER.get(), world);
     }
 
     @Override
-    protected void entityInit()
+    protected void defineSynchedData(SynchedEntityData.Builder builder)
     {
-        this.dataManager.register(SIZE_DATA, ConfigBlast.redmatter.DEFAULT_SIZE);
-        this.dataManager.register(MAX_SIZE_DATA, ConfigBlast.redmatter.MAX_SIZE);
+        builder.define(SIZE_DATA, ConfigBlast.redmatter.DEFAULT_SIZE);
+        builder.define(MAX_SIZE_DATA, ConfigBlast.redmatter.MAX_SIZE);
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
-        super.onUpdate();
+        super.tick();
 
         //Update motion until we hit zero
-        if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) //TODO replace zero with range check to prevent rounding issues
+        if (!this.getDeltaMovement().equals(Vec3.ZERO)) //TODO replace zero with range check to prevent rounding issues
         {
             reduceMotion();
             correctMotion();
-            move(MoverType.SELF, motionX, motionY, motionZ);
+            move(MoverType.SELF, getDeltaMovement());
         }
 
         //Run only if server
-        if(!world.isRemote)
+        if(!level().isClientSide())
         {
             redmatterLogic.tick();
         }
@@ -84,9 +90,7 @@ public class EntityRedmatter extends Entity
     //<editor-fold desc="motion handling">
     private void reduceMotion()
     {
-        this.motionX *= SPEED_REDUCTION;
-        this.motionY *= SPEED_REDUCTION;
-        this.motionZ *= SPEED_REDUCTION;
+        this.setDeltaMovement(this.getDeltaMovement().scale(SPEED_REDUCTION));
     }
 
     private void correctMotion()
@@ -94,50 +98,56 @@ public class EntityRedmatter extends Entity
         //TODO see if we can remove the sqrt and if the limit should be in an if-statement
 
         //Normalize motion as a speed value
-        final float speed = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
-        this.motionX /= speed;
-        this.motionY /= speed;
-        this.motionZ /= speed;
+        final Vec3 motion = this.getDeltaMovement();
+        final float speed = (float) motion.length();
+
+        // PORT: 1.12 divided by the speed unguarded, once the decaying motion underflowed the float speed to 0
+        // the motion became NaN (0 * Infinity) and the entity moved to a NaN position. Stop the motion instead.
+        if (!(speed > 1.0E-6f))
+        {
+            this.setDeltaMovement(Vec3.ZERO);
+            return;
+        }
 
         //Limit our velocity vector by the updated speed
         final float limitedSpeed = Math.min(speed, MAX_SPEED);
-        this.motionX *= limitedSpeed;
-        this.motionY *= limitedSpeed;
-        this.motionZ *= limitedSpeed;
+        this.setDeltaMovement(motion.scale(1.0 / speed).scale(limitedSpeed));
     }
     //</editor-fold>
 
     //<editor-fold desc="saving">
     @Override
-    protected void readEntityFromNBT(NBTTagCompound nbt)
+    protected void readAdditionalSaveData(CompoundTag nbt)
     {
-        if(nbt.hasKey(NBT_BLAST_SIZE))
+        if(nbt.contains(NBT_BLAST_SIZE))
         {
             setBlastSize(nbt.getFloat(NBT_BLAST_SIZE));
         }
-        if(nbt.hasKey(NBT_BLAST_SIZE_MAX))
+        if(nbt.contains(NBT_BLAST_SIZE_MAX))
         {
-            setBlastSize(nbt.getFloat(NBT_BLAST_SIZE_MAX));
+            // PORT: 1.12 loaded the max size into the current size (setBlastSize), which made every redmatter
+            // jump to its max size on chunk reload. Fixed to restore the max size.
+            setBlastMaxSize(nbt.getFloat(NBT_BLAST_SIZE_MAX));
         }
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound nbt)
+    protected void addAdditionalSaveData(CompoundTag nbt)
     {
-        nbt.setFloat(NBT_BLAST_SIZE, getBlastSize());
-        nbt.setFloat(NBT_BLAST_SIZE_MAX, getBlastMaxSize());
+        nbt.putFloat(NBT_BLAST_SIZE, getBlastSize());
+        nbt.putFloat(NBT_BLAST_SIZE_MAX, getBlastMaxSize());
     }
     //</editor-fold>
 
     //<editor-fold desc="disabled-props">
     @Override
-    protected boolean canTriggerWalking()
+    protected Entity.MovementEmission getMovementEmission()
     {
-        return false;
+        return Entity.MovementEmission.NONE;
     }
 
     @Override
-    public boolean canBeCollidedWith()
+    public boolean isPickable()
     {
         return false;
     }
@@ -145,47 +155,41 @@ public class EntityRedmatter extends Entity
 
     //<editor-fold desc="cap-system">
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == ICBMClassicAPI.BLAST_CAPABILITY
-                || capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY
-                || super.hasCapability(capability, facing);
-    }
-
-    @Override
     @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    @SuppressWarnings("unchecked")
+    public <T> T getEntityCapability(EntityCapability<T, Void> capability)
     {
         if (capability == ICBMClassicAPI.BLAST_CAPABILITY)
         {
-            return ICBMClassicAPI.BLAST_CAPABILITY.cast(blastData);
+            return (T) blastData;
         }
         else if (capability == ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY)
         {
-            return ICBMClassicAPI.BLAST_VELOCITY_CAPABILITY.cast(capRedmatterPull);
+            return (T) capRedmatterPull;
         }
-        return super.getCapability(capability, facing);
+        return null;
     }
     //</editor-fold>
 
     public float getBlastSize()
     {
-        return this.dataManager.get(SIZE_DATA);
+        return this.entityData.get(SIZE_DATA);
     }
 
     public float getBlastMaxSize()
     {
-        return this.dataManager.get(MAX_SIZE_DATA);
+        return this.entityData.get(MAX_SIZE_DATA);
     }
 
     public void setBlastSize(float size)
     {
         final float limitedSize = Math.max(ConfigBlast.redmatter.MIN_SIZE, size);
-        this.dataManager.set(SIZE_DATA, limitedSize);
+        this.entityData.set(SIZE_DATA, limitedSize);
     }
 
     public void setBlastMaxSize(float size)
     {
-        this.dataManager.set(MAX_SIZE_DATA, size);
+        this.entityData.set(MAX_SIZE_DATA, size);
     }
 }
+// PORTED

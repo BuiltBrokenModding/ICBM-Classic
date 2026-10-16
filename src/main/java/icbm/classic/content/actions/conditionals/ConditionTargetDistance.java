@@ -13,15 +13,16 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 
-public class ConditionTargetDistance implements ICondition, IConditionCause, INBTSerializable<NBTTagCompound> {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "projectile.target.distance");
+public class ConditionTargetDistance implements ICondition, IConditionCause, INBTSerializable<CompoundTag> {
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "projectile.target.distance");
     private IActionFieldProvider provider;
 
     @Getter
@@ -45,8 +46,8 @@ public class ConditionTargetDistance implements ICondition, IConditionCause, INB
     public void onTick()
     {
         if(provider.hasField(ActionFields.TARGET_POSITION) && provider.hasField(ActionFields.HOST_POSITION)) {
-            final Vec3d value = provider.getValue(ActionFields.TARGET_POSITION);
-            final Vec3d host = provider.getValue(ActionFields.HOST_POSITION);
+            final Vec3 value = provider.getValue(ActionFields.TARGET_POSITION);
+            final Vec3 host = provider.getValue(ActionFields.HOST_POSITION);
             if(value != null && host != null) {
                 currentDistance = host.distanceTo(value);
                 //TODO add a manhatten distance version for faster calculations
@@ -79,12 +80,12 @@ public class ConditionTargetDistance implements ICondition, IConditionCause, INB
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -99,3 +100,4 @@ public class ConditionTargetDistance implements ICondition, IConditionCause, INB
         return null; // TODO implement
     }
 }
+// PORTED

@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "icbmclassic:concrete",
+    "icbmclassic:concrete_compact",
+    "icbmclassic:concrete_reinforced",
+    "icbmclassic:spikes",
+    "icbmclassic:spikes_poison",
+    "icbmclassic:spikes_fire",
+    "icbmclassic:emptower",
+    "icbmclassic:launcherbase",
+    "icbmclassic:launcherscreen",
+    "icbmclassic:launcherframe",
+    "icbmclassic:launcher_connector",
+    "icbmclassic:cruiselauncher",
+    "icbmclassic:radarstation",
+    "icbmclassic:radioactive_dirt",
+    "icbmclassic:radioactive_stone"
+  ]
+}

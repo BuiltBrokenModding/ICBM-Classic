@@ -2,33 +2,30 @@ package icbm.classic.client.render.entity;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.entity.EntityExplosion;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
-
-@SideOnly(Side.CLIENT)
-public class RenderExplosion extends Render<EntityExplosion>
+/** Renders nothing, the explosion controller entity is invisible */
+public class RenderExplosion extends EntityRenderer<EntityExplosion>
 {
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
+    public static ResourceLocation GREY_TEXTURE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
 
-    public RenderExplosion(RenderManager renderManager)
+    public RenderExplosion(EntityRendererProvider.Context context)
     {
-        super(renderManager);
+        super(context);
     }
 
     @Override
-    public void doRender(EntityExplosion entityExplosion, double x, double y, double z, float entityYaw, float partialTicks)
+    public boolean shouldRender(EntityExplosion entity, net.minecraft.client.renderer.culling.Frustum frustum, double camX, double camY, double camZ)
     {
+        return false;
     }
 
-    @Nullable
     @Override
-    protected ResourceLocation getEntityTexture(EntityExplosion entity)
+    public ResourceLocation getTextureLocation(EntityExplosion entity)
     {
         return GREY_TEXTURE;
     }
 }
+// PORTED

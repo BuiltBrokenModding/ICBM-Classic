@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "sgs",
+    "gwg",
+    "sgs"
+  ],
+  "key": {
+    "s": {
+      "item": "minecraft:sand"
+    },
+    "g": {
+      "item": "minecraft:gravel"
+    },
+    "w": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:concrete",
+    "count": 8
+  }
+}

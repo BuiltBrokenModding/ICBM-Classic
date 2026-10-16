@@ -1,6 +1,6 @@
 package icbm.classic.lib.network.lambda;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import lombok.Data;
 
 import java.lang.reflect.Type;
@@ -13,6 +13,6 @@ public class PacketCodexEntry<OBJECT, DATA> {
     private final boolean isArray;
     private final Function<OBJECT, DATA> getter;
     private final BiConsumer<OBJECT, DATA> setter;
-    private final BiConsumer<ByteBuf, DATA> encoder;
-    private final Function<ByteBuf, DATA> decoder;
+    private final BiConsumer<RegistryFriendlyByteBuf, DATA> encoder;
+    private final Function<RegistryFriendlyByteBuf, DATA> decoder;
 }

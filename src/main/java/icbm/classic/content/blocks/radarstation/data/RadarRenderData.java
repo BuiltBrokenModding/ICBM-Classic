@@ -7,6 +7,9 @@ import lombok.Getter;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * PORT: encode/decode take a plain ByteBuf, compatible with the RegistryFriendlyByteBuf based PacketCodex#node
+ */
 public class RadarRenderData {
 
     public static final int UV_SIZE = 54;
@@ -23,27 +26,27 @@ public class RadarRenderData {
     public void update() {
 
 
-        addDot(this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5, RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5, RadarDotType.MARKER);
 
         // Edge
-        addDot(this.host.getDetectionRange() + this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5, RadarDotType.MARKER);
-        addDot(-this.host.getDetectionRange() + this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5, RadarDotType.MARKER);
-        addDot(this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5 + this.host.getDetectionRange(), RadarDotType.MARKER);
-        addDot(this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5 - this.host.getDetectionRange(), RadarDotType.MARKER);
+        addDot(this.host.getDetectionRange() + this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5, RadarDotType.MARKER);
+        addDot(-this.host.getDetectionRange() + this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5, RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5 + this.host.getDetectionRange(), RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5 - this.host.getDetectionRange(), RadarDotType.MARKER);
 
         // Trigger
-        addDot(this.host.getPos().getX() + 0.5 + this.host.getTriggerRange(), this.host.getPos().getZ() + 0.5, RadarDotType.MARKER);
-        addDot(this.host.getPos().getX() + 0.5 - this.host.getTriggerRange(), this.host.getPos().getZ() + 0.5, RadarDotType.MARKER);
-        addDot(this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5 + this.host.getTriggerRange(), RadarDotType.MARKER);
-        addDot(this.host.getPos().getX() + 0.5, this.host.getPos().getZ() + 0.5 - this.host.getTriggerRange(), RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5 + this.host.getTriggerRange(), this.host.getBlockPos().getZ() + 0.5, RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5 - this.host.getTriggerRange(), this.host.getBlockPos().getZ() + 0.5, RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5 + this.host.getTriggerRange(), RadarDotType.MARKER);
+        addDot(this.host.getBlockPos().getX() + 0.5, this.host.getBlockPos().getZ() + 0.5 - this.host.getTriggerRange(), RadarDotType.MARKER);
 
-        this.host.getDetectedThreats().forEach((entity) ->  addDot(entity.posX, entity.posZ, RadarDotType.HOSTILE));
+        this.host.getDetectedThreats().forEach((entity) ->  addDot(entity.getX(), entity.getZ(), RadarDotType.HOSTILE));
         this.host.getIncomingThreats().forEach((entity) ->  addDot(entity.x(), entity.z(), RadarDotType.INCOMING));
     }
 
     public void addDot(double ex, double ez, RadarDotType type) {
-        final double deltaX = ex - (this.host.getPos().getX() + 0.5);
-        final double deltaZ = ez - (this.host.getPos().getZ() + 0.5);
+        final double deltaX = ex - (this.host.getBlockPos().getX() + 0.5);
+        final double deltaZ = ez - (this.host.getBlockPos().getZ() + 0.5);
 
         final double vecX = deltaX / this.host.getDetectionRange();
         final double vecZ = deltaZ / this.host.getDetectionRange();
@@ -65,7 +68,7 @@ public class RadarRenderData {
 
     public static List<RadarRenderDot> decodeDots(ByteBuf buf) {
 
-        final List<RadarRenderDot> dots = new LinkedList();
+        final List<RadarRenderDot> dots = new LinkedList<>();
 
         int dotCount = buf.readInt();
         for(int i = 0; i < dotCount; i++) {
@@ -83,3 +86,4 @@ public class RadarRenderData {
         });
     }
 }
+// PORTED

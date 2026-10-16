@@ -5,7 +5,7 @@ import icbm.classic.api.actions.cause.IActionCause;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.reg.obj.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * the location and caused by source.
  *
  * Potential actions are designed to be cached on source. Such as having a field
- * at the top of a TileEntity called warheadAction.
+ * at the top of a BlockEntity called warheadAction.
  */
 public interface IPotentialAction extends IBuildableObject {
 
@@ -43,7 +43,7 @@ public interface IPotentialAction extends IBuildableObject {
      * @return response
      */
     @Nonnull
-    IActionStatus checkAction(World world, double x, double y, double z, @Nullable IActionCause cause) ;
+    IActionStatus checkAction(Level world, double x, double y, double z, @Nullable IActionCause cause) ;
 
     /**
      * Wraps to {@link IActionData} after validating
@@ -57,10 +57,11 @@ public interface IPotentialAction extends IBuildableObject {
      * @return response
      */
     @Nonnull
-    IActionStatus doAction(World world, double x, double y, double z, @Nullable IActionCause cause);
+    IActionStatus doAction(Level world, double x, double y, double z, @Nullable IActionCause cause);
 
     @Override
     default IBuilderRegistry getRegistry() {
         return ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY;
     }
 }
+// PORTED

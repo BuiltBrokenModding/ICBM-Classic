@@ -8,13 +8,14 @@ import icbm.classic.config.blast.types.ConfigAntimatter;
 import icbm.classic.content.blast.BlastHelpers;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.transform.BlockEditHandler;
-import net.minecraft.block.BlockFalling;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import icbm.classic.content.blast.helpers.BlastBlockHelpers;
+import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,25 +23,25 @@ import java.util.stream.Collectors;
 
 public class BlastAntimatter extends BlastThreaded
 {
-    private final IBlockState replaceState = Blocks.AIR.getDefaultState();
+    private final BlockState replaceState = Blocks.AIR.defaultBlockState();
 
     @Override
     public boolean setupBlast()
     {
         super.setupBlast();
-        ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().rand.nextFloat() * 0.1 + 0.9F), true);
+        ICBMSounds.ANTIMATTER.play(world, this.location.x(), this.location.y(), this.location.z(), 7F, (float) (this.world().random.nextFloat() * 0.1 + 0.9F), true);
         return this.doDamageEntities(this.getBlastRadius() * 2, ConfigBlast.antimatter.damage); //TODO config for radius
     }
 
     @Override
     public void destroyBlock(BlockPos blockPos)
     {
-        final IBlockState blockState = world.getBlockState(blockPos);
-        if (!blockState.getBlock().isAir(blockState, world, blockPos))
+        final BlockState blockState = world.getBlockState(blockPos);
+        if (!blockState.isAir())
         {
-            if (blockState.getBlockHardness(world, blockPos) >= 0 || ConfigBlast.antimatter.damageUnbreakable)
+            if (blockState.getDestroySpeed(world, blockPos) >= 0 || ConfigBlast.antimatter.damageUnbreakable)
             {
-                world.setBlockState(blockPos, replaceState, ConfigBlast.BLAST_DO_BLOCKUPDATES ? 3 : 2);
+                world.setBlock(blockPos, replaceState, ConfigBlast.BLAST_DO_BLOCKUPDATES ? 3 : 2);
             }
         }
     }
@@ -67,7 +68,7 @@ public class BlastAntimatter extends BlastThreaded
     {
         //TODO have threads take a copy of chunks for use before running
         //      OR replace thread system with an entity that ticks over time to collect data
-        if (world instanceof WorldServer)
+        if (world instanceof ServerLevel)
         {
             long time = System.currentTimeMillis();
 
@@ -82,8 +83,9 @@ public class BlastAntimatter extends BlastThreaded
             time = System.currentTimeMillis();
 
             //Pull out fluids and falling blocks to prevent lag issues
+            // PORT: worker thread, reads the chunks captured on the server thread
             final List<BlockPos> removeFirst = edits.stream()
-                    .filter(blockPos -> world.isBlockLoaded(blockPos))
+                    .filter(this::isLoadedThreaded)
                     .filter(this::isFluid)
                     .collect(Collectors.toList());
 
@@ -93,16 +95,19 @@ public class BlastAntimatter extends BlastThreaded
             }
 
             //Schedule edits to run in the world
-            ((WorldServer) world).addScheduledTask(() -> scheduledTask(removeFirst, edits));
+            scheduleOnServerThread(() -> scheduledTask(removeFirst, edits));
         }
     }
 
     private void scheduledTask(List<BlockPos> removeFirst, List<BlockPos> edits) {
 
+        //Worker is done reading
+        releaseChunkSnapshot();
+
         long time = System.currentTimeMillis();
 
         //Remove any blocks that could cause issues when queued
-        removeFirst.forEach(blockPos -> world.setBlockState(blockPos, replaceState, 2));
+        removeFirst.forEach(blockPos -> world.setBlock(blockPos, replaceState, 2));
 
         time = System.currentTimeMillis() - time;
         if(ConfigDebug.DEBUG_EXPLOSIVES) {
@@ -123,10 +128,11 @@ public class BlastAntimatter extends BlastThreaded
         onPostThreadJoinWorld();
     }
 
+    /** Called from the worker thread */
     protected boolean isFluid(BlockPos blockPos)
     {
-        IBlockState state = world.getBlockState(blockPos);
-        return state.getMaterial() == Material.WATER || state.getBlock() instanceof BlockFalling;
+        BlockState state = getBlockStateThreaded(blockPos);
+        return BlastBlockHelpers.isWaterMaterial(state) || state.getBlock() instanceof FallingBlock;
     }
 
     protected boolean shouldEditPos(int x, int y, int z)
@@ -140,7 +146,7 @@ public class BlastAntimatter extends BlastThreaded
         if (delta < featherEdge)
         {
             final double p2 = 1 - (delta / (double) featherEdge);
-            return world().rand.nextFloat() > p2;
+            return ThreadLocalRandom.current().nextFloat() /* PORT: worker thread, 1.21 level random throws when used from several threads */ > p2;
         }
         return true;
     }
@@ -173,10 +179,11 @@ public class BlastAntimatter extends BlastThreaded
         if (entity instanceof EntityRedmatter)
         {
             //TODO implement a proper event instead of BlastCancel
-            entity.setDead();
+            entity.discard();
             return true;
         }
 
         return false;
     }
 }
+// PORTED
