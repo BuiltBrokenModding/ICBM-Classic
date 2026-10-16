@@ -5,11 +5,12 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigDebug;
 import icbm.classic.content.blast.Blast;
 import icbm.classic.lib.transform.vector.Location;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -36,7 +37,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
     }
 
     @Override
-    public void doRun(World world, Location center)
+    public void doRun(Level world, Location center)
     {
         long time = System.nanoTime();
 
@@ -61,7 +62,7 @@ public class ThreadLargeExplosion extends ThreadExplosion
             for (int theta_n = 0; theta_n < steps && !kill; theta_n++)
             {
                 //Calculate power
-                power = this.energy - (this.energy * world.rand.nextFloat() / 2);
+                power = this.energy - (this.energy * ThreadLocalRandom.current().nextFloat() /* PORT: worker thread, 1.21 level random throws when used from several threads */ / 2);
 
                 //Get angles for rotation steps
                 yaw = Math.PI * 2 / steps * phi_n;
@@ -86,23 +87,23 @@ public class ThreadLargeExplosion extends ThreadExplosion
                     power -= 0.3F * 0.75F * 5; //TODO why the magic numbers?
 
                     //Convert double position to int position as block pos
-                    final BlockPos blockPos = new BlockPos(Math.floor(x), Math.floor(y), Math.floor(z));
+                    final BlockPos blockPos = BlockPos.containing(x, y, z);
 
                     //Only do action one time per block (not a perfect solution, but solves double hit on the same block in the same line)
                     if (prevPos != blockPos)
                     {
-                        if(!position.world().isBlockLoaded(blockPos)) //TODO: find better fix for non main thread loading
+                        // PORT: reads the chunks captured on the server thread
+                        if(!snapshot.isLoaded(blockPos)) //TODO: find better fix for non main thread loading
                             continue;
 
                         //Get block state and block from position
-                        final IBlockState state = world.getBlockState(blockPos);
-                        final Block block = state.getBlock();
+                        final BlockState state = snapshot.getBlockState(blockPos);
 
                         //Ignore air blocks && Only break block that can be broken
-                        if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
+                        if (!state.isAir() && state.getDestroySpeed(world, blockPos) >= 0)
                         {
                             //Consume power based on block
-                            power -= this.callBack.getResistance(world, position, blockPos, source, block);
+                            power -= this.callBack.getResistance(world, position, blockPos, source, state);
 
                             //If we still have power, break the block
                             if (power > 0f)
@@ -132,3 +133,4 @@ public class ThreadLargeExplosion extends ThreadExplosion
         }
     }
 }
+// PORTED

@@ -2,16 +2,17 @@ package icbm.classic.content.missile.logic.targeting;
 
 import icbm.classic.ICBMConstants;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 
 @NoArgsConstructor
 public class BallisticTargetingData extends BasicTargetData {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ballistic");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "ballistic");
 
     public static final String NBT_IMPACT_HEIGHT = "impact_height";
     /**
@@ -19,7 +20,7 @@ public class BallisticTargetingData extends BasicTargetData {
      */
     private double impactHeightOffset;
 
-    public BallisticTargetingData(Vec3d position, int impactHeightOffset) {
+    public BallisticTargetingData(Vec3 position, int impactHeightOffset) {
         super(position);
         this.impactHeightOffset = impactHeightOffset;
     }
@@ -36,15 +37,16 @@ public class BallisticTargetingData extends BasicTargetData {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound saveData = super.serializeNBT();
-        saveData.setDouble(NBT_IMPACT_HEIGHT, impactHeightOffset);
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag saveData = super.serializeNBT(provider);
+        saveData.putDouble(NBT_IMPACT_HEIGHT, impactHeightOffset);
         return saveData;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         impactHeightOffset = nbt.getDouble(NBT_IMPACT_HEIGHT);
     }
 }
+// PORTED

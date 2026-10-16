@@ -17,3 +17,4 @@ public final class ActionTypes {
     /** Decorative tag, Actions flavored to with effects to look like explosive blasts. */
     public static final MetaTag BLAST = MetaTag.getOrCreateSubTag(ROOT, "blast");
 }
+// PORTED

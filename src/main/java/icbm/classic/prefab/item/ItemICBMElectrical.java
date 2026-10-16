@@ -1,12 +1,18 @@
 package icbm.classic.prefab.item;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public abstract class ItemICBMElectrical extends ItemICBMBase
 {
     public ItemICBMElectrical(String name)
     {
         super(name);
+    }
+
+    public ItemICBMElectrical(String name, Item.Properties properties)
+    {
+        super(name, properties);
     }
 
     public int getEnergy(ItemStack itemStack)
@@ -19,3 +25,4 @@ public abstract class ItemICBMElectrical extends ItemICBMBase
 
     }
 }
+// PORTED

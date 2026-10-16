@@ -1,28 +1,25 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "icbmclassic:silo_screen"
-  },
   "variants": {
-    "inventory": {
-      "model": "icbmclassic:silo_screen"
+    "rotation=down": {
+      "model": "icbmclassic:block/silo_screen"
     },
-    "rotation": {
-      "up": {},
-      "down": {},
-      "north": {
-        "y": 180
-      },
-      "south": {
-        "y": 0
-      },
-      "east": {
-        "y": 270
-      },
-      "west": {
-        "y": 90
-      }
+    "rotation=up": {
+      "model": "icbmclassic:block/silo_screen"
+    },
+    "rotation=north": {
+      "model": "icbmclassic:block/silo_screen",
+      "y": 180
+    },
+    "rotation=south": {
+      "model": "icbmclassic:block/silo_screen"
+    },
+    "rotation=west": {
+      "model": "icbmclassic:block/silo_screen",
+      "y": 90
+    },
+    "rotation=east": {
+      "model": "icbmclassic:block/silo_screen",
+      "y": 270
     }
   }
 }
-

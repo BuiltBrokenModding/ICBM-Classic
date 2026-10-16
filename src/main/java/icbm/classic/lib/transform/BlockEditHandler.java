@@ -1,12 +1,13 @@
 package icbm.classic.lib.transform;
 
 import icbm.classic.ICBMConstants;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,27 +18,48 @@ import java.util.function.Consumer;
 /**
  * Created by Dark(DarkGuardsman, Robin) on 10/8/2018.
  */
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
+@EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class BlockEditHandler
 {
-    public static final HashMap<Integer, Queue<EditQueue>> worldToRemoveQueue = new HashMap<>();
+    public static final HashMap<ResourceKey<Level>, Queue<EditQueue>> worldToRemoveQueue = new HashMap<>();
     public static float maxTickTimePercentage = 0.7f; // fraction of ticktime we are allowed to use.
     // (0.5 = 50% means that up to 50% of the 50ms that a tick may take, will be used at most)
 
     @SubscribeEvent
-    public static void onWorldUnload(WorldEvent.Unload event)
+    public static void onWorldUnload(LevelEvent.Unload event)
     {
-        final int dim = event.getWorld().provider.getDimension();
+        if (!(event.getLevel() instanceof Level level) || level.isClientSide())
+        {
+            return;
+        }
+        final ResourceKey<Level> dim = level.dimension();
         if (worldToRemoveQueue.containsKey(dim))
         {
             worldToRemoveQueue.remove(dim);
         }
     }
 
+    // PORT: 1.12 WorldTickEvent fired for both START and END phases, both are kept to keep the same edit throughput.
+    // Limited to the server as the queue is only filled by server side logic.
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent event)
+    public static void onWorldTickPre(LevelTickEvent.Pre event)
     {
-        final int dim = event.world.provider.getDimension();
+        onWorldTick(event.getLevel());
+    }
+
+    @SubscribeEvent
+    public static void onWorldTickPost(LevelTickEvent.Post event)
+    {
+        onWorldTick(event.getLevel());
+    }
+
+    private static void onWorldTick(Level world)
+    {
+        if (world.isClientSide())
+        {
+            return;
+        }
+        final ResourceKey<Level> dim = world.dimension();
         if (worldToRemoveQueue.containsKey(dim))
         {
             long startTime = System.currentTimeMillis();
@@ -75,14 +97,14 @@ public class BlockEditHandler
         }
     }
 
-    public static void queue(World world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock)
+    public static void queue(Level world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock)
     {
         queue(world, edits, onEditBlock, null);
     }
 
-    public static void queue(World world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock, Runnable onCompleteCallback)
+    public static void queue(Level world, Collection<BlockPos> edits, Consumer<BlockPos> onEditBlock, Runnable onCompleteCallback)
     {
-        final int dim = world.provider.getDimension();
+        final ResourceKey<Level> dim = world.dimension();
         if (!worldToRemoveQueue.containsKey(dim))
         {
             worldToRemoveQueue.put(dim, new LinkedList<>());
@@ -119,3 +141,4 @@ public class BlockEditHandler
         }
     }
 }
+// PORTED

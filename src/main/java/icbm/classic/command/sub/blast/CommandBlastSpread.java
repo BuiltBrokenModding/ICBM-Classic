@@ -1,5 +1,6 @@
 package icbm.classic.command.sub.blast;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import icbm.classic.api.actions.data.ActionFields;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.reg.IExplosiveData;
@@ -8,12 +9,16 @@ import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.content.missile.logic.source.ActionSource;
 import icbm.classic.lib.actions.fields.ActionFieldProvider;
-import net.minecraft.command.*;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -36,7 +41,7 @@ public class CommandBlastSpread extends SubCommand
     }
 
     @Override
-    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
         if (args.length == 8)
         {
@@ -44,36 +49,39 @@ public class CommandBlastSpread extends SubCommand
         }
         else
         {
-            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
+            throw CommandUtils.error(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
         }
     }
 
-    private void doCommand(@Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    private void doCommand(@Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
-        final int count = CommandBase.parseInt(args[0], 1);
-        final int distance = CommandBase.parseInt(args[1], 1);
+        final int count = CommandUtils.parseInt(args[0], 1);
+        final int distance = CommandUtils.parseInt(args[1], 1);
 
         //Get explosive data from user
         final IExplosiveData explosiveData = CommandBlastTrigger.getExplosive(args[2]);
 
         //Get world position
-        final World world = CommandUtils.getWorld(sender, args[3], sender.getEntityWorld());
-        final double xInput = CommandUtils.getNumber(sender, args[4], sender.getPosition().getX() + 0.5);
-        final double yInput = CommandUtils.getNumber(sender, args[5], sender.getPosition().getY() + 0.5);
-        final double zInput = CommandUtils.getNumber(sender, args[6], sender.getPosition().getZ() + 0.5);
+        final BlockPos senderPos = BlockPos.containing(sender.getPosition());
+        final Level world = CommandUtils.getWorld(sender, args[3], sender.getLevel());
+        final double xInput = CommandUtils.getNumber(sender, args[4], senderPos.getX() + 0.5);
+        final double yInput = CommandUtils.getNumber(sender, args[5], senderPos.getY() + 0.5);
+        final double zInput = CommandUtils.getNumber(sender, args[6], senderPos.getZ() + 0.5);
 
         //Get scale from user
-        final float scale = Float.parseFloat(args[7]); //TODO turn into helper method
+        final float scale = CommandUtils.parseFloat(args[7]); //TODO turn into helper method
         if (scale <= 0)
         {
-            throw new SyntaxErrorException(CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO);
+            throw CommandUtils.error(CommandBlastTrigger.TRANSLATION_ERROR_SCALE_ZERO);
         }
 
         final int expectedSpawnCount = (int)Math.floor(Math.pow((count * 2) + 1, 2));
 
-        sender.sendMessage(new TextComponentTranslation(TRANSLATION_SPREAD_START,
-                explosiveData.getRegistryKey(), scale,
-                world.provider.getDimension(), world.getWorldType().getName(),
+        // PORT: 1.12 sent the int dimension id and world type name, 1.21 sends the dimension and dimension type names
+        sender.sendSystemMessage(Component.translatable(TRANSLATION_SPREAD_START,
+                explosiveData.getRegistryKey().toString(), scale,
+                world.dimension().location().toString(),
+                world.dimensionTypeRegistration().unwrapKey().map(key -> key.location().toString()).orElse("unknown"),
                 xInput, yInput, zInput,
                 count, distance,
                 expectedSpawnCount));
@@ -91,8 +99,25 @@ public class CommandBlastSpread extends SubCommand
                 final IActionStatus result = explosiveData.create(world, x, yInput, z, new ActionSource(),new ActionFieldProvider().field(ActionFields.AREA_SIZE, () -> scale)).doAction();
 
                 //Send translated message to user
-                sender.sendMessage(result.getTooltip());
+                // PORT: 1.12 sent getTooltip(), which resolves to an untranslated `action.status.*` key. message() is the status text
+                sender.sendSystemMessage(result.message());
             }
         }
     }
+
+    @Override
+    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
+    {
+        // PORT: 1.12 had no suggestions here, added explosive ids and dimension names for Brigadier
+        if (args.length == 3)
+        {
+            return CommandUtils.getListOfStringsMatchingLastWord(args, CommandBlastTrigger.getExplosiveNames());
+        }
+        else if (args.length == 4)
+        {
+            return CommandUtils.getListOfStringsMatchingLastWord(args, CommandUtils.getDimensionNames(server));
+        }
+        return Collections.emptyList();
+    }
 }
+// PORTED

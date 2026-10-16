@@ -1,63 +1,46 @@
 package icbm.classic.lib;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/9/19.
+ *
+ * PORT: 1.12 version was an ICapabilitySerializable provider. NeoForge capabilities are looked up through
+ * {@link icbm.classic.lib.capability.holder} interfaces, so only the save/load template remains. The
+ * former isCapability/hasCapability/getCapability methods are gone; expose the object from the holder's
+ * getCapability instead.
  */
-public abstract class CapabilityPrefab implements ICapabilitySerializable<NBTTagCompound>
+public abstract class CapabilityPrefab implements INBTSerializable<CompoundTag>
 {
-
-    public abstract boolean isCapability(@Nonnull Capability<?> capability);
-
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+    public final CompoundTag serializeNBT(@Nonnull HolderLookup.Provider provider)
     {
-        return isCapability(capability);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        if (isCapability(capability))
-        {
-            return (T) this;
-        }
-        return null;
-    }
-
-
-    @Override
-    public final NBTTagCompound serializeNBT()
-    {
-        NBTTagCompound tagCompound = new NBTTagCompound();
+        CompoundTag tagCompound = new CompoundTag();
         save(tagCompound);
         return tagCompound;
     }
 
     @Override
-    public final void deserializeNBT(NBTTagCompound nbt)
+    public final void deserializeNBT(@Nonnull HolderLookup.Provider provider, CompoundTag nbt)
     {
-        if (nbt != null && !nbt.hasNoTags())
+        if (nbt != null && !nbt.isEmpty())
         {
             load(nbt);
         }
     }
 
-    protected void save(NBTTagCompound tag)
+    protected void save(CompoundTag tag)
     {
 
     }
 
-    protected void load(NBTTagCompound tag)
+    protected void load(CompoundTag tag)
     {
 
     }
 }
+// PORTED

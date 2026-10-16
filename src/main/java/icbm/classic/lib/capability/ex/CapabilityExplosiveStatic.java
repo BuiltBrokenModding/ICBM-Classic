@@ -4,9 +4,10 @@ import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -15,11 +16,11 @@ import java.util.function.Supplier;
  * Used by any item that has an explosive capability
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
  */
-public class CapabilityExplosiveStatic implements IExplosive, INBTSerializable<NBTTagCompound>
+public class CapabilityExplosiveStatic implements IExplosive, INBTSerializable<CompoundTag>
 {
     private final IExplosiveData data;
     private final Supplier<ItemStack> itemStackSupplier;
-    private NBTTagCompound custom_ex_data;
+    private CompoundTag custom_ex_data;
 
     public CapabilityExplosiveStatic(IExplosiveData data, Supplier<ItemStack> itemStackSupplier) {
         this.data = data;
@@ -51,15 +52,16 @@ public class CapabilityExplosiveStatic implements IExplosive, INBTSerializable<N
     }
 
     @Override
-    public NBTTagCompound serializeNBT()
+    public CompoundTag serializeNBT(HolderLookup.Provider provider)
     {
         //TODO save customizations
-        return new NBTTagCompound();
+        return new CompoundTag();
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt)
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt)
     {
 
     }
 }
+// PORTED

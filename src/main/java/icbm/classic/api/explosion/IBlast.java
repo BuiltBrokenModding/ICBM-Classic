@@ -3,9 +3,9 @@ package icbm.classic.api.explosion;
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,11 +88,12 @@ public interface IBlast extends IWorldPosition, IAction
      */
     void clearBlast();
 
-    default World getWorld() {
+    default Level getWorld() {
         return world();
     }
 
-    default Vec3d getPosition() {
+    default Vec3 getPosition() {
         return getVec3d();
     }
 }
+// PORTED

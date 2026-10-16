@@ -8,3 +8,4 @@ public class RadarRenderDot {
     private final int y;
     private final RadarDotType type;
 }
+// PORTED

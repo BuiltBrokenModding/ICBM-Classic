@@ -1,17 +1,22 @@
 package icbm.classic.content.entity;
 
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
+import icbm.classic.content.reg.EntityReg;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 /**
  * Entity that spawns smoke from it's position
  */
-public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
+public class EntitySmoke extends Entity implements IEntityWithComplexSpawn
 {
     //Render color
     public float red = 1;
@@ -19,18 +24,28 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
     public float blue = 0;
     public int ticksToLive = 100;
 
-    public EntitySmoke(World world)
+    public EntitySmoke(EntityType<? extends EntitySmoke> type, Level world)
     {
-        super(world);
-        this.setSize(1F, 1F);
-        this.preventEntitySpawning = true;
-        this.ignoreFrustumCheck = true;
-        this.height = 0.1f;
-        this.width = 0.1f;
+        super(type, world);
+        this.refreshDimensions();
+        this.blocksBuilding = true;
+        this.noCulling = true;
+    }
+
+    public EntitySmoke(Level world)
+    {
+        this(EntityReg.SMOKE.get(), world);
+    }
+
+    /** 1.12 set width/height to 0.1 after setSize(1, 1), the registered type is 1x1 */
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        return EntityDimensions.fixed(0.1f, 0.1f);
     }
 
     @Override
-    protected void entityInit()
+    protected void defineSynchedData(SynchedEntityData.Builder builder)
     {
 
     }
@@ -44,7 +59,7 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(RegistryFriendlyByteBuf data)
     {
         data.writeFloat(this.red);
         data.writeFloat(this.green);
@@ -53,7 +68,7 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(RegistryFriendlyByteBuf data)
     {
         this.red = data.readFloat();
         this.green = data.readFloat();
@@ -62,50 +77,51 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
         //Safety in case the beam is never killed
-        if (ticksExisted > ticksToLive)
+        if (tickCount > ticksToLive)
         {
-            setDead();
+            discard();
         }
 
         // TODO scale with age with mid life having most, early low and later trailing off
-        final int spawnCount = 3 + world.rand.nextInt(4);
+        final Level world = level();
+        final int spawnCount = 3 + world.random.nextInt(4);
         for(int i = 0; i < spawnCount; i++) {
-            world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, posX, posY + 0.1f, posZ,
-                0.05f * world.rand.nextFloat() - 0.05f * world.rand.nextFloat(),
+            world.addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.1f, getZ(),
+                0.05f * world.random.nextFloat() - 0.05f * world.random.nextFloat(),
                 0.1f,
-                0.05f * world.rand.nextFloat() - 0.05f * world.rand.nextFloat());
+                0.05f * world.random.nextFloat() - 0.05f * world.random.nextFloat());
         }
     }
 
     @Override
-    public boolean canBePushed()
+    public boolean isPushable()
     {
         return false;
     }
 
     @Override
-    protected boolean canTriggerWalking()
+    protected Entity.MovementEmission getMovementEmission()
+    {
+        return Entity.MovementEmission.NONE;
+    }
+
+    @Override
+    public boolean isPickable()
     {
         return false;
     }
 
     @Override
-    public boolean canBeCollidedWith()
-    {
-        return false;
-    }
-
-    @Override
-    protected void readEntityFromNBT(NBTTagCompound tag)
+    protected void readAdditionalSaveData(CompoundTag tag)
     {
         SAVE_LOGIC.load(this, tag);
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound tag)
+    protected void addAdditionalSaveData(CompoundTag tag)
     {
         SAVE_LOGIC.save(this, tag);
     }
@@ -115,7 +131,9 @@ public class EntitySmoke extends Entity implements IEntityAdditionalSpawnData
         .nodeInteger("ticksToLive", (e) -> e.ticksToLive, (e, i) -> e.ticksToLive = i)
         .addRoot("color")
         /* */.nodeFloat("red", (e) -> e.red, (e, i) -> e.red = i)
-        /* */.nodeFloat("green", (e) -> e.red, (e, i) -> e.red = i)
-        /* */.nodeFloat("red", (e) -> e.red, (e, i) -> e.red = i)
+        // PORT: 1.12 keyed green and blue to the red field, fixed so the color survives reloads
+        /* */.nodeFloat("green", (e) -> e.green, (e, i) -> e.green = i)
+        /* */.nodeFloat("blue", (e) -> e.blue, (e, i) -> e.blue = i)
         .base();
 }
+// PORTED

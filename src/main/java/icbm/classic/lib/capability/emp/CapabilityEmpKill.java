@@ -2,8 +2,8 @@ package icbm.classic.lib.capability.emp;
 
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 /**
  * Capability that destroys the host
@@ -21,7 +21,7 @@ public class CapabilityEmpKill<E extends Entity> implements IEMPReceiver
     }
 
     @Override
-    public float applyEmpAction(World world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
+    public float applyEmpAction(Level world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
     {
         if (doAction)
         {
@@ -32,6 +32,7 @@ public class CapabilityEmpKill<E extends Entity> implements IEMPReceiver
 
     protected void setDeadEmp(IAction emp_blast, float power)
     {
-        entity.setDead();
+        entity.discard();
     }
 }
+// PORTED

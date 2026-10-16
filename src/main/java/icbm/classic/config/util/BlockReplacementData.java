@@ -2,11 +2,11 @@ package icbm.classic.config.util;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Handles block placement with a chance
@@ -16,46 +16,56 @@ import net.minecraft.world.World;
 public class BlockReplacementData {
 
     /** Block state to place */
-    private IBlockState blockState;
+    private BlockState blockState;
 
     /** NBT data to load into the block */
-    private NBTTagCompound blockNBT = null;
+    private CompoundTag blockNBT = null;
 
     /** Chance of placement, 1 is always and 0 is never */
     private float chance = -1;
 
-    public void apply(World world, BlockPos pos) {
+    /**
+     * Alias of {@link #setBlockState(BlockState)} used by config parsers and handlers
+     */
+    public BlockReplacementData setBlock(BlockState state) {
+        this.blockState = state;
+        return this;
+    }
+
+    public void apply(Level world, BlockPos pos) {
         if (shouldPlace(world)) {
             placeBlock(world, pos);
             applyNBT(world, pos);
         }
     }
 
-    private boolean shouldPlace(World world) {
-        return getChance() < 0 || world.rand.nextFloat() <= getChance();
+    private boolean shouldPlace(Level world) {
+        return getChance() < 0 || world.random.nextFloat() <= getChance();
     }
 
-    private void placeBlock(World world, BlockPos pos) {
+    private void placeBlock(Level world, BlockPos pos) {
         if (getBlockState() != null) {
-            world.setBlockState(pos, getBlockState(), 3);
+            world.setBlock(pos, getBlockState(), 3);
         }
     }
 
-    private void applyNBT(World world, BlockPos pos) {
-        if(blockNBT != null && !blockNBT.hasNoTags()) {
-            final TileEntity tileEntity = world.getTileEntity(pos);
+    private void applyNBT(Level world, BlockPos pos) {
+        if(blockNBT != null && !blockNBT.isEmpty()) {
+            final BlockEntity tileEntity = world.getBlockEntity(pos);
             if(tileEntity != null) {
-                final NBTTagCompound existingSave = tileEntity.writeToNBT(new NBTTagCompound());
+                final CompoundTag existingSave = tileEntity.saveWithoutMetadata(world.registryAccess());
 
                 // Remove internal tags to prevent issues
-                blockNBT.removeTag("id");
-                blockNBT.removeTag("x");
-                blockNBT.removeTag("y");
-                blockNBT.removeTag("z");
+                blockNBT.remove("id");
+                blockNBT.remove("x");
+                blockNBT.remove("y");
+                blockNBT.remove("z");
 
                 existingSave.merge(blockNBT);
-                tileEntity.readFromNBT(existingSave);
+                tileEntity.loadWithComponents(existingSave, world.registryAccess());
+                tileEntity.setChanged();
             }
         }
     }
 }
+// PORTED

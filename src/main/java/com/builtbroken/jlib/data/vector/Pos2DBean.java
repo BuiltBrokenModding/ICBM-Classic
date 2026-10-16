@@ -96,3 +96,4 @@ public class Pos2DBean implements Cloneable
         return "Pos2D [" + this.x + "," + this.y + "]";
     }
 }
+// PORTED

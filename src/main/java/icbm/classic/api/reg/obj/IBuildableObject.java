@@ -1,11 +1,8 @@
 package icbm.classic.api.reg.obj;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 
@@ -79,7 +76,7 @@ public interface IBuildableObject {
      *
      *     'Missile has been spawned with flight logic {missile.flightLogic.getDisplayName()} using action {action.getDisplayName()}'
      *
-     * Calling systems often use {@link icbm.classic.lib.LanguageUtility#buildToolTipString(ITextComponent)}
+     * Calling systems often use {@link icbm.classic.lib.LanguageUtility#buildToolTipString(Component)}
      * to add extra features such as line splitting, indents, and colors
      *
      * </pre>
@@ -87,20 +84,21 @@ public interface IBuildableObject {
      * @return text component for display
      */
     @Nonnull
-    default ITextComponent getDisplayName() {
-        return new TextComponentTranslation(getTranslationKey());
+    default Component getDisplayName() {
+        return Component.translatable(getTranslationKey());
     }
 
     /**
      * Tooltip information to show in GUIs or on an item
      * <p>
-     * Calling systems often use {@link icbm.classic.lib.LanguageUtility#buildToolTipString(ITextComponent)}
+     * Calling systems often use {@link icbm.classic.lib.LanguageUtility#buildToolTipString(Component)}
      * to add extra features such as line splitting, indents, and colors
      *
      * @return text component for display
      */
     @Nonnull
-    default ITextComponent getTooltip() {
+    default Component getTooltip() {
         return getDisplayName();
     }
 }
+// PORTED

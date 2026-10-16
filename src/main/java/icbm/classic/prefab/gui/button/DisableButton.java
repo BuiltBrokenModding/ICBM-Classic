@@ -3,9 +3,8 @@ package icbm.classic.prefab.gui.button;
 import icbm.classic.prefab.gui.GuiContainerBase;
 import icbm.classic.prefab.gui.IGuiComponent;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.function.Supplier;
 
@@ -26,34 +25,26 @@ public class DisableButton extends GuiButtonBase<DisableButton> implements IGuiC
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-        if (this.visible) {
-            // Set color and texture
-            mc.getTextureManager().bindTexture(GuiContainerBase.COMPONENTS_TEXTURE);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        // Check if mouse is over button TODO check for circle
+        final boolean hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 
-            // Check if mouse is over button TODO check for circle
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+        //TODO add disabled state
 
-            //TODO add disabled state
-
-            // Hover state
-            if (this.hovered && GuiContainer.isAltKeyDown()) {
-                this.drawTexturedModalRect(this.x, this.y, UV_X + WIDTH, UV_Y, this.width, this.height);
-            }
-            // Default state
-            else if(shouldShowAsDisabled.get()) {
-                this.drawTexturedModalRect(this.x, this.y, UV_X, UV_Y, this.width, this.height);
-            }
-
-            // Not sure why this is here
-            this.mouseDragged(mc, mouseX, mouseY);
+        // Hover state
+        if (hovered && Screen.hasAltDown()) {
+            graphics.blit(GuiContainerBase.COMPONENTS_TEXTURE, this.getX(), this.getY(), UV_X + WIDTH, UV_Y, this.width, this.height);
+        }
+        // Default state
+        else if(shouldShowAsDisabled.get()) {
+            graphics.blit(GuiContainerBase.COMPONENTS_TEXTURE, this.getX(), this.getY(), UV_X, UV_Y, this.width, this.height);
         }
     }
 
     @Override
-    public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        return super.mousePressed(mc, mouseX, mouseY) && GuiContainer.isAltKeyDown();
+        return Screen.hasAltDown() && super.mouseClicked(mouseX, mouseY, button);
     }
 }
+// PORTED

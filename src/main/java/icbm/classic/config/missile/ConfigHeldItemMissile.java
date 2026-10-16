@@ -1,6 +1,6 @@
 package icbm.classic.config.missile;
 
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 /**
  * Config for any item that deploys an entity that acts as a holder of cargo (balloon, parachute)

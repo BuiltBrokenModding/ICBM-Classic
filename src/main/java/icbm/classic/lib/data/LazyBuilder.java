@@ -18,3 +18,4 @@ public class LazyBuilder<T> implements Supplier<T> {
         return thing;
     }
 }
+// PORTED

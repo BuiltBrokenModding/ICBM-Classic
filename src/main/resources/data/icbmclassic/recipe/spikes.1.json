@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "icbmclassic:spikes_poison",
+  "pattern": [
+    "c",
+    "i"
+  ],
+  "key": {
+    "c": {
+      "item": "icbmclassic:poisonpowder"
+    },
+    "i": {
+      "item": "icbmclassic:spikes"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:spikes_poison",
+    "count": 1
+  }
+}

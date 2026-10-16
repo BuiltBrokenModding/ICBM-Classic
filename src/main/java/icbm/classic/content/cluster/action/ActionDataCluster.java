@@ -10,23 +10,25 @@ import icbm.classic.api.actions.data.EntityActionTypes;
 import icbm.classic.api.actions.data.IActionFieldProvider;
 import icbm.classic.api.data.meta.MetaTag;
 import lombok.Getter;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-public class ActionDataCluster implements IActionData, INBTSerializable<NBTTagCompound> {
-    public final static ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "entity.cluster.spawning");
+public class ActionDataCluster implements IActionData, INBTSerializable<CompoundTag> {
+    public final static ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "entity.cluster.spawning");
     private final static ImmutableList<MetaTag> TAGS = ImmutableList.of(EntityActionTypes.ENTITY_CREATION);
 
     @Getter
@@ -34,14 +36,14 @@ public class ActionDataCluster implements IActionData, INBTSerializable<NBTTagCo
 
     @Nonnull
     @Override
-    public IAction create(World world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor) {
-        final ActionCluster cluster = new ActionCluster(world, new Vec3d(x, y, z), source, this);
+    public IAction create(Level world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessor) {
+        final ActionCluster cluster = new ActionCluster(world, new Vec3(x, y, z), source, this);
         cluster.setSpawnList(clusterSpawnEntries);
         if(fieldAccessor != null && fieldAccessor.hasField(ActionFields.HOST_ENTITY)) {
             final Entity host = fieldAccessor.getValue(ActionFields.HOST_ENTITY);
             if(host != null) {
-                cluster.setSourcePitch(host.rotationPitch);
-                cluster.setSourceYaw(host.rotationYaw);
+                cluster.setSourcePitch(host.getXRot());
+                cluster.setSourceYaw(host.getYRot());
             }
         }
         return cluster;
@@ -60,22 +62,22 @@ public class ActionDataCluster implements IActionData, INBTSerializable<NBTTagCo
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        final NBTTagCompound save = new NBTTagCompound();
-        final NBTTagList spawnEntries = new NBTTagList(); //TODO convert to node
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        final CompoundTag save = new CompoundTag();
+        final ListTag spawnEntries = new ListTag(); //TODO convert to node
         for (ItemStack stack : clusterSpawnEntries) {
-            spawnEntries.appendTag(stack.serializeNBT());
+            spawnEntries.add(stack.saveOptional(provider));
         }
-        save.setTag("clusterSpawnEntries", spawnEntries);
+        save.put("clusterSpawnEntries", spawnEntries);
         return save;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        final NBTTagList tagList = nbt.getTagList("clusterSpawnEntries", 10);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        final ListTag tagList = nbt.getList("clusterSpawnEntries", Tag.TAG_COMPOUND);
         clusterSpawnEntries.clear();
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            ItemStack stack = new ItemStack(tagList.getCompoundTagAt(i));
+        for (int i = 0; i < tagList.size(); i++) {
+            ItemStack stack = ItemStack.parseOptional(provider, tagList.getCompound(i));
             clusterSpawnEntries.add(stack);
         }
     }
@@ -85,3 +87,4 @@ public class ActionDataCluster implements IActionData, INBTSerializable<NBTTagCo
         throw new NotImplementedException("Cluster is dynamic and doesn't register static");
     }
 }
+// PORTED

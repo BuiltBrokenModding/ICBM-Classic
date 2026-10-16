@@ -1,7 +1,7 @@
 package icbm.classic.lib.transform;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Rotation helpers for MC game world
@@ -44,14 +44,14 @@ public class RotationHelper {
      * @param yaw to rotate with
      * @return new angle
      */
-    public static Vec3d rotateY(Vec3d vector, double yaw) { //TODO cache sin/cos for performance
+    public static Vec3 rotateY(Vec3 vector, double yaw) { //TODO cache sin/cos for performance
         /* https://mathworld.wolfram.com/RotationMatrix.html
          * cos(a)   0     -sin(a)
          * 0        1           0
          * sin(a)  0      cos(a)
          */
         final double rad = Math.toRadians(clamp360(yaw));
-        return new Vec3d(
+        return new Vec3(
             fixRounding(vector.x * Math.cos(rad) + vector.z * -Math.sin(rad), 0.001),  //TODO see why x has to be inverted for it to work in MC
             vector.y,
             fixRounding(vector.x * Math.sin(rad) + vector.z * Math.cos(rad), 0.001)
@@ -66,7 +66,7 @@ public class RotationHelper {
      * @param pitch to rotate with
      * @return new angle
      */
-    public static Vec3d rotateX(Vec3d vector, double pitch) { //TODO cache sin/cos for performance
+    public static Vec3 rotateX(Vec3 vector, double pitch) { //TODO cache sin/cos for performance
         /* https://mathworld.wolfram.com/RotationMatrix.html
         * a is flipped so sin is flipped
          * 1      0               0
@@ -74,7 +74,7 @@ public class RotationHelper {
          * 0      sin(a)     cos(a)
          */
         final double theta = Math.toRadians(clamp360(pitch));
-        return new Vec3d(
+        return new Vec3(
             vector.x,
             fixRounding(vector.y * Math.cos(theta) + vector.z * -Math.sin(theta), 0.001),
             fixRounding(vector.y * Math.sin(theta) + vector.z * Math.cos(theta), 0.001)
@@ -90,14 +90,14 @@ public class RotationHelper {
      * @param roll to rotate with
      * @return new vector
      */
-    public static Vec3d rotateZ(final Vec3d vector, final double roll) { //TODO cache sin/cos for performance
+    public static Vec3 rotateZ(final Vec3 vector, final double roll) { //TODO cache sin/cos for performance
         /* https://mathworld.wolfram.com/RotationMatrix.html
          * cos(a)  sin(a)  0
          * -sin(a)  cos(a)   0
          *      0       0   1
          */
         final double rad = Math.toRadians(clamp360(roll));
-        return new Vec3d(
+        return new Vec3(
             fixRounding(vector.x * Math.cos(rad) + vector.y * Math.sin(rad), 0.001),
             fixRounding(vector.x * -Math.sin(rad) + vector.y * Math.cos(rad), 0.001),
             vector.z
@@ -105,7 +105,7 @@ public class RotationHelper {
     }
 
     public static double clamp360(double angle) {
-        return MathHelper.wrapDegrees(angle);
+        return Mth.wrapDegrees(angle);
     }
 
     public static double fixRounding(double value, double limit) {
@@ -115,3 +115,4 @@ public class RotationHelper {
         return value;
     }
 }
+// PORTED

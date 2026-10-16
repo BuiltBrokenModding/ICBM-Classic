@@ -1,18 +1,18 @@
 package icbm.classic.content.cargo;
 
 import icbm.classic.api.ICBMClassicAPI;
+import icbm.classic.api.missiles.projectile.IProjectileData;
 import icbm.classic.api.missiles.projectile.IProjectileStack;
-import icbm.classic.content.cluster.missile.ClusterMissileHandler;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.projectile.ProjectileStack;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Supplier;
 
@@ -20,43 +20,43 @@ import java.util.function.Supplier;
 /**
  * Recipe for adding cargo to cargo projectile item
  */
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@Data
-public class RecipeCargoData extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+public class RecipeCargoData extends CustomRecipe {
 
-    private final ItemStack recipeOutput;
-    private final Supplier<CargoProjectileData> dataBuilder;
+    private final Supplier<ItemStack> recipeOutput;
+    private final Supplier<IProjectileData> dataBuilder;
+    private final Supplier<? extends RecipeSerializer<?>> serializer;
 
-    @Override
-    public boolean isDynamic()
-    {
-        return true;
+    public RecipeCargoData(CraftingBookCategory category, Supplier<ItemStack> recipeOutput, Supplier<IProjectileData> dataBuilder, Supplier<? extends RecipeSerializer<?>> serializer) {
+        super(category);
+        this.recipeOutput = recipeOutput;
+        this.dataBuilder = dataBuilder;
+        this.serializer = serializer;
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput inv)
     {
         // Don't leave container items, since we store the entire item
-        return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+        return NonNullList.withSize(inv.size(), ItemStack.EMPTY);
     }
 
     @Override
-    public boolean matches(InventoryCrafting inv, World worldIn) {
+    public boolean matches(CraftingInput inv, Level worldIn) {
+        final ItemStack output = recipeOutput.get();
         int itemCount = 0;
         boolean hasCargoItem = false;
-        for(int slot = 0; slot < inv.getSizeInventory(); slot++) {
-            final ItemStack slotStack = inv.getStackInSlot(slot);
+        for(int slot = 0; slot < inv.size(); slot++) {
+            final ItemStack slotStack = inv.getItem(slot);
             if(!slotStack.isEmpty()) {
                 itemCount++;
 
 
-                if(ItemStack.areItemsEqual(slotStack, recipeOutput)) {
+                if(ItemStack.isSameItem(slotStack, output)) {
                     hasCargoItem = isValidProjectileStack(getProjectileStack(slotStack));
                 }
                 // Cluster takes priority as it is before parachute/balloon
-                else if((slotStack.getItem() == ItemReg.itemClusterMissile
-                    || slotStack.getItem() == ItemReg.heldItemMissile) && !hasCargoItem) {
+                else if((slotStack.getItem() == ItemReg.itemClusterMissile.get()
+                    || slotStack.getItem() == ItemReg.heldItemMissile.get()) && !hasCargoItem) {
                     return false;
                 }
                 else if(!CargoHolderHandler.isAllowed(slotStack)) {
@@ -68,11 +68,7 @@ public class RecipeCargoData extends net.minecraftforge.registries.IForgeRegistr
     }
 
     private ProjectileStack getProjectileStack(ItemStack stack) {
-
-        if (!stack.hasCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null)) {
-            return null;
-        }
-        final IProjectileStack iProjectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY, null);
+        final IProjectileStack iProjectileStack = stack.getCapability(ICBMClassicAPI.PROJECTILE_STACK_CAPABILITY);
         if(iProjectileStack instanceof ProjectileStack) {
             return (ProjectileStack) iProjectileStack;
         }
@@ -84,13 +80,14 @@ public class RecipeCargoData extends net.minecraftforge.registries.IForgeRegistr
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
+        final ItemStack recipeStack = recipeOutput.get();
         ItemStack cargoHolder = null;
         ItemStack cargo = null;
-        for(int slot = 0; slot < inv.getSizeInventory() && (cargo == null || cargoHolder == null); slot++) {
-            final ItemStack slotStack = inv.getStackInSlot(slot);
+        for(int slot = 0; slot < inv.size() && (cargo == null || cargoHolder == null); slot++) {
+            final ItemStack slotStack = inv.getItem(slot);
             if (!slotStack.isEmpty()) {
-                if (ItemStack.areItemsEqual(slotStack, recipeOutput)) {
+                if (ItemStack.isSameItem(slotStack, recipeStack)) {
                     final IProjectileStack projectileStack = getProjectileStack(slotStack);
                     if (cargoHolder == null && isValidProjectileStack(projectileStack)) {
                         cargoHolder = slotStack;
@@ -105,27 +102,36 @@ public class RecipeCargoData extends net.minecraftforge.registries.IForgeRegistr
 
         // Should not happen but IDE is annoying
         if(cargoHolder == null || cargo == null) {
-            return null;
+            return ItemStack.EMPTY;
         }
 
         final ItemStack output = cargoHolder.copy();
         output.setCount(1);
 
         final ProjectileStack projectileStack = getProjectileStack(output);
+        if(projectileStack == null) {
+            return ItemStack.EMPTY;
+        }
 
-        final CargoProjectileData projectileData = projectileStack.getProjectileData() instanceof CargoProjectileData ? (CargoProjectileData) projectileStack.getProjectileData() : dataBuilder.get();
+        final CargoProjectileData projectileData = projectileStack.getProjectileData() instanceof CargoProjectileData ? (CargoProjectileData) projectileStack.getProjectileData() : (CargoProjectileData) dataBuilder.get();
 
         final ItemStack insert = cargo.copy();
         insert.setCount(1);
         projectileData.setHeldItem(insert);
 
-        projectileStack.setProjectileData(projectileData);
+        projectileStack.setProjectileData(projectileData); // writes back to output stack
 
         return output;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width * height >= 2;
     }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return serializer.get();
+    }
 }
+// PORTED

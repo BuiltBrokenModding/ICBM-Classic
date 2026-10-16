@@ -1,10 +1,11 @@
 package icbm.classic.content.blast;
 
 import icbm.classic.client.ICBMSounds;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.core.BlockPos;
 
 public class BlastFire extends Blast
 {
@@ -15,7 +16,7 @@ public class BlastFire extends Blast
     @Override
     public boolean doExplode(int callCount)
     {
-        if (!this.world().isRemote)
+        if (!this.world().isClientSide())
         {
             int radius = (int) this.getBlastRadius();
 
@@ -36,21 +37,21 @@ public class BlastFire extends Blast
                             yStep /= diagonalDistance;
                             zStep /= diagonalDistance;
 
-                            float energy = radius * (0.7F + world().rand.nextFloat() * 0.6F);
+                            float energy = radius * (0.7F + world().random.nextFloat() * 0.6F);
                             double posX = location.x();
                             double posY = location.y();
                             double posZ = location.z();
 
                             for (float stepAmount = 0.3F; energy > 0.0F; energy -= stepAmount * 0.75F)
                             {
-                                BlockPos targetPosition = new BlockPos(posX, posY, posZ);
+                                BlockPos targetPosition = BlockPos.containing(posX, posY, posZ);
                                 double distanceFromCenter = location.distance(targetPosition);
-                                IBlockState blockState = world().getBlockState(targetPosition);
+                                BlockState blockState = world().getBlockState(targetPosition);
                                 Block block = blockState.getBlock();
 
-                                if (!block.isAir(blockState, world, targetPosition))
+                                if (!blockState.isAir())
                                 {
-                                    energy -= (block.getExplosionResistance(world(), targetPosition, this.exploder, this) + 0.3F) * stepAmount;
+                                    energy -= (getBlockResistance(targetPosition, blockState) + 0.3F) * stepAmount;
                                 }
 
                                 if (energy > 0.0F)
@@ -60,15 +61,16 @@ public class BlastFire extends Blast
 
                                     if (chance > distanceFromCenter * 0.55)
                                     {
-                                        boolean canReplace = block.isReplaceable(world(), targetPosition) || block.isAir(blockState, world(), targetPosition);
+                                        boolean canReplace = blockState.canBeReplaced() || blockState.isAir();
+                                        final BlockState fireState = BaseFireBlock.getState(world(), targetPosition);
 
-                                        if (canReplace && Blocks.FIRE.canPlaceBlockAt(world(), targetPosition))
+                                        if (canReplace && fireState.canSurvive(world(), targetPosition))
                                         {
-                                            world.setBlockState(targetPosition, Blocks.FIRE.getDefaultState(), 3);
+                                            world.setBlock(targetPosition, fireState, 3);
                                         }
                                         else if (block == Blocks.ICE)
                                         {
-                                            world.setBlockToAir(targetPosition);
+                                            world.removeBlock(targetPosition, false);
                                         }
                                     }
                                 }
@@ -83,7 +85,8 @@ public class BlastFire extends Blast
             }
         }
 
-        ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 4.0F, (1.0F + (world().rand.nextFloat() - world().rand.nextFloat()) * 0.2F) * 1F, true);
+        ICBMSounds.EXPLOSION_FIRE.play(world, location.x() + 0.5D, location.y() + 0.5D, location.z() + 0.5D, 4.0F, (1.0F + (world().random.nextFloat() - world().random.nextFloat()) * 0.2F) * 1F, true);
         return true;
     }
 }
+// PORTED

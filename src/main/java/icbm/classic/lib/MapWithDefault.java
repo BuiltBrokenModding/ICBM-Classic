@@ -24,3 +24,4 @@ public class MapWithDefault<K, V> extends HashMap<K, V>
         return value;
     }
 }
+// PORTED

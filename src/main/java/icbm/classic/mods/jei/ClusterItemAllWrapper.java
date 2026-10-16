@@ -1,22 +1,22 @@
 package icbm.classic.mods.jei;
 
-import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.content.cluster.missile.CapabilityClusterMissileStack;
 import lombok.AllArgsConstructor;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Cluster missile + 8 slots of any allowed item. Unused in 1.12 as well (commented out in {@link JEIProxy}).
+ * PORT: 1.12 ICraftingRecipeWrapper, now builds a display only shapeless recipe for JEI 19.
+ */
 @AllArgsConstructor
-public class ClusterItemAllWrapper implements ICraftingRecipeWrapper {
+public class ClusterItemAllWrapper {
 
     private final ItemStack output;
     private final List<ItemStack> inputs;
@@ -29,29 +29,13 @@ public class ClusterItemAllWrapper implements ICraftingRecipeWrapper {
         return copy;
     }
 
-    @Override
-    public void getIngredients(IIngredients iIngredients) {
-
-        if(random) {
-            iIngredients.setInputs(ItemStack.class, Arrays.asList(
-                output, inputs, copyShuffle(inputs),
-                copyShuffle(inputs), copyShuffle(inputs), copyShuffle(inputs),
-                copyShuffle(inputs), copyShuffle(inputs), copyShuffle(inputs)
-            ));
+    public RecipeHolder<CraftingRecipe> build() {
+        final Ingredient[] ingredients = new Ingredient[9];
+        ingredients[0] = JeiRecipeHelper.exact(output);
+        for (int i = 1; i < 9; i++) {
+            ingredients[i] = JeiRecipeHelper.anyOf(random && i > 1 ? copyShuffle(inputs) : inputs);
         }
-        else {
-            iIngredients.setInputs(ItemStack.class, Arrays.asList(
-                output, inputs, inputs,
-                inputs, inputs, inputs,
-                inputs, inputs, inputs
-            ));
-        }
-        iIngredients.setOutput(ItemStack.class, Collections.singletonList(output));
-    }
-
-    @Override
-    @Nullable
-    public ResourceLocation getRegistryName() {
-        return regName;
+        return JeiRecipeHelper.shapeless(regName, output.copy(), ingredients);
     }
 }
+// PORTED

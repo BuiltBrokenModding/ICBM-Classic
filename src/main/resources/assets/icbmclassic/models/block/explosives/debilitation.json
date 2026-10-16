@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "icbmclassic:block/explosive/debilitation",
+    "down": "icbmclassic:block/explosive/bottom_1",
+    "up": "icbmclassic:block/explosive/bottom_1",
+    "north": "icbmclassic:block/explosive/debilitation",
+    "east": "icbmclassic:block/explosive/debilitation",
+    "south": "icbmclassic:block/explosive/debilitation",
+    "west": "icbmclassic:block/explosive/debilitation"
+  }
+}

@@ -4,47 +4,44 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.api.data.IWorldPosition;
 import icbm.classic.lib.NBTConstants;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.dispenser.ILocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 @Deprecated
 public class Location extends AbstractLocation<Location> implements IWorldPosition, IPos3D, Comparable<IWorldPosition>
 {
     public static final Location NULL = new Location(null, 0, 0, 0);
 
-    public Location(World world, double x, double y, double z)
+    public Location(Level world, double x, double y, double z)
     {
         super(world, x, y, z);
     }
 
-    public Location(NBTTagCompound nbt)
+    public Location(CompoundTag nbt)
     {
-        this(DimensionManager.getWorld(nbt.getInteger(NBTConstants.DIMENSION)), nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
+        this(lookupWorld(readDimension(nbt)), nbt.getDouble(NBTConstants.X), nbt.getDouble(NBTConstants.Y), nbt.getDouble(NBTConstants.Z));
     }
 
     public Location(ByteBuf data)
     {
-        this(DimensionManager.getWorld(data.readInt()), data.readDouble(), data.readDouble(), data.readDouble());
+        super(data);
     }
 
     public Location(Entity entity)
     {
-        this(entity.world, entity.posX, entity.posY, entity.posZ);
+        this(entity.level(), entity.getX(), entity.getY(), entity.getZ());
     }
 
-    public Location(TileEntity tile)
+    public Location(BlockEntity tile)
     {
         super(tile);
     }
@@ -54,29 +51,26 @@ public class Location extends AbstractLocation<Location> implements IWorldPositi
         this(vec.world(), vec.x(), vec.y(), vec.z());
     }
 
-    public Location(ILocation loc)
-    {
-        this(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
-    }
+    // PORT: Location(ILocation) removed, net.minecraft.dispenser.ILocation has no 1.21 equivalent
 
-    public Location(World world, IPos3D vector)
+    public Location(Level world, IPos3D vector)
     {
         this(world, vector.x(), vector.y(), vector.z());
     }
 
-    public Location(World world, BlockPos pos)
+    public Location(Level world, BlockPos pos)
     {
         this(world, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public Location(World world, Vec3d vec)
+    public Location(Level world, Vec3 vec)
     {
         this(world, vec.x, vec.y, vec.z);
     }
 
-    public Location(World world, RayTraceResult target)
+    public Location(Level world, HitResult target)
     {
-        this(world, target.hitVec);
+        this(world, target.getLocation());
     }
 
     @Override
@@ -85,18 +79,19 @@ public class Location extends AbstractLocation<Location> implements IWorldPositi
         return new Location(world, x, y, z);
     }
 
-    public void playSound(SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay)
+    public void playSound(SoundEvent soundIn, SoundSource category, float volume, float pitch, boolean distanceDelay)
     {
-        world().playSound(x(), y(), z(), soundIn, category, volume, pitch, distanceDelay);
+        // 1.12 World#playSound(x, y, z, ...) only played on the client, same as playLocalSound
+        world().playLocalSound(x(), y(), z(), soundIn, category, volume, pitch, distanceDelay);
     }
 
-    public boolean isSideSolid(EnumFacing side)
+    public boolean isSideSolid(Direction side)
     {
-        IBlockState state = getBlockState();
-        if (state != null && !state.getBlock().isAir(state, world, toBlockPos()))
+        BlockState state = getBlockState();
+        if (state != null && !state.isAir())
         {
-            BlockFaceShape shape = state.getBlockFaceShape(world, toBlockPos(), side);
-            return shape != null && shape == BlockFaceShape.SOLID;
+            // PORT: BlockFaceShape.SOLID -> full sturdy face
+            return state.isFaceSturdy(world, toBlockPos(), side);
         }
         return false;
     }
@@ -110,12 +105,13 @@ public class Location extends AbstractLocation<Location> implements IWorldPositi
     @Override
     public int compareTo(IWorldPosition that)
     {
-        if (world().provider.getDimension() < that.world().provider.getDimension() || x() < that.x() || y() < that.y() || z() < that.z())
+        final int dimCompare = world().dimension().location().compareTo(that.world().dimension().location());
+        if (dimCompare < 0 || x() < that.x() || y() < that.y() || z() < that.z())
         {
             return -1;
         }
 
-        if (world().provider.getDimension() > that.world().provider.getDimension() || x() > that.x() || y() > that.y() || z() > that.z())
+        if (dimCompare > 0 || x() > that.x() || y() > that.y() || z() > that.z())
         {
             return 1;
         }
@@ -123,3 +119,4 @@ public class Location extends AbstractLocation<Location> implements IWorldPositi
         return 0;
     }
 }
+// PORTED

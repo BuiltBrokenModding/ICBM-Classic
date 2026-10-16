@@ -1,4 +1,0 @@
-{
-  "__comment": "Fix for block state looking in block models for item generated",
-  "parent": "minecraft:item/generated"
-}

@@ -9,13 +9,16 @@ import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.refs.ICBMExplosives;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
+import icbm.classic.lib.RegistryHelper;
 import icbm.classic.lib.actions.status.ActionResponses;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import icbm.classic.lib.explosive.ExplosiveStacks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
@@ -32,20 +35,21 @@ public class CapabilityExplosiveEntity implements IExplosive
         this.entity = entity;
     }
 
-    public NBTTagCompound serializeNBT()
+    /** PORT: stack saved with {@link ItemStack#saveOptional}, registries from {@link RegistryHelper} */
+    public CompoundTag serializeNBT()
     {
-        return toStack().serializeNBT();
+        return (CompoundTag) toStack().saveOptional(RegistryHelper.access()); // saveOptional is declared to return Tag
     }
 
-    public void deserializeNBT(@Nonnull NBTTagCompound nbt)
+    public void deserializeNBT(@Nonnull CompoundTag nbt)
     {
-        if (nbt.getSize() == 0)
+        if (nbt.isEmpty())
         {
             stack = ItemStack.EMPTY;
         }
         else
         {
-            stack = new ItemStack(nbt);
+            stack = ItemStack.parseOptional(RegistryHelper.access(), nbt);
         }
     }
 
@@ -58,9 +62,9 @@ public class CapabilityExplosiveEntity implements IExplosive
         //Make sure to note we are currently exploding
         this.isExploding = true;
 
-        if (!this.entity.world.isRemote)
+        if (!this.entity.level().isClientSide())
         {
-            return this.getExplosiveData().create(this.entity.world, x, y, z, source, null).doAction();
+            return this.getExplosiveData().create(this.entity.level(), x, y, z, source, null).doAction();
         }
         return ActionResponses.COMPLETED;
     }
@@ -69,41 +73,30 @@ public class CapabilityExplosiveEntity implements IExplosive
     @Override
     public IExplosiveData getExplosiveData()
     {
-        final ItemStack stack = toStack();
-        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        final IExplosive explosive = toStack().getCapability(ICBMClassicAPI.EXPLOSIVE_ITEM_CAPABILITY);
+        if (explosive != null && explosive.getExplosiveData() != null)
         {
-            final IExplosive explosive = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
-                return explosive.getExplosiveData();
-            }
+            return explosive.getExplosiveData();
         }
         return ICBMExplosives.CONDENSED;
     }
 
     @Override
     public void applyCustomizations(IBlast blast) {
-        final ItemStack stack = toStack();
-        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        final IExplosive explosive = toStack().getCapability(ICBMClassicAPI.EXPLOSIVE_ITEM_CAPABILITY);
+        if (explosive != null)
         {
-            final IExplosive explosive = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
-                explosive.applyCustomizations(blast);
-            }
+            explosive.applyCustomizations(blast);
         }
     }
 
     @Override
     public void addCustomization(IExplosiveCustomization customization) {
-        final ItemStack stack = toStack();
-        if (stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        // PORT: the stack cap writes the customization into the stack, so use the held stack directly
+        final IExplosive explosive = toStack().isEmpty() ? null : stack.getCapability(ICBMClassicAPI.EXPLOSIVE_ITEM_CAPABILITY);
+        if (explosive != null)
         {
-            final IExplosive explosive = stack.getCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null);
-            if (explosive != null)
-            {
-                explosive.addCustomization(customization);
-            }
+            explosive.addCustomization(customization);
         }
     }
 
@@ -121,27 +114,35 @@ public class CapabilityExplosiveEntity implements IExplosive
     @Override
     public void onDefuse()
     {
-        entity.world.spawnEntity(new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, toStack().copy()));
-        entity.setDead();
+        entity.level().addFreshEntity(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), toStack().copy()));
+        entity.discard();
     }
 
     public void setStack(@Nonnull ItemStack stack)
     {
-        if (!stack.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null))
+        if (stack.getCapability(ICBMClassicAPI.EXPLOSIVE_ITEM_CAPABILITY) == null)
         {
             ICBMClassic.logger().error("CapabilityExplosive[" + entity + "] Was set with a stack that is not an explosive [" + stack + "]");
         }
-        this.stack = stack.copy().splitStack(1);
+        this.stack = stack.copyWithCount(1);
     }
 
     @Override
     public int hashCode() {
-        return 31 * stack.getItem().hashCode() + stack.getItemDamage();
+        // PORT: 1.12 hashed item + metadata (explosive id)
+        return 31 * stack.getItem().hashCode() + Objects.hashCode(ExplosiveStacks.getExplosiveName(stack));
     }
 
     @Override
     public boolean equals(Object other) {
-        return super.equals(other) || other instanceof IExplosive && ItemStack.areItemsEqual(((IExplosive) other).toStack(), toStack());
+        return super.equals(other) || other instanceof IExplosive && sameItemAndExplosive(((IExplosive) other).toStack(), toStack());
+    }
+
+    private static boolean sameItemAndExplosive(ItemStack a, ItemStack b) {
+        if (a == null || b == null) {
+            return a == b;
+        }
+        return ItemStack.isSameItem(a, b) && Objects.equals(ExplosiveStacks.getExplosiveName(a), ExplosiveStacks.getExplosiveName(b));
     }
 
     @Override
@@ -149,3 +150,4 @@ public class CapabilityExplosiveEntity implements IExplosive
         return String.format("CapabilityExplosiveEntity[%s]@%s", toStack(), super.hashCode());
     }
 }
+// PORTED

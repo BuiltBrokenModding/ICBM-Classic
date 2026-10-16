@@ -1,35 +1,32 @@
 package icbm.classic.prefab.tile;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Created by Robin on 1/8/2015.
+ * <p>
+ * PORT: 1.12 IGuiHandler getServerGuiElement/getClientGuiElement are replaced by {@link MenuProvider}.
+ * Tiles implement {@code createMenu(int, Inventory, Player)} and {@code getDisplayName()}; screens are
+ * bound to menu types in ClientReg.
  */
-public interface IGuiTile
+public interface IGuiTile extends MenuProvider
 {
     /**
-     * Returns a Server side Container to be displayed to the user.
+     * Opens this tile's menu for the player, server side only. Writes the tile position so
+     * {@link icbm.classic.content.reg.MenuReg} can resolve the tile client side.
      *
-     * @param ID     The Gui ID Number
-     * @param player The player viewing the Gui
-     * @return A GuiScreen/Container to be displayed to the user, null if none.
+     * @param player to open the menu for
      */
-    default Object getServerGuiElement(int ID, EntityPlayer player)
+    default void openGui(Player player)
     {
-        return null;
-    }
-
-    /**
-     * Returns a Container to be displayed to the user. On the client side, this
-     * needs to return a instance of GuiScreen On the server side, this needs to
-     * return a instance of Container
-     *
-     * @param ID     The Gui ID Number
-     * @param player The player viewing the Gui
-     * @return A GuiScreen/Container to be displayed to the user, null if none.
-     */
-    default Object getClientGuiElement(int ID, EntityPlayer player)
-    {
-        return null;
+        if (player instanceof ServerPlayer && this instanceof BlockEntity)
+        {
+            final BlockEntity tile = (BlockEntity) this;
+            player.openMenu(this, buf -> buf.writeBlockPos(tile.getBlockPos()));
+        }
     }
 }
+// PORTED

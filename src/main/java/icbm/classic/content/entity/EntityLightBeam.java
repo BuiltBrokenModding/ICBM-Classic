@@ -1,21 +1,21 @@
 package icbm.classic.content.entity;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.entity.EntityType;
+import icbm.classic.content.reg.EntityReg;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import javax.annotation.Nonnull;
 
-public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnData
+public class EntityLightBeam extends Entity implements IEntityWithComplexSpawn
 {
     //Render color
     public float red = 1;
@@ -35,27 +35,29 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
     public float beamGrowthRate = 0.05f;
 
     //Data
-    private static final DataParameter<Float> BEAM_PROGRESS = EntityDataManager.createKey(EntityLightBeam.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> BEAM_PROGRESS = SynchedEntityData.defineId(EntityLightBeam.class, EntityDataSerializers.FLOAT);
 
-    public EntityLightBeam(World world)
+    public EntityLightBeam(EntityType<? extends EntityLightBeam> type, Level world)
     {
-        super(world);
-        this.setSize(1F, 1F);
-        this.preventEntitySpawning = true;
-        this.ignoreFrustumCheck = true;
-        this.height = 1;
-        this.width = 1;
+        super(type, world);
+        this.blocksBuilding = true;
+        this.noCulling = true;
+    }
+
+    public EntityLightBeam(Level world)
+    {
+        this(EntityReg.BEAM.get(), world);
     }
 
     @Override
-    protected void entityInit()
+    protected void defineSynchedData(SynchedEntityData.Builder builder)
     {
-        this.getDataManager().register(BEAM_PROGRESS, -1f);
+        builder.define(BEAM_PROGRESS, -1f);
     }
 
     public EntityLightBeam setPosition(IPos3D position)
     {
-        this.setPosition(position.x(), position.y(), position.z());
+        this.setPos(position.x(), position.y(), position.z());
         return this;
     }
 
@@ -79,24 +81,23 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
 
     public void setActualBeamProgress(float value)
     {
-        this.getDataManager().set(BEAM_PROGRESS, Math.min(1, Math.max(0, value)));
+        this.getEntityData().set(BEAM_PROGRESS, Math.min(1, Math.max(0, value)));
     }
 
     public float getBeamProgress()
     {
-        return this.getDataManager().get(BEAM_PROGRESS);
+        return this.getEntityData().get(BEAM_PROGRESS);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     @Nonnull
-    public AxisAlignedBB getRenderBoundingBox()
+    public AABB getBoundingBoxForCulling()
     {
-        return new AxisAlignedBB(posX - 5, -10, posZ - 5, posX + 5, Double.POSITIVE_INFINITY, posZ + 5);
+        return new AABB(getX() - 5, -10, getZ() - 5, getX() + 5, Double.POSITIVE_INFINITY, getZ() + 5);
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(RegistryFriendlyByteBuf data)
     {
         data.writeFloat(this.red);
         data.writeFloat(this.green);
@@ -106,7 +107,7 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(RegistryFriendlyByteBuf data)
     {
         this.red = data.readFloat();
         this.green = data.readFloat();
@@ -116,8 +117,15 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
+        // PORT: target progress and death cycle only exist on the server, the client follows the synced
+        // BEAM_PROGRESS (smoothed by RenderLightBeam) and is removed by the server
+        if (this.level().isClientSide())
+        {
+            return;
+        }
+
         //Grow beam slowly
         if (getBeamProgress() < targetBeamProgress)
         {
@@ -132,42 +140,43 @@ public class EntityLightBeam extends Entity implements IEntityAdditionalSpawnDat
         //Kill off beam when animation finishes
         if (deathCycle && Math.abs(getBeamProgress() - targetBeamProgress) <= 0.01)
         {
-            setDead();
+            discard();
         }
         //Safety in case the beam is never killed
-        else if (ticksExisted > 20 * 60 * 5) //ticks per second * seconds * mins = 5 mins
+        else if (tickCount > 20 * 60 * 5) //ticks per second * seconds * mins = 5 mins
         {
-            setDead();
+            discard();
         }
     }
 
     @Override
-    public boolean canBePushed()
+    public boolean isPushable()
     {
         return false;
     }
 
     @Override
-    protected boolean canTriggerWalking()
+    protected Entity.MovementEmission getMovementEmission()
+    {
+        return Entity.MovementEmission.NONE;
+    }
+
+    @Override
+    public boolean isPickable()
     {
         return false;
     }
 
     @Override
-    public boolean canBeCollidedWith()
-    {
-        return false;
-    }
-
-    @Override
-    protected void readEntityFromNBT(NBTTagCompound var1)
+    protected void readAdditionalSaveData(CompoundTag var1)
     {
 
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound var1)
+    protected void addAdditionalSaveData(CompoundTag var1)
     {
 
     }
 }
+// PORTED

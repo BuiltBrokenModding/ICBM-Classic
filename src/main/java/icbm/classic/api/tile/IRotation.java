@@ -1,7 +1,7 @@
 package icbm.classic.api.tile;
 
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.core.Direction;
 
 /** Used by blocks that have a placement direction in the world
  *
@@ -10,7 +10,8 @@ import net.minecraft.util.EnumFacing;
 @Deprecated //Highly likely this will be replaced or removed
 public interface IRotation
 {
-    /** Gets the facing direction of the TileEntity
+    /** Gets the facing direction of the BlockEntity
      * @return  Front of the tile */
-    EnumFacing getDirection();
+    Direction getDirection();
 }
+// PORTED

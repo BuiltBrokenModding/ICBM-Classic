@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:copper_wire"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "cwc",
+    "csc",
+    "cwc"
+  ],
+  "key": {
+    "c": {
+      "tag": "c:ingots/copper"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:copper_wire",
+    "count": 18
+  }
+}

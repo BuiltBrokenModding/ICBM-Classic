@@ -3,13 +3,14 @@ package icbm.classic.lib.radar;
 import com.google.common.collect.Lists;
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
-import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,8 @@ public final class RadarRegistry
     public static final RadarRegistry INSTANCE = new RadarRegistry();
     //TODO add client side version for mini-map like systems
     //TODO add per machine tracking map that uses line of sight so hills can block it's view. (Visible Area Cache in other words)
-    /** World id to radar map */
-    private static final HashMap<Integer, RadarMap> RADAR_MAPS = new HashMap();
+    /** Level id to radar map */
+    private static final HashMap<ResourceKey<Level>, RadarMap> RADAR_MAPS = new HashMap();
 
     /**
      * Adds an entity to the radar map
@@ -37,10 +38,10 @@ public final class RadarRegistry
      */
     public static boolean add(Entity entity)
     {
-        if (entity != null && !entity.isDead && entity.world != null && !entity.world.isRemote)
+        if (entity != null && !entity.isRemoved() && entity.level() != null && !entity.level().isClientSide())
         {
-            RadarMap map = getRadarMapForWorld(entity.world);
-            return map != null && getRadarMapForWorld(entity.world).add(entity);
+            RadarMap map = getRadarMapForWorld(entity.level());
+            return map != null && getRadarMapForWorld(entity.level()).add(entity);
         }
         return false;
     }
@@ -53,10 +54,10 @@ public final class RadarRegistry
      */
     public static boolean remove(Entity entity)
     {
-        if (entity != null && !entity.isDead && entity.world != null)
+        if (entity != null && !entity.isRemoved() && entity.level() != null)
         {
-            RadarMap map = getRadarMapForWorld(entity.world);
-            return map != null ? getRadarMapForWorld(entity.world).remove(entity) : false;
+            RadarMap map = getRadarMapForWorld(entity.level());
+            return map != null ? getRadarMapForWorld(entity.level()).remove(entity) : false;
         }
         return false;
     }
@@ -67,11 +68,11 @@ public final class RadarRegistry
      * @param world - should be a valid world that is loaded and has a dim id
      * @return existing map, or new map if one does not exist
      */
-    public static RadarMap getRadarMapForWorld(World world)
+    public static RadarMap getRadarMapForWorld(Level world)
     {
-        if (world != null && world.provider != null)
+        if (world != null)
         {
-            if (world.isRemote)
+            if (world.isClientSide())
             {
                 if (ICBMClassic.runningAsDev)
                 {
@@ -79,12 +80,12 @@ public final class RadarRegistry
                 }
                 return null;
             }
-            return getRadarMapForDim(world.provider.getDimension());
+            return getRadarMapForDim(world.dimension());
         }
         //Only throw an error in dev mode, ignore in normal runtime
         else if (ICBMClassic.runningAsDev)
         {
-            ICBMClassic.logger().error("RadarRegistry: World can not be null or have a null provider when requesting a radar map", new RuntimeException());
+            ICBMClassic.logger().error("RadarRegistry: Level can not be null or have a null provider when requesting a radar map", new RuntimeException());
         }
         return null;
     }
@@ -92,10 +93,10 @@ public final class RadarRegistry
     /**
      * Gets a radar map for a dimension
      *
-     * @param dimID - unique dim id
+     * @param dimID - dimension key
      * @return existing mpa, or new map if one does not exist
      */
-    public static RadarMap getRadarMapForDim(int dimID)
+    public static RadarMap getRadarMapForDim(ResourceKey<Level> dimID)
     {
         if (!RADAR_MAPS.containsKey(dimID))
         {
@@ -116,7 +117,7 @@ public final class RadarRegistry
      * @param distance in x & z axis
      * @return list, never null
      */
-    public static List<Entity> getAllLivingObjectsWithin(World world, double x, double y, double z, double distance)
+    public static List<Entity> getAllLivingObjectsWithin(Level world, double x, double y, double z, double distance)
     {
         return getAllLivingObjectsWithin(world, new Cube(x - distance, 0, z - distance, x + distance, ICBMClassic.MAP_HEIGHT, z + distance));
     }
@@ -128,13 +129,13 @@ public final class RadarRegistry
      * @param cube  - area to search for contacts
      * @return list, never null
      */
-    public static List<Entity> getAllLivingObjectsWithin(World world, Cube cube)
+    public static List<Entity> getAllLivingObjectsWithin(Level world, Cube cube)
     {
         // TODO recode to take filter as input to reduce output list
         // TODO recode to use a consumer pattern, if so ignore filter and let consumer be the filter
 
         final List<Entity> list = Lists.<Entity>newArrayList();
-        if (RADAR_MAPS.containsKey(world.provider.getDimension()))
+        if (RADAR_MAPS.containsKey(world.dimension()))
         {
             final RadarMap map = getRadarMapForWorld(world);
             if (map != null)
@@ -145,14 +146,14 @@ public final class RadarRegistry
                     if (object != null && object.isValid())
                     {
                         Entity entity = ((RadarEntity) object).entity;
-                        if (entity != null && !entity.isDead)
+                        if (entity != null && !entity.isRemoved())
                         {
                             list.add(entity);
                         }
                     }
                 }
             }
-            else if (world.isRemote && ICBMClassic.runningAsDev)
+            else if (world.isClientSide() && ICBMClassic.runningAsDev)
             {
                 ICBMClassic.logger().error("RadarRegistry: Radar data can not be requested client side.", new RuntimeException());
             }
@@ -160,12 +161,15 @@ public final class RadarRegistry
         return list;
     }
 
-    @SubscribeEvent
+    // PORT: LOWEST so MissileEventHandler#chunkUnload (NORMAL) reads the chunk's contacts before they are dropped.
+    // In 1.12 the missile handler was registered first; here RadarRegistry is registered in the mod constructor,
+    // before FML injects @EventBusSubscriber classes, so same-priority ordering would be reversed
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void chunkUnload(ChunkEvent.Unload event)
     {
-        if (event.getChunk().getWorld() != null && event.getChunk().getWorld().provider != null)
+        if (event.getLevel() instanceof Level level && !level.isClientSide()) // PORT: server maps only, client levels share dimension keys
         {
-            int dim = event.getChunk().getWorld().provider.getDimension();
+            final ResourceKey<Level> dim = level.dimension();
             if (RADAR_MAPS.containsKey(dim))
             {
                 getRadarMapForDim(dim).remove(event.getChunk());
@@ -174,11 +178,12 @@ public final class RadarRegistry
     }
 
     @SubscribeEvent
-    public void worldUpdateTick(TickEvent.WorldTickEvent event)
+    public void worldUpdateTick(LevelTickEvent.Post event)
     {
-        if (event.world.provider != null && event.side == Side.SERVER && event.phase == TickEvent.Phase.END)
+        final Level level = event.getLevel();
+        if (!level.isClientSide())
         {
-            int dim = event.world.provider.getDimension();
+            final ResourceKey<Level> dim = level.dimension();
             if (RADAR_MAPS.containsKey(dim))
             {
                 RadarMap map = getRadarMapForDim(dim);
@@ -195,11 +200,11 @@ public final class RadarRegistry
     }
 
     @SubscribeEvent
-    public void worldUnload(WorldEvent.Unload event)
+    public void worldUnload(LevelEvent.Unload event)
     {
-        if (event.getWorld().provider != null)
+        if (event.getLevel() instanceof Level level && !level.isClientSide()) // PORT: server maps only, client levels share dimension keys
         {
-            int dim = event.getWorld().provider.getDimension();
+            final ResourceKey<Level> dim = level.dimension();
             if (RADAR_MAPS.containsKey(dim))
             {
                 getRadarMapForDim(dim).unloadAll();
@@ -209,3 +214,4 @@ public final class RadarRegistry
     }
 
 }
+// PORTED

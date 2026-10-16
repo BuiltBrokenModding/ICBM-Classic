@@ -1,0 +1,45 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:and",
+      "values": [
+        {
+          "type": "neoforge:not",
+          "value": {
+            "type": "neoforge:tag_empty",
+            "tag": "c:circuits/basic"
+          }
+        },
+        {
+          "type": "neoforge:not",
+          "value": {
+            "type": "neoforge:tag_empty",
+            "tag": "c:ingots/steel"
+          }
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " i ",
+    "ici",
+    "ipi"
+  ],
+  "key": {
+    "c": {
+      "tag": "c:circuits/basic"
+    },
+    "i": {
+      "tag": "c:ingots/steel"
+    },
+    "p": {
+      "tag": "minecraft:wooden_buttons"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:empty_bomblet",
+    "count": 16
+  }
+}

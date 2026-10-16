@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -121,3 +121,4 @@ public abstract class ExplosiveContentRegistry implements IExplosiveContentRegis
         return locked;
     }
 }
+// PORTED

@@ -11,10 +11,10 @@ import icbm.classic.lib.radio.imp.RadioTile;
 import icbm.classic.lib.radio.messages.IncomingMissileMessage;
 import icbm.classic.lib.radio.messages.TextMessage;
 import icbm.classic.prefab.FakeRadioSender;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public class RadioEmpTower extends RadioTile<TileEMPTower> implements IRadioReceiver, INBTSerializable<NBTTagCompound> {
+public class RadioEmpTower extends RadioTile<TileEMPTower> implements IRadioReceiver, INBTSerializable<CompoundTag> {
 
     public static final String SUCCESS = "tile.emptower.radio.success";
 
@@ -51,3 +51,4 @@ public class RadioEmpTower extends RadioTile<TileEMPTower> implements IRadioRece
         }
     }
 }
+// PORTED

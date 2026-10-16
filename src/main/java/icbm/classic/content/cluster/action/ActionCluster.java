@@ -6,23 +6,22 @@ import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.lib.actions.ActionBase;
 import icbm.classic.lib.actions.status.ActionResponses;
-import icbm.classic.content.cluster.bomblet.EntityBombDroplet;
-import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.transform.RotationHelper;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 public class ActionCluster extends ActionBase {
 
-    private static final Vec3d SOUTH_VEC = new Vec3d(0, 0, 1);
-    private static final Vec3d UP_VEC = new Vec3d(0, 1, 0);
+    private static final Vec3 SOUTH_VEC = new Vec3(0, 0, 1);
+    private static final Vec3 UP_VEC = new Vec3(0, 1, 0);
     private static final float stackScale = 0.1f;
     private static final float offsetScale = 0.25f;
 
@@ -94,13 +93,13 @@ public class ActionCluster extends ActionBase {
     @Setter
     private float sourcePitch = 0;
 
-    public ActionCluster(World world, Vec3d position, IActionSource source, IActionData actionData) {
+    public ActionCluster(Level world, Vec3 position, IActionSource source, IActionData actionData) {
         super(world, position, source, actionData);
     }
 
     @Override
     public IActionStatus doAction() {
-        if (this.getWorld().isRemote) {
+        if (this.getWorld().isClientSide()) {
             return ActionResponses.COMPLETED;
         }
 
@@ -120,12 +119,12 @@ public class ActionCluster extends ActionBase {
                 bombsToFire -= 1;
 
                 // calculate yaw
-                final double yaw = MathHelper.wrapDegrees(yawAmount * bombIndex + (discIndex * discYawOffset));
-                final Vec3d offsetYaw = RotationHelper.rotateY(SOUTH_VEC, yaw);
-                final Vec3d sourceVec = RotationHelper.rotateY(RotationHelper.rotateX(offsetYaw, sourcePitch - 90), sourceYaw);
+                final double yaw = Mth.wrapDegrees(yawAmount * bombIndex + (discIndex * discYawOffset));
+                final Vec3 offsetYaw = RotationHelper.rotateY(SOUTH_VEC, yaw);
+                final Vec3 sourceVec = RotationHelper.rotateY(RotationHelper.rotateX(offsetYaw, sourcePitch - 90), sourceYaw);
 
                 // Calculate back motion to have projectiles shoot at an angle rather than direct 90
-                final Vec3d backVector = RotationHelper.rotateX(UP_VEC, motionPitchOffset);
+                final Vec3 backVector = RotationHelper.rotateX(UP_VEC, motionPitchOffset);
 
                 // set base motion
                 double motionX = (sourceVec.x + backVector.x) * motionScale;
@@ -138,13 +137,13 @@ public class ActionCluster extends ActionBase {
 
                 // Randomize motion to create a less perfect pattern
                 if (motionRandomScale > 0) {
-                    motionX += (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * motionScaleLayer;
-                    motionY += (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * motionScaleLayer;
-                    motionZ += (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * motionScaleLayer;
+                    motionX += (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * motionScaleLayer;
+                    motionY += (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * motionScaleLayer;
+                    motionZ += (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * motionScaleLayer;
                 }
 
                 // set position to slightly next to missile body
-                final Vec3d stackVector = RotationHelper.rotateY(RotationHelper.rotateX(SOUTH_VEC, sourcePitch - 180), sourceYaw); //offset from disc, if facing down this is y++
+                final Vec3 stackVector = RotationHelper.rotateY(RotationHelper.rotateX(SOUTH_VEC, sourcePitch - 180), sourceYaw); //offset from disc, if facing down this is y++
                 double x = (sourceVec.x * offsetScale) + (stackVector.x * stackScale * discIndex);
                 double y = (sourceVec.y * offsetScale) + (stackVector.y * stackScale * discIndex);
                 double z = (sourceVec.z * offsetScale) + (stackVector.z * stackScale * discIndex);
@@ -166,36 +165,34 @@ public class ActionCluster extends ActionBase {
         final Entity entity = ICBMClassicAPI.PROJECTILE_DATA_REGISTRY.spawnProjectile(stackToSpawn, getWorld(), getPosition().x + x, getPosition().y+ y, getPosition().z + z,
             null, this.allowPickupItem,
             (newEntity) -> {
-                newEntity.setPosition(getPosition().x + x, getPosition().y+ y, getPosition().z + z);
-
-                newEntity.motionX = mx;
-                newEntity.motionY = my;
-                newEntity.motionZ = mz;
-
-                // set rotation to match motion
-                final float f3 = MathHelper.sqrt(newEntity.motionX * newEntity.motionX + newEntity.motionZ * newEntity.motionZ);
-                newEntity.prevRotationYaw = newEntity.rotationYaw = (float) (Math.atan2(newEntity.motionX, newEntity.motionZ) * 180.0D / Math.PI);
-                newEntity.prevRotationPitch = newEntity.rotationPitch = (float) (Math.atan2(newEntity.motionY, f3) * 180.0D / Math.PI);
+                newEntity.setPos(getPosition().x + x, getPosition().y+ y, getPosition().z + z);
+                applyMotion(newEntity, mx, my, mz);
             });
 
         // Spawn item to prevent loss
         if(entity == null) {
-            final EntityItem entityItem = new EntityItem(getWorld());
-            entityItem.setPosition(getPosition().x + x, getPosition().y+ y, getPosition().z + z);
+            final ItemEntity entityItem = new ItemEntity(EntityType.ITEM, getWorld());
+            entityItem.setPos(getPosition().x + x, getPosition().y+ y, getPosition().z + z);
             entityItem.setItem(stackToSpawn.copy());
-            entityItem.setDefaultPickupDelay();
+            entityItem.setDefaultPickUpDelay();
+            applyMotion(entityItem, mx, my, mz);
 
-            entityItem.motionX = mx;
-            entityItem.motionY = my;
-            entityItem.motionZ = mz;
-
-            // set rotation to match motion
-            final float f3 = MathHelper.sqrt(entityItem.motionX * entityItem.motionX + entityItem.motionZ * entityItem.motionZ);
-            entityItem.prevRotationYaw = entityItem.rotationYaw = (float) (Math.atan2(entityItem.motionX, entityItem.motionZ) * 180.0D / Math.PI);
-            entityItem.prevRotationPitch = entityItem.rotationPitch = (float) (Math.atan2(entityItem.motionY, f3) * 180.0D / Math.PI);
-
-            return getWorld().spawnEntity(entityItem);
+            return getWorld().addFreshEntity(entityItem);
         }
         return true;
     }
+
+    private static void applyMotion(Entity entity, double mx, double my, double mz) {
+        entity.setDeltaMovement(mx, my, mz);
+
+        // set rotation to match motion
+        final float f3 = (float) Math.sqrt(mx * mx + mz * mz);
+        final float yaw = (float) (Math.atan2(mx, mz) * 180.0D / Math.PI);
+        final float pitch = (float) (Math.atan2(my, f3) * 180.0D / Math.PI);
+        entity.setYRot(yaw);
+        entity.yRotO = yaw;
+        entity.setXRot(pitch);
+        entity.xRotO = pitch;
+    }
 }
+// PORTED

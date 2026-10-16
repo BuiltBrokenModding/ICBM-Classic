@@ -1,38 +1,57 @@
 package icbm.classic.client.models;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import icbm.classic.ICBMConstants;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.animal.Chicken;
 
 // Made with Blockbench 4.6.4
-// Exported for Minecraft version 1.7 - 1.12
-public class ModelChickenHelmet extends ModelBase {
-    private final ModelRenderer bone;
+// PORT: rebuilt as a 1.21 layer definition, same box, pivot and texture size
+public class ModelChickenHelmet extends EntityModel<Chicken> {
 
-    public ModelChickenHelmet() {
-        textureWidth = 64;
-        textureHeight = 32;
+    public static final ModelLayerLocation LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "chicken_helmet"), "main");
 
-        bone = new ModelRenderer(this);
-        bone.setRotationPoint(0.0F, 15.0F, -4.0F);
-        bone.cubeList.add(new ModelBox(bone, 40, 12, -3.0F, -6.5F, -4.5F, 6, 7, 6, 0.0F, false));
+    private final ModelPart bone;
+
+    public ModelChickenHelmet(ModelPart root) {
+        this.bone = root.getChild("bone");
+    }
+
+    public static LayerDefinition createLayer() {
+        final MeshDefinition mesh = new MeshDefinition();
+        final PartDefinition root = mesh.getRoot();
+        root.addOrReplaceChild("bone",
+            CubeListBuilder.create().texOffs(40, 12).addBox(-3.0F, -6.5F, -4.5F, 6, 7, 6),
+            PartPose.offset(0.0F, 15.0F, -4.0F));
+        return LayerDefinition.create(mesh, 64, 32);
     }
 
     @Override
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void setupAnim(Chicken entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        bone.xRot = headPitch * 0.017453292F;
+        bone.yRot = netHeadYaw * 0.017453292F;
+    }
 
-        bone.rotateAngleX = headPitch * 0.017453292F;
-        bone.rotateAngleY = netHeadYaw * 0.017453292F;
-
-        if (this.isChild) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(0.0F, 5.0F * scale, 2.0F * scale);
-            bone.render(scale);
-            GlStateManager.popMatrix();
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        if (this.young) {
+            poseStack.pushPose();
+            // 1.12 translate(0, 5 * scale, 2 * scale) with scale = 1/16
+            poseStack.translate(0.0F, 5.0F / 16.0F, 2.0F / 16.0F);
+            bone.render(poseStack, buffer, packedLight, packedOverlay, color);
+            poseStack.popPose();
         } else {
-            bone.render(scale);
+            bone.render(poseStack, buffer, packedLight, packedOverlay, color);
         }
     }
 }
+// PORTED

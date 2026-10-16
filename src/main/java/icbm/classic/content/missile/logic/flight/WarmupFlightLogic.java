@@ -8,9 +8,10 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
  */
 public class WarmupFlightLogic extends FlightLogic {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "engine.warmup");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "engine.warmup");
 
     /** Timer for missile to wait on pad before climbing */
     @Getter @Setter @Accessors(chain = true)
@@ -70,18 +71,20 @@ public class WarmupFlightLogic extends FlightLogic {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<WarmupFlightLogic> SAVE_LOGIC = new NbtSaveHandler<WarmupFlightLogic>()
         .mainRoot()
-            /* */.nodeInteger("timer", (bl) -> null, (bl, data) -> bl.timer = data)
+            // PORT: 1.12 never saved the timer, so clients (spawn/desc sync) and reloads lost the warm up
+            /* */.nodeInteger("timer", (bl) -> bl.timer, (bl, data) -> bl.timer = data)
         .base();
 }
+// PORTED

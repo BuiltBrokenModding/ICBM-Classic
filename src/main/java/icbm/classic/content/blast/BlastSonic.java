@@ -8,14 +8,13 @@ import icbm.classic.content.blast.thread.ThreadLargeExplosion;
 import icbm.classic.content.blocks.explosive.TileEntityExplosive;
 import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.content.reg.BlockReg;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +39,7 @@ public class BlastSonic extends Blast implements IBlastTickable
         //TODO remove thread
         createAndStartThread(new ThreadLargeExplosion(this, (int) this.getBlastRadius(), getBlastRadius() * 2, this.exploder));
 
-        ICBMSounds.SONICWAVE.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F, true);
+        ICBMSounds.SONICWAVE.play(world, location.x(), location.y(), location.z(), 4.0F, (1.0F + (this.world().random.nextFloat() - this.world().random.nextFloat()) * 0.2F) * 0.7F, true);
     }
 
     @Override
@@ -73,25 +72,25 @@ public class BlastSonic extends Blast implements IBlastTickable
                             it.remove();
 
                             //Get data
-                            final IBlockState blockState = world.getBlockState(targetPosition);
+                            final BlockState blockState = world.getBlockState(targetPosition);
                             final Block block = blockState.getBlock();
 
                             //Only act on movable blocks
-                            if (!block.isAir(blockState, world, targetPosition) && blockState.getBlockHardness(world, targetPosition) >= 0)
+                            if (!blockState.isAir() && blockState.getDestroySpeed(world, targetPosition) >= 0)
                             {
                                 //Trigger explosions
-                                if (block == BlockReg.blockExplosive)  //TODO add handle to trigger more blocks
+                                if (block == BlockReg.blockExplosive.get())  //TODO add handle to trigger more blocks
                                 {
-                                    final TileEntity tile = this.world().getTileEntity(targetPosition);
+                                    final BlockEntity tile = this.world().getBlockEntity(targetPosition);
                                     if(tile instanceof TileEntityExplosive) {
                                         ((TileEntityExplosive)tile).trigger(false);
                                     }
                                 }
 
-                                if(this.world().rand.nextFloat() < 0.1) {  //TODO add config for chance, increase chance if we fail to spawn a block
+                                if(this.world().random.nextFloat() < 0.1) {  //TODO add config for chance, increase chance if we fail to spawn a block
                                     FlyingBlock.spawnFlyingBlock(world, targetPosition, null, null);
                                 }
-                                this.world().setBlockToAir(targetPosition);
+                                this.world().removeBlock(targetPosition, false);
                             }
                         }
                     }
@@ -114,22 +113,22 @@ public class BlastSonic extends Blast implements IBlastTickable
         }
 
         final int entityEffectRadius = 2 * this.callCount; //TODO scale to radius
-        final AxisAlignedBB bounds = new AxisAlignedBB(
+        final AABB bounds = new AABB(
                 location.x() - entityEffectRadius, location.y() - entityEffectRadius, location.z() - entityEffectRadius,
                 location.x() + entityEffectRadius, location.y() + entityEffectRadius, location.z() + entityEffectRadius);
 
-        final List<Entity> allEntities = this.world().getEntitiesWithinAABB(Entity.class, bounds);
+        final List<Entity> allEntities = this.world().getEntitiesOfClass(Entity.class, bounds);
         for (Entity entity : allEntities)
         {
-            if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isCreative())
+            if (!(entity instanceof Player) || !((Player) entity).isCreative())
             {
                 //Get difference
-                double xDelta = entity.posX - location.x();
-                double yDelta = entity.posY - location.y();
-                double zDelta = entity.posZ - location.z();
+                double xDelta = entity.getX() - location.x();
+                double yDelta = entity.getY() - location.y();
+                double zDelta = entity.getZ() - location.z();
 
                 //Normalize
-                float distance = MathHelper.sqrt(xDelta * xDelta + yDelta * yDelta + zDelta * zDelta);
+                float distance = (float) Math.sqrt(xDelta * xDelta + yDelta * yDelta + zDelta * zDelta);
                 xDelta = xDelta / (double) distance;
                 yDelta = yDelta / (double) distance;
                 zDelta = zDelta / (double) distance;
@@ -140,12 +139,15 @@ public class BlastSonic extends Blast implements IBlastTickable
                 yDelta *= scale;
                 zDelta *= scale;
 
-                entity.motionX += xDelta * this.world().rand.nextFloat() * 0.2;
-                entity.motionY += Math.abs(yDelta * this.world().rand.nextFloat()) * 1;
-                entity.motionZ += zDelta * this.world().rand.nextFloat() * 0.2;
+                entity.setDeltaMovement(entity.getDeltaMovement().add(
+                    xDelta * this.world().random.nextFloat() * 0.2,
+                    Math.abs(yDelta * this.world().random.nextFloat()) * 1,
+                    zDelta * this.world().random.nextFloat() * 0.2));
+                markVelocityChanged(entity);
             }
         }
 
         return this.callCount > this.getBlastRadius();
     }
 }
+// PORTED

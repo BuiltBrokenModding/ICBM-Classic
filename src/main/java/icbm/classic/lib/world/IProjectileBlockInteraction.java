@@ -1,11 +1,11 @@
 package icbm.classic.lib.world;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 @FunctionalInterface
 public interface IProjectileBlockInteraction {
@@ -24,7 +24,7 @@ public interface IProjectileBlockInteraction {
      * @param hit position exact, normally raytrace driven
      * @return desired result for interaction
      */
-    EnumHitReactions apply(World world, BlockPos pos, Vec3d hit, EnumFacing side, IBlockState state, Entity projectile);
+    EnumHitReactions apply(Level world, BlockPos pos, Vec3 hit, Direction side, BlockState state, Entity projectile);
 
 
     enum EnumHitReactions {
@@ -48,3 +48,4 @@ public interface IProjectileBlockInteraction {
         }
     }
 }
+// PORTED

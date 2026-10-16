@@ -2,12 +2,11 @@ package icbm.classic.content.blast.thread;
 
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.content.blast.Blast;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 @Deprecated
 public class BasicResistanceCallBack implements IThreadCallBack
@@ -20,15 +19,16 @@ public class BasicResistanceCallBack implements IThreadCallBack
     }
 
     @Override
-    public float getResistance(World world, IPos3D blastCenter, BlockPos pos, Entity source, Block block)
+    public float getResistance(Level world, IPos3D blastCenter, BlockPos pos, Entity source, BlockState state)
     {
-        if (block instanceof BlockLiquid || block instanceof IFluidBlock)
+        if (state.getBlock() instanceof LiquidBlock) // PORT: 1.12 also checked Forge IFluidBlock
         {
             return 0.25f;
         }
         else
         {
-            return block.getExplosionResistance(world, pos, source, blast);
+            return blast.getBlockResistance(pos, state);
         }
     }
 }
+// PORTED

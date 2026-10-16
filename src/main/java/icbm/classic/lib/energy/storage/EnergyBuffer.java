@@ -3,10 +3,11 @@ package icbm.classic.lib.energy.storage;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.lib.energy.system.EnergySystem;
 import icbm.classic.lib.energy.system.IEnergySystem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.IntTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
  *
  * Created by Dark on 8/15/2015.
  */
-public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
+public class EnergyBuffer implements IEnergyStorage, INBTSerializable<IntTag>
 {
     private final Supplier<Integer> storageLimit;
 
@@ -100,17 +101,16 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
 
     public int extractEnergyInternal(int desiredEnergy, boolean simulate)
     {
-
-        final int maxEnergy = getMaxEnergyStored();
         final int energyStored = getEnergyStored();
 
         if(desiredEnergy <= 0 || energyStored <= 0) {
             return 0;
         }
 
-        final int toRemove = Math.min(maxEnergy, desiredEnergy);
+        // PORT: 1.12 capped by capacity instead of stored energy, so consumePower(cost, true) passed with 1 FE stored
+        final int toRemove = Math.min(energyStored, desiredEnergy);
         if(!simulate) {
-            setEnergyInternal(energyStored - desiredEnergy, EnergyActionType.REMOVE);
+            setEnergyInternal(energyStored - toRemove, EnergyActionType.REMOVE);
         }
         return toRemove;
     }
@@ -123,17 +123,32 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
      * @return true if amount was consumed
      */
     public boolean consumePower(int amount, boolean simulate) {
-        return !ConfigMain.REQUIRES_POWER || extractEnergyInternal(amount, simulate) >= amount;
+        if(!ConfigMain.REQUIRES_POWER) {
+            return true;
+        }
+        // PORT: all or nothing. extractEnergyInternal now caps at stored energy, a failed consume must not drain a
+        // partial amount (radar fed below its per tick cost would be emptied every tick and never charge up)
+        if(extractEnergyInternal(amount, true) < amount) {
+            return false;
+        }
+        if(!simulate) {
+            extractEnergyInternal(amount, false);
+        }
+        return true;
     }
 
     public ItemStack dischargeItem(ItemStack itemStack) {
         final IEnergySystem system = EnergySystem.getSystem(itemStack, null);
         if(system != null && canReceive()) {
-            final int energyLeftToStore = getMaxEnergyStored() - getEnergyStored(); //TODO limit based on receive method
+            final int energyLeftToStore = getMaxEnergyStored() - getEnergyStored();
             if(energyLeftToStore > 0) {
-                final int removed = system.removeEnergy(itemStack, null, energyLeftToStore, false);
-                if(removed > 0) {
-                    receiveEnergy(removed, false);
+                // PORT: 1.12 drained the item by the free space and lost whatever was over the receive limit
+                final int accept = receiveEnergy(energyLeftToStore, true);
+                if(accept > 0) {
+                    final int removed = system.removeEnergy(itemStack, null, accept, false);
+                    if(removed > 0) {
+                        receiveEnergy(removed, false);
+                    }
                 }
             }
         }
@@ -171,21 +186,24 @@ public class EnergyBuffer implements IEnergyStorage, INBTSerializable<NBTTagInt>
 
     private void setEnergyInternal(int energy, EnergyActionType type) {
         final int prev = this.energyStorage;
-        if(energy != prev) {
-            this.energyStorage = Math.min(getMaxEnergyStored(), Math.max(0, energy));
-            Optional.ofNullable(onEnergyChanged).ifPresent(f -> f.onChange(prev, energy, type));
+        // PORT: compare after clamping so a no-op set (already full/empty) does not mark the tile dirty and resend packets
+        final int next = Math.min(getMaxEnergyStored(), Math.max(0, energy));
+        if(next != prev) {
+            this.energyStorage = next;
+            Optional.ofNullable(onEnergyChanged).ifPresent(f -> f.onChange(prev, next, type));
         }
     }
 
     @Override
-    public NBTTagInt serializeNBT()
+    public IntTag serializeNBT(HolderLookup.Provider provider)
     {
-        return new NBTTagInt(getEnergyStored());
+        return IntTag.valueOf(getEnergyStored());
     }
 
     @Override
-    public void deserializeNBT(NBTTagInt nbt)
+    public void deserializeNBT(HolderLookup.Provider provider, IntTag nbt)
     {
-        setEnergyStored(nbt.getInt());
+        setEnergyStored(nbt.getAsInt());
     }
 }
+// PORTED

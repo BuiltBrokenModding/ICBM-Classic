@@ -1,59 +1,60 @@
 package icbm.classic.lib;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 
 public class ForgeRegistryHelpers {
 
     /**
-     * Checks if a forge registry contains the value.
+     * Checks if a registry contains the value. PORT: takes a vanilla {@link Registry} (ex: BuiltInRegistries.ITEM)
+     * instead of a Forge IForgeRegistry.
      *
      * @param registry to check
      * @param targetKey to look for, supports resource path fuzzy logic (contains, start, end)
      * @return true if at least one entry matches
      */
-    public static <V extends IForgeRegistryEntry<V>> boolean contains(IForgeRegistry<V> registry, ResourceLocation targetKey) {
+    public static <V> boolean contains(Registry<V> registry, ResourceLocation targetKey) {
         // Contains
-        if(targetKey.getResourcePath().startsWith("~") && targetKey.getResourcePath().endsWith("~")) {
-            final String checkStr = targetKey.getResourcePath().substring(1, targetKey.getResourcePath().length() - 1);
-            return pathContains(registry, targetKey.getResourceDomain(), checkStr);
+        if(targetKey.getPath().startsWith("~") && targetKey.getPath().endsWith("~")) {
+            final String checkStr = targetKey.getPath().substring(1, targetKey.getPath().length() - 1);
+            return pathContains(registry, targetKey.getNamespace(), checkStr);
         }
         // Ends
-        else if(targetKey.getResourcePath().startsWith("~")) {
-            final String checkStr = targetKey.getResourcePath().substring(1);
-            return pathEndsWith(registry, targetKey.getResourceDomain(), checkStr);
+        else if(targetKey.getPath().startsWith("~")) {
+            final String checkStr = targetKey.getPath().substring(1);
+            return pathEndsWith(registry, targetKey.getNamespace(), checkStr);
         }
         // Starts
-        else if(targetKey.getResourcePath().endsWith("~")) {
-            final String checkStr = targetKey.getResourcePath().substring(0, targetKey.getResourcePath().length() - 1);
-            return pathStartsWith(registry, targetKey.getResourceDomain(), checkStr);
+        else if(targetKey.getPath().endsWith("~")) {
+            final String checkStr = targetKey.getPath().substring(0, targetKey.getPath().length() - 1);
+            return pathStartsWith(registry, targetKey.getNamespace(), checkStr);
         }
         // exact match
-        return registry.containsKey(targetKey) && registry.getValue(targetKey) != null;
+        return registry.containsKey(targetKey) && registry.get(targetKey) != null;
     }
 
-    private static <V extends IForgeRegistryEntry<V>> boolean pathContains(IForgeRegistry<V> registry, String domain, String checkStr) {
-        return registry.getKeys()
+    private static <V> boolean pathContains(Registry<V> registry, String domain, String checkStr) {
+        return registry.keySet()
             .stream()
-            .anyMatch(contentKey -> contentKey.getResourceDomain().equalsIgnoreCase(domain)
-                && contentKey.getResourcePath().contains(checkStr)
-                && registry.getValue(contentKey) != null);
+            .anyMatch(contentKey -> contentKey.getNamespace().equalsIgnoreCase(domain)
+                && contentKey.getPath().contains(checkStr)
+                && registry.get(contentKey) != null);
     }
 
-    private static <V extends IForgeRegistryEntry<V>> boolean pathEndsWith(IForgeRegistry<V> registry, String domain, String checkStr) {
-        return registry.getKeys()
+    private static <V> boolean pathEndsWith(Registry<V> registry, String domain, String checkStr) {
+        return registry.keySet()
             .stream()
-            .anyMatch(contentKey -> contentKey.getResourceDomain().equalsIgnoreCase(domain)
-                && contentKey.getResourcePath().endsWith(checkStr)
-                && registry.getValue(contentKey) != null);
+            .anyMatch(contentKey -> contentKey.getNamespace().equalsIgnoreCase(domain)
+                && contentKey.getPath().endsWith(checkStr)
+                && registry.get(contentKey) != null);
     }
 
-    private static <V extends IForgeRegistryEntry<V>> boolean pathStartsWith(IForgeRegistry<V> registry, String domain, String checkStr) {
-        return registry.getKeys()
+    private static <V> boolean pathStartsWith(Registry<V> registry, String domain, String checkStr) {
+        return registry.keySet()
             .stream()
-            .anyMatch(contentKey -> contentKey.getResourceDomain().equalsIgnoreCase(domain)
-                && contentKey.getResourcePath().startsWith(checkStr)
-                && registry.getValue(contentKey) != null);
+            .anyMatch(contentKey -> contentKey.getNamespace().equalsIgnoreCase(domain)
+                && contentKey.getPath().startsWith(checkStr)
+                && registry.get(contentKey) != null);
     }
 }
+// PORTED

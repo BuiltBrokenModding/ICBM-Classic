@@ -2,9 +2,9 @@ package icbm.classic.prefab.inventory;
 
 import icbm.classic.lib.tile.ITick;
 import lombok.Getter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -73,9 +73,17 @@ public class InventoryWithSlots extends ItemStackHandler implements ITick {
         if(isServer) {
             for (InventorySlot slot : slotHandlers) {
                 if (slot != null && slot.getOnTick() != null) {
-                    setStackInSlot(slot.getSlot(), slot.getOnTick().apply(getStackInSlot(slot.getSlot())));
+                    // PORT: NeoForge setStackInSlot always fires onContentsChanged (-> tile setChanged, description packet),
+                    // only write back when the callback replaced the stack. In place changes (battery discharge) mark the
+                    // tile dirty through the energy buffer callback
+                    final ItemStack current = getStackInSlot(slot.getSlot());
+                    final ItemStack result = slot.getOnTick().apply(current);
+                    if (result != current) {
+                        setStackInSlot(slot.getSlot(), result);
+                    }
                 }
             }
         }
     }
 }
+// PORTED

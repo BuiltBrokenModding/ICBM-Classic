@@ -8,11 +8,7 @@ import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.content.gas.ProtectiveArmorHandler;
 import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
 import icbm.classic.content.radioactive.RadioactiveHandler;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import icbm.classic.lib.config.Config;
 
 /**
  * Settings class for various configuration settings.
@@ -21,7 +17,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  */
 @Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/main")
 @Config.LangKey("config.icbmclassic:main.title")
-@Mod.EventBusSubscriber(modid = ICBMConstants.DOMAIN)
 public class ConfigMain
 {
     @Config.Name("use_energy")
@@ -66,13 +61,10 @@ public class ConfigMain
         public String[] ITEMS = new String[]{};
     }
 
-    @SubscribeEvent
-    public static void onConfigChangedEvent(final ConfigChangedEvent.OnConfigChangedEvent event)
+    /** Called by {@link icbm.classic.lib.config.ConfigLoader} after any ICBM config is loaded or reloaded */
+    public static void onConfigReloaded()
     {
-        if (event.getModID().equals(ICBMConstants.DOMAIN))
         {
-            ConfigManager.sync(ICBMConstants.DOMAIN, Config.Type.INSTANCE);
-
             // Reload config so we can convert to easier to hash lists
             FlyingBlock.loadFromConfig();
             ClusterMissileHandler.loadFromConfig();

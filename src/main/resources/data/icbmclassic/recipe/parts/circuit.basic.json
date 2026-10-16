@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:basic_circuit"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "rcr",
+    "iii",
+    "bbb"
+  ],
+  "key": {
+    "i": {
+      "tag": "c:ingots/copper"
+    },
+    "c": {
+      "item": "minecraft:clay_ball"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "b": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:basic_circuit",
+    "count": 4
+  }
+}

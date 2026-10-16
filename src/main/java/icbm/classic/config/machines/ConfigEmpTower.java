@@ -1,7 +1,7 @@
 package icbm.classic.config.machines;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 /**
  * Settings class for various configuration settings.

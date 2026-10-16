@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#c:plates/steel",
+    "#c:plates/iron"
+  ]
+}

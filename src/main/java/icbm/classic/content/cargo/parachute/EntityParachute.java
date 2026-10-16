@@ -1,29 +1,33 @@
 package icbm.classic.content.cargo.parachute;
 
 import icbm.classic.content.entity.flyingblock.EntityFlyingBlock;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import javax.annotation.Nonnull;
 
 /**
  * Entity that acts as a slow falling seat for other entities to use
  */
-public class EntityParachute extends EntityProjectile<EntityParachute> implements IEntityAdditionalSpawnData
+public class EntityParachute extends EntityProjectile<EntityParachute> implements IEntityWithComplexSpawn
 {
 
     public static final float GRAVITY = 0.01f; // TODO config
@@ -32,66 +36,74 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
 
     /** Stack to render */
     @Nonnull @Setter @Getter @Accessors(chain = true)
-    private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute);
+    private ItemStack renderItemStack = new ItemStack(ItemReg.itemParachute.get());
 
     /** Stack to drop on impact with ground */
     @Nonnull @Setter @Getter @Accessors(chain = true)
-    private ItemStack dropItemStack = new ItemStack(ItemReg.itemParachute); // TODO consider used parachute item
+    private ItemStack dropItemStack = new ItemStack(ItemReg.itemParachute.get()); // TODO consider used parachute item
 
     @Getter
     private float renderScale = 1;
     private float prevRenderScale = 1;
 
 
-    public EntityParachute(World world)
+    public EntityParachute(EntityType<? extends EntityParachute> type, Level world)
     {
-        super(world);
-        this.setSize(ENTITY_SIZE, ENTITY_SIZE);
-        this.preventEntitySpawning = true;
-        this.ignoreFrustumCheck = true;
+        super(type, world);
+        this.blocksBuilding = true;
+        this.noCulling = true;
+    }
+
+    public EntityParachute(Level world)
+    {
+        this(EntityReg.PARACHUTE.get(), world);
     }
 
     protected void setRenderScale(float scale) {
         this.renderScale = scale;
         if(Math.abs(prevRenderScale - scale) > 0.01) {
             this.prevRenderScale = this.renderScale;
-            this.setSize(ENTITY_SIZE * scale, ENTITY_SIZE * scale);
+            // PORT: 1.12 setSize(ENTITY_SIZE * scale), type size is ENTITY_SIZE so scale the dimensions
+            this.refreshDimensions();
         }
     }
 
     @Override
-    protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
+    public EntityDimensions getDimensions(Pose pose) {
+        return super.getDimensions(pose).scale(prevRenderScale <= 0 ? 1 : prevRenderScale); // field is 0 while the super constructor runs
+    }
+
+    @Override
+    protected float getImpactDamage(Entity entityHit, float velocity, HitResult hit) {
         return 0; //TODO consider passenger weight? As heavy object on small parachute would be falling fast and do damage
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(RegistryFriendlyByteBuf data)
     {
         data.writeInt(this.ticksInAir);
-        ByteBufUtils.writeItemStack(data, renderItemStack);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(data, renderItemStack);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(RegistryFriendlyByteBuf data)
     {
         this.ticksInAir = data.readInt();
-        renderItemStack = ByteBufUtils.readItemStack(data);
+        renderItemStack = ItemStack.OPTIONAL_STREAM_CODEC.decode(data);
         // TODO pull iBakedModel and cache
     }
 
     @Override
     protected boolean shouldExpire() {
-        return ticksInAir >= inAirKillTime || getPassengers().isEmpty();
+        // PORT: passenger check is server only, the client copy is paired before the passenger packet arrives
+        // and would otherwise discard itself, leaving the cargo to fall and desync on the client
+        return ticksInAir >= inAirKillTime || (!level().isClientSide() && getPassengers().isEmpty());
     }
 
-    @Override
-    public double getMountedYOffset()
-    {
-        return -0.25;
-    }
+    // PORT: 1.12 getMountedYOffset() = -0.25 was only used by the default passenger positioning, which positionRider replaces
 
     @Override
-    protected boolean canFitPassenger(Entity passenger)
+    protected boolean canAddPassenger(Entity passenger)
     {
         return this.getPassengers().isEmpty();
     }
@@ -103,9 +115,9 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     @Override
-    public void addPassenger(Entity passenger) {
+    protected void addPassenger(Entity passenger) {
         super.addPassenger(passenger);
-        if(passenger instanceof EntityItem)
+        if(passenger instanceof ItemEntity)
         {
             this.setRenderScale(1);
         }
@@ -120,34 +132,34 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     @Override
-    public void updatePassenger(Entity passenger)
+    protected void positionRider(Entity passenger, Entity.MoveFunction moveFunction)
     {
-        if (this.isPassenger(passenger))
+        if (this.hasPassenger(passenger))
         {
-            if(passenger instanceof EntityItem)
+            if(passenger instanceof ItemEntity)
             {
-                if(((EntityItem) passenger).getItem().getItem() instanceof ItemBlock)
+                if(((ItemEntity) passenger).getItem().getItem() instanceof BlockItem)
                 {
-                    passenger.setPosition(this.posX, this.posY - 0.6, this.posZ);
+                    moveFunction.accept(passenger, this.getX(), this.getY() - 0.6, this.getZ());
                 }
                 else
                 {
-                    passenger.setPosition(this.posX, this.posY - 0.7, this.posZ);
+                    moveFunction.accept(passenger, this.getX(), this.getY() - 0.7, this.getZ());
                 }
             }
             else if(passenger instanceof EntityFlyingBlock)
             {
-                passenger.setPosition(this.posX, this.posY - 1.5, this.posZ);
+                moveFunction.accept(passenger, this.getX(), this.getY() - 1.5, this.getZ());
             }
             else
             {
-                passenger.setPosition(this.posX, this.posY + passenger.height -0.25, this.posZ);
+                moveFunction.accept(passenger, this.getX(), this.getY() + passenger.getBbHeight() - 0.25, this.getZ());
             }
         }
     }
 
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return GRAVITY; // TODO make dynamic based on passenger(s) and type
     }
 
@@ -163,9 +175,9 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     @Override
-    protected boolean ignoreImpact(RayTraceResult hit) {
+    protected boolean ignoreImpact(HitResult hit) {
         // Ignore entity impacts, as we only care about the ground
-        return hit.entityHit != null;
+        return hit instanceof EntityHitResult;
     }
 
     @Override
@@ -174,7 +186,7 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     @Override
-    protected void onImpact(@Nonnull RayTraceResult impactLocation) {
+    protected void onImpact(@Nonnull HitResult impactLocation) {
         releaseParachute();
     }
 
@@ -184,31 +196,29 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
     }
 
     protected void releaseParachute() {
-        this.removePassengers();
-        this.setDead(); //TODO have parachute drift away and then despawn with particles
+        this.ejectPassengers();
+        this.discard(); //TODO have parachute drift away and then despawn with particles
 
         if(isServer() && this.dropItemStack != null && !this.dropItemStack.isEmpty()) {
-            final EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, this.dropItemStack.copy());
-            entityitem.setDefaultPickupDelay();
-            world.spawnEntity(entityitem);
+            final ItemEntity entityitem = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.dropItemStack.copy());
+            entityitem.setDefaultPickUpDelay();
+            level().addFreshEntity(entityitem);
         }
 
         //TODO add event, idea would be to use it non-projectile items and entities to handle additional logic
-        //      though this is not meant to act as a replacement for other solutions. Such as spawn eggs using a deployer item.
-        //      example, adding a parachute backpack to entities, or adding to player inventory
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound tag)
+    protected void readAdditionalSaveData(CompoundTag tag)
     {
-        super.readEntityFromNBT(tag);
+        super.readAdditionalSaveData(tag);
         SAVE_LOGIC.load(this, tag);
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound tag)
+    protected void addAdditionalSaveData(CompoundTag tag)
     {
-        super.writeEntityToNBT(tag);
+        super.addAdditionalSaveData(tag);
         SAVE_LOGIC.save(this, tag);
     }
 
@@ -218,3 +228,4 @@ public class EntityParachute extends EntityProjectile<EntityParachute> implement
         .nodeItemStack("dropItem", (e) -> e.dropItemStack, (e, i) -> e.dropItemStack = i)
         .base();
 }
+// PORTED

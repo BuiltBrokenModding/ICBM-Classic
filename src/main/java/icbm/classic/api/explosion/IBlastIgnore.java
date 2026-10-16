@@ -16,3 +16,4 @@ public interface IBlastIgnore
      */
     boolean canIgnore(IBlast explosion); //TODO rethink this design - 3/12/2018 Dark
 }
+// PORTED

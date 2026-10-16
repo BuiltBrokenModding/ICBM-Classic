@@ -2,16 +2,15 @@ package icbm.classic.config.util;
 
 import icbm.classic.ICBMClassic;
 import lombok.Getter;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,11 +34,15 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
     // TODO once ContentBuilder Json system is published for MC replace this with JSON version to support programmatic and more complex entries
     //      entries to consider once JSON is allowed: time/date specific, conditional statements such as IF(MOD) IF(WORLD) IF(MATH) IF(GEO_AREA), block sets/lists
 
-    protected static final Pattern SORTING_REGEX = Pattern.compile("^@sort\\((\\d*),(\\S*)\\)$");
-    protected static final Pattern DOMAIN_VALE_REGEX = Pattern.compile("^@domain:([^=]*)(?:=(\\S))?$");
+    // PORT: 1.12 allowed `@sort(,x)` which threw parsing an empty number
+    protected static final Pattern SORTING_REGEX = Pattern.compile("^@sort\\((\\d+),(\\S*)\\)$");
+    // PORT: 1.12 only accepted a single character value (`=5`), `=0.5` and `=true` were rejected as unknown format
+    protected static final Pattern DOMAIN_VALE_REGEX = Pattern.compile("^@domain:([^=]*)(?:=(\\S+))?$");
 
-    protected static final Pattern KEY_VALUE_REGEX = Pattern.compile("^([^\\s@]*):([^\\s=]*)(?:=(\\S*))?");
-    protected static final Pattern META_KEY_REGEX = Pattern.compile("^([^\\s@]*):([^\\s=@]*)@([0-9]+)(?:=(\\S*))?");
+    // PORT: the domain group excludes ':' and '='. In 1.12 it backtracked to the last ':' so `a:b=c:d` parsed as
+    // key `a:b=c` + `d` with no value, making every block -> block replacement entry invalid.
+    protected static final Pattern KEY_VALUE_REGEX = Pattern.compile("^([^\\s@:=]*):([^\\s=]*)(?:=(\\S*))?");
+    protected static final Pattern META_KEY_REGEX = Pattern.compile("^([^\\s@:=]*):([^\\s=@]*)@([0-9]+)(?:=(\\S*))?");
 
     // Constructor
     @Getter
@@ -136,7 +139,8 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
     protected int compare(ResourceConfigEntry<CONTENT, VALUE> a, ResourceConfigEntry<CONTENT, VALUE> b) {
         int sortA = a.getOrder();
         int sortB = b.getOrder();
-        return sortB - sortA;
+        // PORT: was `sortB - sortA`, which overflows for large user @sort values and breaks the sort contract
+        return Integer.compare(sortB, sortA);
     }
 
     protected void processData() {
@@ -150,6 +154,8 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
     private void reset() {
         contentMatchers.clear();
         generalMatchers.clear();
+        // PORT: 1.12 never cleared the defaults, so every reload (the reload callback re-adds them) stacked duplicates
+        defaultMatchers.clear();
         parsingIssues.clear();
     }
 
@@ -215,7 +221,14 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
         }
 
         for (String str : entries) {
-            handleEntry(source, str, null);
+            // PORT: a malformed entry is logged as a parse error instead of throwing out of common setup and failing mod loading
+            try {
+                handleEntry(source, str, null);
+            }
+            catch (RuntimeException e) {
+                ICBMClassic.logger().error("{}: Unexpected error parsing entry '{}' from '{}'", name, str, source, e);
+                error(source, String.valueOf(str), "Unexpected error while parsing entry: " + e);
+            }
         }
     }
 
@@ -246,7 +259,15 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
         // TODO allow permutation arguments
         final Matcher sortMatcher = SORTING_REGEX.matcher(entry);
         if (sortMatcher.matches()) {
-            return handleEntry(source, sortMatcher.group(2), Integer.parseInt(sortMatcher.group(1)));
+            final int order;
+            try {
+                order = Integer.parseInt(sortMatcher.group(1));
+            }
+            catch (NumberFormatException e) {
+                error(source, entry, "Invalid sort number '" + sortMatcher.group(1) + "'");
+                return false;
+            }
+            return handleEntry(source, sortMatcher.group(2), order);
         }
 
         for(Pair<Pattern, MatcherHandler<CONTENT, VALUE>> handlerEntry: this.matcherHandlers) {
@@ -270,7 +291,7 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
         return false;
     }
 
-    protected ResourceConfigEntry<CONTENT, VALUE> handleDomain(Matcher domainMatcher, String source, String entry, int index) {
+    protected ResourceConfigEntry<CONTENT, VALUE> handleDomain(Matcher domainMatcher, String source, String entry, Integer index) { // PORT: was int, unboxing a null index threw NPE
 
         final String domain = domainMatcher.group(1);
 
@@ -296,11 +317,15 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
         return new ResourceConfigEntry<>("resource_domain", index, matcher);
     }
 
-    protected ResourceConfigEntry<CONTENT, VALUE> handleMeta(Matcher metaMatcher, String source, String entry, int index) {
+    protected ResourceConfigEntry<CONTENT, VALUE> handleMeta(Matcher metaMatcher, String source, String entry, Integer index) { // PORT: was int, unboxing a null index threw NPE
         final String domain = metaMatcher.group(1);
         final String resource = metaMatcher.group(2);
-        final ResourceLocation key = new ResourceLocation(domain, resource);
-        if (!isDomainValid(key.getResourceDomain())) {
+        final ResourceLocation key = toKey(domain, resource);
+        if (key == null) {
+            error(source, entry, "Invalid resource location '" + domain + ":" + resource + "'");
+            return null;
+        }
+        else if (!isDomainValid(key.getNamespace())) {
             error(source, entry, "No matching mod domain found for '" + key + "'");
             return null;
         } else if (!isValidKey(key)) {
@@ -308,7 +333,14 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
             return null;
         }
 
-        final int meta = Integer.parseInt(metaMatcher.group(3));
+        final int meta;
+        try {
+            meta = Integer.parseInt(metaMatcher.group(3));
+        }
+        catch (NumberFormatException e) {
+            error(source, entry, "Invalid number '" + metaMatcher.group(3) + "'");
+            return null;
+        }
 
         final String valueStr = metaMatcher.group(4);
         VALUE value = null;
@@ -321,6 +353,8 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
 
         final Function<CONTENT, VALUE> matcher = getMetaValue(key, meta, value);
         if (matcher == null) {
+            // PORT: metadata no longer exists for most content in 1.21
+            error(source, entry, "Metadata is not supported for this list, use properties or the flattened id instead");
             return null;
         }
         return new ResourceConfigEntry<>("resource_metadata", index, matcher).setKey(key);
@@ -329,9 +363,19 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
     protected ResourceConfigEntry<CONTENT, VALUE> handleSimple(Matcher regexMatcher, String source, String entry, Integer index) {
         final String domain = regexMatcher.group(1);
         final String resource = regexMatcher.group(2);
-        final ResourceLocation key = new ResourceLocation(domain, resource);
 
-        if(!isDomainValid(key.getResourceDomain())) {
+        // PORT: 1.21 resource locations reject '~', fuzzy entries are handled without building a key.
+        // In 1.12 they were stored under their fuzzy key and could never be looked up; now they are general matchers.
+        if(resource.contains("~")) {
+            return handleFuzzy(source, entry, index, domain.toLowerCase(Locale.ROOT), resource.toLowerCase(Locale.ROOT), regexMatcher.group(3));
+        }
+
+        final ResourceLocation key = toKey(domain, resource);
+        if(key == null) {
+            error(source, entry, "Invalid resource location '" + domain + ":" + resource + "'");
+            return null;
+        }
+        else if(!isDomainValid(key.getNamespace())) {
             error(source, entry, "No matching mod domain found for '" + key + "'");
             return null;
         }
@@ -356,46 +400,84 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
     }
 
     protected Function<CONTENT, VALUE> getDomainValue(String domain, @Nullable VALUE value) {
-        return (content) -> domain.equalsIgnoreCase(getContentKey(content).getResourceDomain()) ? value : null;
+        return (content) -> domain.equalsIgnoreCase(getContentKey(content).getNamespace()) ? value : null;
     }
 
-    protected Function<CONTENT, VALUE> getSimpleValue(ResourceLocation targetKey, @Nullable VALUE value) {
-        // TODO consider caching for faster matching.
-        //      As string compare will be slower than object.is(object) for Items and Blocks
+    private ResourceConfigEntry<CONTENT, VALUE> handleFuzzy(String source, String entry, Integer index, String domain, String resource, @Nullable String valueStr) {
+        if(!isDomainValid(domain)) {
+            error(source, entry, "No matching mod domain found for '" + domain + "'");
+            return null;
+        }
+
+        VALUE value = null;
+        if(valueStr != null) {
+            value = parseValue(source, entry, valueStr);
+            if(value == null) {
+                return null;
+            }
+        }
+        final Function<CONTENT, VALUE> matcher = getFuzzyValue(domain, resource, value);
+        if(matcher == null) {
+            return null;
+        }
+        return new ResourceConfigEntry<>("resource_fuzzy", index, matcher);
+    }
+
+    /**
+     * Builds a key the way 1.12 did (lower cased), returns null if 1.21 considers it invalid
+     */
+    @Nullable
+    protected static ResourceLocation toKey(String domain, String path) {
+        return ResourceLocation.tryBuild(domain.toLowerCase(Locale.ROOT), path.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Fuzzy matcher for paths containing '~'
+     *
+     * @param domain   of the content
+     * @param path     with ~ markers
+     * @param value    to return on match
+     * @return matcher
+     */
+    protected Function<CONTENT, VALUE> getFuzzyValue(String domain, String path, @Nullable VALUE value) {
         // Contains: ~stone~ ->  dark_stone_deep
-        if(targetKey.getResourcePath().startsWith("~") && targetKey.getResourcePath().endsWith("~")) {
-            final String checkStr = targetKey.getResourcePath().substring(1, targetKey.getResourcePath().length() - 1);
+        if(path.startsWith("~") && path.endsWith("~") && path.length() > 1) {
+            final String checkStr = path.substring(1, path.length() - 1);
             return (content) -> {
                 final ResourceLocation contentKey = getContentKey(content);
-                if(!targetKey.getResourceDomain().equalsIgnoreCase(contentKey.getResourceDomain())) {
+                if(!domain.equalsIgnoreCase(contentKey.getNamespace())) {
                     return null;
                 }
-                return  targetKey.getResourcePath().contains(checkStr) ? value : null;
+                return contentKey.getPath().contains(checkStr) ? value : null;
             };
         }
         // Starts: ~stone -> dark_stone
-        else if(targetKey.getResourcePath().startsWith("~")) {
-            final String checkStr = targetKey.getResourcePath().substring(1);
+        else if(path.startsWith("~")) {
+            final String checkStr = path.substring(1);
             return (content) -> {
                 final ResourceLocation contentKey = getContentKey(content);
-                if(!targetKey.getResourceDomain().equalsIgnoreCase(contentKey.getResourceDomain())) {
+                if(!domain.equalsIgnoreCase(contentKey.getNamespace())) {
                     return null;
                 }
-                return  targetKey.getResourcePath().endsWith(checkStr) ? value : null;
+                return contentKey.getPath().endsWith(checkStr) ? value : null;
             };
         }
         // Ends: stone~ -> stone_dark
-        else if(targetKey.getResourcePath().endsWith("~")) {
-            final String checkStr = targetKey.getResourcePath().substring(0, targetKey.getResourcePath().length() - 1);
+        else if(path.endsWith("~")) {
+            final String checkStr = path.substring(0, path.length() - 1);
             return (content) -> {
                 final ResourceLocation contentKey = getContentKey(content);
-                if(!targetKey.getResourceDomain().equalsIgnoreCase(contentKey.getResourceDomain())) {
+                if(!domain.equalsIgnoreCase(contentKey.getNamespace())) {
                     return null;
                 }
-                return  targetKey.getResourcePath().startsWith(checkStr) ? value : null;
+                return contentKey.getPath().startsWith(checkStr) ? value : null;
             };
         }
+        return null;
+    }
 
+    protected Function<CONTENT, VALUE> getSimpleValue(ResourceLocation targetKey, @Nullable VALUE value) {
+        // PORT: fuzzy (~) keys can not exist as ResourceLocation in 1.21, see getFuzzyValue
         // equals: a is a
         return (content) -> targetKey.equals(getContentKey(content)) ? value : null;
     }
@@ -419,7 +501,7 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
 
     protected boolean isDomainValid(String domain) {
         //TODO fuzzy domains?
-        return "minecraft".equalsIgnoreCase(domain) || Loader.isModLoaded(domain);
+        return "minecraft".equalsIgnoreCase(domain) || ModList.get().isLoaded(domain.toLowerCase(Locale.ROOT));
     }
 
 
@@ -444,3 +526,4 @@ public abstract class ResourceConfigList<CONFIG extends ResourceConfigList, CONT
         ResourceConfigEntry<CONTENT, VALUE> handle(Matcher regexMatcher, String source, String entry, Integer index);
     }
 }
+// PORTED

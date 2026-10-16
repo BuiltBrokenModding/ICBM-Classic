@@ -11,14 +11,15 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFlightLogicStep, INBTSerializable<NBTTagCompound> {
+public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFlightLogicStep, INBTSerializable<CompoundTag> {
 
     @Getter @Setter @Accessors(chain = true)
     private IMissileFlightLogic nextStep;
@@ -43,7 +44,7 @@ public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFligh
     @Override
     public void onEntityTick(Entity entity, IMissile missile, int ticksInAir)
     {
-        if(isDone() && !entity.world.isRemote) {
+        if(isDone() && !entity.level().isClientSide()) {
             missile.switchFlightLogic(getNextStep());
         }
     }
@@ -75,12 +76,12 @@ public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFligh
     public abstract boolean isDone();
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -95,3 +96,4 @@ public abstract class FlightLogic  implements IMissileFlightLogic, IMissileFligh
         /* */.nodeBuildableObject("next", () -> ICBMClassicAPI.MISSILE_FLIGHT_LOGIC_REGISTRY, FlightLogic::getNextStep, FlightLogic::setNextStep)
         .base();
 }
+// PORTED

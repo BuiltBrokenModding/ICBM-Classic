@@ -1,10 +1,10 @@
 package icbm.classic.api.events;
 
 import icbm.classic.api.missiles.IMissile;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.Event;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
@@ -52,12 +52,11 @@ public abstract class MissileEvent extends Event
      * <p>
      * Called before {@link PostImpact}
      */
-    @Cancelable
-    public static class PreImpact extends MissileEvent
+    public static class PreImpact extends MissileEvent implements ICancellableEvent
     {
-        public final RayTraceResult hit;
+        public final HitResult hit;
 
-        public PreImpact(IMissile missile, Entity entityMissile, RayTraceResult hit)
+        public PreImpact(IMissile missile, Entity entityMissile, HitResult hit)
         {
             super(missile, entityMissile);
             this.hit = hit;
@@ -82,8 +81,7 @@ public abstract class MissileEvent extends Event
      * For magic or disconnected dimensions please use a portal. This can easily be implemented
      * on the portal's side or the block impact system of the missile.
      */
-    @Cancelable
-    public static class EnteringSimQueue extends MissileEvent
+    public static class EnteringSimQueue extends MissileEvent implements ICancellableEvent
     {
         public EnteringSimQueue(IMissile missile, Entity entityMissile)
         {
@@ -98,12 +96,13 @@ public abstract class MissileEvent extends Event
      */
     public static class PostImpact extends MissileEvent
     {
-        public final RayTraceResult hit;
+        public final HitResult hit;
 
-        public PostImpact(IMissile missile, Entity entityMissile, RayTraceResult hit)
+        public PostImpact(IMissile missile, Entity entityMissile, HitResult hit)
         {
             super(missile, entityMissile);
             this.hit = hit;
         }
     }
 }
+// PORTED

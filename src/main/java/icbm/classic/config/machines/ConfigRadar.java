@@ -1,7 +1,7 @@
 package icbm.classic.config.machines;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 @Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/radar")
 @Config.LangKey("config.icbmclassic:radar.title")

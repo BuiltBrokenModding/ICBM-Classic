@@ -1,15 +1,16 @@
 package icbm.classic.command.sub;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import icbm.classic.command.CommandUtils;
 import icbm.classic.command.ICBMCommands;
 import icbm.classic.command.system.SubCommand;
 import icbm.classic.content.entity.EntityExplosive;
-import net.minecraft.command.*;
-import net.minecraft.entity.Entity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,15 +44,15 @@ public class CommandRemove extends SubCommand
     }
 
     @Override
-    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    public void handleCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
         if (args.length <= 0 || !doCommand(sender, args))
         {
-            throw new WrongUsageException(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
+            throw CommandUtils.error(ICBMCommands.TRANSLATION_UNKNOWN_COMMAND, getUsage(sender));
         }
     }
 
-    private boolean doCommand(@Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException
+    private boolean doCommand(@Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException
     {
         //Get type
         final Predicate<Entity> entitySelector = buildSelector(args[0]);
@@ -60,24 +61,24 @@ public class CommandRemove extends SubCommand
         final int range = getRange(args);
 
         //Get position
-        World world;
+        Level world;
         double x, y, z;
 
         //Long version, 5 args or 6 if range is applied
         if (args.length >= 5)
         {
-            world = CommandUtils.getWorld(sender, args[1], sender.getEntityWorld());
-            x = CommandUtils.getNumber(sender, args[2], sender.getPositionVector().x);
-            y = CommandUtils.getNumber(sender, args[3], sender.getPositionVector().y);
-            z = CommandUtils.getNumber(sender, args[4], sender.getPositionVector().z);
+            world = CommandUtils.getWorld(sender, args[1], sender.getLevel());
+            x = CommandUtils.getNumber(sender, args[2], sender.getPosition().x);
+            y = CommandUtils.getNumber(sender, args[3], sender.getPosition().y);
+            z = CommandUtils.getNumber(sender, args[4], sender.getPosition().z);
         }
         //Short version, 1 arg or 2 if range is applied
-        else if (!(sender instanceof MinecraftServer) && args.length <= 2)
+        else if (!CommandUtils.isConsole(sender) && args.length <= 2)
         {
-            world = sender.getEntityWorld();
-            x = sender.getPositionVector().x;
-            y = sender.getPositionVector().y;
-            z = sender.getPositionVector().z;
+            world = sender.getLevel();
+            x = sender.getPosition().x;
+            y = sender.getPosition().y;
+            z = sender.getPosition().z;
         }
         else
         {
@@ -86,20 +87,20 @@ public class CommandRemove extends SubCommand
 
         //Find and set entities dead
         final List<Entity> entities = CommandUtils.getEntities(world, x, y, z, range, entitySelector);
-        entities.forEach(Entity::setDead);
+        entities.forEach(Entity::discard);
 
         //User feedback
-        sender.sendMessage(new TextComponentTranslation(TRANSLATION_REMOVE, entities.size(), range));
+        sender.sendSystemMessage(Component.translatable(TRANSLATION_REMOVE, entities.size(), range));
 
         return true;
     }
 
-    private int getRange(String[] args) throws NumberInvalidException
+    private int getRange(String[] args) throws CommandSyntaxException
     {
         if(args.length == 2) {
-            return CommandBase.parseInt(args[1]);
+            return CommandUtils.parseInt(args[1]);
         } else  if(args.length == 6) {
-            return CommandBase.parseInt(args[5]);
+            return CommandUtils.parseInt(args[5]);
         }
         return -1;
     }
@@ -125,7 +126,7 @@ public class CommandRemove extends SubCommand
         final boolean remove_explosives = isRemoveExplosion(type);
 
         return (entity) -> {
-            if(entity.isEntityAlive())
+            if(entity.isAlive())
             {
                 if (remove_all)
                 {
@@ -142,8 +143,9 @@ public class CommandRemove extends SubCommand
     }
 
     @Override
-    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
+    public List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args, @Nullable BlockPos targetPos)
     {
-        return args.length == 1 ? CommandBase.getListOfStringsMatchingLastWord(args, "all", "missile", "explosion") : new ArrayList<>();
+        return args.length == 1 ? CommandUtils.getListOfStringsMatchingLastWord(args, "all", "missile", "explosion") : new ArrayList<>();
     }
 }
+// PORTED

@@ -5,11 +5,12 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.missiles.parts.IMissileFlightLogic;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 
@@ -17,9 +18,9 @@ import javax.annotation.Nonnull;
  * Flight computer that does nothing, acts as a placeholder for when we fire missiles like an arrow or are using
  * raw motion setting logic in another system.
  */
-public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<NBTTagCompound>
+public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<CompoundTag>
 {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "dead");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "dead");
 
     public int fuelTicks = 0;
 
@@ -48,9 +49,9 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<NB
         fuelTicks--;
 
         if(hasFuel(entity)) {
-            float f3 = MathHelper.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
-            entity.prevRotationYaw = entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180.0D / Math.PI);
-            entity.prevRotationPitch = entity.rotationPitch = (float) (Math.atan2(entity.motionY, (double) f3) * 180.0D / Math.PI);
+            float f3 = (float) Math.sqrt(entity.getDeltaMovement().x * entity.getDeltaMovement().x + entity.getDeltaMovement().z * entity.getDeltaMovement().z);
+            MotionHelper.setYawAndPrev(entity, (float) (Math.atan2(entity.getDeltaMovement().x, entity.getDeltaMovement().z) * 180.0D / Math.PI));
+            MotionHelper.setPitchAndPrev(entity, (float) (Math.atan2(entity.getDeltaMovement().y, (double) f3) * 180.0D / Math.PI));
         }
     }
 
@@ -60,18 +61,18 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<NB
     }
 
     @Override
-    public NBTTagCompound serializeNBT()
+    public CompoundTag serializeNBT(HolderLookup.Provider provider)
     {
-        final NBTTagCompound tagCompound = new NBTTagCompound();
-        tagCompound.setInteger("fuel", fuelTicks);
+        final CompoundTag tagCompound = new CompoundTag();
+        tagCompound.putInt("fuel", fuelTicks);
         return tagCompound;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound save)
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag save)
     {
-        if(save.hasKey("fuel")) {
-            fuelTicks = save.getInteger("fuel");
+        if(save.contains("fuel")) {
+            fuelTicks = save.getInt("fuel");
         }
     }
 
@@ -79,9 +80,9 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<NB
     public <V> V predictPosition(Entity entity, VecBuilderFunc<V> builder, int ticks)
     {
         return builder.apply(
-            entity.posX + entity.motionX * ticks, //TODO add gravity
-            entity.posY + entity.motionY * ticks,
-            entity.posZ + entity.motionZ * ticks
+            entity.getX() + entity.getDeltaMovement().x * ticks, //TODO add gravity
+            entity.getY() + entity.getDeltaMovement().y * ticks,
+            entity.getZ() + entity.getDeltaMovement().z * ticks
         );
     }
 
@@ -112,3 +113,4 @@ public class DeadFlightLogic implements IMissileFlightLogic, INBTSerializable<NB
         return false;
     }
 }
+// PORTED

@@ -5,8 +5,8 @@ import icbm.classic.api.actions.status.IActionStatus;
 import icbm.classic.api.explosion.IBlastInit;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.lib.actions.status.ActionResponses;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class BlastBase implements IBlastInit
 {
-    private World world;
+    private Level world;
     private double x, y, z;
     private boolean locked;
 
@@ -39,10 +39,10 @@ public abstract class BlastBase implements IBlastInit
     @Override
     public IActionStatus doAction()
     {
-        final World world = world();
+        final Level world = world();
         if (world != null)
         {
-            if(!world.isRemote)
+            if(!world.isClientSide())
             {
                 return triggerBlast();
             }
@@ -77,13 +77,13 @@ public abstract class BlastBase implements IBlastInit
 
     //<editor-fold desc="pos-data">
     @Override
-    public World world()
+    public Level world()
     {
         return world;
     }
 
     @Override
-    public World getWorld() {
+    public Level getWorld() {
         return world;
     }
 
@@ -106,8 +106,8 @@ public abstract class BlastBase implements IBlastInit
     }
 
     @Override
-    public Vec3d getPosition() {
-        return new Vec3d(x, y, z);
+    public Vec3 getPosition() {
+        return new Vec3(x, y, z);
     }
     //</editor-fold>
 
@@ -122,7 +122,7 @@ public abstract class BlastBase implements IBlastInit
     }
 
     @Override
-    public IBlastInit setBlastWorld(World world)
+    public IBlastInit setBlastWorld(Level world)
     {
         if(!locked)
         {
@@ -168,3 +168,4 @@ public abstract class BlastBase implements IBlastInit
     }
     //</editor-fold>
 }
+// PORTED

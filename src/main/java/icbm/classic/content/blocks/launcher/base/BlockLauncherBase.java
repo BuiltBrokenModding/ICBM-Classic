@@ -1,28 +1,34 @@
 package icbm.classic.content.blocks.launcher.base;
 
-import icbm.classic.ICBMClassic;
+import com.mojang.serialization.MapCodec;
 import icbm.classic.ICBMConstants;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNetwork;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.InventoryUtility;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
 
@@ -30,105 +36,108 @@ import javax.annotation.Nullable;
  *
  * Created by Dark(DarkGuardsman, Robin) on 1/8/2018.
  */
-public class BlockLauncherBase extends BlockContainer
+public class BlockLauncherBase extends BaseEntityBlock
 {
-    public static final PropertyDirection ROTATION_PROP = PropertyDirection.create("facing");
+    public static final MapCodec<BlockLauncherBase> CODEC = simpleCodec(p -> new BlockLauncherBase());
+
+    public static final DirectionProperty ROTATION_PROP = DirectionProperty.create("facing");
 
     public BlockLauncherBase()
     {
-        super(Material.IRON);
-        this.blockHardness = 10f;
-        this.blockResistance = 10f;
-        this.fullBlock = true;
-        setRegistryName(ICBMConstants.DOMAIN, "launcherbase");
-        setUnlocalizedName(ICBMConstants.PREFIX + "launcherbase");
-        setCreativeTab(ICBMClassic.CREATIVE_TAB);
-    }
-
-    @Deprecated
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        // Needed to prevent render lighting issues for missiles
-        return false;
+        // 1.12 Material.IRON, hardness 10, resistance field 10 (= 2)
+        // PORT: 1.12 isOpaqueCube false (prevents missile lighting issues) -> noOcclusion
+        // PORT: 1.12 Material.IRON needed a pickaxe to drop -> requiresCorrectToolForDrops (+ mineable/pickaxe tag)
+        super(Properties.of().mapColor(MapColor.METAL).strength(10f, 2f).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops());
+        // PORT: 1.12 meta 0 (old tiles without rotation) defaulted to UP
+        registerDefaultState(stateDefinition.any().setValue(ROTATION_PROP, Direction.UP));
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    protected MapCodec<? extends BaseEntityBlock> codec()
     {
-        final TileEntity tile = worldIn.getTileEntity(pos);
-        if (tile instanceof TileLauncherBase && !worldIn.isRemote)
+        return CODEC;
+    }
+
+    @Override
+    public String getDescriptionId()
+    {
+        return "tile." + ICBMConstants.PREFIX + "launcherbase";
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit)
+    {
+        final BlockEntity tile = worldIn.getBlockEntity(pos);
+        if (tile instanceof TileLauncherBase && !worldIn.isClientSide())
         {
-            if(playerIn.getHeldItem(hand).getItem() == Items.STONE_AXE) {
-                    final LauncherNetwork network = ((TileLauncherBase) tile).getNetworkNode().getNetwork();
-                    playerIn.sendMessage(new TextComponentString("Network: " + network));
-                    playerIn.sendMessage(new TextComponentString("L: " + network.getLaunchers().size()));
-                return true;
+            if (heldItem.getItem() == Items.STONE_AXE)
+            {
+                final LauncherNetwork network = ((TileLauncherBase) tile).getNetworkNode().getNetwork();
+                playerIn.sendSystemMessage(Component.literal("Network: " + network));
+                // PORT: 1.12 crashed here (NPE) when the component had no network yet, ex. a single block placed alone
+                playerIn.sendSystemMessage(Component.literal("L: " + (network != null ? network.getLaunchers().size() : 0)));
+                return ItemInteractionResult.SUCCESS;
             }
-            if(!((TileLauncherBase) tile).tryInsertMissile(playerIn, hand, playerIn.getHeldItem(hand))) {
-                playerIn.openGui(ICBMClassic.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            if (!((TileLauncherBase) tile).tryInsertMissile(playerIn, hand, heldItem))
+            {
+                ((TileLauncherBase) tile).openGui(playerIn);
             }
-            return true;
+            return ItemInteractionResult.SUCCESS;
         }
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean movedByPiston)
+    {
+        if (!state.is(newState.getBlock()))
+        {
+            final BlockEntity tile = world.getBlockEntity(pos);
+            if (tile instanceof ILauncherComponent)
+            {
+                ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            }
+            InventoryUtility.dropInventory(world, pos);
+        }
+        super.onRemove(state, world, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state)
+    {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos)
+    {
         return true;
-    }
-
-    @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
-    {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ILauncherComponent)
-        {
-            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
-        }
-        InventoryUtility.dropInventory(world, pos);
-        super.breakBlock(world, pos, state);
-    }
-
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
-    {
-        return EnumBlockRenderType.MODEL;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
-        return BlockRenderLayer.SOLID;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new TileLauncherBase();
+        return new TileLauncherBase(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
+    {
+        return createTickerHelper(type, BlockReg.TILE_LAUNCHER_BASE.get(), (l, p, s, tile) -> tile.update());
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-        return new BlockStateContainer(this, ROTATION_PROP);
+        builder.add(ROTATION_PROP);
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        if(meta == 0) {
-            return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.UP);
-        }
-        return getDefaultState().withProperty(ROTATION_PROP, EnumFacing.getFront(meta - 1));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        // Shifting by one due to older tiles not having rotation, default should be UP
-        return state.getValue(ROTATION_PROP).ordinal() + 1;
-    }
-
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
-    {
-        return getDefaultState().withProperty(ROTATION_PROP, facing);
+        return defaultBlockState().setValue(ROTATION_PROP, context.getClickedFace());
     }
 }
+// PORTED

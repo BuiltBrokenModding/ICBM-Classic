@@ -5,12 +5,12 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-public abstract class Condition implements ICondition, INBTSerializable<NBTTagCompound> {
+public abstract class Condition implements ICondition, INBTSerializable<CompoundTag> {
     /**
      * Display name
      */
@@ -20,20 +20,20 @@ public abstract class Condition implements ICondition, INBTSerializable<NBTTagCo
     private String name;
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         if (name != null) {
-            return new TextComponentTranslation(getTranslationKey() + ".user_defined_name", name);
+            return Component.translatable(getTranslationKey() + ".user_defined_name", name);
         }
-        return new TextComponentTranslation(getTranslationKey());
+        return Component.translatable(getTranslationKey());
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -42,3 +42,4 @@ public abstract class Condition implements ICondition, INBTSerializable<NBTTagCo
         /* */.nodeString("display_name", Condition::getName, Condition::setName)
         .base();
 }
+// PORTED

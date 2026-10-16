@@ -27,3 +27,4 @@ public class BlastBuildEvent extends BlastEvent<IBlastInit>
         return (IBlastInit)blast;
     }
 }
+// PORTED

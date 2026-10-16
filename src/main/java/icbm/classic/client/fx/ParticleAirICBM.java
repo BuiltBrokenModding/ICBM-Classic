@@ -1,72 +1,71 @@
 package icbm.classic.client.fx;
 
-import net.minecraft.client.particle.ParticleSmokeNormal;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.SmokeParticle;
 
 /**
  * Same as normal smoke, but doesn't move upwards on its own
  */
-@SideOnly(Side.CLIENT)
-public class ParticleAirICBM extends ParticleSmokeNormal
+public class ParticleAirICBM extends SmokeParticle
 {
-    public ParticleAirICBM(World worldIn, double x, double y, double z, double vx, double vy, double vz, float scale)
+    public ParticleAirICBM(ClientLevel worldIn, double x, double y, double z, double vx, double vy, double vz, float scale)
     {
-        super(worldIn, x, y, z, vx, vy, vz, scale);
+        super(worldIn, x, y, z, vx, vy, vz, scale, SmokeSprites.INSTANCE);
     }
 
     public ParticleAirICBM setAge(int age)
     {
-        this.particleMaxAge = age;
+        this.lifetime = age;
         return this;
     }
 
     public ParticleAirICBM setColor(float r, float g, float b, boolean addColorVariant)
     {
-        this.particleRed = r;
-        this.particleGreen = g;
-        this.particleBlue = b;
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
 
         if (addColorVariant)
         {
             float colorVariant = (float) (Math.random() * 0.90000001192092896D);
-            this.particleRed *= colorVariant;
-            this.particleBlue *= colorVariant;
-            this.particleGreen *= colorVariant;
+            this.rCol *= colorVariant;
+            this.bCol *= colorVariant;
+            this.gCol *= colorVariant;
         }
         return this;
     }
 
     @Override
-    public void onUpdate() // same code as in vanilla particle, but the vertical velocity acceleration is set to 0
+    public void tick() // same code as in vanilla particle, but the vertical velocity acceleration is set to 0
     {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.xo = this.x;
+        this.yo = this.y;
+        this.zo = this.z;
 
-        if (this.particleAge++ >= this.particleMaxAge)
+        if (this.age++ >= this.lifetime)
         {
-            this.setExpired();
+            this.remove();
+            return;
         }
 
-        this.setParticleTextureIndex(7 - this.particleAge * 8 / this.particleMaxAge);
-        this.move(this.motionX, this.motionY, this.motionZ);
+        this.setSpriteFromAge(SmokeSprites.INSTANCE);
+        this.move(this.xd, this.yd, this.zd);
 
-        if (this.posY == this.prevPosY)
+        if (this.y == this.yo)
         {
-            this.motionX *= 1.1D;
-            this.motionZ *= 1.1D;
+            this.xd *= 1.1D;
+            this.zd *= 1.1D;
         }
 
-        this.motionX *= 0.95999999D;
-        this.motionY *= 0.95999999D;
-        this.motionZ *= 0.95999999D;
+        this.xd *= 0.95999999D;
+        this.yd *= 0.95999999D;
+        this.zd *= 0.95999999D;
 
         if (this.onGround)
         {
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.xd *= 0.699999988079071D;
+            this.zd *= 0.699999988079071D;
         }
     }
 }
+// PORTED

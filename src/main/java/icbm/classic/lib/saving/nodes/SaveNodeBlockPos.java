@@ -1,13 +1,13 @@
 package icbm.classic.lib.saving.nodes;
 
 import icbm.classic.lib.saving.NbtSaveNode;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class SaveNodeBlockPos<E> extends NbtSaveNode<E, NBTTagCompound>
+public class SaveNodeBlockPos<E> extends NbtSaveNode<E, CompoundTag>
 {
     public SaveNodeBlockPos(final String name, Function<E, BlockPos> save, BiConsumer<E, BlockPos> load) {
         super(name,
@@ -16,22 +16,22 @@ public class SaveNodeBlockPos<E> extends NbtSaveNode<E, NBTTagCompound>
         );
     }
 
-    public static NBTTagCompound save(BlockPos pos) {
+    public static CompoundTag save(BlockPos pos) {
         if(pos != null) {
-            final NBTTagCompound compound = new NBTTagCompound();
-            compound.setInteger("x", pos.getX());
-            compound.setInteger("y", pos.getY());
-            compound.setInteger("z", pos.getZ());
+            final CompoundTag compound = new CompoundTag();
+            compound.putInt("x", pos.getX());
+            compound.putInt("y", pos.getY());
+            compound.putInt("z", pos.getZ());
             return compound;
         }
         return null;
     }
 
-    public static BlockPos load(NBTTagCompound data) {
+    public static BlockPos load(CompoundTag data) {
         return new BlockPos(
-            data.getInteger("x"),
-            data.getInteger("y"),
-            data.getInteger("z")
+            data.getInt("x"),
+            data.getInt("y"),
+            data.getInt("z")
         );
     }
 }

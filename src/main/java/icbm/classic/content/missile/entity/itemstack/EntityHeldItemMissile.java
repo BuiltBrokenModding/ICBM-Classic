@@ -1,6 +1,8 @@
 package icbm.classic.content.missile.entity.itemstack;
 
-import com.google.common.collect.Multimap;
+import net.minecraft.world.item.ShearsItem;
+import net.neoforged.neoforge.common.IShearable;
+import net.minecraft.world.level.block.Block;
 import icbm.classic.ICBMClassic;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
@@ -8,41 +10,43 @@ import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.content.missile.entity.EntityMissile;
 import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMissile;
 import icbm.classic.content.missile.entity.itemstack.item.HeldItemMissileHandler;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.world.IProjectileBlockInteraction;
 import icbm.classic.lib.world.ProjectileBlockInteraction;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.*;
-import net.minecraft.init.Enchantments;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,7 +55,7 @@ import java.lang.reflect.Method;
 /**
  * Missile holding an item, will use the item on impact if possible
  */
-public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> implements IEntityAdditionalSpawnData {
+public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> implements IEntityWithComplexSpawn {
 
     private ItemStack renderStackCache;
     @Getter
@@ -61,25 +65,30 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
 
     boolean hasUsedAction = false;
 
-    public EntityHeldItemMissile(World world) {
-        super(world);
-        this.setMaxHealth(ConfigMissile.TIER_2_HEALTH);
+    public EntityHeldItemMissile(EntityType<? extends EntityHeldItemMissile> type, Level world) {
+        super(type, world);
+        // PORT: 1.12 only set the max health, leaving the synced health at its default of 1
+        this.initHealth(ConfigMissile.TIER_2_HEALTH);
+    }
+
+    public EntityHeldItemMissile(Level world) {
+        this(EntityReg.MISSILE_HELD_ITEM.get(), world);
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
 
-        if(!world.isRemote) {
+        if(!level().isClientSide()) {
             // TODO add homing target logic
         }
 
         //Normal update logic
-        super.onUpdate();
+        super.tick();
     }
 
     @Override
-    protected IProjectileBlockInteraction.EnumHitReactions specialHandleBlock(RayTraceResult hit, double velocity) {
-        if(!world.isRemote) {
+    protected IProjectileBlockInteraction.EnumHitReactions specialHandleBlock(BlockHitResult hit, double velocity) {
+        if(!level().isClientSide()) {
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
 
             if (!hasUsedAction && !held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
@@ -107,52 +116,62 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                 return IProjectileBlockInteraction.EnumHitReactions.CONTINUE;
             }
 
-            return ProjectileBlockInteraction.handleSpecialInteraction(world, this.getInGroundData().getPos(), hit.hitVec, this.getInGroundData().getSide(), this.getInGroundData().getState(), this);
+            return ProjectileBlockInteraction.handleSpecialInteraction(level(), this.getInGroundData().getPos(), hit.getLocation(), this.getInGroundData().getSide(), this.getInGroundData().getState(), this);
         }
         return IProjectileBlockInteraction.EnumHitReactions.PASS;
     }
 
     @Override
-    protected void actionOnImpact(RayTraceResult hit) {
-        if(!this.world.isRemote) {
-            if (isEntityAlive()) {
-                this.entityDropItem(toStack(), 0);
+    protected void actionOnImpact(HitResult hit) {
+        if(!this.level().isClientSide()) {
+            if (isAlive()) {
+                this.spawnAtLocation(toStack(), 0);
             }
             this.destroy();
         }
     }
 
-    private void usePrimaryOnPosition(ItemStack held, RayTraceResult hit, double velocity) {
-        final FakePlayer player = getFakePlayer(new Vec3d(
-            hit.hitVec.x + hit.sideHit.getFrontOffsetX(),
-            hit.hitVec.y + hit.sideHit.getFrontOffsetY(),
-            hit.hitVec.z + hit.sideHit.getFrontOffsetZ()
-        ));
-        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
+    private static Vec3 offsetBySide(BlockHitResult hit) {
+        final Direction side = hit.getDirection();
+        return hit.getLocation().add(side.getStepX(), side.getStepY(), side.getStepZ());
+    }
+
+    private void usePrimaryOnPosition(ItemStack held, BlockHitResult hit, double velocity) {
+        final FakePlayer player = getFakePlayer(offsetBySide(hit));
+        player.setItemInHand(InteractionHand.MAIN_HAND, held.copy());
 
         // TODO mimic player.interactionManager.onBlockClicked(hit.getBlockPos(), hit.sideHit);
+        final Level world = level();
         final BlockPos pos = hit.getBlockPos();
-        final IBlockState state = world.getBlockState(pos);
+        final BlockState state = world.getBlockState(pos);
 
         // Shear use this to instant break leaves (via IShearable)
-        if(held.getItem().onBlockStartBreak(held, pos, player)) {
+        // PORT: 1.12 ItemShears#onBlockStartBreak sheared IShearable blocks; NeoForge 21.1 has no such hook, so do it directly
+        if(held.getItem() instanceof ShearsItem && state.getBlock() instanceof IShearable shearable && shearable.isShearable(player, held, world, pos)) {
+            if(!world.isClientSide()) {
+                for(ItemStack drop : shearable.onSheared(player, held, world, pos)) {
+                    Block.popResource(world, pos, drop);
+                }
+                world.removeBlock(pos, false);
+            }
             hasUsedAction = true;
         }
-        // TODO state.getBlock().canSilkHarvest(world, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, held) > 0
-        else if(state.getBlock().canHarvestBlock(world, pos, player)) {
+        // TODO silk touch
+        else if(state.canHarvestBlock(world, pos, player)) {
             // Player default dig speed with hand is 1.0, wood shovel is 2.0, stone is 4.0, diamond is 8.0
             //  block HP (technically progress) is hardness * 10, hardness = digSpeed / blockHardness / (30 if can harvest | 100 if can't)
             //  tool strike irl can be 5m/s to 10m/s depending on method... we want to scale by velocity with a bonus to mass of missile
             // Damage should be scaled on single impact and shouldn't account for some enchantments.
 
             // Prevent non-tools from breaking blocks, keeps a stick from killing a dirt block
-            if(player.getHeldItemMainhand().getItem().getToolClasses(held).isEmpty()) {
+            // PORT: 1.12 getToolClasses().isEmpty() -> item has no TOOL data component
+            if(!player.getMainHandItem().has(DataComponents.TOOL)) {
                 resetFakePlayer(player);
                 return;
             }
 
-            final float toolSpeed = player.getHeldItemMainhand().getDestroySpeed(state);
-            final float hardness = state.getBlockHardness(world, pos);
+            final float toolSpeed = player.getMainHandItem().getDestroySpeed(state);
+            final float hardness = state.getDestroySpeed(world, pos);
             final float digSpeed = toolSpeed * (float)velocity * ConfigMissile.HELD_ITEM_MISSILE.BLOCK_DAMAGE_MULTIPLIER;
 
             if(hardness <= digSpeed) {
@@ -165,26 +184,28 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
                    this.handleDynamicTreeBreak(state, world, pos, player);
                 }
                 // Break block TODO trigger events with shooter if player
-                else if (state.getBlock().removedByPlayer(state, world, pos, player, true))
-                {
-                    state.getBlock().harvestBlock(this.world, player, pos, state, world().getTileEntity(pos), player.getHeldItem(EnumHand.MAIN_HAND));
-                    state.getBlock().onBlockDestroyedByPlayer(this.world, pos, state);
+                else {
+                    final BlockEntity blockEntity = world.getBlockEntity(pos);
+                    if (state.onDestroyedByPlayer(world, pos, player, true, world.getFluidState(pos))) {
+                        state.getBlock().destroy(world, pos, state);
+                        state.getBlock().playerDestroy(world, player, pos, state, blockEntity, player.getMainHandItem());
+                    }
                 }
             }
         }
 
         if(hasUsedAction) {
-            this.itemStackHandler.setStackInSlot(0, player.getHeldItemMainhand());
+            this.itemStackHandler.setStackInSlot(0, player.getMainHandItem());
         }
 
         resetFakePlayer(player);
     }
 
-    private void handleDynamicTreeBreak(IBlockState state, World world, BlockPos pos, EntityLivingBase player) {
+    private void handleDynamicTreeBreak(BlockState state, Level world, BlockPos pos, LivingEntity player) {
         try {
-            // https://github.com/DynamicTreesTeam/DynamicTrees/blob/release/1.12.2/src/main/java/com/ferreusveritas/dynamictrees/blocks/BlockBranch.java#L396
+            // PORT-CHECK: reflective hook into Dynamic Trees, method name/signature from the 1.12 mod
             Class clazz = state.getBlock().getClass();
-            Method method = clazz.getMethod("futureBreak", IBlockState.class, World.class, BlockPos.class, EntityLivingBase.class);
+            Method method = clazz.getMethod("futureBreak", BlockState.class, Level.class, BlockPos.class, LivingEntity.class);
             method.invoke(state.getBlock(), state, world, pos, player);
         }
         catch (Exception e) {
@@ -192,32 +213,31 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         }
     }
 
-    private void useSecondaryOnPosition(ItemStack held, RayTraceResult hit) {
-        final FakePlayer player = getFakePlayer(new Vec3d(
-            hit.hitVec.x + hit.sideHit.getFrontOffsetX(),
-            hit.hitVec.y + hit.sideHit.getFrontOffsetY(),
-            hit.hitVec.z + hit.sideHit.getFrontOffsetZ()
-        ));
+    private void useSecondaryOnPosition(ItemStack held, BlockHitResult hit) {
+        final FakePlayer player = getFakePlayer(offsetBySide(hit));
 
-        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
+        player.setItemInHand(InteractionHand.MAIN_HAND, held.copy());
 
         // Right click
-        EnumActionResult ret = held.onItemUseFirst(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
-        if (ret == EnumActionResult.PASS) {
-            held.onItemUse(player, world, hit.getBlockPos(), EnumHand.MAIN_HAND, hit.sideHit, 0, 0, 0);
+        // PORT: 1.12 passed hit offsets of 0,0,0; UseOnContext uses the real hit and the fake player's held copy
+        final UseOnContext context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
+        final ItemStack used = player.getMainHandItem();
+        InteractionResult ret = used.onItemUseFirst(context);
+        if (ret == InteractionResult.PASS) {
+            used.useOn(context);
         }
 
         //TODO handle offhand
 
-        this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+        this.itemStackHandler.setStackInSlot(0, player.getItemInHand(InteractionHand.MAIN_HAND));
         resetFakePlayer(player);
     }
 
     @Override
-    protected void onImpactEntity(@Nonnull Entity entityHit, float velocity, @Nonnull RayTraceResult hit) {
-        if (!world.isRemote) {
+    protected void onImpactEntity(@Nonnull Entity entityHit, float velocity, @Nonnull HitResult hit) {
+        if (!level().isClientSide()) {
             final ItemStack held = this.itemStackHandler.getStackInSlot(0);
-            final FakePlayer player = getFakePlayer(hit.hitVec);
+            final FakePlayer player = getFakePlayer(hit.getLocation());
 
             if(!held.isEmpty() && HeldItemMissileHandler.isAllowed(held)) {
                 if(actionMode == HeldActionMode.PRIMARY || actionMode == HeldActionMode.PRIMARY_FIRST) {
@@ -240,86 +260,91 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     private void useItemSecondaryOnEntity(FakePlayer player, ItemStack held, Entity entityHit) {
 
         // Setup player
-        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
+        player.setItemInHand(InteractionHand.MAIN_HAND, held.copy());
 
-        if(entityHit instanceof EntityLivingBase) {
-            hasUsedAction = player.interactOn(entityHit, EnumHand.MAIN_HAND) == EnumActionResult.SUCCESS;
+        if(entityHit instanceof LivingEntity) {
+            // PORT-CHECK: 1.12 compared == SUCCESS, consumesAction also accepts CONSUME
+            hasUsedAction = player.interactOn(entityHit, InteractionHand.MAIN_HAND).consumesAction();
 
             if(!hasUsedAction) {
 
                 // Try off-hand
-                player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-                player.setHeldItem(EnumHand.OFF_HAND, held.copy());
+                player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                player.setItemInHand(InteractionHand.OFF_HAND, held.copy());
 
-                hasUsedAction = player.interactOn(entityHit, EnumHand.OFF_HAND) == EnumActionResult.SUCCESS;
+                hasUsedAction = player.interactOn(entityHit, InteractionHand.OFF_HAND).consumesAction();
 
                 // If used store impacted item, this may not be the same item
                 if(hasUsedAction) {
-                    this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.OFF_HAND));
+                    this.itemStackHandler.setStackInSlot(0, player.getItemInHand(InteractionHand.OFF_HAND));
                 }
             }
             else {
-                this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+                this.itemStackHandler.setStackInSlot(0, player.getItemInHand(InteractionHand.MAIN_HAND));
             }
         }
 
         resetFakePlayer(player);
     }
 
-    private FakePlayer getFakePlayer(Vec3d pos) {
-        final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world);
-        player.setPosition(pos.x, pos.y, pos.z);
+    private FakePlayer getFakePlayer(Vec3 pos) {
+        final FakePlayer player = FakePlayerFactory.getMinecraft((ServerLevel) level());
+        player.setPos(pos.x, pos.y, pos.z);
         //TODO get shooter and use them as the player for protections & death logs
         resetFakePlayer(player);
         return player;
     }
 
     private void resetFakePlayer(FakePlayer player) {
-        player.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
-        player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
-        player.dismountRidingEntity();
+        player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        player.stopRiding();
     }
 
     private void useItemPrimaryOnEntity(FakePlayer player, ItemStack held, Entity entityHit, float velocity) {
 
         // Setup player
-        player.setHeldItem(EnumHand.MAIN_HAND, held.copy());
+        player.setItemInHand(InteractionHand.MAIN_HAND, held.copy());
 
         // Left click entity
-        if(entityHit instanceof EntityLivingBase) {
+        if(entityHit instanceof LivingEntity livingHit) {
 
-            final Multimap<String, AttributeModifier> attributes = held.getAttributeModifiers(EntityEquipmentSlot.MAINHAND);
-            if(attributes.containsKey(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
-                final AbstractAttributeMap attributeMap = new AttributeMap();
-                attributeMap.registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
-                attributeMap.applyAttributeModifiers(attributes);
+            // PORT-CHECK: 1.21 attribute modifiers are a data component; built a standalone instance like 1.12's AttributeMap
+            final AttributeInstance attributeInstance = new AttributeInstance(Attributes.ATTACK_DAMAGE, (inst) -> {});
+            attributeInstance.setBaseValue(1.0D);
+            final boolean[] hasAttackDamage = {false};
+            held.getAttributeModifiers().forEach(EquipmentSlotGroup.MAINHAND, (attribute, modifier) -> {
+                if (attribute.is(Attributes.ATTACK_DAMAGE)) {
+                    hasAttackDamage[0] = true;
+                    if (!attributeInstance.hasModifier(modifier.id())) {
+                        attributeInstance.addTransientModifier(modifier);
+                    }
+                }
+            });
 
-                final IAttributeInstance attributeInstance =  attributeMap.getAttributeInstance(SharedMonsterAttributes.ATTACK_DAMAGE);
-                double damage = attributeInstance.getAttributeValue();
+            if(hasAttackDamage[0]) {
+                final LivingEntity attacker = this.shootingEntity instanceof LivingEntity ? (LivingEntity) this.shootingEntity : player;
+                final DamageSource damageSource = damageSources().mobProjectile(this, attacker); // 1.12 causeIndirectDamage
+                double damage = attributeInstance.getValue();
 
-                damage += EnchantmentHelper.getModifierForCreature(held, ((EntityLivingBase) entityHit).getCreatureAttribute());
+                // PORT-CHECK: 1.12 getModifierForCreature -> EnchantmentHelper#modifyDamage (adds sharpness/smite/etc)
+                damage = EnchantmentHelper.modifyDamage((ServerLevel) level(), held, entityHit, damageSource, (float) damage);
                 damage *= velocity;
 
                 if(damage > 0) {
-                    final EntityLivingBase attacker = this.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase) this.shootingEntity : player;
-                    entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, attacker), (float)damage);
+                    entityHit.hurt(damageSource, (float)damage);
                 }
                 //TODO if entity dies keep moving with sword
 
                 // TODO pull knockback from item
 
-                final int j = EnchantmentHelper.getFireAspectModifier(player);
-                if (j > 0)
-                {
-                    entityHit.setFire(j * 4);
-                }
-
-                this.applyEnchantments(player, entityHit);
+                // PORT-CHECK: 1.12 fire aspect + applyEnchantments are both post-attack enchantment effects in 1.21
+                EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) level(), entityHit, damageSource, held);
             }
 
-            hasUsedAction = held.getItem().hitEntity(held, (EntityLivingBase) entityHit, player);
+            hasUsedAction = held.getItem().hurtEnemy(held, livingHit, player);
             if (hasUsedAction) {
-                this.itemStackHandler.setStackInSlot(0, player.getHeldItem(EnumHand.MAIN_HAND));
+                this.itemStackHandler.setStackInSlot(0, player.getItemInHand(InteractionHand.MAIN_HAND));
             }
         }
 
@@ -328,27 +353,22 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     }
 
     @Override
-    protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
+    protected float getImpactDamage(Entity entityHit, float velocity, HitResult hit) {
         return 0;
     }
 
+    @Nullable
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+    public <T> T getSidedCapability(EntityCapability<T, @org.jetbrains.annotations.Nullable Direction> capability, @Nullable Direction side) {
+        if(capability == Capabilities.ItemHandler.ENTITY_AUTOMATION) {
             return (T) itemStackHandler;
         }
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-            || super.hasCapability(capability, facing);
+        return super.getSidedCapability(capability, side);
     }
 
     @Override
     public ItemStack toStack() { //TODO replace with more specific callbacks to decouple render side from drop-logic from pick-logic
-        if(world.isRemote) {
+        if(level().isClientSide()) {
             if(renderStackCache == null) {
                 renderStackCache = genItem();
             }
@@ -358,8 +378,8 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     }
 
     private ItemStack genItem() {
-        final ItemStack stack = new ItemStack(ItemReg.heldItemMissile);
-        final ICapabilityMissileStack capabilityMissileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        final ItemStack stack = new ItemStack(ItemReg.heldItemMissile.get());
+        final ICapabilityMissileStack capabilityMissileStack = stack.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
         if(capabilityMissileStack instanceof CapabilityHeldItemMissile) {
             ((CapabilityHeldItemMissile) capabilityMissileStack).setHeldItem(itemStackHandler.getStackInSlot(0));
             ((CapabilityHeldItemMissile) capabilityMissileStack).setActionMode(getActionMode());
@@ -368,33 +388,35 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
+    protected void readAdditionalSaveData(CompoundTag nbt)
     {
-        super.readEntityFromNBT(nbt);
+        super.readAdditionalSaveData(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
+    protected void addAdditionalSaveData(CompoundTag nbt)
     {
-        super.writeEntityToNBT(nbt);
+        super.addAdditionalSaveData(nbt);
         SAVE_LOGIC.save(this, nbt);
     }
 
     @Override
-    public void writeSpawnData(ByteBuf additionalMissileData)
+    public void writeSpawnData(RegistryFriendlyByteBuf additionalMissileData)
     {
         super.writeSpawnData(additionalMissileData);
-        final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
-        ByteBufUtils.writeTag(additionalMissileData, saveData);
+        final CompoundTag saveData = SAVE_LOGIC.save(this, new CompoundTag());
+        additionalMissileData.writeNbt(saveData);
     }
 
     @Override
-    public void readSpawnData(ByteBuf additionalMissileData)
+    public void readSpawnData(RegistryFriendlyByteBuf additionalMissileData)
     {
         super.readSpawnData(additionalMissileData);
-        final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
-        SAVE_LOGIC.load(this, saveData);
+        final CompoundTag saveData = additionalMissileData.readNbt();
+        if (saveData != null) {
+            SAVE_LOGIC.load(this, saveData);
+        }
     }
 
     private static final NbtSaveHandler<EntityHeldItemMissile> SAVE_LOGIC = new NbtSaveHandler<EntityHeldItemMissile>()
@@ -403,3 +425,4 @@ public class EntityHeldItemMissile extends EntityMissile<EntityHeldItemMissile> 
         /* */.nodeEnumString("action_mode", EntityHeldItemMissile::getActionMode, EntityHeldItemMissile::setActionMode, HeldActionMode::valueOf)
         .base();
 }
+// PORTED

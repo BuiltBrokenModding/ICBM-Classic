@@ -11,21 +11,23 @@ import icbm.classic.lib.radio.messages.TriggerActionTargetMessage;
 import icbm.classic.prefab.FakeRadioSender;
 import icbm.classic.prefab.item.ItemRadio;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Extended version of {@link ItemRemoteDetonator} that can target blocks in a line of sight.
@@ -42,84 +44,90 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
 
     public ItemLaserDetonator()
     {
+        super(new Item.Properties().stacksTo(1).setNoRepair());
         this.setName("laserDetonator");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setHasSubtypes(true);
-        this.setMaxStackSize(1);
-        this.setNoRepair();
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn)
     {
-        final ItemStack stack = player.getHeldItem(handIn);
-        if (world.isRemote && clientCooldownTicks <= 0)
+        final ItemStack stack = player.getItemInHand(handIn);
+        if (world.isClientSide() && clientCooldownTicks <= 0)
         {
             clientCooldownTicks = COOLDOWN;
-            RayTraceResult objectMouseOver = player.rayTrace(RANGE, 1);
-            if (objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) // ignore failed raytraces
+            final HitResult objectMouseOver = player.pick(RANGE, 1, false);
+            if (objectMouseOver.getType() != HitResult.Type.MISS && objectMouseOver instanceof BlockHitResult blockHit) // ignore failed raytraces
             {
-                TileEntity tileEntity = world.getTileEntity(objectMouseOver.getBlockPos());
+                final BlockEntity tileEntity = world.getBlockEntity(blockHit.getBlockPos());
                 if (!(ICBMClassicHelpers.isLauncher(tileEntity, null)))
                 {
-                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(player).addData(objectMouseOver.hitVec));
+                    // PORT: 1.12 always sent the selected hotbar slot, so off hand use reached the wrong item
+                    final int slot = handIn == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+                    ICBMClassic.packetHandler.sendToServer(new PacketPlayerItem(slot).addData(objectMouseOver.getLocation()));
                 }
             }// TODO else: add message stating that the raytrace failed
             else {
-                player.sendStatusMessage(new TextComponentTranslation(getUnlocalizedName(stack) + ".laser.missed", RANGE), true);
+                player.displayClientMessage(Component.translatable(getDescriptionId(stack) + ".laser.missed", RANGE), true);
             }
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return InteractionResultHolder.success(stack);
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entityLiving) {
 
-        if (world.isRemote) // when releasing the right mouse button, reset the cooldown to allow immediate reuse of item
+        if (world.isClientSide()) // when releasing the right mouse button, reset the cooldown to allow immediate reuse of item
             clientCooldownTicks = 0;
-        return super.onItemUseFinish(stack, world, entityLiving);
+        return super.finishUsingItem(stack, world, entityLiving);
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (world.isRemote && clientCooldownTicks > 0) // when holding the right mouse button, trigger item use every second
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+        if (world.isClientSide() && clientCooldownTicks > 0) // when holding the right mouse button, trigger item use every second
             clientCooldownTicks--;
 
-        super.onUpdate(stack, world, entity, itemSlot, isSelected);
+        super.inventoryTick(stack, world, entity, itemSlot, isSelected);
     }
 
     @Override
-    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket packet)
+    public boolean read(ByteBuf buf, int id, Player player, IPacket packet)
     {
-        final ItemStack stack = player.inventory.getCurrentItem();
-        if (stack.getItem() == this && !player.world.isRemote)
+        // Use the slot the packet was sent for, off hand included
+        final ItemStack stack = packet instanceof PacketPlayerItem itemPacket && itemPacket.slotId >= 0
+            ? player.getInventory().getItem(itemPacket.slotId)
+            : player.getInventory().getSelected();
+        if (stack.getItem() == this && !player.level().isClientSide())
         {
             final double x = buf.readDouble();
             final double y = buf.readDouble();
             final double z = buf.readDouble();
-            final Vec3d target = new Vec3d(x, y, z);
+            final Vec3 target = new Vec3(x, y, z);
 
-            // Fire on main thread
-            ((WorldServer) player.getEntityWorld()).addScheduledTask(() -> {
+            // PORT: 1.12 trusted the client position, reject anything the client trace could not have hit
+            if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)
+                || player.getEyePosition().distanceToSqr(target) > (RANGE + 8) * (RANGE + 8))
+            {
+                return true;
+            }
 
-                final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.world, target, player);
-                if (!MinecraftForge.EVENT_BUS.post(event)) {
-                    player.sendStatusMessage(new TextComponentTranslation(
-                        getUnlocalizedName(stack) + ".target",
-                        formatNumber(event.getPos().x),
-                        formatNumber(event.getPos().y),
-                        formatNumber(event.getPos().z)
-                    ), false);
+            // Packet handlers already run on the main thread
+            final LaserRemoteTriggerEvent event = new LaserRemoteTriggerEvent(player.level(), target, player);
+            if (!NeoForge.EVENT_BUS.post(event).isCanceled()) {
+                player.displayClientMessage(Component.translatable(
+                    getDescriptionId(stack) + ".target",
+                    formatNumber(event.getPos().x),
+                    formatNumber(event.getPos().y),
+                    formatNumber(event.getPos().z)
+                ), false);
 
-                    RadioRegistry.popMessage(player.world, new FakeRadioSender(player, stack, null), new TriggerActionTargetMessage(getRadioChannel(stack), event.getPos()));
-                }
-                else if(event.cancelReason != null) {
-                    player.sendStatusMessage(new TextComponentTranslation(event.cancelReason), true);
-                }
-                else {
-                    player.sendStatusMessage(new TextComponentTranslation(getUnlocalizedName(stack) + ".laser.canceled"), false);
-                }
-            });
+                RadioRegistry.popMessage(player.level(), new FakeRadioSender(player, stack, null), new TriggerActionTargetMessage(getRadioChannel(stack), event.getPos()));
+            }
+            else if(event.cancelReason != null) {
+                player.displayClientMessage(Component.translatable(event.cancelReason), true);
+            }
+            else {
+                player.displayClientMessage(Component.translatable(getDescriptionId(stack) + ".laser.canceled"), false);
+            }
         }
         return true;
     }
@@ -129,8 +137,9 @@ public class ItemLaserDetonator extends ItemRadio implements IPacketIDReceiver
     }
 
     @Override
-    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader world, BlockPos pos, Player player)
     {
         return true;
     }
 }
+// PORTED

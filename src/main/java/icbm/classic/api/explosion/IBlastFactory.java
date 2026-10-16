@@ -2,7 +2,7 @@ package icbm.classic.api.explosion;
 
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.actions.cause.IActionSource;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -22,5 +22,6 @@ public interface IBlastFactory
      * @return new blast
      */
     @Nonnull
-    IAction create(World world, double x, double y, double z, IActionSource source);
+    IAction create(Level world, double x, double y, double z, IActionSource source);
 }
+// PORTED

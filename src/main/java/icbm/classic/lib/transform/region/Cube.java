@@ -7,15 +7,15 @@ import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Point;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,21 +56,21 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         this(new Pos(x, y, z), new Pos(i, j, k));
     }
 
-    public Cube(AxisAlignedBB bb)
+    public Cube(AABB bb)
     {
         this(new Pos(bb.minX, bb.minY, bb.minZ), new Pos(bb.maxX, bb.maxY, bb.maxZ));
     }
 
-    public Cube(NBTTagCompound nbt)
+    public Cube(CompoundTag nbt)
     {
         super(nbt);
-        if (nbt.hasKey(NBTConstants.POINT_ONE))
+        if (nbt.contains(NBTConstants.POINT_ONE))
         {
-            pointOne = new Pos(nbt.getCompoundTag(NBTConstants.POINT_ONE));
+            pointOne = new Pos(nbt.getCompound(NBTConstants.POINT_ONE));
         }
-        if (nbt.hasKey(NBTConstants.POINT_TWO))
+        if (nbt.contains(NBTConstants.POINT_TWO))
         {
-            pointTwo = new Pos(nbt.getCompoundTag(NBTConstants.POINT_TWO));
+            pointTwo = new Pos(nbt.getCompound(NBTConstants.POINT_TWO));
         }
         recalc();
     }
@@ -109,14 +109,14 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     ///Conversion methods
     ///////////////////////
 
-    public AxisAlignedBB toAABB()
+    public AABB toAABB()
     {
-        return isValid() ? new AxisAlignedBB(min().x(), min().y(), min().z(), max().x(), max().y(), max().z()) : new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+        return isValid() ? new AABB(min().x(), min().y(), min().z(), max().x(), max().y(), max().z()) : new AABB(0, 0, 0, 0, 0, 0);
     }
 
-    public AxisAlignedBB getAABB()
+    public AABB getAABB()
     {
-        return new AxisAlignedBB(min().x(), min().y(), min().z(), max().x(), max().y(), max().z());
+        return new AABB(min().x(), min().y(), min().z(), max().x(), max().y(), max().z());
     }
 
     public Rectangle toRectangle()
@@ -124,20 +124,20 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isValid() ? new Rectangle(new Point(min()), new Point(max())) : null;
     }
 
-    public NBTTagCompound toNBT()
+    public CompoundTag toNBT()
     {
-        return save(new NBTTagCompound());
+        return save(new CompoundTag());
     }
 
-    public NBTTagCompound save(NBTTagCompound tag)
+    public CompoundTag save(CompoundTag tag)
     {
         if (pointOne != null)
         {
-            tag.setTag(NBTConstants.POINT_ONE, new Pos(pointOne).writeNBT(new NBTTagCompound()));
+            tag.put(NBTConstants.POINT_ONE, new Pos(pointOne).writeNBT(new CompoundTag()));
         }
         if (pointTwo != null)
         {
-            tag.setTag(NBTConstants.POINT_TWO, new Pos(pointTwo).writeNBT(new NBTTagCompound()));
+            tag.put(NBTConstants.POINT_TWO, new Pos(pointTwo).writeNBT(new CompoundTag()));
         }
         return tag;
     }
@@ -183,7 +183,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
     /// Collision Detection
     /////////////////////
 
-    public boolean intersects(Vec3d v)
+    public boolean intersects(Vec3 v)
     {
         return intersects(v.x, v.y, v.z);
     }
@@ -198,7 +198,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isWithinX(x) && isWithinY(y) && isWithinZ(z);
     }
 
-    public boolean doesOverlap(AxisAlignedBB box)
+    public boolean doesOverlap(AABB box)
     {
         return doesOverlap(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
     }
@@ -238,12 +238,12 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isInsideBounds(other.min().x(), other.min().y(), other.min().z(), other.max().x(), other.max().y(), other.max().z());
     }
 
-    public boolean isInsideBounds(AxisAlignedBB other)
+    public boolean isInsideBounds(AABB other)
     {
         return isInsideBounds(other.minX, other.minY, other.minZ, other.maxX, other.maxY, other.maxZ);
     }
 
-    public boolean isVecInYZ(Vec3d v)
+    public boolean isVecInYZ(Vec3 v)
     {
         return isWithinY(v) && isWithinZ(v);
     }
@@ -253,7 +253,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isWithinY(v) && isWithinZ(v);
     }
 
-    public boolean isWithinXZ(Vec3d v)
+    public boolean isWithinXZ(Vec3 v)
     {
         return isWithinX(v) && isWithinZ(v);
     }
@@ -268,7 +268,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isWithinRange(min().x(), max().x(), v);
     }
 
-    public boolean isWithinX(Vec3d v)
+    public boolean isWithinX(Vec3 v)
     {
         return isWithinX(v.x);
     }
@@ -283,7 +283,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isWithinRange(min().y(), max().y(), v);
     }
 
-    public boolean isWithinY(Vec3d v)
+    public boolean isWithinY(Vec3 v)
     {
         return isWithinY(v.y);
     }
@@ -298,7 +298,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return isWithinRange(min().z(), max().z(), v);
     }
 
-    public boolean isWithinZ(Vec3d v)
+    public boolean isWithinZ(Vec3 v)
     {
         return isWithinZ(v.z);
     }
@@ -364,7 +364,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return array;
     }
 
-    public static IPos3D[] getCorners(AxisAlignedBB box)
+    public static IPos3D[] getCorners(AABB box)
     {
         return getCorners(new Cube(box));
     }
@@ -468,7 +468,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return (int) getSizeX() == (int) getSizeY() && (int) getSizeY() == (int) getSizeZ();
     }
 
-    public double distance(Vec3d v)
+    public double distance(Vec3 v)
     {
         if (!isValid())
         {
@@ -513,7 +513,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return distance(box.center);
     }
 
-    public double distance(AxisAlignedBB box)
+    public double distance(AABB box)
     {
         return distance(new Cube(box));
     }
@@ -537,7 +537,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
      * @param world - world to search
      * @return list
      */
-    public List<Entity> getEntities(World world)
+    public List<Entity> getEntities(Level world)
     {
         return getEntities(world, Entity.class);
     }
@@ -549,9 +549,9 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
      * @param entityClass - class to search for
      * @return list
      */
-    public List getEntities(World world, Class<? extends Entity> entityClass)
+    public List getEntities(Level world, Class<? extends Entity> entityClass)
     {
-        return world.getEntitiesWithinAABB(entityClass, toAABB());
+        return world.getEntitiesOfClass(entityClass, toAABB());
     }
 
     /**
@@ -560,16 +560,16 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
      * @param world - world to scan
      * @return list
      */
-    public List<TileEntity> getTilesInArea(World world)
+    public List<BlockEntity> getTilesInArea(Level world)
     {
-        List<TileEntity> tilesInArea = new ArrayList();
-        for (Chunk chunk : getChunks(world))
+        List<BlockEntity> tilesInArea = new ArrayList();
+        for (LevelChunk chunk : getChunks(world))
         {
-            for (Object object : chunk.getTileEntityMap().values())
+            for (Object object : chunk.getBlockEntities().values())
             {
-                if (object instanceof TileEntity && ((TileEntity) object).isInvalid() && ((TileEntity) object).getWorld() != null && isWithin(((TileEntity) object).getPos()))
+                if (object instanceof BlockEntity && ((BlockEntity) object).isRemoved() && ((BlockEntity) object).getLevel() != null && isWithin(((BlockEntity) object).getBlockPos()))
                 {
-                    tilesInArea.add((TileEntity) object);
+                    tilesInArea.add((BlockEntity) object);
                 }
             }
         }
@@ -582,7 +582,7 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
      * @param world - world to search
      * @return
      */
-    public List<Chunk> getChunks(World world)
+    public List<LevelChunk> getChunks(Level world)
     {
         return getChunks(world, true);
     }
@@ -594,16 +594,16 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
      * @param loaded - only grab loaded chunks
      * @return list
      */
-    public List<Chunk> getChunks(World world, boolean loaded)
+    public List<LevelChunk> getChunks(Level world, boolean loaded)
     {
-        List<Chunk> chunks = new ArrayList();
+        List<LevelChunk> chunks = new ArrayList();
         for (int chunkX = (min().xi() >> 4) - 1; chunkX <= (max().xi() >> 4) + 1; chunkX++)
         {
             for (int chunkZ = (min().zi() >> 4) - 1; chunkZ <= (max().zi() >> 4) + 1; chunkZ++)
             {
-                if (loaded || (!(world instanceof WorldServer) || ((WorldServer) world).getChunkProvider().chunkExists(chunkX, chunkZ)))
+                if (loaded || (!(world instanceof ServerLevel) || ((ServerLevel) world).getChunkSource().hasChunk(chunkX, chunkZ)))
                 {
-                    Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+                    LevelChunk chunk = world.getChunk(chunkX, chunkZ);
                     if (chunk != null)
                     {
                         chunks.add(chunk);
@@ -815,3 +815,4 @@ public class Cube extends Shape3D implements Cloneable, IByteBufWriter
         return this;
     }
 }
+// PORTED

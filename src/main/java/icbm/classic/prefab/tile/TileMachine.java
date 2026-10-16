@@ -1,31 +1,38 @@
 package icbm.classic.prefab.tile;
 
 import icbm.classic.lib.tile.ITick;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/9/2017.
+ * <p>
+ * PORT: 1.12 ITickable#update is now driven by the block's {@code getTicker} which calls {@link #update()}.
+ * 1.12 {@code shouldRefresh} (keep tile while block is the same) is the 1.21 default behaviour.
  */
-public class TileMachine extends TileEntity implements ITickable
+public class TileMachine extends BlockEntity
 {
     protected int ticks = -1;
 
-    protected final List<ITick> tickActions = new ArrayList();
+    protected final List<ITick> tickActions = new ArrayList<>();
 
-    @Override
+    public TileMachine(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    {
+        super(type, pos, state);
+    }
+
+    /** Called each tick by the block entity ticker */
     public void update()
     {
         //Increase tick
@@ -41,53 +48,47 @@ public class TileMachine extends TileEntity implements ITickable
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    public Packet<ClientGamePacketListener> getUpdatePacket()
     {
-        return oldState.getBlock() != newSate.getBlock();
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries)
     {
-        return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return writeToNBT(new NBTTagCompound());
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
-    {
-        readFromNBT(pkt.getNbtCompound());
+        return saveWithoutMetadata(registries);
     }
 
     public boolean isServer()
     {
-        return world != null && !world.isRemote;
+        return level != null && !level.isClientSide();
     }
 
     public boolean isClient()
     {
-        return world != null && world.isRemote;
+        return level != null && level.isClientSide();
     }
 
     @Deprecated
-    public EnumFacing getRotation()
+    public Direction getRotation()
     {
-        IBlockState state = getBlockState();
-        if (state.getProperties().containsKey(BlockICBM.ROTATION_PROP))
+        final BlockState state = getBlockState();
+        if (state.hasProperty(BlockICBM.ROTATION_PROP))
         {
             return state.getValue(BlockICBM.ROTATION_PROP);
         }
-        return EnumFacing.NORTH;
+        return Direction.NORTH;
     }
 
-    public IBlockState getBlockState()
+    /**
+     * Distance squared from the center of this tile, replaces 1.12 TileEntity#getDistanceSq
+     */
+    public double getDistanceSq(double x, double y, double z)
     {
-        return world.getBlockState(getPos());
+        final double dx = getBlockPos().getX() + 0.5D - x;
+        final double dy = getBlockPos().getY() + 0.5D - y;
+        final double dz = getBlockPos().getZ() + 0.5D - z;
+        return dx * dx + dy * dy + dz * dz;
     }
 }
+// PORTED

@@ -4,13 +4,13 @@ import icbm.classic.ICBMClassic;
 import icbm.classic.config.ConfigMain;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.entity.LivingEntity;
+import icbm.classic.content.blast.ICBMDamageTypes;
+import net.minecraft.core.Vec3i;
 
 public class BlastChemical extends BlastGasBase
 {
-    public static final DamageSource CHEMICAL_DAMAGE = new DamageSource("icbm.chemical");
+    // PORT: 1.12 static CHEMICAL_DAMAGE source is now data driven, see ICBMDamageTypes.CHEMICAL
 
     public static final float red = 0.8f, green = 0.8f, blue = 0;
 
@@ -28,9 +28,9 @@ public class BlastChemical extends BlastGasBase
     }
 
     @Override
-    protected boolean canGasEffect(EntityLivingBase entity)
+    protected boolean canGasEffect(LivingEntity entity)
     {
-        return super.canGasEffect(entity) && !entity.isEntityInvulnerable(CHEMICAL_DAMAGE);
+        return super.canGasEffect(entity) && !entity.isInvulnerableTo(ICBMDamageTypes.source(world, ICBMDamageTypes.CHEMICAL));
     }
 
     @Override
@@ -39,13 +39,13 @@ public class BlastChemical extends BlastGasBase
     }
 
     @Override
-    protected void applyEffect(final EntityLivingBase entity, final int hitCount)
+    protected void applyEffect(final LivingEntity entity, final int hitCount)
     {
-        ICBMClassic.chemicalPotion.poisonEntity(location.toPos(), entity);
+        ICBMClassic.chemicalPotion.get().poisonEntity(location.toPos(), entity);
         if (hitCount > toxicityBuildup)
         {
             // TODO https://builtbroken.codecks.io/decks/14-icbm-backlog/card/1aq-rework-gas-weapons
-            entity.attackEntityFrom(CHEMICAL_DAMAGE, Math.max(toxicityMinDamage, hitCount * toxicityScale));
+            entity.hurt(ICBMDamageTypes.source(world, ICBMDamageTypes.CHEMICAL), Math.max(toxicityMinDamage, hitCount * toxicityScale));
         }
     }
 
@@ -67,3 +67,4 @@ public class BlastChemical extends BlastGasBase
         return blue;
     }
 }
+// PORTED

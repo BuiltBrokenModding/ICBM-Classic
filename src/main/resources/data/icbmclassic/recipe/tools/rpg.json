@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "sss",
+    "rcg",
+    "w w"
+  ],
+  "key": {
+    "r": {
+      "item": "icbmclassic:radargun"
+    },
+    "s": {
+      "tag": "c:ingots/steel"
+    },
+    "c": {
+      "tag": "c:circuits/basic"
+    },
+    "g": {
+      "tag": "c:wires/copper"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:rocketlauncher",
+    "count": 1
+  }
+}

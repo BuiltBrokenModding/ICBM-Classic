@@ -9,12 +9,16 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 
@@ -26,24 +30,28 @@ import javax.annotation.Nonnull;
 @NoArgsConstructor
 public class CausedByBlock extends ActionCause implements ICausedByBlock {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "block");
 
-    private World world;
+    private Level world;
     private BlockPos blockPos;
-    private IBlockState blockState;
+    private BlockState blockState;
 
-    private int worldId;
+    /** PORT: 1.12 int dimension id, now a dimension key */
+    private ResourceKey<Level> worldId;
 
-    public CausedByBlock(World world, BlockPos pos, IBlockState state) {
+    public CausedByBlock(Level world, BlockPos pos, BlockState state) {
         this.world = world;
-        this.worldId = world.provider.getDimension();
+        this.worldId = world.dimension();
         this.blockPos = pos;
         this.blockState = state;
     }
 
-    public World getWorld() {
-        if(world == null) {
-            world = DimensionManager.getWorld(worldId);
+    public Level getWorld() {
+        if(world == null && worldId != null) {
+            final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                world = server.getLevel(worldId);
+            }
         }
         return world;
     }
@@ -61,20 +69,24 @@ public class CausedByBlock extends ActionCause implements ICausedByBlock {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
     private static final NbtSaveHandler<CausedByBlock> SAVE_LOGIC = new NbtSaveHandler<CausedByBlock>()
         .mainRoot()
-        /* */.nodeInteger("level", CausedByBlock::getWorldId, CausedByBlock::setWorldId)
+        // PORT: saved as a dimension resource location string, 1.12 saved an int id under the same key
+        /* */.nodeResourceLocation("level",
+            (c) -> c.getWorldId() != null ? c.getWorldId().location() : null,
+            (c, loc) -> c.setWorldId(ResourceKey.create(Registries.DIMENSION, loc)))
         /* */.nodeBlockPos("pos", CausedByBlock::getBlockPos, CausedByBlock::setBlockPos)
         /* */.nodeBlockState("state", CausedByBlock::getBlockState, CausedByBlock::setBlockState)
         .base();
 }
+// PORTED

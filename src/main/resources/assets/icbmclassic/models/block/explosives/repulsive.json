@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "icbmclassic:block/explosive/repulsive",
+    "down": "icbmclassic:block/explosive/bottom_1",
+    "up": "icbmclassic:block/explosive/bottom_1",
+    "north": "icbmclassic:block/explosive/repulsive",
+    "east": "icbmclassic:block/explosive/repulsive",
+    "south": "icbmclassic:block/explosive/repulsive",
+    "west": "icbmclassic:block/explosive/repulsive"
+  }
+}

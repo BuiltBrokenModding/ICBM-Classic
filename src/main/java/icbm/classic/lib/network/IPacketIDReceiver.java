@@ -2,7 +2,7 @@ package icbm.classic.lib.network;
 
 import icbm.classic.api.data.IWorldPosition;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Applied to an object that received packet server or client side with an ID
@@ -20,7 +20,7 @@ public interface IPacketIDReceiver
      * @param type   - packet object
      * @return true if the data was read
      */
-    boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket type);
+    boolean read(ByteBuf buf, int id, Player player, IPacket type);
 
     /**
      * Called to check if the packet should be read at all.
@@ -32,7 +32,7 @@ public interface IPacketIDReceiver
      *                        world packets without postion data, and null if non-world packets
      * @return true if the packet should be read
      */
-    default boolean shouldReadPacket(EntityPlayer player, IWorldPosition receiveLocation, IPacket packet)
+    default boolean shouldReadPacket(Player player, IWorldPosition receiveLocation, IPacket packet)
     {
         return true;
     }

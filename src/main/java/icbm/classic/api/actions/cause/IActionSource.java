@@ -1,9 +1,9 @@
 package icbm.classic.api.actions.cause;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 /**
  * Information about the source (starting point) of an action
@@ -16,14 +16,14 @@ import net.minecraftforge.common.util.INBTSerializable;
  * That said ICBM team will not stop anyone from using the data. As there are valid interaction uses. Such as showing
  * missiles on an interactive map or exposing the player's own missile launch position to themselves.
  */
-public interface IActionSource extends INBTSerializable<NBTTagCompound>
+public interface IActionSource extends INBTSerializable<CompoundTag>
 {
     /**
-     * World source of the action
+     * Level source of the action
      *
      * @return world
      */
-    World getWorld();
+    Level getWorld();
 
     /**
      * Source position of the action. May not align
@@ -35,7 +35,7 @@ public interface IActionSource extends INBTSerializable<NBTTagCompound>
      *
      * @return position
      */
-    Vec3d getPosition();
+    Vec3 getPosition();
 
 
     /**
@@ -45,3 +45,4 @@ public interface IActionSource extends INBTSerializable<NBTTagCompound>
      */
     IActionCause getCause();
 }
+// PORTED

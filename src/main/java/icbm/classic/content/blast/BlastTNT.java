@@ -6,20 +6,16 @@ import icbm.classic.lib.transform.region.Cube;
 import icbm.classic.lib.transform.vector.Pos;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,19 +76,19 @@ public class BlastTNT extends Blast
     {
         calculateDamage(); //TODO add listener(s) to control block break and placement
 
-        if(world instanceof WorldServer) {
-            final WorldServer worldServer = (WorldServer)world;
+        if(world instanceof ServerLevel) {
+            final ServerLevel worldServer = (ServerLevel)world;
             if (this.size >= 2.0F)
             {
-                worldServer.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, false, this.x, this.y, this.z, 1, 1.0D, 0.0D, 0.0D, 1);
+                worldServer.sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1, 1.0D, 0.0D, 0.0D, 1);
             }
             else
             {
-                worldServer.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, false, this.x, this.y, this.z, 1, 1.0D, 0.0D, 0.0D, 1);
+                worldServer.sendParticles(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1, 1.0D, 0.0D, 0.0D, 1);
             }
         }
 
-        this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world().rand.nextFloat() - this.world().rand.nextFloat()) * 0.2F) * 0.7F);
+        this.world().playSound(null, this.location.x(), this.location.y(), this.location.z(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4.0F, (1.0F + (this.world().random.nextFloat() - this.world().random.nextFloat()) * 0.2F) * 0.7F);
 
         //TODO collect entities before applying effects, this way event can override
         if (this.pushType == PushType.NO_PUSH)
@@ -105,7 +101,7 @@ public class BlastTNT extends Blast
         }
 
         //Fire event to allow blocking explosion damage
-        MinecraftForge.EVENT_BUS.post(new ExplosionEvent.Detonate(world, this, new ArrayList()));
+        fireDetonateEvent(new ArrayList<>());
 
         //Destroy blocks
         doDestroyBlocks(); //TODO add listener(s) to control block break and placement
@@ -120,7 +116,7 @@ public class BlastTNT extends Blast
         //TODO fix, alg seems to be making non-semetric shapes in harder blocks.
         //      TnT vanilla will do 3x3
         //      Condensed will do a 2x4 shaft with a few offshoots but doesn't scale correctly
-        if (!this.world().isRemote)
+        if (!this.world().isClientSide())
         {
             for (int xs = 0; xs < this.raysPerAxis; ++xs)
             {
@@ -145,7 +141,7 @@ public class BlastTNT extends Blast
                             zStep /= diagonalDistance;
 
                             //Get energy
-                            float radialEnergy = this.getBlastRadius() * (0.7F + this.world().rand.nextFloat() * 0.6F);
+                            float radialEnergy = this.getBlastRadius() * (0.7F + this.world().random.nextFloat() * 0.6F);
 
                             //Get starting point for ray
                             double x = this.location.x();
@@ -155,20 +151,19 @@ public class BlastTNT extends Blast
                             for (float step = 0.3F; radialEnergy > 0.0F; radialEnergy -= step * 0.75F)
                             {
                                 //Convert position to int
-                                int xi = MathHelper.floor(x);
-                                int yi = MathHelper.floor(y);
-                                int zi = MathHelper.floor(z);
+                                int xi = Mth.floor(x);
+                                int yi = Mth.floor(y);
+                                int zi = Mth.floor(z);
 
                                 //Get block
                                 BlockPos blockPos = new BlockPos(xi, yi, zi);
-                                IBlockState blockState = world.getBlockState(blockPos);
-                                Block block = blockState.getBlock();
+                                BlockState blockState = world.getBlockState(blockPos);
 
                                 //Only act on non-air blocks
-                                if (blockState.getMaterial() != Material.AIR)
+                                if (!blockState.isAir())
                                 {
                                     //Decrease energy based on resistance
-                                    radialEnergy -= (block.getExplosionResistance(this.world(), blockPos, this.exploder, this) + 0.3F) * step;
+                                    radialEnergy -= (getBlockResistance(blockPos, blockState) + 0.3F) * step;
 
                                     //Track blocks to destroy
                                     if (radialEnergy > 0.0F)
@@ -198,29 +193,23 @@ public class BlastTNT extends Blast
      */
     protected void doDestroyBlocks() //TODO convert to change action
     {
-        if (!this.world().isRemote)
+        if (!this.world().isClientSide())
         {
             for (BlockPos blockDestroyedPos : getAffectedBlockPositions()) //TODO convert block positions to block edits to track prev and current blocks
             {
                 //Get block
-                final IBlockState blockState = world().getBlockState(blockDestroyedPos);
+                final BlockState blockState = world().getBlockState(blockDestroyedPos);
 
                 ///Generate effect TODO send a single packet with a list of block pos, this will do a 80% reduction in packet byte data
                 PacketSpawnBlockExplosion.sendToAllClients(world(), x(), y(), z(), getBlastRadius(), blockDestroyedPos);
 
                 //Only edit block if not air
-                if (blockState.getMaterial() != Material.AIR)
+                if (!blockState.isAir())
                 {
                     try
                     {
-                        //Do drops
-                        if (blockState.getBlock().canDropFromExplosion(this))
-                        {
-                            blockState.getBlock().dropBlockAsItemWithChance(this.world(), blockDestroyedPos, blockState, 1.0F / this.getBlastRadius(), 0);
-                        }
-
-                        //Break block
-                        blockState.getBlock().onBlockExploded(this.world(), blockDestroyedPos, this);
+                        //Do drops and break block
+                        destroyBlockByBlast(blockDestroyedPos, blockState, true);
                     }
                     catch (Exception e)
                     {
@@ -240,21 +229,21 @@ public class BlastTNT extends Blast
         maxCoord = maxCoord.add(radius + 1);
 
         Cube region = new Cube(minCoord, maxCoord);
-        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, region.getAABB());
+        List<Entity> entities = world.getEntitiesOfClass(Entity.class, region.getAABB());
 
         for (Entity entity : entities)
         {
-            double distanceScale = entity.getDistance(location.x(), location.y(), location.z()) / radius;
+            double distanceScale = Math.sqrt(entity.distanceToSqr(location.x(), location.y(), location.z())) / radius;
 
             if (distanceScale <= 1.0D)
             {
                 //Get delta
-                double xDifference = entity.posX - location.x();
-                double yDifference = entity.posY - location.y();
-                double zDifference = entity.posZ - location.z();
+                double xDifference = entity.getX() - location.x();
+                double yDifference = entity.getY() - location.y();
+                double zDifference = entity.getZ() - location.z();
 
                 //Get magnitude
-                double mag = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+                double mag = Math.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
 
                 //Normalize difference
                 xDifference /= mag;
@@ -263,32 +252,34 @@ public class BlastTNT extends Blast
 
                 if (type == PushType.ATTRACT)
                 {
-                    double modifier = distanceScale * force * (entity instanceof EntityPlayer ? 0.5 : 1);
-                    entity.addVelocity(-xDifference * modifier, -yDifference * modifier, -zDifference * modifier);
+                    double modifier = distanceScale * force * (entity instanceof Player ? 0.5 : 1);
+                    entity.push(-xDifference * modifier, -yDifference * modifier, -zDifference * modifier);
+                    markVelocityChanged(entity);
                 }
                 else if (type == PushType.REPEL)
                 {
-                    double modifier = (1.0D - distanceScale) * force * (entity instanceof EntityPlayer ? 0.5 : 1);
-                    entity.addVelocity(xDifference * modifier, yDifference * modifier, zDifference * modifier);
+                    double modifier = (1.0D - distanceScale) * force * (entity instanceof Player ? 0.5 : 1);
+                    entity.push(xDifference * modifier, yDifference * modifier, zDifference * modifier);
+                    markVelocityChanged(entity);
                 }
             }
         }
     }
 
     @Override
-    public void load(NBTTagCompound nbt)
+    public void load(CompoundTag nbt)
     {
         super.load(nbt);
-        this.pushType = PushType.values()[nbt.getInteger(NBTConstants.PUSH_TYPE)];
+        this.pushType = PushType.values()[nbt.getInt(NBTConstants.PUSH_TYPE)];
         this.destroyItem = nbt.getBoolean(NBTConstants.DESTROY_ITEM);
     }
 
     @Override
-    public void save(NBTTagCompound nbt)
+    public void save(CompoundTag nbt)
     {
         super.save(nbt);
-        nbt.setInteger(NBTConstants.PUSH_TYPE, this.pushType.ordinal());
-        nbt.setBoolean(NBTConstants.DESTROY_ITEM, this.destroyItem);
+        nbt.putInt(NBTConstants.PUSH_TYPE, this.pushType.ordinal());
+        nbt.putBoolean(NBTConstants.DESTROY_ITEM, this.destroyItem);
     }
 
     public static enum PushType
@@ -296,3 +287,4 @@ public class BlastTNT extends Blast
         NO_PUSH, ATTRACT, REPEL;
     }
 }
+// PORTED

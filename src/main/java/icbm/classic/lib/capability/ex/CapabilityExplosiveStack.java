@@ -5,13 +5,15 @@ import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.reg.IExplosiveCustomization;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import icbm.classic.lib.RegistryHelper;
+import icbm.classic.lib.StackNbt;
+import icbm.classic.content.items.ExplosiveItemHelper;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,31 +22,37 @@ import java.util.function.Consumer;
 /**
  * Used by any item that has an explosive capability
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
+ * <p>
+ * PORT: item capabilities are rebuilt per lookup. Customizations are read from the stack's custom data
+ * (key {@link #STACK_KEY}, same as the 1.12 cap provider key) and written back when added.
  */
-public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializable<NBTTagCompound>
+public class CapabilityExplosiveStack implements IExplosive, INBTSerializable<CompoundTag>
 {
+    public static final String STACK_KEY = "explosive";
+
+    @Nullable
     private final ItemStack stack;
     private final List<IExplosiveCustomization> customizationList = new ArrayList();
 
-    public CapabilityExplosiveStack(ItemStack stack)
+    public CapabilityExplosiveStack(@Nullable ItemStack stack)
     {
         this.stack = stack;
-    }
-
-    protected int getExplosiveID()
-    {
-        if(stack == null)
+        if (stack != null && StackNbt.has(stack, STACK_KEY))
         {
-            return 0;
+            deserializeNBT(RegistryHelper.access(), StackNbt.getCompound(stack, STACK_KEY));
         }
-        return stack.getItemDamage(); //TODO replace meta usage for 1.14 update
     }
 
     @Nullable
     @Override
     public IExplosiveData getExplosiveData()
     {
-        return ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(getExplosiveID());
+        if (stack == null)
+        {
+            return null;
+        }
+        // PORT: 1.12 used the stack metadata as explosive id, now the explosive component (missing = id 0 like meta 0)
+        return ExplosiveItemHelper.getExplosiveData(stack);
     }
 
     @Override
@@ -55,6 +63,10 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
     @Override
     public void addCustomization(IExplosiveCustomization customization) {
         customizationList.add(customization);
+        if (stack != null && !stack.isEmpty())
+        {
+            StackNbt.putCompound(stack, STACK_KEY, serializeNBT(RegistryHelper.access()));
+        }
     }
 
     @Override
@@ -71,43 +83,26 @@ public class CapabilityExplosiveStack implements IExplosive, ICapabilitySerializ
         {
             return ItemStack.EMPTY;
         }
-
-        final ItemStack re = stack.copy();
-        //TODO save customizations
-        re.setCount(1);
-        return re;
+        return stack.copyWithCount(1);
     }
 
     @Override
-    public NBTTagCompound serializeNBT()
+    public CompoundTag serializeNBT(HolderLookup.Provider provider)
     {
-        final NBTTagCompound save = new NBTTagCompound();
-        save.setTag("customizations", ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.save(customizationList));
+        final CompoundTag save = new CompoundTag();
+        if (!customizationList.isEmpty())
+        {
+            save.put("customizations", ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.save(customizationList));
+        }
         return save;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt)
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt)
     {
-        if(nbt.hasKey("customizations")) {
-            ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.load(nbt.getTagList("customizations", 10), customizationList);
+        if(nbt.contains("customizations")) {
+            ICBMClassicAPI.EXPLOSIVE_CUSTOMIZATION_REGISTRY.load(nbt.getList("customizations", Tag.TAG_COMPOUND), customizationList);
         }
-    }
-
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        if (capability == ICBMClassicAPI.EXPLOSIVE_CAPABILITY)
-        {
-            return ICBMClassicAPI.EXPLOSIVE_CAPABILITY.cast(this);
-        }
-        return null;
     }
 }
+// PORTED

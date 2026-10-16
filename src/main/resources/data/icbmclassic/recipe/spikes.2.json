@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "icbmclassic:spikes_fire",
+  "pattern": [
+    "c",
+    "i"
+  ],
+  "key": {
+    "c": {
+      "tag": "c:dusts/sulfur"
+    },
+    "i": {
+      "item": "icbmclassic:spikes"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:spikes_fire",
+    "count": 1
+  }
+}

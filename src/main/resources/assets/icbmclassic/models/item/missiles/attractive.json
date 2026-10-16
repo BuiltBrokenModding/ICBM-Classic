@@ -2,9 +2,9 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/missiles/tier1",
-		"1": "icbmclassic:items/missiles/attractive",
-		"particle": "icbmclassic:items/missiles/tier1"
+		"0": "icbmclassic:item/missiles/tier1",
+		"1": "icbmclassic:item/missiles/attractive",
+		"particle": "icbmclassic:item/missiles/tier1"
 	},
 	"elements": [
 		{
@@ -242,7 +242,7 @@
 				"north": {"uv": [6, 0, 5.5, 2], "texture": "#1"},
 				"east": {"uv": [5.5, 0, 4.5, 2], "texture": "#1"},
 				"south": {"uv": [6, 0, 5.5, 2], "texture": "#1"},
-				"west": {"uv": [7.5, 1, 8.5, 2], "texture": "#missing"},
+				"west": {"uv": [5.5, 0, 4.5, 2], "texture": "#1"},
 				"up": {"uv": [5.5, 1, 6, 0], "rotation": 180, "texture": "#1"},
 				"down": {"uv": [5.5, 1, 6, 2], "rotation": 180, "texture": "#1"}
 			}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "c"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:minecart"
+    },
+    "a": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:smoke"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:bombcart",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:smoke"
+    }
+  }
+}

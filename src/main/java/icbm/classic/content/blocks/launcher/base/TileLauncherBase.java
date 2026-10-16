@@ -8,11 +8,12 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigLauncher;
 import icbm.classic.content.blocks.launcher.FiringPackage;
 import icbm.classic.content.blocks.launcher.base.gui.ContainerLaunchBase;
-import icbm.classic.content.blocks.launcher.base.gui.GuiLauncherBase;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.entity.EntityPlayerSeat;
 import icbm.classic.content.missile.entity.EntityMissile;
+import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.capability.holder.ICapabilityHolderTile;
 import icbm.classic.lib.capability.launcher.CapabilityMissileHolder;
 import icbm.classic.lib.data.IMachineInfo;
 import icbm.classic.lib.energy.storage.EnergyBuffer;
@@ -29,22 +30,22 @@ import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -57,9 +58,9 @@ import java.util.function.BiConsumer;
  *
  * @author Calclavia, DarkGuardsman
  */
-public class TileLauncherBase extends TileMachine implements ILauncherComponent, IMachineInfo, IGuiTile, IPlayerUsing
+public class TileLauncherBase extends TileMachine implements ILauncherComponent, IMachineInfo, IGuiTile, IPlayerUsing, ICapabilityHolderTile
 {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherbase");
+    public static final ResourceLocation REGISTRY_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "launcherbase");
 
     /**
      * Fake entity to allow player to mount the missile without using the missile entity itself
@@ -72,13 +73,13 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     private boolean hasMissileCollision = false;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
-        .withOnChange((p,c,s) -> this.markDirty());
+        .withOnChange((p,c,s) -> this.setChanged());
 
     public final InventoryWithSlots inventory = new InventoryWithSlots(2)
-        .withChangeCallback((s, i) -> markDirty())
+        .withChangeCallback((s, i) -> setChanged())
         .withSlot(new InventorySlot(0, ICBMClassicHelpers::isMissile)
             .withInsertCheck((s) -> !this.checkForMissileInBounds())
-            .withChangeCallback((stack) -> this.markDirty())
+            .withChangeCallback((stack) -> this.setChanged())
         )
         .withSlot(new InventorySlot(1, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
 
@@ -106,7 +107,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     private int groupIndex = -1;
 
     @Setter
-    private EnumFacing seatSide = null;
+    private Direction seatSide = null;
 
     @Getter @Setter
     private FiringPackage firingPackage;
@@ -114,13 +115,14 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     private final TickDoOnce descriptionPacketSender = new TickDoOnce((t) -> PACKET_DESCRIPTION.sendToAllAround(this));
 
     @Getter
-    private final List<EntityPlayer> playersUsing = new LinkedList<>();
+    private final List<Player> playersUsing = new LinkedList<>();
 
-    public TileLauncherBase() {
+    public TileLauncherBase(BlockPos pos, BlockState state) {
+        super(BlockReg.TILE_LAUNCHER_BASE.get(), pos, state);
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3,true,  (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {
-            playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchBase));
+            playersUsing.removeIf((player) -> !(player.containerMenu instanceof ContainerLaunchBase));
         }));
         tickActions.add(new TickAction(() -> isServer() && this.firingPackage != null, this::handleFirePackage));
         tickActions.add(new TickAction(3, true, this::updateSeat));
@@ -128,9 +130,9 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     }
 
     @Override
-    public void markDirty()
+    public void setChanged()
     {
-        super.markDirty();
+        super.setChanged();
         if(isServer()) {
             descriptionPacketSender.doNext();
         }
@@ -152,24 +154,24 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
      *
      * @return direction
      */
-    public EnumFacing getLaunchDirection() {
-        IBlockState state = getBlockState();
-        if (state.getProperties().containsKey(BlockLauncherBase.ROTATION_PROP))
+    public Direction getLaunchDirection() {
+        final BlockState state = getBlockState();
+        if (state.hasProperty(BlockLauncherBase.ROTATION_PROP))
         {
             return state.getValue(BlockLauncherBase.ROTATION_PROP);
         }
-        return EnumFacing.UP;
+        return Direction.UP;
     }
 
-    public EnumFacing getSeatSide() {
+    public Direction getSeatSide() {
         if(seatSide == null) {
             switch (getLaunchDirection()) {
-                case UP: seatSide = EnumFacing.NORTH; break;
-                case DOWN: seatSide = EnumFacing.NORTH; break;
-                case EAST: seatSide = EnumFacing.UP; break;
-                case WEST: seatSide = EnumFacing.UP; break;
-                case NORTH: seatSide = EnumFacing.UP; break;
-                case SOUTH: seatSide = EnumFacing.UP; break;
+                case UP: seatSide = Direction.NORTH; break;
+                case DOWN: seatSide = Direction.NORTH; break;
+                case EAST: seatSide = Direction.UP; break;
+                case WEST: seatSide = Direction.UP; break;
+                case NORTH: seatSide = Direction.UP; break;
+                case SOUTH: seatSide = Direction.UP; break;
             }
         }
         return seatSide;
@@ -216,14 +218,15 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     @Override
     public void onLoad()
     {
+        super.onLoad();
         launcherNode.connectToTiles();
     }
 
     @Override
-    public void invalidate()
+    public void setRemoved()
     {
         getNetworkNode().onTileRemoved();
-        super.invalidate();
+        super.setRemoved();
     }
 
     @Override
@@ -242,41 +245,37 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
     private void updateSeat() {
         checkMissileCollision = true;
 
+        // PORT: forget a seat that was removed (discarded or unloaded with its chunk) so a new one can be created;
+        // a saved seat that loads later yields to the new one (see EntityPlayerSeat#tick)
+        if (seat != null && seat.isRemoved()) {
+            seat = null;
+        }
+
         //Create seat if missile
         if (!getMissileStack().isEmpty() && seat == null)  //TODO add hook to disable riding some missiles
         {
-            seat = new EntityPlayerSeat(world);
-            seat.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+            seat = new EntityPlayerSeat(level);
+            seat.setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
             seat.setHost(this);
-            world.spawnEntity(seat);
+            level.addFreshEntity(seat);
         }
         //Destroy seat if no missile
         else if (getMissileStack().isEmpty() && seat != null)
         {
-            Optional.ofNullable(seat.getRidingEntity()).ifPresent(Entity::removePassengers);
-            seat.setDead();
+            Optional.ofNullable(seat.getVehicle()).ifPresent(Entity::ejectPassengers);
+            seat.discard();
             seat = null;
         }
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY
-            || capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY
-            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER
-            || super.hasCapability(capability, facing);
-    }
-
-    @Override
     @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    public <T> T getCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing)
     {
-        if(capability == CapabilityEnergy.ENERGY) {
-            return (T) energyStorage;
+        if(capability == Capabilities.EnergyStorage.BLOCK) {
+            return ConfigMain.REQUIRES_POWER ? (T) energyStorage : null;
         }
-        else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        else if (capability == Capabilities.ItemHandler.BLOCK)
         {
             return (T) inventory;
         } else if (capability == ICBMClassicAPI.MISSILE_HOLDER_CAPABILITY)
@@ -286,28 +285,29 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         else if(capability == ICBMClassicAPI.MISSILE_LAUNCHER_CAPABILITY) {
             return (T) missileLauncher;
         }
-        return super.getCapability(capability, facing);
+        return null;
     }
 
     public boolean checkForMissileInBounds()
     {
         //Limit how often we check for collision
-        if (checkMissileCollision)
+        if (checkMissileCollision && level != null)
         {
             checkMissileCollision = false;
 
             //Validate the space above the launcher is free of entities, mostly for smooth reload visuals
-            final AxisAlignedBB collisionCheck = new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 5, getPos().getZ() + 1); //TODO magic numbers
-            final List<EntityMissile> entities = world.getEntitiesWithinAABB(EntityMissile.class, collisionCheck);
+            final BlockPos pos = getBlockPos();
+            final AABB collisionCheck = new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 5, pos.getZ() + 1); //TODO magic numbers
+            final List<EntityMissile> entities = level.getEntitiesOfClass(EntityMissile.class, collisionCheck);
             hasMissileCollision = entities.size() > 0;
         }
         return hasMissileCollision;
     }
 
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return new TextComponentTranslation("gui.icbmclassic:launcherbase.name");
+        return Component.translatable("gui.icbmclassic:launcherbase.name");
     }
 
     public ItemStack getMissileStack()
@@ -319,7 +319,7 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         return missileHolder.getMissileStack();
     }
 
-    public boolean tryInsertMissile(EntityPlayer player, EnumHand hand, ItemStack heldItem) // TODO consider moving to inventory code as a generic insert/extract slot logic
+    public boolean tryInsertMissile(Player player, InteractionHand hand, ItemStack heldItem) // TODO consider moving to inventory code as a generic insert/extract slot logic
     {
         // Add missile
         if (this.getMissileStack().isEmpty() && missileHolder.canSupportMissile(heldItem))
@@ -327,59 +327,47 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
             if (isServer())
             {
                 final ItemStack stackLeft = inventory.insertItem(0, heldItem, false);
-                if (!player.capabilities.isCreativeMode)
+                if (!player.getAbilities().instabuild)
                 {
-                    player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, stackLeft);
-                    player.inventoryContainer.detectAndSendChanges();
+                    player.setItemInHand(hand, stackLeft);
+                    player.inventoryMenu.broadcastChanges();
                 }
             }
             return true;
         }
         // Remove missile
-        else if (player.isSneaking() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
+        else if (player.isShiftKeyDown() && heldItem.isEmpty() && !this.getMissileStack().isEmpty())
         {
             if (isServer())
             {
-
-                player.setItemStackToSlot(hand == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, this.getMissileStack());
+                player.setItemInHand(hand, this.getMissileStack());
                 inventory.extractItem(0, 1, false);
-                player.inventoryContainer.detectAndSendChanges();
+                player.inventoryMenu.broadcastChanges();
             }
             return true;
         }
         return false;
     }
 
+    @Nullable
     @Override
-    public AxisAlignedBB getRenderBoundingBox()
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player)
     {
-        return INFINITE_EXTENT_AABB;
+        return new ContainerLaunchBase(windowId, player, this);
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player)
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        return new ContainerLaunchBase(player, this);
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player)
-    {
-        return new GuiLauncherBase(player, this);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound nbt)
-    {
-        super.readFromNBT(nbt);
+        super.loadAdditional(nbt, registries);
         SAVE_LOGIC.load(this, nbt);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
         SAVE_LOGIC.save(this, nbt);
-        return super.writeToNBT(nbt);
+        super.saveAdditional(nbt, registries);
     }
 
     private static final NbtSaveHandler<TileLauncherBase> SAVE_LOGIC = new NbtSaveHandler<TileLauncherBase>()
@@ -390,13 +378,19 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         /* */.nodeInteger("firing_delay", TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
         /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
-        /* */.nodeINBTSerializable("firing_package", launcher -> launcher.firingPackage)
+        // PORT: 1.12 used the accessor-only node, which never restored the package as the field is null on load
+        /* */.nodeINBTSerializable("firing_package", TileLauncherBase::getFiringPackage, (launcher, firingPackage) -> {
+            // Client gets this via the update tag but never ticks it, don't keep a stale copy
+            if (launcher.getLevel() == null || !launcher.getLevel().isClientSide()) {
+                launcher.setFiringPackage(firingPackage);
+            }
+        }, () -> new FiringPackage(null, null))
         /* */.nodeINBTSerializable("launcher", launcher -> launcher.missileLauncher)
         /* */.nodeFacing("seat_side", TileLauncherBase::getSeatSide, TileLauncherBase::setSeatSide)
         .base();
 
+    /** Registers packet codexes, block entity type lives in BlockReg */
     public static void register() {
-        GameRegistry.registerTileEntity(TileLauncherBase.class, REGISTRY_NAME);
         PacketCodexReg.register(PACKET_DESCRIPTION, PACKET_GUI, PACKET_LOCK_HEIGHT, PACKET_GROUP_ID, PACKET_GROUP_INDEX, PACKET_FIRING_DELAY, PACKET_SEAT_ROTATION);
     }
 
@@ -410,25 +404,33 @@ public class TileLauncherBase extends TileMachine implements ILauncherComponent,
         .nodeInt(TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex)
         .nodeInt(TileLauncherBase::getGroupId, TileLauncherBase::setGroupId)
         .nodeInt(TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
-        .nodeInt(TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight);
+        .nodeInt(TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight)
+        // PORT: 1.12 never synced energy for the GUI, so the energy bar only showed the value from the chunk load
+        .nodeInt(t -> t.energyStorage.getEnergyStored(), (t, i) -> t.energyStorage.setEnergyStored(i));
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_LOCK_HEIGHT = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "lock_height")
         .fromClient()
-        .nodeInt(TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight);
+        .nodeInt(TileLauncherBase::getLockHeight, TileLauncherBase::setLockHeight)
+        .onFinished((tile, target, player) -> tile.setChanged());
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GROUP_INDEX = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "group.index")
         .fromClient()
-        .nodeInt(TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex);
+        .nodeInt(TileLauncherBase::getGroupIndex, TileLauncherBase::setGroupIndex)
+        .onFinished((tile, target, player) -> tile.setChanged());
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_GROUP_ID = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "group.id")
         .fromClient()
-        .nodeInt(TileLauncherBase::getGroupId, TileLauncherBase::setGroupId);
+        .nodeInt(TileLauncherBase::getGroupId, TileLauncherBase::setGroupId)
+        .onFinished((tile, target, player) -> tile.setChanged());
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_SEAT_ROTATION = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "rotation.seat")
         .fromClient()
-        .nodeFacing(TileLauncherBase::getSeatSide, TileLauncherBase::setSeatSide);
+        .nodeFacing(TileLauncherBase::getSeatSide, TileLauncherBase::setSeatSide)
+        .onFinished((tile, target, player) -> tile.setChanged());
 
     public static final PacketCodexTile<TileLauncherBase, TileLauncherBase> PACKET_FIRING_DELAY = (PacketCodexTile<TileLauncherBase, TileLauncherBase>) new PacketCodexTile<TileLauncherBase, TileLauncherBase>(REGISTRY_NAME, "firing.delay")
         .fromClient()
-        .nodeInt(TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay);
+        .nodeInt(TileLauncherBase::getFiringDelay, TileLauncherBase::setFiringDelay)
+        .onFinished((tile, target, player) -> tile.setChanged());
 }
+// PORTED

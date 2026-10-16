@@ -2,8 +2,8 @@ package icbm.classic.api.reg.events;
 
 import icbm.classic.api.reg.IExplosiveRegistry;
 import icbm.classic.api.reg.content.IExplosiveContentRegistry;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.Event;
 
 /**
  * Used to register new content types before explosives are registered.
@@ -33,3 +33,4 @@ public class ExplosiveContentRegistryEvent extends Event
         registry.registerContentRegistry(id, contentRegistry);
     }
 }
+// PORTED

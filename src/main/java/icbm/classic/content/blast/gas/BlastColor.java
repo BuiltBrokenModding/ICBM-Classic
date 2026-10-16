@@ -2,7 +2,7 @@ package icbm.classic.content.blast.gas;
 
 import icbm.classic.lib.colors.ColorB;
 import icbm.classic.lib.colors.ColorHelper;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Vec3i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class BlastColor extends BlastGasBase
     {
         for (int i = 0; i < COLOR_COUNT; i++)
         {
-            final float hue = world.rand.nextFloat();
+            final float hue = world.random.nextFloat();
             final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
             final float luminance = 0.5f; //1.0 for brighter, 0.0 for black
             PARTICLE_COLORS.add(ColorHelper.HSBtoRGB(hue, saturation, luminance));
@@ -65,12 +65,13 @@ public class BlastColor extends BlastGasBase
         currentColorIndex = (currentColorIndex + 1) % COLOR_COUNT;
     }
 
+    // PORT: 1.12 returned the raw signed ColorB bytes, particles expect 0-1 floats so the bytes are normalized
     @Override
     protected float getParticleColorRed(final Vec3i pos)
     {
         if(currentColorIndex >= 0 && currentColorIndex < PARTICLE_COLORS.size())
         {
-            return PARTICLE_COLORS.get(currentColorIndex).getRed();
+            return (PARTICLE_COLORS.get(currentColorIndex).getRed() & 0xFF) / 255f;
         }
         return 1;
     }
@@ -80,7 +81,7 @@ public class BlastColor extends BlastGasBase
     {
         if(currentColorIndex >= 0 && currentColorIndex < PARTICLE_COLORS.size())
         {
-            return PARTICLE_COLORS.get(currentColorIndex).getGreen();
+            return (PARTICLE_COLORS.get(currentColorIndex).getGreen() & 0xFF) / 255f;
         }
         return 1;
     }
@@ -90,8 +91,9 @@ public class BlastColor extends BlastGasBase
     {
         if(currentColorIndex >= 0 && currentColorIndex < PARTICLE_COLORS.size())
         {
-            return PARTICLE_COLORS.get(currentColorIndex).getBlue();
+            return (PARTICLE_COLORS.get(currentColorIndex).getBlue() & 0xFF) / 255f;
         }
         return 1;
     }
 }
+// PORTED

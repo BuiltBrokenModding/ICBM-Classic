@@ -22,3 +22,4 @@ public interface IMissileTargetDelayed extends IMissileTarget {
      */
     IMissileTarget cloneWithoutDelay();
 }
+// PORTED

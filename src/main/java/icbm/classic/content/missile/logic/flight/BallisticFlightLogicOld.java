@@ -13,10 +13,11 @@ import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
 import icbm.classic.content.missile.tracker.MissileTrackerHandler;
 import icbm.classic.lib.buildable.BuildableObject;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 
 /**
  * @deprecated replaced with modular flight systems, kept for loading old save data
@@ -31,7 +32,7 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
     //  Then have it switch to the actual ballistic flight logic next
     //  Idea will be to cleanup the code and allow for better control in each version
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "ballistic");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "ballistic");
 
     /**
      * Ticks to animate slowly rising from the launcher
@@ -88,7 +89,7 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
     }
 
     @Override
-    public void calculateFlightPath(final World world, double startX, double startY, double startZ, final IMissileTarget targetData)
+    public void calculateFlightPath(final Level world, double startX, double startY, double startZ, final IMissileTarget targetData)
     {
         //Record start and end position
         this.startX = startX;
@@ -172,26 +173,26 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
 
             hasStartedFlight = true;
 
-            this.startX = entity.posX;
-            this.startY = entity.posY;
-            this.startZ = entity.posZ;
+            this.startX = entity.getX();
+            this.startY = entity.getY();
+            this.startZ = entity.getZ();
 
             calculatePath();
 
             if(!flightUpAlways) {
 
-                entity.motionY = this.acceleration * ((float) missileFlightTime / 2f);
+                MotionHelper.setMotionY(entity, this.acceleration * ((float) missileFlightTime / 2f));
 
-                entity.motionX = this.deltaPathX / missileFlightTime;
-                entity.motionZ = this.deltaPathZ / missileFlightTime;
+                MotionHelper.setMotionX(entity, this.deltaPathX / missileFlightTime);
+                MotionHelper.setMotionZ(entity, this.deltaPathZ / missileFlightTime);
             }
             else {
                 final float flatDistance = (float)Math.sqrt(deltaPathX * deltaPathX + deltaPathZ * deltaPathZ);
                 final float hortSpeed = 0.05f;
                 final float vertSpeed = 2f;
-                entity.motionX = (this.deltaPathX / flatDistance) * hortSpeed;
-                entity.motionZ = (this.deltaPathZ / flatDistance) * hortSpeed;
-                entity.motionY = vertSpeed;
+                MotionHelper.setMotionX(entity, (this.deltaPathX / flatDistance) * hortSpeed);
+                MotionHelper.setMotionZ(entity, (this.deltaPathZ / flatDistance) * hortSpeed);
+                MotionHelper.setMotionY(entity, vertSpeed);
             }
         }
         //Normal path logic
@@ -204,17 +205,17 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
     {
         ticksFlight++;
 
-        if (!entity.world.isRemote)
+        if (!entity.level().isClientSide())
         {
             // Apply gravity
             if(!flightUpAlways) {
-                entity.motionY -= this.acceleration;
+                MotionHelper.addMotionY(entity, -(this.acceleration));
             }
 
             // Cut off x-z motion to prevent missing target
-            if(Math.abs(entity.posX - endX) <= 0.1f && Math.abs(entity.posZ - endZ) <= 0.1f) {
-                entity.motionX = 0;
-                entity.motionZ = 0;
+            if(Math.abs(entity.getX() - endX) <= 0.1f && Math.abs(entity.getZ() - endZ) <= 0.1f) {
+                MotionHelper.setMotionX(entity, 0);
+                MotionHelper.setMotionZ(entity, 0);
             }
 
             // Update animate rotations
@@ -235,17 +236,17 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
 
     protected void handleLockHeight(Entity entity, int ticksInAir)
     {
-        entity.motionY += 0.1f;
-        entity.motionX = 0;
-        entity.motionZ = 0;
-        this.lockHeight -= entity.motionY; //TODO fix to account for slow animation climb
+        MotionHelper.addMotionY(entity, 0.1f);
+        MotionHelper.setMotionX(entity, 0);
+        MotionHelper.setMotionZ(entity, 0);
+        this.lockHeight -= entity.getDeltaMovement().y; //TODO fix to account for slow animation climb
     }
 
     protected void alignWithMotion(Entity entity)
     {
-        entity.rotationPitch = (float) (Math.atan(entity.motionY / (Math.sqrt(entity.motionX * entity.motionX + entity.motionZ * entity.motionZ))) * 180 / Math.PI);
+        entity.setXRot((float) (Math.atan(entity.getDeltaMovement().y / (Math.sqrt(entity.getDeltaMovement().x * entity.getDeltaMovement().x + entity.getDeltaMovement().z * entity.getDeltaMovement().z))) * 180 / Math.PI));
         // Look at the next point
-        entity.rotationYaw = (float) (Math.atan2(entity.motionX, entity.motionZ) * 180 / Math.PI);
+        entity.setYRot((float) (Math.atan2(entity.getDeltaMovement().x, entity.getDeltaMovement().z) * 180 / Math.PI));
     }
 
     /**
@@ -256,9 +257,9 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
      */
     protected void doSlowClimb(Entity entity, int ticksInAir)
     {
-        entity.motionY += 0.005f; //TODO add config
-        lockHeight -= entity.motionY;
-        climbHeight -= entity.motionY;
+        MotionHelper.addMotionY(entity, 0.005f); //TODO add config
+        lockHeight -= entity.getDeltaMovement().y;
+        climbHeight -= entity.getDeltaMovement().y;
     }
 
     /**
@@ -269,7 +270,7 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
      */
     protected void idleMissileOnPad(Entity entity, int ticksInAir)
     {
-        entity.rotationPitch = entity.prevRotationPitch = 90;
+        MotionHelper.setPitchAndPrev(entity, 90);
         ICBMClassic.proxy.spawnPadSmoke(entity, this, ticksInAir);
     }
 
@@ -284,33 +285,40 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
         {
             return false;
         }
-        else if (entity.posY >= ConfigMissile.SIMULATION_EXIT_HEIGHT)
+        else if (entity.getY() >= ConfigMissile.SIMULATION_EXIT_HEIGHT)
         {
             return true;
         }
 
-        final BlockPos futurePos = predictPosition(entity, BlockPos::new, 2);
+        final BlockPos futurePos = predictPosition(entity, BlockPos::containing, 2);
 
-        //About to enter an unloaded chunk
-        return !entity.world.isAreaLoaded(entity.getPosition(), futurePos);
+        //About to enter an unloaded chunk (also true above build height, same as 1.12 isAreaLoaded(from, to))
+        if (!entity.level().hasChunksAt(entity.blockPosition(), futurePos))
+        {
+            return true;
+        }
+
+        // PORT: 1.21 freezes entities in loaded chunks outside the simulation distance, simulate before entering one
+        return entity.level() instanceof ServerLevel serverLevel
+            && !MissileTrackerHandler.canEntitiesTickBetween(serverLevel, entity.getX(), entity.getZ(), futurePos.getX(), futurePos.getZ());
     }
 
     @Override
     public <V> V predictPosition(Entity entity, VecBuilderFunc<V> builder, int ticks)
     {
-        double x = entity.posX;
-        double y = entity.posY;
-        double z = entity.posZ;
+        double x = entity.getX();
+        double y = entity.getY();
+        double z = entity.getZ();
 
-        double motionY = entity.motionY;
+        double motionY = entity.getDeltaMovement().y;
 
         while (ticks-- > 0)
         {
             motionY -= this.acceleration;
 
-            x += entity.motionX;
+            x += entity.getDeltaMovement().x;
             y += motionY;
-            z += entity.motionZ;
+            z += entity.getDeltaMovement().z;
         }
 
         return builder.apply(x, y, z);
@@ -358,3 +366,4 @@ public class BallisticFlightLogicOld extends BuildableObject<BallisticFlightLogi
         .base();
 
 }
+// PORTED

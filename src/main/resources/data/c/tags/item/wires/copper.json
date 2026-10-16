@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "icbmclassic:copper_wire",
+      "required": false
+    }
+  ]
+}

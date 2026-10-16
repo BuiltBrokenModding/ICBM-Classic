@@ -2,7 +2,7 @@ package icbm.classic.api.reg.events;
 
 import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * Fired to allow registering action data message types
@@ -16,3 +16,4 @@ public class ActionRegistryEvent extends Event
         this.registry = registry;
     }
 }
+// PORTED

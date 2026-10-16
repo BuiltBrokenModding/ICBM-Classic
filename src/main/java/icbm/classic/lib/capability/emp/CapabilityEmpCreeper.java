@@ -3,50 +3,40 @@ package icbm.classic.lib.capability.emp;
 import icbm.classic.api.actions.IAction;
 import icbm.classic.api.caps.IEMPReceiver;
 import icbm.classic.config.blast.ConfigBlast;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.Level;
 
 /**
  *
  * Created by Dark(DarkGuardsman, Robin) on 3/12/2018.
  */
-public class CapabilityEmpCreeper implements IEMPReceiver, ICapabilityProvider
+public class CapabilityEmpCreeper implements IEMPReceiver
 {
-    public final EntityCreeper creeper;
+    public final Creeper creeper;
 
-    public CapabilityEmpCreeper(EntityCreeper creeper)
+    public CapabilityEmpCreeper(Creeper creeper)
     {
         this.creeper = creeper;
     }
 
     @Override
-    public float applyEmpAction(World world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
+    public float applyEmpAction(Level world, double x, double y, double z, IAction emp_blast, float power, boolean doAction)
     {
-        if (ConfigBlast.emp.ALLOW_LIGHTING_CREEPER)
+        if (ConfigBlast.emp.ALLOW_LIGHTING_CREEPER && world instanceof ServerLevel serverLevel)
         {
             //Attack creeper with lighting TODO replace with data manager call
-            creeper.onStruckByLightning(new EntityLightningBolt(world, creeper.posX, creeper.posY, creeper.posZ, true));
+            final LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(world);
+            if (bolt != null)
+            {
+                bolt.moveTo(creeper.getX(), creeper.getY(), creeper.getZ());
+                bolt.setVisualOnly(true); // 1.12 effectOnly = true, bolt is never spawned
+                creeper.thunderHit(serverLevel, bolt);
+            }
         }
         return power;
     }
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityEMP.EMP;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityEMP.EMP ? (T) this : null;
-    }
-
 }
+// PORTED

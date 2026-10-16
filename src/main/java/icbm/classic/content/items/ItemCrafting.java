@@ -1,120 +1,56 @@
 package icbm.classic.content.items;
 
 import icbm.classic.prefab.item.ItemICBMBase;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Prefab for use in generating new sets of crafting items
- *
- *
+ * <p>
+ * PORT: 1.12 used one item per group with a metadata per type (circuit:basic). Items are flattened, one item
+ * per group + type. The translation key stays the 1.12 variant key {@code item.icbmclassic:<group>.<type>}.
+ * Ore dictionary names are replaced by item tags in data (c:circuits/basic ...).
+ * <p>
  * Created by Dark(DarkGuardsman, Robin) on 3/20/2018.
  */
 public class ItemCrafting extends ItemICBMBase
 {
-    /** Array of sub types (e.g. Iron, Steel, Copper) */
-    public final String[] subItems;
-    /** Name of the set of items (Ingot, Plate, Circuit) */
+    /** Sub type (e.g. iron, steel, copper) */
+    public final String type;
+    /** Name of the set of items (ingot, plate, circuit) */
     public final String oreName;
 
     /**
-     * @param oreName - registry name, localization, and ore prefix
-     * @param items   - list of sub-items, used for unlocalized
+     * @param oreName - group name, localization, and old ore prefix
+     * @param type    - sub-item, used for unlocalized
      */
-    public ItemCrafting(String oreName, String... items)
+    public ItemCrafting(String oreName, String type)
     {
         super(oreName);
         this.oreName = oreName;
-        subItems = items;
-        setHasSubtypes(true);
-    }
-
-    public void registerOreNames(String... exceptions)
-    {
-        for (int i = 0; i < subItems.length; i++)
-        {
-            //Get name
-            final String name = subItems[i];
-            registerOreName(name, i, exceptions);
-        }
-    }
-
-    protected void registerOreName(String name, int metadata, String... exceptions)
-    {
-        if (exceptions != null)
-        {
-            for (String string : exceptions)
-            {
-                if (name.equalsIgnoreCase(string))
-                {
-                    return;
-                }
-            }
-        }
-
-        //Turn into ore name
-        String oreName = name.substring(0, 1).toUpperCase() + name.substring(1);
-        oreName = this.oreName + oreName;
-
-        //Register
-        OreDictionary.registerOre(oreName, new ItemStack(this, 1, metadata));
+        this.type = type;
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack)
+    public String getDescriptionId()
     {
-        String subName = getSubItemName(stack.getItemDamage());
-        return super.getUnlocalizedName(stack) + (subName != null ? "." + subName : "");
-    }
-
-    public String getSubItemName(int index)
-    {
-        if (index >= 0 && index < subItems.length)
-        {
-            return subItems[index];
-        }
-        return null;
-    }
-
-    public int getIndexForName(String name)
-    {
-        for (int i = 0; i < subItems.length; i++)
-        {
-            String s = subItems[i];
-            if (s.equalsIgnoreCase(name))
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public ItemStack getStack(String name)
-    {
-        return getStack(name, 1);
-    }
-
-    public ItemStack getStack(String name, int count)
-    {
-        int index = getIndexForName(name);
-        if (index > 0)
-        {
-            return new ItemStack(this, count, index);
-        }
-        return ItemStack.EMPTY;
+        return super.getDescriptionId() + "." + type;
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+    public String getDescriptionId(ItemStack stack)
     {
-        if (this.isInCreativeTab(tab))
-        {
-            for (int i = 0; i < subItems.length; i++)
-            {
-                items.add(new ItemStack(this, 1, i));
-            }
-        }
+        return getDescriptionId();
+    }
+
+    /** @return old 1.12 ore dictionary name, e.g. circuitBasic */
+    public String getOreName()
+    {
+        return oreName + type.substring(0, 1).toUpperCase() + type.substring(1);
+    }
+
+    public ItemStack getStack(int count)
+    {
+        return new ItemStack(this, count);
     }
 }
+// PORTED

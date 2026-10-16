@@ -1,9 +1,9 @@
 {
 	"credit": "QueenOfMissiles",
 	"textures": {
-		"0": "icbmclassic:items/missiles/tier1",
-		"3": "minecraft:blocks/anvil_base",
-		"particle": "icbmclassic:items/missiles/tier1"
+		"0": "icbmclassic:item/missiles/tier1",
+		"3": "minecraft:block/anvil",
+		"particle": "icbmclassic:item/missiles/tier1"
 	},
 	"elements": [
 		{

@@ -6,9 +6,9 @@ import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
 import icbm.classic.lib.transform.BlockEditHandler;
 import icbm.classic.lib.transform.PosDistanceSorter;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.Comparator;
 import java.util.List;
@@ -60,13 +60,16 @@ public abstract class BlastThreaded extends Blast
      */
     protected void onWorkerThreadComplete(List<BlockPos> edits)
     {
-        if (world instanceof WorldServer)
+        if (world instanceof ServerLevel)
         {
             //Sort distance
             edits.sort(buildSorter());
 
             //Schedule edits to run in the world
-            ((WorldServer) world).addScheduledTask(() -> {
+            scheduleOnServerThread(() -> {
+
+                //Worker is done reading
+                releaseChunkSnapshot();
 
                 if (skipQueue())
                 {
@@ -95,6 +98,10 @@ public abstract class BlastThreaded extends Blast
         if (!hasThreadStarted)
         {
             hasThreadStarted = true;
+
+            // PORT: worker threads can not read the level in 1.21 without blocking on the server thread,
+            //  they read the loaded chunks captured here instead, see ChunkSnapshot
+            captureChunkSnapshot(getBlastRadius());
             WorkerThreadManager.INSTANCE.addWork(getWorkerTask());
         }
         return false;
@@ -108,11 +115,12 @@ public abstract class BlastThreaded extends Blast
 
     public void destroyBlock(BlockPos pos)
     {
-        IBlockState state = this.world().getBlockState(pos);
-        if (!state.getBlock().isAir(state, world(), pos))
+        BlockState state = this.world().getBlockState(pos);
+        if (!state.isAir())
         {
-            state.getBlock().onBlockExploded(this.world(), pos, this);
+            state.onBlockExploded(this.world(), pos, asVanillaExplosion());
         }
     }
 
 }
+// PORTED

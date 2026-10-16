@@ -10,27 +10,24 @@ import icbm.classic.prefab.gui.TextInput;
 import icbm.classic.prefab.gui.button.DisableButton;
 import icbm.classic.prefab.gui.components.SlotEnergyBar;
 import icbm.classic.prefab.gui.tooltip.TooltipTranslations;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
-@SideOnly(Side.CLIENT)
-public class GuiLauncherScreen extends GuiContainerBase
+public class GuiLauncherScreen extends GuiContainerBase<ContainerLaunchScreen>
 {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_silo_screen.png");
-    public static final ITextComponent ACCURACY_TOOLTIP = new TextComponentTranslation("gui.launcherscreen.inaccuracy.info");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_silo_screen.png");
+    public static final Component ACCURACY_TOOLTIP = Component.translatable("gui.launcherscreen.inaccuracy.info");
 
     private final TileLauncherScreen tileEntity;
 
-    public GuiLauncherScreen(EntityPlayer player, TileLauncherScreen tileEntity)
+    public GuiLauncherScreen(ContainerLaunchScreen container, Inventory playerInventory, Component title)
     {
-        super(new ContainerLaunchScreen(player, tileEntity));
-        this.tileEntity = tileEntity;
-        this.ySize = 166;
-        this.xSize = 175;
+        super(container, playerInventory, title);
+        this.tileEntity = container.getHost();
+        this.imageHeight = 166;
+        this.imageWidth = 175;
     }
 
     @Override
@@ -40,26 +37,26 @@ public class GuiLauncherScreen extends GuiContainerBase
 
     /** Adds the buttons (and other controls) to the screen in question. */
     @Override
-    public void initGui()
+    protected void init()
     {
-        super.initGui();
+        super.init();
 
         int componentID = 0;
 
         // Target field
-        addComponent(TextInput.vec3dField(componentID++, fontRenderer, 18, 17, 100, 12,
+        addComponent(TextInput.vec3dField(componentID++, font, 18, 17, 100, 12,
             tileEntity::getTarget, tileEntity::setTarget, (o) -> TileLauncherScreen.PACKET_TARGET.sendToServer(tileEntity)));
 
         // Hz
-        addComponent(TextInput.textField(componentID++, fontRenderer, 135, 17, 34, 12,
+        addComponent(TextInput.textField(componentID++, font, 135, 17, 34, 12,
             tileEntity.radioCap::getChannel, tileEntity.radioCap::setChannel, (o) -> TileLauncherScreen.PACKET_RADIO_HZ.sendToServer(tileEntity)));
 
         // Launch button
-        addButton(new LaunchButton(0, guiLeft + 24, guiTop + 38)
+        addComponent(new LaunchButton(0, leftPos + 24, topPos + 38)
             .doDrawDisabledGlass()
-            .setTooltip(this.tileEntity::getStatusTranslation))
+            .setTooltip(this.tileEntity::getStatusTranslation)
             .setAction(() -> TileLauncherScreen.PACKET_LAUNCH.sendToServer(tileEntity))
-            .setEnabledCheck(tileEntity::canLaunch);
+            .setEnabledCheck(tileEntity::canLaunch));
 
         addComponent(new SlotEnergyBar(141, 66, tileEntity.energyStorage::getEnergyStored, tileEntity.energyStorage::getMaxEnergyStored));
 
@@ -67,7 +64,7 @@ public class GuiLauncherScreen extends GuiContainerBase
 
         // Radio tooltip
         addComponent(new TooltipTranslations(119, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_RADIO).withDelay(1));
-        addComponent(new DisableButton(1, guiLeft + 119, guiTop + 16, tileEntity.radioCap::isDisabled)
+        addComponent(new DisableButton(1, leftPos + 119, topPos + 16, tileEntity.radioCap::isDisabled)
             .setAction(() -> TileLauncherScreen.PACKET_RADIO_DISABLE.sendToServer(tileEntity))
         );
 
@@ -75,13 +72,14 @@ public class GuiLauncherScreen extends GuiContainerBase
         addComponent(new TooltipTranslations(2, 16, 14, 14, LauncherLangs.TRANSLATION_TOOLTIP_TARGET).withDelay(1));
     }
 
-    /** Draw the foreground layer for the GuiContainer (everything in front of the items) */
+    /** Draw the foreground layer (everything in front of the items) */
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString("\u00a77" + LanguageUtility.getLocal("gui.launcherscreen.name"), 30, 6, 4210752);
-        this.fontRenderer.drawString(LanguageUtility.getLocal("gui.launcherscreen.inaccuracy").replaceAll("%1\\$s", String.format("%.2f", tileEntity.getLauncherInaccuracy())), 60, 32, 4210752);
+        drawString(graphics, "§7" + LanguageUtility.getLocal("gui.launcherscreen.name"), 30, 6, 4210752);
+        drawString(graphics, LanguageUtility.getLocal("gui.launcherscreen.inaccuracy").replaceAll("%1\\$s", String.format("%.2f", tileEntity.getLauncherInaccuracy())), 60, 32, 4210752);
 
-        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+        super.renderLabels(graphics, mouseX, mouseY);
     }
 }
+// PORTED

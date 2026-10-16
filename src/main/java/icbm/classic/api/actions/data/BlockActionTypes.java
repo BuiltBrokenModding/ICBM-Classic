@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class BlockActionTypes {
-    /** Action type involving a {@link net.minecraft.world.World} being modified/mutated.
+    /** Action type involving a {@link net.minecraft.world.level.Level} being modified/mutated.
      * This can be placing blocks, removing blocks, changing biomes, properties on blocks, etc.
      * Anything that updated what is stored in a world/chunk, excluding entities.
      */
@@ -16,8 +16,8 @@ public final class BlockActionTypes {
      * Think of water to stream (constructive), or machine into scrap metal (destructive) */
     public static final MetaTag BLOCK_REPLACE = MetaTag.getOrCreateSubTag(BLOCK_EDIT, "replace");
 
-    /** Block being modified but staying consistent as the same {@link net.minecraft.block.Block} instance.
-     *  Maybe {@link net.minecraft.block.state.IBlockState} property or data on the {@link net.minecraft.tileentity.TileEntity} */
+    /** Block being modified but staying consistent as the same {@link net.minecraft.world.level.block.Block} instance.
+     *  Maybe {@link net.minecraft.world.level.block.state.BlockState} property or data on the {@link net.minecraft.world.level.block.entity.BlockEntity} */
     public static final MetaTag BLOCK_CHANGE = MetaTag.getOrCreateSubTag(BLOCK_EDIT, "change");
 
     /** Block being removed from the world, setAir is counted as removed */
@@ -26,3 +26,4 @@ public final class BlockActionTypes {
     /** Block being added to the world, air is not counted as addition */
     public static final MetaTag BLOCK_ADD = MetaTag.getOrCreateSubTag(BLOCK_EDIT, "add");
 }
+// PORTED

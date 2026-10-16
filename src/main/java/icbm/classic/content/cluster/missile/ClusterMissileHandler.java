@@ -5,9 +5,10 @@ import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.config.util.ItemStackConfigList;
 import icbm.classic.content.reg.ItemReg;
+import icbm.classic.lib.explosive.ExplosiveStacks;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ClusterMissileHandler {
@@ -18,15 +19,15 @@ public final class ClusterMissileHandler {
 
     public static final ItemStackConfigList.IntOut itemSizes = new ItemStackConfigList.IntOut("[Cluster Contents][Item Sizes]", (configList) -> {
 
-        configList.setDefault(ItemReg.itemBalloon.getRegistryName(), 2, 0);
-        configList.setDefault(ItemReg.itemParachute.getRegistryName(), 2, 0);
+        configList.setDefault(ItemReg.itemBalloon.getId(), 2, 0);
+        configList.setDefault(ItemReg.itemParachute.getId(), 2, 0);
 
-        configList.setDefault(ItemReg.itemClusterMissile.getRegistryName(), 20, 0);
-        configList.setDefault(ItemReg.itemExplosiveMissile.getRegistryName(), 20, 0);
-        configList.setDefault(ItemReg.itemSAM.getRegistryName(), 10, 0);
-        configList.setDefault(ItemReg.heldItemMissile.getRegistryName(), 10, 0);
+        configList.setDefault(ItemReg.itemClusterMissile.getId(), 20, 0);
+        configList.setDefault(ItemReg.itemExplosiveMissile.getId(), 20, 0);
+        configList.setDefault(ItemReg.itemSAM.getId(), 10, 0);
+        configList.setDefault(ItemReg.heldItemMissile.getId(), 10, 0);
 
-        configList.setDefault(ItemReg.itemBombletExplosive.getRegistryName(), 2, 0);
+        configList.setDefault(ItemReg.itemBombletExplosive.getId(), 2, 0);
         for(IExplosiveData data : ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosives()) {
             int size = 2;
             switch(data.getTier()) {
@@ -34,7 +35,7 @@ public final class ClusterMissileHandler {
                 case THREE: size = 10; break;
                 case FOUR: size = 20; break;
             }
-            configList.setDefaultMeta(new ItemStack(ItemReg.itemBombletExplosive, 1, data.getRegistryID()), size, 1);
+            configList.setDefaultMeta(ExplosiveStacks.create(ItemReg.itemBombletExplosive.get(), data), size, 1);
         }
 
 
@@ -59,3 +60,4 @@ public final class ClusterMissileHandler {
         itemSizes.reload();
     }
 }
+// PORTED

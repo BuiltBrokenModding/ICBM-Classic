@@ -1,11 +1,11 @@
 package icbm.classic.api.events;
 
 import icbm.classic.api.actions.IAction;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * Base class for any event fired by the EMP system
@@ -29,8 +29,7 @@ public abstract class EmpEvent extends BlastEvent
      * Canceling the effect will remove any side effects that are normally applied. This includes
      * mutating some entities, apply some effects, and adding EMP effects to items.
      */
-    @Cancelable
-    public static class EntityPre extends EmpEvent
+    public static class EntityPre extends EmpEvent implements ICancellableEvent
     {
         public final Entity target;
 
@@ -62,14 +61,13 @@ public abstract class EmpEvent extends BlastEvent
      * Canceling the effect will remove any side effects that are normally applied. This includes
      * mutating some entities, apply some effects, and adding EMP effects to items.
      */
-    @Cancelable
-    public static class BlockPre extends EmpEvent
+    public static class BlockPre extends EmpEvent implements ICancellableEvent
     {
-        public final World world;
+        public final Level world;
         public final BlockPos blockPos;
-        public final IBlockState state;
+        public final BlockState state;
 
-        public BlockPre(IAction emp, World world, BlockPos pos, IBlockState state)
+        public BlockPre(IAction emp, Level world, BlockPos pos, BlockState state)
         {
             super(emp);
             this.world = world;
@@ -84,11 +82,11 @@ public abstract class EmpEvent extends BlastEvent
      */
     public static class BlockPost extends EmpEvent
     {
-        public final World world;
+        public final Level world;
         public final BlockPos blockPos;
-        public final IBlockState state;
+        public final BlockState state;
 
-        public BlockPost(IAction emp, World world, BlockPos pos, IBlockState state)
+        public BlockPost(IAction emp, Level world, BlockPos pos, BlockState state)
         {
             super(emp);
             this.world = world;
@@ -97,3 +95,4 @@ public abstract class EmpEvent extends BlastEvent
         }
     }
 }
+// PORTED

@@ -2,9 +2,11 @@ package icbm.classic.lib.radar;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.transform.region.Cube;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkAccess;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -24,8 +26,8 @@ public class RadarMap
 {
     public static final int UPDATE_DELAY = 20;
 
-    /** DIM ID, never change */
-    public final int dimID;
+    /** Dimension key, never change */
+    public final ResourceKey<Level> dimID;
 
     /** Map of chunk coords( converted to long) to radar contacts in that chunk */
     private final HashMap<ChunkPos, List<RadarEntity>> chunk_to_entities = new HashMap();
@@ -40,7 +42,7 @@ public class RadarMap
      *
      * @param dimID - unique dimension that is not already tracked
      */
-    public RadarMap(int dimID)
+    public RadarMap(ResourceKey<Level> dimID)
     {
         this.dimID = dimID;
     }
@@ -69,7 +71,8 @@ public class RadarMap
                 {
                     for (RadarEntity object : entry.getValue())
                     {
-                        if (entry.getKey() != object.getChunkPos())
+                        // PORT: 1.12 compared ChunkPos by reference, which was always true and re-added every contact
+                        if (!object.isValid() || !entry.getKey().equals(object.getChunkPos()))
                         {
                             removeList.put(object, entry.getKey());
                             if (object.isValid())
@@ -136,7 +139,7 @@ public class RadarMap
         if (!allEntities.contains(object) && object.isValid())
         {
             allEntities.add(object);
-            ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
+            ChunkPos pair = object.getChunkPos(); // PORT: floor based, matches ChunkEvent/ChunkPos for negative coords
             List<RadarEntity> list;
 
             //Get list or make new
@@ -175,7 +178,7 @@ public class RadarMap
             return false;
         }
 
-        ChunkPos pair = getChunkValue((int) object.x(), (int) object.z());
+        ChunkPos pair = object.getChunkPos(); // PORT: floor based, matches ChunkEvent/ChunkPos for negative coords
         allEntities.remove(object);
         if (chunk_to_entities.containsKey(pair))
         {
@@ -197,7 +200,7 @@ public class RadarMap
      *
      * @param chunk - should never be null
      */
-    public void remove(Chunk chunk)
+    public void remove(ChunkAccess chunk)
     {
         if(accessingData) {
             ICBMClassic.logger().warn("Attempted to add radar chunk mid access of entities", new RuntimeException());
@@ -296,7 +299,7 @@ public class RadarMap
      *
      * @return valid dim ID.
      */
-    public int dimID()
+    public ResourceKey<Level> dimID()
     {
         return dimID;
     }
@@ -310,7 +313,7 @@ public class RadarMap
         }
         else if (object instanceof RadarMap)
         {
-            return ((RadarMap) object).dimID == dimID;
+            return ((RadarMap) object).dimID.equals(dimID);
         }
         return false;
     }
@@ -326,3 +329,4 @@ public class RadarMap
         return chunk_to_entities.isEmpty();
     }
 }
+// PORTED

@@ -1,7 +1,7 @@
 package icbm.classic.api.reg.events;
 
 import icbm.classic.api.missiles.projectile.IProjectileDataRegistry;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * Fired to allow registering projectile data
@@ -15,3 +15,4 @@ public class ProjectileDataRegistryEvent extends Event
         this.registry = registry;
     }
 }
+// PORTED

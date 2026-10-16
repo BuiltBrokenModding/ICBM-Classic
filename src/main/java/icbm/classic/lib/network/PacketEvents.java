@@ -6,21 +6,23 @@ import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketEventUtils;
 import icbm.classic.lib.tracker.EventTrackerHelpers;
 import icbm.classic.lib.tracker.EventTrackerType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 public class PacketEvents {
 
-    public static final ResourceLocation EXPECTED_WORLD = new ResourceLocation(ICBMConstants.DOMAIN, "level.id.expected");
+    public static final ResourceLocation EXPECTED_WORLD = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "level.id.expected");
     public static final EventTrackerType WRONG_WORLD =
-        new EventTrackerType.Builder(new ResourceLocation(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
+        new EventTrackerType.Builder(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
             .asWarn()
             .with(PacketEventUtils.fieldCodexId(0))
             .with(PacketEventUtils.fieldCodexKey(1))
             .withString(EventTrackerHelpers.WORLD_SIDE, EventTrackerHelpers.stringAt(2))
-            .withInt(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.intAt(3))
-            .withInt(EXPECTED_WORLD, EventTrackerHelpers.intAt(4))
+            .withString(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.stringAt(3))
+            .withString(EXPECTED_WORLD, EventTrackerHelpers.stringAt(4))
             // Console logging
-            .listen(new ResourceLocation(ICBMConstants.DOMAIN, "logger"),
+            .listen(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "logger"),
                 () -> ICBMClassic.logger().isDebugEnabled(),
                 (entry) -> {
                     final String ERROR_MSG = "Packet(%s, %s): Received packet on side %s for world(%s) but got world(%s)... ignoring.";
@@ -37,13 +39,13 @@ public class PacketEvents {
             .build();
 
     public static final EventTrackerType NOT_SERVER_WORLD =
-        new EventTrackerType.Builder(new ResourceLocation(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
+        new EventTrackerType.Builder(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
             .asWarn()
             .with(PacketEventUtils.fieldCodexId(0))
             .with(PacketEventUtils.fieldCodexKey(1))
-            .withInt(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.intAt(2))
+            .withString(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.stringAt(2))
             // Console logging
-            .listen(new ResourceLocation(ICBMConstants.DOMAIN, "logger"),
+            .listen(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "logger"),
                 () -> ICBMClassic.logger().isDebugEnabled(),
                 (entry) -> {
                     final String ERROR_MSG = "Packet(%s, %s): Received packet server side but world(%s) is not WorldServer";
@@ -57,21 +59,21 @@ public class PacketEvents {
 
             .build();
 
-    public static void onWrongWorld(PacketCodex builder, String side, int expected, int received) {
+    public static void onWrongWorld(PacketCodex builder, String side, ResourceKey<Level> expected, ResourceKey<Level> received) {
         ICBMClassic.MAIN_TRACKER.post(WRONG_WORLD, () -> new Object[]{
             PacketEventUtils.getPacketId(builder),
             PacketEventUtils.getPacketName(builder),
             side,
-            received,
-            expected
+            String.valueOf(received.location()),
+            String.valueOf(expected.location())
         });
     }
 
-    public static void onNotServerWorld(PacketCodex builder, int dim) {
+    public static void onNotServerWorld(PacketCodex builder, ResourceKey<Level> dim) {
         ICBMClassic.MAIN_TRACKER.post(NOT_SERVER_WORLD, () -> new Object[]{
             PacketEventUtils.getPacketId(builder),
             PacketEventUtils.getPacketName(builder),
-            dim
+            String.valueOf(dim.location())
         });
     }
 }

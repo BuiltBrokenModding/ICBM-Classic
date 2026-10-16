@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "iri",
+    "ici",
+    "ibi"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:redstone_torch"
+    },
+    "b": {
+      "tag": "minecraft:wooden_buttons"
+    },
+    "i": {
+      "tag": "c:ingots/steel"
+    },
+    "c": {
+      "tag": "c:circuits/advanced"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:remotedetonator",
+    "count": 1
+  }
+}

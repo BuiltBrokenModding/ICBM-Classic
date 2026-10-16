@@ -1,21 +1,26 @@
 package icbm.classic.content.blocks.launcher.cruise;
 
-import icbm.classic.ICBMClassic;
+import com.mojang.serialization.MapCodec;
 import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IGPSData;
 import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
+import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.capability.gps.GPSDataHelpers;
 import icbm.classic.prefab.tile.BlockICBM;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
 
@@ -25,85 +30,78 @@ import javax.annotation.Nullable;
  */
 public class BlockCruiseLauncher extends BlockICBM
 {
+    public static final MapCodec<BlockCruiseLauncher> CODEC = simpleCodec(p -> new BlockCruiseLauncher());
+
     public BlockCruiseLauncher()
     {
-        super("cruiseLauncher");
-        this.blockHardness = 10f;
-        this.blockResistance = 10f;
+        // 1.12 hardness 10, resistance field 10 (= 2), isOpaqueCube/isFullCube false
+        super("cruiseLauncher", machineProperties().noOcclusion());
         this.dropInventory = true;
     }
 
     @Override
-    public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side)
+    protected MapCodec<? extends BaseEntityBlock> codec()
+    {
+        return CODEC;
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side)
     {
         return true;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state)
+    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos)
     {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
-    {
-        return EnumBlockRenderType.MODEL;
-    }
-
-    @Override
-    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
-    {
-        return super.canPlaceBlockOnSide(worldIn, pos, side);
-    }
-
-    @Override
-    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
-    {
-        return super.canPlaceBlockAt(worldIn, pos);
+        return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new TileCruiseLauncher();
+        return new TileCruiseLauncher(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
+    {
+        return createTickerHelper(type, BlockReg.TILE_CRUISE_LAUNCHER.get(), (l, p, s, tile) -> tile.update());
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
     {
-        if (!world.isRemote)
+        if (!world.isClientSide())
         {
-            final TileEntity tileEntity = world.getTileEntity(pos);
+            final BlockEntity tileEntity = world.getBlockEntity(pos);
             if (tileEntity instanceof TileCruiseLauncher)
             {
                 final TileCruiseLauncher launcher = (TileCruiseLauncher) tileEntity;
-                final ItemStack stack = player.getHeldItem(hand);
                 final IGPSData gpsData = ICBMClassicHelpers.getGPSData(stack);
                 if (!GPSDataHelpers.handlePlayerInteraction(gpsData, player, launcher::setTarget))
                 {
-                    player.openGui(ICBMClassic.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
+                    launcher.openGui(player);
                 }
             }
         }
-        return true;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state)
+    protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean movedByPiston)
     {
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ILauncherComponent)
+        if (!state.is(newState.getBlock()))
         {
-            ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            final BlockEntity tile = world.getBlockEntity(pos);
+            if (tile instanceof ILauncherComponent)
+            {
+                ((ILauncherComponent) tile).getNetworkNode().onTileRemoved();
+            }
         }
-        super.breakBlock(world, pos, state);
+        super.onRemove(state, world, pos, newState, movedByPiston);
     }
 }
+// PORTED

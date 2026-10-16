@@ -34,3 +34,4 @@ public interface ITypeTaggable {
         return false;
     }
 }
+// PORTED

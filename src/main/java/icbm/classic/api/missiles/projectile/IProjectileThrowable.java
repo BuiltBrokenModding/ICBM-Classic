@@ -1,7 +1,7 @@
 package icbm.classic.api.missiles.projectile;
 
 import icbm.classic.api.actions.cause.IActionSource;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,3 +42,4 @@ public interface IProjectileThrowable<ProjectileEntity extends Entity> {
      */
     boolean throwProjectile(@Nonnull ProjectileEntity entity, @Nullable IActionSource source, double x, double y, double z, float yaw, float pitch, float velocity, float random);
 }
+// PORTED

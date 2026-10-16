@@ -11,14 +11,15 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 
-public class ConditionalImpact implements ICondition, INBTSerializable<NBTTagCompound> {
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "impact");
+public class ConditionalImpact implements ICondition, INBTSerializable<CompoundTag> {
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "impact");
 
     private IActionFieldProvider provider;
 
@@ -49,12 +50,12 @@ public class ConditionalImpact implements ICondition, INBTSerializable<NBTTagCom
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -63,3 +64,4 @@ public class ConditionalImpact implements ICondition, INBTSerializable<NBTTagCom
         /* */.nodeBoolean("impact_desired", ConditionalImpact::isImpactDesired, ConditionalImpact::setImpactDesired)
         .base();
 }
+// PORTED

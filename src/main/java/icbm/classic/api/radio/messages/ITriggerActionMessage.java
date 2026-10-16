@@ -30,3 +30,4 @@ public interface ITriggerActionMessage extends IRadioMessage {
         return true;
     }
 }
+// PORTED

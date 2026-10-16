@@ -7,12 +7,13 @@ import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.reg.content.IExMissileRegistry;
 import icbm.classic.content.reg.ItemReg;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import icbm.classic.lib.explosive.ExplosiveStacks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.function.Consumer;
 
@@ -48,7 +49,7 @@ public class ExMissileContentReg extends ExplosiveContentRegistry implements IEx
     @Override
     public void triggerLaunch(IMissile missile)
     {
-        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostLaunch(missile, missile.getMissileEntity()));
+        NeoForge.EVENT_BUS.post(new MissileEvent.PostLaunch(missile, missile.getMissileEntity()));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ExMissileContentReg extends ExplosiveContentRegistry implements IEx
     }
 
     @Override
-    public boolean onInteraction(Entity entity, EntityPlayer player, EnumHand hand)
+    public boolean onInteraction(Entity entity, Player player, InteractionHand hand)
     {
         return false;
     }
@@ -66,6 +67,7 @@ public class ExMissileContentReg extends ExplosiveContentRegistry implements IEx
     @Override
     public ItemStack getDeviceStack(ResourceLocation regName)
     {
-        return new ItemStack(ItemReg.itemExplosiveMissile, 1, ICBMClassicHelpers.getExplosive(regName, false).getRegistryID());
+        return ExplosiveStacks.create(ItemReg.itemExplosiveMissile.get(), ICBMClassicHelpers.getExplosive(regName, false));
     }
 }
+// PORTED

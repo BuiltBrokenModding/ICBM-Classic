@@ -1,7 +1,7 @@
 package icbm.classic.prefab.gui;
 
 import icbm.classic.ICBMConstants;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Consumer;
 
@@ -23,7 +23,7 @@ public class GuiFormatHelpers {
      * @param setter to pass back the vector
      * @return error feedback, null for no errors
      */
-    public static String parseVec3d(String inputText, Consumer<Vec3d> setter) {
+    public static String parseVec3d(String inputText, Consumer<Vec3> setter) {
         if(inputText != null) {
             final String[] split = inputText.split(",");
             if(split.length == 3) {
@@ -31,7 +31,7 @@ public class GuiFormatHelpers {
                     final double x = Double.parseDouble(split[0].trim());
                     final double y = Double.parseDouble(split[1].trim());
                     final double z = Double.parseDouble(split[2].trim());
-                    setter.accept(new Vec3d(x, y, z)); //TODO use a builder
+                    setter.accept(new Vec3(x, y, z)); //TODO use a builder
                     return null;
                 }
                 catch (NumberFormatException e) {
@@ -69,3 +69,4 @@ public class GuiFormatHelpers {
         }
     }
 }
+// PORTED

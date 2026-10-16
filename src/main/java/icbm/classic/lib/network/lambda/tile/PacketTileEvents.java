@@ -6,24 +6,24 @@ import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketEventUtils;
 import icbm.classic.lib.tracker.EventTrackerHelpers;
 import icbm.classic.lib.tracker.EventTrackerType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 public class PacketTileEvents {
 
     public static final EventTrackerType ERROR_HANDLING =
-        new EventTrackerType.Builder(new ResourceLocation(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
+        new EventTrackerType.Builder(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
             .asError()
             .with(PacketEventUtils.fieldCodexId(0))
             .with(PacketEventUtils.fieldCodexKey(1))
-            .withInt(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.intAt(2))
+            .withString(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.stringAt(2))
             .withString(EventTrackerHelpers.WORLD_NAME, EventTrackerHelpers.stringAt(3))
             .withBlockPos(EventTrackerHelpers.TILE_POS, (entry) -> (BlockPos) entry.getData()[4])
             .with(PacketEventUtils.fieldError(5))
 
             // Console logging
-            .listen(new ResourceLocation(ICBMConstants.DOMAIN, "logger"), (entry) -> {
+            .listen(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "logger"), (entry) -> {
                 final String ERROR_HANDLING = "Packet(%s, %s): unexpected error writing to tile.\n\tWorld(%s): '%s'\n\tPos: %sx %sy %sz";
                 final String message = String.format(ERROR_HANDLING,
                     entry.getString(PacketEventUtils.CODEX_ID, "?"),
@@ -41,16 +41,16 @@ public class PacketTileEvents {
             .build();
 
     public static final EventTrackerType INVALID_TILE =
-        new EventTrackerType.Builder(new ResourceLocation(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
+        new EventTrackerType.Builder(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.tile.error.handling"))
             .asWarn()
             .with(PacketEventUtils.fieldCodexId(0))
             .with(PacketEventUtils.fieldCodexKey(1))
-            .withInt(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.intAt(2))
+            .withString(EventTrackerHelpers.WORLD_ID, EventTrackerHelpers.stringAt(2))
             .withString(EventTrackerHelpers.WORLD_NAME, EventTrackerHelpers.stringAt(3))
             .withBlockPos(EventTrackerHelpers.TILE_POS, (entry) -> (BlockPos) entry.getData()[4])
 
             // Console logging
-            .listen(new ResourceLocation(ICBMConstants.DOMAIN, "logger"),
+            .listen(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "logger"),
                 () -> ICBMClassic.logger().isDebugEnabled(),
                 (entry) -> {
                     final String DEBUG_INVALID_TILE = "Packet(%s, %s): invalid tile for packet.\n\tWorld(%s): '%s'\n\tPos: %sx %sy %sz";
@@ -68,23 +68,23 @@ public class PacketTileEvents {
 
             .build();
 
-    public static void onHandlingError(PacketCodex builder, World world, BlockPos pos, Exception e) {
+    public static void onHandlingError(PacketCodex builder, Level world, BlockPos pos, Exception e) {
         ICBMClassic.MAIN_TRACKER.post(ERROR_HANDLING, () -> new Object[]{
             PacketEventUtils.getPacketId(builder),
             PacketEventUtils.getPacketName(builder),
-            EventTrackerHelpers.getWorldId(world),
-            EventTrackerHelpers.getWorldName(world),
+            world != null ? world.dimension().location().toString() : "null",
+            world != null ? world.dimension().location().toString() : "null",
             pos,
             e
         });
     }
 
-    public static void onInvalidTile(PacketCodex builder, World world, BlockPos pos) {
+    public static void onInvalidTile(PacketCodex builder, Level world, BlockPos pos) {
         ICBMClassic.MAIN_TRACKER.post(INVALID_TILE, () -> new Object[]{
             PacketEventUtils.getPacketId(builder),
             PacketEventUtils.getPacketName(builder),
-            EventTrackerHelpers.getWorldId(world),
-            EventTrackerHelpers.getWorldName(world),
+            world != null ? world.dimension().location().toString() : "null",
+            world != null ? world.dimension().location().toString() : "null",
             pos
         });
     }

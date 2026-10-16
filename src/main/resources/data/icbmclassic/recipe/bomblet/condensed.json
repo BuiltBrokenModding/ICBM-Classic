@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "mx"
+  ],
+  "key": {
+    "m": {
+      "item": "icbmclassic:empty_bomblet"
+    },
+    "x": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:condensed"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosive_bomblet",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:condensed"
+    }
+  }
+}

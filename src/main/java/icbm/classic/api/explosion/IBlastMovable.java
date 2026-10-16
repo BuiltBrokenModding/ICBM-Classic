@@ -26,3 +26,4 @@ public interface IBlastMovable extends IBlast
      */
     void onPositionUpdate(double posX, double posY, double posZ);
 }
+// PORTED

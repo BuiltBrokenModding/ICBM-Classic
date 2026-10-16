@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "icbmclassic:block/explosive/antimatter",
+    "down": "icbmclassic:block/explosive/redmatter_bottom",
+    "up": "icbmclassic:block/explosive/antimatter",
+    "north": "icbmclassic:block/explosive/antimatter",
+    "east": "icbmclassic:block/explosive/antimatter",
+    "south": "icbmclassic:block/explosive/antimatter",
+    "west": "icbmclassic:block/explosive/antimatter"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "trt",
+    "rtr",
+    "trt"
+  ],
+  "key": {
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "t": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosives",
+    "count": 3,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:condensed"
+    }
+  }
+}

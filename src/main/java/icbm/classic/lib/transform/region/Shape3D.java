@@ -4,8 +4,8 @@ import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.rotation.EulerAngle;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
 
 /**
  * Created by Robin on 1/12/2015.
@@ -20,9 +20,9 @@ public abstract class Shape3D
         this.center = center;
     }
 
-    public Shape3D(NBTTagCompound nbt)
+    public Shape3D(CompoundTag nbt)
     {
-        this(new Pos(nbt.getCompoundTag(NBTConstants.CENTER)));
+        this(new Pos(nbt.getCompound(NBTConstants.CENTER)));
         angle = new EulerAngle(nbt.getDouble(NBTConstants.YAW), nbt.getDouble(NBTConstants.PITCH), nbt.getDouble(NBTConstants.ROLL));
     }
 
@@ -95,3 +95,4 @@ public abstract class Shape3D
         return isWithin(vec.getX(), vec.getY(), vec.getZ());
     }
 }
+// PORTED

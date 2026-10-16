@@ -1,7 +1,7 @@
 package icbm.classic.config;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 2/10/2019.

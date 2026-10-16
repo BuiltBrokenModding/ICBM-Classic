@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "icbmclassic:block/explosive/breaching_top",
+    "down": "icbmclassic:block/explosive/bottom_2",
+    "up": "icbmclassic:block/explosive/breaching_top",
+    "north": "icbmclassic:block/explosive/breaching_side",
+    "east": "icbmclassic:block/explosive/breaching_side",
+    "south": "icbmclassic:block/explosive/breaching_side",
+    "west": "icbmclassic:block/explosive/breaching_side"
+  },
+  "icbmclassic:rotatable": true
+}

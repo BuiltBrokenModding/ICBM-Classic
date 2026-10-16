@@ -3,7 +3,7 @@ package icbm.classic.lib.transform.region;
 import com.builtbroken.jlib.data.vector.IPos2D;
 import com.builtbroken.jlib.data.vector.IPos3D;
 import icbm.classic.lib.transform.vector.Point;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Created by Robin on 1/12/2015.
@@ -53,10 +53,11 @@ public abstract class Shape2D
     }
 
     /** Checks if the point is inside the shape */
-    boolean isWithin(Vec3d vec)
+    boolean isWithin(Vec3 vec)
     {
         return isWithin(vec.x, vec.y, vec.z);
     }
 
 
 }
+// PORTED

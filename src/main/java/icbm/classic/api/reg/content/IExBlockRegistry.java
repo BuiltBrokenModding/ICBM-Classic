@@ -1,7 +1,7 @@
 package icbm.classic.api.reg.content;
 
 import icbm.classic.api.data.BlockActivateFunction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @deprecated being removed in 1.13
@@ -20,3 +20,4 @@ public interface IExBlockRegistry extends IExplosiveContentRegistry, IExFuseBloc
      */
     void setActivationListener(ResourceLocation exName, BlockActivateFunction function);
 }
+// PORTED

@@ -1,7 +1,7 @@
 package icbm.classic.api.caps;
 
 import icbm.classic.api.ICBMClassicAPI;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Capability for gaining access to the missile.
@@ -31,7 +31,7 @@ public interface IMissileHolder //TODO refactor to be a list
      * @return true if missile
      */
     default boolean hasMissile() {
-        return getMissileStack().hasCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+        return getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY) != null;
     }
 
     /**
@@ -61,3 +61,4 @@ public interface IMissileHolder //TODO refactor to be a list
      */
     boolean canSupportMissile(ItemStack stack);
 }
+// PORTED

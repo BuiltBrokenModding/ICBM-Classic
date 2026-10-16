@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:elite_circuit"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "wcw",
+    "ibi",
+    "wcw"
+  ],
+  "key": {
+    "w": {
+      "tag": "c:wires/gold"
+    },
+    "i": {
+      "tag": "c:ingots/gold"
+    },
+    "c": {
+      "item": "minecraft:quartz"
+    },
+    "b": {
+      "tag": "c:circuits/basic"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:elite_circuit",
+    "count": 1
+  }
+}

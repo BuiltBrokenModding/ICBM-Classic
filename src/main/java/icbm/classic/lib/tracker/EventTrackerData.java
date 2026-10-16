@@ -2,12 +2,12 @@ package icbm.classic.lib.tracker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -36,12 +36,12 @@ final class EventTrackerData {
 
         // Minecraft
         VALID_OBJECTS.add(BlockPos.class);
-        VALID_OBJECTS.add(Vec3d.class);
+        VALID_OBJECTS.add(Vec3.class);
         VALID_OBJECTS.add(ResourceLocation.class);
 
         INVALID_OBJECTS.add(Entity.class);
-        INVALID_OBJECTS.add(World.class);
-        INVALID_OBJECTS.add(NBTBase.class);
+        INVALID_OBJECTS.add(Level.class);
+        INVALID_OBJECTS.add(Tag.class);
 
         return this;
     }
@@ -138,3 +138,4 @@ final class EventTrackerData {
         }
     }
 }
+// PORTED

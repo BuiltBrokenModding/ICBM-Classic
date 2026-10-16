@@ -1,22 +1,23 @@
 package icbm.classic.lib.network.lambda.tile;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.PacketEvents;
 import icbm.classic.lib.network.lambda.PacketCodex;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
 import icbm.classic.lib.tracker.EventTrackerHelpers;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import icbm.classic.prefab.gui.ContainerBase;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,103 +27,137 @@ import java.util.function.Consumer;
 public class PacketLambdaTile<TARGET> implements IPacket<PacketLambdaTile<TARGET>> {
 
     private PacketCodex codex;
-    private Integer dimensionId;
+    private ResourceKey<Level> dimensionId;
     private BlockPos pos;
-    private List<Consumer<ByteBuf>> writers;
+    private List<Consumer<RegistryFriendlyByteBuf>> writers;
     private List<Consumer<TARGET>> setters;
 
-    public PacketLambdaTile(PacketCodexTile codex, TileEntity tile, TARGET target) {
-        this(codex, tile.getWorld(), tile.getPos(), target);
+    public PacketLambdaTile(PacketCodexTile codex, BlockEntity tile, TARGET target) {
+        this(codex, tile.getLevel(), tile.getBlockPos(), target);
     }
 
-    public PacketLambdaTile(PacketCodexTile codex, World dimensionId, BlockPos pos, TARGET target) {
+    public PacketLambdaTile(PacketCodexTile codex, Level dimensionId, BlockPos pos, TARGET target) {
       this(codex, dimensionId, pos.getX(), pos.getY(), pos.getZ(), target);
     }
 
-    public PacketLambdaTile(PacketCodexTile codex, World dimensionId, int x, int y, int z, TARGET target) {
+    public PacketLambdaTile(PacketCodexTile codex, Level dimensionId, int x, int y, int z, TARGET target) {
         this.codex = codex;
 
-        setDimensionId(dimensionId.provider.getDimension());
+        setDimensionId(dimensionId.dimension());
         setPos(new BlockPos(x, y, z));
 
         writers = codex.encodeAsWriters(target);
     }
 
     @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+    public void encodeInto(RegistryFriendlyByteBuf buffer) {
         // Write general data
         buffer.writeInt(codex.getId());
-        buffer.writeInt(dimensionId);
-        buffer.writeInt(pos.getX());
-        buffer.writeInt(pos.getY());
-        buffer.writeInt(pos.getZ());
+        buffer.writeResourceKey(dimensionId);
+        buffer.writeBlockPos(pos);
 
         // Write data from builder
         writers.forEach(c -> c.accept(buffer));
     }
 
     @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+    public void decodeInto(RegistryFriendlyByteBuf buffer) {
 
         // Read general data
-        codex = PacketCodexReg.get(buffer.readInt());
-        dimensionId = buffer.readInt();
-        pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
+        final int codexId = buffer.readInt();
+        codex = PacketCodexReg.get(codexId);
+        if(codex == null) {
+            // PORT: 1.12 caught decode errors in the netty handler, in 1.21 an exception while decoding drops the connection
+            ICBMClassic.logger().error(String.format("PacketTile: Failed to locate codex(%s)", codexId));
+            // Skip remaining data so the network layer doesn't error on unread bytes
+            buffer.skipBytes(buffer.readableBytes());
+            return;
+        }
+        dimensionId = buffer.readResourceKey(Registries.DIMENSION);
+        pos = buffer.readBlockPos();
 
         // Read data for builder
         setters = codex.decodeAsSetters(buffer);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void handleClientSide(final Minecraft minecraft, final EntityPlayer player)
+    public void handleClientSide(final Minecraft minecraft, final Player player)
     {
-        final int playerDim = player.world.provider.getDimension();
+        if(codex == null || setters == null) {
+            return;
+        }
+        final ResourceKey<Level> playerDim = player.level().dimension();
 
         // Normal, player may have changed dim between network calls
-        if (playerDim != getDimensionId()) {
+        if (!playerDim.equals(getDimensionId())) {
             PacketEvents.onWrongWorld(codex, EventTrackerHelpers.SIDE_CLIENT, getDimensionId(), playerDim);
             return;
         }
 
-        final World world = player.world;
-
-        minecraft.addScheduledTask(() -> loadDataIntoTile(world, player));
+        loadDataIntoTile(player.level(), player, false);
     }
 
     @Override
-    public void handleServerSide(EntityPlayer player)
+    public void handleServerSide(Player player)
     {
-        final int playerDim = player.world.provider.getDimension();
+        if(codex == null || setters == null) {
+            return;
+        }
+
+        // PORT: 1.12 never checked the codex direction, so clients could push server to client data (energy, missile
+        //  stacks) into tiles. Only codexes marked fromClient() are accepted from players.
+        if(!codex.allowServer()) {
+            ICBMClassic.logger().warn(String.format("PacketTile: player '%s' sent server to client only codex %s for %s, ignoring",
+                player.getName().getString(), codex, pos));
+            return;
+        }
+
+        final ResourceKey<Level> playerDim = player.level().dimension();
 
         // Normal, player may have changed dim between network calls
-        if (playerDim != getDimensionId()) {
+        if (!playerDim.equals(getDimensionId())) {
             PacketEvents.onWrongWorld(codex, EventTrackerHelpers.SIDE_SERVER, getDimensionId(), playerDim);
             return;
         }
 
         // Issue, should never happen
-        if(!(player.world instanceof WorldServer)) {
+        if(!(player.level() instanceof ServerLevel)) {
             PacketEvents.onNotServerWorld(codex, getDimensionId());
             return;
         }
 
-        final WorldServer world = (WorldServer) player.world;
-        world.addScheduledTask(() -> loadDataIntoTile(world, player));
+        loadDataIntoTile(player.level(), player, true);
     }
 
-    private void loadDataIntoTile(World world, EntityPlayer player) {
+    /**
+     * Checks that the player sending a packet to the server is using the tile's GUI. Every client to server tile
+     * codex is sent from a machine GUI, and the open menu also enforces the 8 block use range.
+     */
+    private static boolean isUsingTile(Player player, BlockEntity tile) {
+        return player.containerMenu instanceof ContainerBase<?> menu
+            && menu.getHost() == tile
+            && menu.stillValid(player);
+    }
+
+    private void loadDataIntoTile(Level world, Player player, boolean fromClient) {
 
         // Area is no longer loaded, this is normal in most cases
-        if(!world.isBlockLoaded(pos)) {
+        if(!world.isLoaded(pos)) {
             return;
         }
 
         try {
-            final TileEntity tile = player.world.getTileEntity(pos);
+            final BlockEntity tile = world.getBlockEntity(pos);
 
             // Could be normal, as data changes in main thread... especially given latency
             if(tile == null || !codex.isValid(tile)) {
+                PacketTileEvents.onInvalidTile(codex, world, pos);
+                return;
+            }
+
+            // PORT: 1.12 accepted packets for any loaded tile in the dimension at any distance, so any player could
+            //  fire or reconfigure machines remotely. Require the sender to have this tile's GUI open.
+            if(fromClient && !isUsingTile(player, tile)) {
                 PacketTileEvents.onInvalidTile(codex, world, pos);
                 return;
             }

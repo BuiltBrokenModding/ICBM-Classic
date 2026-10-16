@@ -1,7 +1,7 @@
 package icbm.classic.prefab.inventory;
 
 import lombok.Getter;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -57,3 +57,4 @@ public class InventorySlot {
         return this;
     }
 }
+// PORTED

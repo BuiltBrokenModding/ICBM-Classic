@@ -3,7 +3,7 @@ package icbm.classic.content.blast.redmatter.caps;
 import icbm.classic.api.explosion.IBlast;
 import icbm.classic.api.explosion.redmatter.IBlastVelocity;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
@@ -51,7 +51,7 @@ public class CapRedmatterPull implements IBlastVelocity
         final double motionZ = vectorZ * sizeScale;
 
         //Apply the pull towards the other redmatter
-        redmatter.addVelocity(motionX, motionY, motionZ);
+        redmatter.push(motionX, motionY, motionZ);
     }
 
     private double calculatePullPower(EntityRedmatter otherRedmatter)
@@ -65,3 +65,4 @@ public class CapRedmatterPull implements IBlastVelocity
         return thisSize / combinedSize;
     }
 }
+// PORTED

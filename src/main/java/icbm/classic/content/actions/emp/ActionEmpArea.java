@@ -1,6 +1,7 @@
 package icbm.classic.content.actions.emp;
 
 import icbm.classic.api.ICBMClassicHelpers;
+import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.cause.IActionSource;
 import icbm.classic.api.actions.data.ActionField;
@@ -21,17 +22,16 @@ import icbm.classic.lib.energy.system.IEnergySystem;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -48,12 +48,12 @@ public class ActionEmpArea extends ActionBase {
     @Accessors(chain = true)
     private int size = 1;
 
-    public ActionEmpArea(World world, Vec3d vec3d, IActionSource source, IActionData actionData) {
+    public ActionEmpArea(Level world, Vec3 vec3d, IActionSource source, IActionData actionData) {
         super(world, vec3d, source, actionData);
     }
 
     @Override
-    public <VALUE, TAG extends NBTBase> VALUE getValue(ActionField<VALUE, TAG> key) {
+    public <VALUE, TAG extends Tag> VALUE getValue(ActionField<VALUE, TAG> key) {
         if (key == ActionFields.AREA_SIZE) {
             return (VALUE) ActionFields.AREA_SIZE.cast((float) size);
         }
@@ -66,21 +66,21 @@ public class ActionEmpArea extends ActionBase {
     }
 
     @Override
-    public <VALUE, TAG extends NBTBase> boolean hasField(ActionField<VALUE, TAG> key) {
+    public <VALUE, TAG extends Tag> boolean hasField(ActionField<VALUE, TAG> key) {
         return key == ActionFields.AREA_SIZE;
     }
 
     @Nonnull
     @Override
     public IActionStatus doAction() {
-        if (!getWorld().isRemote) {
+        if (!getWorld().isClientSide()) {
             this.empTiles();
             this.empEntities();
 
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 1, 3);
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 3, 3);
             //TODO VEProviderShockWave.spawnEffect(world(), position.x(), position.y(), position.z(), 0, 0, 0, 0, 0, 255, 5, 3);
-            ICBMSounds.EMP.play(getWorld(), getPosition().x, getPosition().y, getPosition().z, 4.0F, (1.0F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.2F) * 0.7F, true);
+            ICBMSounds.EMP.play(getWorld(), getPosition().x, getPosition().y, getPosition().z, 4.0F, (1.0F + (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * 0.2F) * 0.7F, true);
         }
         return ActionResponses.COMPLETED;
     }
@@ -94,10 +94,10 @@ public class ActionEmpArea extends ActionBase {
         for (int x = -this.size; x < this.size; x++) {
             for (int y = -this.size; y < this.size; y++) {
                 for (int z = -this.size; z < this.size; z++) {
-                    currentPos.setPos(this.getBlockPos().getX() + x, this.getBlockPos().getY() + y, this.getBlockPos().getZ() + z);
+                    currentPos.set(this.getBlockPos().getX() + x, this.getBlockPos().getY() + y, this.getBlockPos().getZ() + z);
 
                     //Apply action on block if loaded
-                    if (getWorld().isBlockLoaded(currentPos)) {
+                    if (getWorld().isLoaded(currentPos)) {
                         this.empTile(currentPos);
                     }
                 }
@@ -108,18 +108,19 @@ public class ActionEmpArea extends ActionBase {
     protected void empTile(BlockPos blockPos) {
         //Generate some effects
         if (blockPos.getY() == this.getBlockPos().getY()) {
-            getWorld().spawnParticle(EnumParticleTypes.SMOKE_LARGE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
+            // 1.12 World#spawnParticle on the server did nothing, kept as is
+            getWorld().addParticle(ParticleTypes.LARGE_SMOKE, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5, 0, 0, 0);
         }
 
-        IBlockState iBlockState = getWorld().getBlockState(blockPos);
+        BlockState iBlockState = getWorld().getBlockState(blockPos);
         float powerEntity = 1f;
 
         //Fire event to allow canceling action on entity
-        if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState))) {
+        if (!NeoForge.EVENT_BUS.post(new EmpEvent.BlockPre(this, getWorld(), blockPos, iBlockState)).isCanceled()) {
 
             // TODO allow scaling replacement by emp energy key=value@nbt({"energy":@energy(min, max)}) with @energy being a replacement target
             // TODO allow gating replacement by emp energy @if(energy>30, replacement)
-            final IBlockState blockState = getWorld().getBlockState(blockPos);
+            final BlockState blockState = getWorld().getBlockState(blockPos);
             final BlockReplacementData replacement = EmpHandler.empBlockSwaps.getValue(blockState);
             if(replacement != null) {
                 replacement.apply(getWorld(), blockPos);
@@ -129,14 +130,15 @@ public class ActionEmpArea extends ActionBase {
             // TODO Oct 15, 2024 - run action handler per block
             //                     add mod compatability for common mods using NBT editing and reflection
 
-            final TileEntity tileEntity = getWorld().getTileEntity(blockPos);
+            final BlockEntity tileEntity = getWorld().getBlockEntity(blockPos);
             if (tileEntity != null) {
                 boolean doInventory = true;
-                if (tileEntity.hasCapability(CapabilityEMP.EMP, null)) {
-                    IEMPReceiver receiver = tileEntity.getCapability(CapabilityEMP.EMP, null);
+                final IEMPReceiver tileReceiver = getWorld().getCapability(ICBMClassicAPI.EMP_BLOCK_CAPABILITY, blockPos, null);
+                if (tileReceiver != null) {
+                    IEMPReceiver receiver = tileReceiver;
                     if (receiver != null) {
                         powerEntity = empEntity(tileEntity, powerEntity, receiver);
-                        doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
+                        doInventory = receiver.shouldEmpSubObjects(getWorld(), tileEntity.getBlockPos().getX(), tileEntity.getBlockPos().getY(), tileEntity.getBlockPos().getZ());
                     }
                 } else if (ConfigBlast.emp.DRAIN_ENERGY_TILES) {
                     IEnergySystem energySystem = EnergySystem.getSystem(tileEntity, null);
@@ -147,7 +149,7 @@ public class ActionEmpArea extends ActionBase {
                     }
                 }
 
-                if (doInventory && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+                if (doInventory && CapabilityEmpInventory.getItemHandler(tileEntity) != null) {
                     powerEntity = empEntity(tileEntity, powerEntity, new CapabilityEmpInventory.TileInv(tileEntity));
                 }
             }
@@ -155,7 +157,7 @@ public class ActionEmpArea extends ActionBase {
         }
 
         //Fire post event to allow hooking EMP action
-        MinecraftForge.EVENT_BUS.post(new EmpEvent.BlockPost(this, getWorld(), blockPos, iBlockState));
+        NeoForge.EVENT_BUS.post(new EmpEvent.BlockPost(this, getWorld(), blockPos, iBlockState));
     }
 
     protected void empEntities() {
@@ -163,24 +165,25 @@ public class ActionEmpArea extends ActionBase {
             return;
         }
         //Calculate bounds
-        AxisAlignedBB bounds = new AxisAlignedBB(
+        AABB bounds = new AABB(
             getPos().getX() - this.size, getPos().getY() - this.size, getPos().getZ() - this.size,
             getPos().getX() + this.size, getPos().getY() + this.size, getPos().getZ() + this.size);
 
         //Get entities in bounds
-        List<Entity> entities = getWorld().getEntitiesWithinAABB(Entity.class, bounds);
+        List<Entity> entities = getWorld().getEntitiesOfClass(Entity.class, bounds);
 
         //Loop entities to apply effects
         for (Entity entity : entities) {
             float powerEntity = 1f;
             //Fire event to allow canceling action on entity
-            if (!MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity))) {
+            if (!NeoForge.EVENT_BUS.post(new EmpEvent.EntityPre(this, entity)).isCanceled()) {
                 boolean doInventory = true;
-                if (entity.hasCapability(CapabilityEMP.EMP, null)) {
-                    IEMPReceiver receiver = entity.getCapability(CapabilityEMP.EMP, null);
+                final IEMPReceiver entityReceiver = entity.getCapability(ICBMClassicAPI.EMP_ENTITY_CAPABILITY);
+                if (entityReceiver != null) {
+                    IEMPReceiver receiver = entityReceiver;
                     if (receiver != null) {
                         powerEntity = empEntity(entity, powerEntity, receiver);
-                        doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.posX, entity.posY, entity.posZ);
+                        doInventory = receiver.shouldEmpSubObjects(getWorld(), entity.getX(), entity.getY(), entity.getZ());
                     }
                 } else if (ConfigBlast.emp.DRAIN_ENERGY_ENTITY) {
                     IEnergySystem energySystem = EnergySystem.getSystem(entity, null);
@@ -191,31 +194,32 @@ public class ActionEmpArea extends ActionBase {
                     }
                 }
 
-                if (doInventory && entity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+                if (doInventory && CapabilityEmpInventory.getItemHandler(entity) != null) {
                     powerEntity = empEntity(entity, powerEntity, new CapabilityEmpInventory.EntityInv(entity));
                 }
 
                 //Fire post event to allow hooking EMP action
-                MinecraftForge.EVENT_BUS.post(new EmpEvent.EntityPost(this, entity));
+                NeoForge.EVENT_BUS.post(new EmpEvent.EntityPost(this, entity));
             }
         }
     }
 
     protected float empEntity(Entity entity, float powerEntity, IEMPReceiver receiver) {
         if (receiver != null) {
-            powerEntity = receiver.applyEmpAction(getWorld(), entity.posX, entity.posY, entity.posZ, this, powerEntity, true);
+            powerEntity = receiver.applyEmpAction(getWorld(), entity.getX(), entity.getY(), entity.getZ(), this, powerEntity, true);
             //TODO spawn effects on entity if items were effected
             //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
         }
         return powerEntity;
     }
 
-    protected float empEntity(TileEntity entity, float powerEntity, IEMPReceiver receiver) {
+    protected float empEntity(BlockEntity entity, float powerEntity, IEMPReceiver receiver) {
         if (receiver != null) {
-            powerEntity = receiver.applyEmpAction(getWorld(), entity.getPos().getX(), entity.getPos().getY(), entity.getPos().getZ(), this, powerEntity, true);
+            powerEntity = receiver.applyEmpAction(getWorld(), entity.getBlockPos().getX(), entity.getBlockPos().getY(), entity.getBlockPos().getZ(), this, powerEntity, true);
             //TODO spawn effects on entity if items were effected
             //TODO ICBMClassic.proxy.spawnShock(this.oldWorld(), this.position, new Pos(entity), 20);
         }
         return powerEntity;
     }
 }
+// PORTED

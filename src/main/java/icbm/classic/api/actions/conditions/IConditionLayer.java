@@ -36,3 +36,4 @@ public interface IConditionLayer extends ICondition {
         getConditions().forEach(ICondition::reset);
     }
 }
+// PORTED

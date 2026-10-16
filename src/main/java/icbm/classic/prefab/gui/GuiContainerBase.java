@@ -3,81 +3,91 @@ package icbm.classic.prefab.gui;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.LanguageUtility;
-import icbm.classic.prefab.gui.button.GuiButtonBase;
 import icbm.classic.prefab.gui.tooltip.IToolTip;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.inventory.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.commons.lang3.StringUtils;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public abstract class GuiContainerBase extends GuiContainer
+/**
+ * Base screen for ICBM machines. Client only.
+ * <p>
+ * PORT: 1.12 GuiContainer -> AbstractContainerScreen. Subclasses override {@link #init()} instead of
+ * initGui, {@link #renderLabels(GuiGraphics, int, int)} (foreground, translated to the gui corner) instead of
+ * drawGuiContainerForegroundLayer and call super last so tooltips render above.
+ */
+public abstract class GuiContainerBase<T extends AbstractContainerMenu> extends AbstractContainerScreen<T>
 {
-    public static final ResourceLocation COMPONENTS_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
+    public static final ResourceLocation COMPONENTS_TEXTURE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, ICBMConstants.GUI_DIRECTORY + "gui_components.png");
 
     public String currentTooltipText = "";
 
-    protected ArrayList<IGuiComponent> components = new ArrayList();
+    protected ArrayList<IGuiComponent> components = new ArrayList<>();
 
+    /** Lines to render as tooltip after everything else has been drawn this frame */
+    private List<String> pendingTooltip = null;
 
     /** Debug toogle to render text for the ID and inventory ID for a slot */
     public boolean renderSlotDebugIDs = false;
 
-    public GuiContainerBase(Container container)
+    public GuiContainerBase(T container, Inventory playerInventory, Component title)
     {
-        super(container);
+        super(container, playerInventory, title);
     }
 
     public abstract ResourceLocation getBackground();
 
     @Override
-    public void initGui()
+    protected void init()
     {
-        super.initGui();
-        this.buttonList.clear();
+        super.init();
         this.components.clear();
     }
 
     /**
      * Adds a button to the GUI
-     *
-     * @param button
-     * @param <E>
-     * @return
      */
     @Deprecated
-    protected <E extends GuiButton> E addButton(E button)
+    protected <E extends AbstractWidget> E addButton(E button)
     {
-        if(button instanceof IGuiComponent) {
+        if (button instanceof IGuiComponent)
+        {
             addComponent((IGuiComponent) button);
         }
-        else {
-            buttonList.add(button);
+        else
+        {
+            addRenderableWidget(button);
         }
         return button;
     }
 
-    protected void drawString(String str, int x, int y, int color)
+    protected void drawString(GuiGraphics graphics, String str, int x, int y, int color)
     {
-        Minecraft.getMinecraft().fontRenderer.drawString(str, x, y, color);
+        graphics.drawString(Minecraft.getInstance().font, str, x, y, color, false);
     }
 
-    protected void drawStringCentered(String str, int x, int y, int color)
+    protected void drawStringCentered(GuiGraphics graphics, String str, int x, int y, int color)
     {
-        drawString(str, x - (Minecraft.getMinecraft().fontRenderer.getStringWidth(str) / 2), y, color);
+        drawString(graphics, str, x - (Minecraft.getInstance().font.width(str) / 2), y, color);
     }
 
-    protected <T extends IGuiComponent> T addComponent(T field) {
-        if(field instanceof GuiButton) {
-            buttonList.add((GuiButton) field);
+    protected <C extends IGuiComponent> C addComponent(C field)
+    {
+        if (field instanceof AbstractWidget)
+        {
+            addRenderableWidget((AbstractWidget) field);
         }
         components.add(field);
         field.onAddedToHost(this);
@@ -85,37 +95,38 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    public void onGuiClosed()
+    protected void containerTick()
     {
-        Keyboard.enableRepeatEvents(false);
-        super.onGuiClosed();
-    }
-
-    @Override
-    public void updateScreen() {
-        super.updateScreen();
+        super.containerTick();
         components.forEach(IGuiComponent::onUpdate);
     }
 
+    /**
+     * Foreground layer, pose is translated to (leftPos, topPos). Subclasses draw their text then call super.
+     */
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY)
     {
-        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-
+        // PORT: vanilla title/inventory labels are not drawn, 1.12 GuiContainer drew nothing by default
         components.forEach(field -> {
 
             // Draw text
-            field.drawForegroundLayer(mouseX, mouseY);
+            field.drawForegroundLayer(graphics, mouseX, mouseY);
 
             // Detect if we need to display error feedback for the box
-            if(field instanceof IToolTip && ((IToolTip) field).isWithin(mouseX, mouseY)) {
-                final ITextComponent tooltip = ((IToolTip) field).getTooltip();
-                if(tooltip != null) {
-                    try {
+            if (field instanceof IToolTip && ((IToolTip) field).isWithin(mouseX, mouseY))
+            {
+                final Component tooltip = ((IToolTip) field).getToolTip();
+                if (tooltip != null)
+                {
+                    try
+                    {
                         this.currentTooltipText = LanguageUtility.buildToolTipString(tooltip);
                     }
-                    catch (Exception e) {
-                        if(ICBMClassic.runningAsDev) {
+                    catch (Exception e)
+                    {
+                        if (ICBMClassic.runningAsDev)
+                        {
                             ICBMClassic.logger().error("Failed to format text for display", e);
                         }
                     }
@@ -123,11 +134,10 @@ public abstract class GuiContainerBase extends GuiContainer
             }
         });
 
-        // Render current tooltip if not empty
+        // Queue current tooltip if not empty, rendered last in render() so it is above widgets
         if (!StringUtils.isEmpty(this.currentTooltipText))
         {
-            java.util.List<String> lines = LanguageUtility.splitByLine(currentTooltipText);
-            this.drawTooltip(mouseX - this.guiLeft, mouseY - this.guiTop, lines);
+            pendingTooltip = LanguageUtility.splitByLine(currentTooltipText);
         }
 
         // Reset tooltip for next render tick
@@ -135,61 +145,66 @@ public abstract class GuiContainerBase extends GuiContainer
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
     {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        renderHoveredToolTip(mouseX, mouseY); //TODO consider render tooltips in this step
-        components.forEach(component -> component.draw(mouseX, mouseY, partialTicks));
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        this.renderTooltip(graphics, mouseX, mouseY); //TODO consider render tooltips in this step
+        components.forEach(component -> component.draw(graphics, mouseX, mouseY, partialTicks));
+
+        if (pendingTooltip != null)
+        {
+            drawTooltip(graphics, mouseX, mouseY, pendingTooltip);
+            pendingTooltip = null;
+        }
     }
 
     @Override
-    protected void keyTyped(char c, int id) throws IOException
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
         //Key for debug render
-        if (id == Keyboard.KEY_INSERT)
+        if (keyCode == GLFW.GLFW_KEY_INSERT)
         {
             renderSlotDebugIDs = !renderSlotDebugIDs;
+            return true;
         }
-        else
+        if (components.stream().anyMatch(component -> component.onKeyTyped(keyCode, scanCode, modifiers)))
         {
-            boolean f = components.stream().anyMatch(component -> component.onKeyTyped(c, id));
-            if (!f)
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY)
+    {
+        graphics.blit(this.getBackground(), this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        components.forEach(component -> component.drawBackgroundLayer(graphics, partialTicks, mouseX, mouseY));
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
+    {
+        // PORT: 1.12 text fields lost focus when clicking anywhere else, 1.21 widgets keep focus
+        for (IGuiComponent component : components)
+        {
+            if (component instanceof EditBox && ((EditBox) component).isFocused() && !((EditBox) component).isMouseOver(mouseX, mouseY))
             {
-                super.keyTyped(c, id);
+                ((EditBox) component).setFocused(false);
+                if (getFocused() == component)
+                {
+                    setFocused(null);
+                }
             }
         }
-    }
 
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
-    {
-        drawDefaultBackground();
-
-        this.mc.renderEngine.bindTexture(this.getBackground());
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-
-        components.forEach(component -> component.drawBackgroundLayer(partialTicks, mouseX, mouseY));
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+        final boolean result = super.mouseClicked(mouseX, mouseY, mouseButton);
         components.forEach(component -> {
-            if(!(component instanceof GuiButton)) {
-                component.onMouseClick(mouseX, mouseY, mouseButton);
+            if (!(component instanceof AbstractWidget))
+            {
+                component.onMouseClick((int) mouseX, (int) mouseY, mouseButton);
             }
         });
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if(button instanceof GuiButtonBase) {
-            ((GuiButtonBase) button).triggerAction();
-        }
+        return result;
     }
 
     /**
@@ -197,6 +212,7 @@ public abstract class GuiContainerBase extends GuiContainer
      * <p>
      * This works by duplicating the middle (3, width - 3) of the rectangle
      *
+     * @param texture  - texture to draw from
      * @param x        - render pos
      * @param y        - render pos
      * @param u        - x pos of the texture in it's texture sheet
@@ -205,21 +221,21 @@ public abstract class GuiContainerBase extends GuiContainer
      * @param height   - height of the texture
      * @param newWidth - new width to render the rectangle, minimal size of 6
      */
-    protected void drawRectWithScaledWidth(int x, int y, int u, int v, int width, int height, int newWidth)
+    protected void drawRectWithScaledWidth(GuiGraphics graphics, ResourceLocation texture, int x, int y, int u, int v, int width, int height, int newWidth)
     {
         if (width > 0)
         {
             //If both widths are the same redirect to original call
             if (newWidth <= 0 || width == newWidth)
             {
-                drawTexturedModalRect(x, y, u, v, width, height);
+                graphics.blit(texture, x, y, u, v, width, height);
             }
 
             //Size of the middle section of the image
             final int midWidth = width - 6;
 
             //Start cap of image rect
-            drawTexturedModalRect(x, y, u, v, 3, height);
+            graphics.blit(texture, x, y, u, v, 3, height);
             x += 3;
 
             //only render middle if it is larger than 6
@@ -229,7 +245,7 @@ public abstract class GuiContainerBase extends GuiContainer
                 int loops = newWidth / width;
                 while (loops > 0)
                 {
-                    drawTexturedModalRect(x, y, u + 3, v, midWidth, height);
+                    graphics.blit(texture, x, y, u + 3, v, midWidth, height);
                     x += midWidth;
                     loops -= 1;
                 }
@@ -238,7 +254,7 @@ public abstract class GuiContainerBase extends GuiContainer
                 loops = newWidth % width;
                 if (loops != 0)
                 {
-                    drawTexturedModalRect(x, y, u + 3, v, loops, height);
+                    graphics.blit(texture, x, y, u + 3, v, loops, height);
                     x += loops;
                 }
             }
@@ -246,73 +262,23 @@ public abstract class GuiContainerBase extends GuiContainer
             if (width > 3)
             {
                 //End cap of image rect
-                drawTexturedModalRect(x, y, u + width - 3, v, 3, height);
+                graphics.blit(texture, x, y, u + width - 3, v, 3, height);
             }
         }
     }
 
-    //TODO update and docs
-    public void drawTooltip(int x, int y, Collection<String> toolTips)
+    /**
+     * Draws a tooltip at the screen position
+     * <p>
+     * PORT: 1.12 drew a custom gradient box, now uses the vanilla tooltip renderer
+     */
+    public void drawTooltip(GuiGraphics graphics, int x, int y, Collection<String> toolTips)
     {
-        if (toolTips != null)
+        if (toolTips != null && !toolTips.isEmpty())
         {
-            GlStateManager.disableRescaleNormal();
-            GlStateManager.disableDepth();
-
-            int textMaxWidth = 0;
-
-            // Render all my lines
-            for (String line : toolTips)
-            {
-                final int lineWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(line);
-
-                // Tack longest line
-                if (lineWidth > textMaxWidth)
-                {
-                    textMaxWidth = lineWidth;
-                }
-            }
-
-            int backgroundX = x + 12;
-            int backgroundY = y - 12;
-
-            int var9 = 8;
-
-            if (toolTips.size() > 1)
-            {
-                var9 += 2 + (toolTips.size()- 1) * 10;
-            }
-
-            if (this.guiTop + backgroundY + var9 + 6 > this.height)
-            {
-                backgroundY = this.height - var9 - this.guiTop - 6;
-            }
-
-            this.zLevel = 300;
-            int var10 = -267386864;
-            this.drawGradientRect(backgroundX - 3, backgroundY - 4, backgroundX + textMaxWidth + 3, backgroundY - 3, var10, var10);
-            this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 4, var10, var10);
-            this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var10, var10);
-            this.drawGradientRect(backgroundX - 4, backgroundY - 3, backgroundX - 3, backgroundY + var9 + 3, var10, var10);
-            this.drawGradientRect(backgroundX + textMaxWidth + 3, backgroundY - 3, backgroundX + textMaxWidth + 4, backgroundY + var9 + 3, var10, var10);
-            int var11 = 1347420415;
-            int var12 = (var11 & 16711422) >> 1 | var11 & -16777216;
-            this.drawGradientRect(backgroundX - 3, backgroundY - 3 + 1, backgroundX - 3 + 1, backgroundY + var9 + 3 - 1, var11, var12);
-            this.drawGradientRect(backgroundX + textMaxWidth + 2, backgroundY - 3 + 1, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3 - 1, var11, var12);
-            this.drawGradientRect(backgroundX - 3, backgroundY - 3, backgroundX + textMaxWidth + 3, backgroundY - 3 + 1, var11, var11);
-            this.drawGradientRect(backgroundX - 3, backgroundY + var9 + 2, backgroundX + textMaxWidth + 3, backgroundY + var9 + 3, var12, var12);
-
-            // Draw text shadows
-            for (String line : toolTips)
-            {
-                Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line, backgroundX, backgroundY, -1);
-                backgroundY += 10;
-            }
-
-            this.zLevel = 0;
-
-            GlStateManager.enableDepth();
-            GlStateManager.enableRescaleNormal();
+            final List<Component> lines = toolTips.stream().map(Component::literal).collect(Collectors.toList());
+            graphics.renderComponentTooltip(Minecraft.getInstance().font, lines, x, y);
         }
     }
 }
+// PORTED

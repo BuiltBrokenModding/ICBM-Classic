@@ -2,13 +2,12 @@ package icbm.classic.content.entity.flyingblock;
 
 import icbm.classic.config.ConfigFlyingBlocks;
 import icbm.classic.config.util.BlockStateConfigListOld;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -34,12 +33,11 @@ public class FlyingBlock {
      * @param state to check
      * @return true if allowed
      */
-    public static boolean isAllowed(IBlockState state) {
+    public static boolean isAllowed(BlockState state) {
         if(!ConfigFlyingBlocks.enabled
             || state == null
-            || state.getBlock().getMaterial(state) == Material.FIRE
-            || state.getBlock() instanceof IFluidBlock
-            || state.getBlock() instanceof BlockLiquid
+            || state.getBlock() instanceof BaseFireBlock // 1.12 Material.FIRE
+            || state.getBlock() instanceof LiquidBlock // 1.12 also checked Forge IFluidBlock
         ) {
             return false;
         }
@@ -59,7 +57,7 @@ public class FlyingBlock {
      * @param state to mutate
      * @return new state to use
      */
-    public static IBlockState applyMutations(IBlockState state) {
+    public static BlockState applyMutations(BlockState state) {
         return state;
     }
 
@@ -72,20 +70,20 @@ public class FlyingBlock {
      * @param pos   to set
      * @return true if spawned
      */
-    public static boolean spawnFlyingBlock(World world, BlockPos pos,
+    public static boolean spawnFlyingBlock(Level world, BlockPos pos,
                                            Consumer<EntityFlyingBlock> preSpawnCallback,
                                            Consumer<EntityFlyingBlock> postSpawnCallback) {
-        final IBlockState blockState = world.getBlockState(pos);
-        if (!blockState.getBlock().isAir(blockState, world, pos) && isAllowed(blockState))
+        final BlockState blockState = world.getBlockState(pos);
+        if (!blockState.isAir() && isAllowed(blockState))
         {
-            final float hardness = blockState.getBlockHardness(world, pos);
+            final float hardness = blockState.getDestroySpeed(world, pos);
             if (hardness >= 0)
             {
                 final BlockCaptureData blockCaptureData = new BlockCaptureData(world, pos);
                 return spawnFlyingBlock(world,
                     pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     blockCaptureData, preSpawnCallback, postSpawnCallback,
-                    () -> world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2)
+                    () -> world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2)
                 );
             }
         }
@@ -105,7 +103,7 @@ public class FlyingBlock {
      * @param removeBlock callback to set to air, done after collecting data
      * @return true if spawned
      */
-    public static boolean spawnFlyingBlock(World world, double x, double y, double z,
+    public static boolean spawnFlyingBlock(Level world, double x, double y, double z,
                                            BlockCaptureData blockCaptureData,
                                            Consumer<EntityFlyingBlock> preSpawnCallback,
                                            Consumer<EntityFlyingBlock> postSpawnCallback,
@@ -122,12 +120,12 @@ public class FlyingBlock {
 
         final EntityFlyingBlock flyingBlock = new EntityFlyingBlock(world);
         flyingBlock.setBlockData(blockCaptureData); //TODO allow mutations of state
-        flyingBlock.setPosition(x, y, z);
+        flyingBlock.setPos(x, y, z);
 
         // Pre-spawn data set, needed for extra properties that should be exposed to spawn event
         Optional.ofNullable(preSpawnCallback).ifPresent(f -> f.accept(flyingBlock));
 
-        if (world.spawnEntity(flyingBlock)) {
+        if (world.addFreshEntity(flyingBlock)) {
 
             // Post-spawn data set, needed for logic that can't run outside the world
             Optional.ofNullable(postSpawnCallback).ifPresent(f -> f.accept(flyingBlock));
@@ -143,3 +141,4 @@ public class FlyingBlock {
         //TODO load replacements, ensure we store as block -> handler
     }
 }
+// PORTED

@@ -3,17 +3,24 @@ package icbm.classic.content.potion;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import icbm.classic.lib.transform.vector.Pos;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 
 /**
+ * PORT: in 1.12 this was a plain object that applied vanilla potion effects. The 1.21 registry
+ * contract registers the poisons as mob effects ({@code ICBMClassic.chemicalPotion}/{@code contagiousPotion}),
+ * so it extends {@link MobEffect}. The effect itself is never applied to entities, {@link #poisonEntity}
+ * still applies vanilla effects exactly as before.
+ *
  * @deprecated remove at some point and apply potion effects directly
  */
 @Deprecated
-public abstract class Poison
+public abstract class Poison extends MobEffect
 {
     static HashMap<String, Poison> poisons = new HashMap();
     static BiMap<String, Integer> poisonIDs = HashBiMap.create();
@@ -41,8 +48,9 @@ public abstract class Poison
         return poisonIDs.get(name);
     }
 
-    public Poison(String name)
+    public Poison(String name, int color)
     {
+        super(MobEffectCategory.HARMFUL, color);
         this.name = name;
         poisons.put(name, this);
         poisonIDs.put(name, ++maxID);
@@ -65,7 +73,7 @@ public abstract class Poison
      * @param amplifier
      * @param emitPosition
      */
-    public void poisonEntity(Pos emitPosition, EntityLivingBase entity, int amplifier)
+    public void poisonEntity(Pos emitPosition, LivingEntity entity, int amplifier)
     {
         if (!isEntityProtected(emitPosition, entity, amplifier))
         {
@@ -73,80 +81,27 @@ public abstract class Poison
         }
     }
 
-    public void poisonEntity(Pos emitPosition, EntityLivingBase entity)
+    public void poisonEntity(Pos emitPosition, LivingEntity entity)
     {
         this.poisonEntity(emitPosition, entity, 0);
     }
 
-    public boolean isEntityProtected(Pos emitPosition, EntityLivingBase entity, int amplifier)
+    public boolean isEntityProtected(Pos emitPosition, LivingEntity entity, int amplifier)
     {
-        if(entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isCreativeMode)
+        if (entity instanceof Player && ((Player) entity).getAbilities().instabuild)
         {
             return true;
         }
-        /* EnumSet<ArmorType> armorWorn = EnumSet.noneOf(ArmorType.class);
-
-        if (entity instanceof EntityPlayer)
-        {
-            EntityPlayer entityPlayer = (EntityPlayer) entity;
-
-            for (int i = 0; i < entityPlayer.inventory.armorInventory.length; i++)
-            {
-                if (entityPlayer.inventory.armorInventory[i] != null)
-                {
-                    if (entityPlayer.inventory.armorInventory[i].getItem() instanceof IAntiPoisonArmor)
-                    {
-                        IAntiPoisonArmor armor = (IAntiPoisonArmor) entityPlayer.inventory.armorInventory[i].getItem();
-
-                        if (armor.isProtectedFromPoison(entityPlayer.inventory.armorInventory[i], entity, this.getName()))
-                        {
-                            armorWorn.add(ArmorType.values()[armor.getArmorType() % ArmorType.values().length]);
-                            // TODO: Consider putting this in another method.
-                            armor.onProtectFromPoison(entityPlayer.inventory.armorInventory[i], entity, this.getName());
-                        }
-                    }
-                }
-            }
-        }
-
-        return armorWorn.containsAll(this.armorRequired);
-         */
+        //1.12 had armor based protection commented out here, see git history
         return false;
     }
 
-    public int getAntiPoisonBlockCount(World world, Pos startingPosition, Pos endingPosition)
+    public int getAntiPoisonBlockCount(Level world, Pos startingPosition, Pos endingPosition)
     {
-        /* Pos delta = endingPosition.clone().subtract(startingPosition).normalize();
-        Pos targetPosition = startingPosition.clone();
-        double totalDistance = startingPosition.distance(endingPosition);
-
-        int count = 0;
-
-        if (totalDistance > 1)
-        {
-            while (targetPosition.distance(endingPosition) <= totalDistance)
-            {
-                int block = targetPosition.getBlockID(world);
-
-                if (block > 0)
-                {
-                    if (Block.blocksList[block] instanceof IAntiPoisonBlock)
-                    {
-                        if (((IAntiPoisonBlock) Block.blocksList[block]).isPoisonPrevention(world, targetPosition.intX(), targetPosition.intY(), targetPosition.intZ(), this.getName()))
-                        {
-                            count++;
-                        }
-                    }
-                }
-
-                targetPosition.add(delta);
-            }
-        }
-
-        return count;
-        */
+        //1.12 had anti-poison block logic commented out here, see git history
         return 0;
     }
 
-    protected abstract void doPoisonEntity(Pos emitPosition, EntityLivingBase entity, int amplifier);
+    protected abstract void doPoisonEntity(Pos emitPosition, LivingEntity entity, int amplifier);
 }
+// PORTED

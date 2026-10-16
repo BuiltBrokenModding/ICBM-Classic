@@ -4,7 +4,7 @@ import icbm.classic.config.missile.ConfigMissile;
 import icbm.classic.config.util.ItemStackConfigList;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class CargoHolderHandler {
@@ -24,3 +24,4 @@ public final class CargoHolderHandler {
         banAllowItems.reload();
     }
 }
+// PORTED

@@ -1,7 +1,7 @@
 package icbm.classic.config.blocks;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 @Config(modid = ICBMConstants.DOMAIN, name = "icbmclassic/blocks")
 @Config.LangKey("config.icbmclassic:blocks.title")

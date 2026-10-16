@@ -1,6 +1,7 @@
 {
-    "parent": "block/button_inventory",
-    "textures": {
-        "texture": "minecraft:blocks/glass"
-    }
+  "parent": "block/button_inventory",
+  "textures": {
+    "texture": "minecraft:block/glass"
+  },
+  "render_type": "minecraft:cutout"
 }

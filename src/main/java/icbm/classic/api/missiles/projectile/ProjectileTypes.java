@@ -19,3 +19,4 @@ public final class ProjectileTypes {
     /** Projectiles that are explosive and use the capability {@link icbm.classic.api.caps.IExplosive} */
     public static final MetaTag TYPE_EXPLOSIVE = MetaTag.getOrCreateSubTag(TYPE_PROJECTILE, "explosive");
 }
+// PORTED

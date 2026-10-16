@@ -1,112 +1,78 @@
 package icbm.classic.content.blast.redmatter.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.blast.ConfigBlast;
 import icbm.classic.content.blast.redmatter.EntityRedmatter;
 import icbm.classic.lib.colors.ColorB;
 import icbm.classic.lib.colors.ColorHelper;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Sphere;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import org.joml.Matrix4f;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@SideOnly(Side.CLIENT)
-public class RenderRedmatter extends Render<EntityRedmatter>
+/**
+ * PORT: 1.12 drew with immediate mode GL (GLU Sphere, Tessellator, GlStateManager). Rewritten with
+ * PoseStack + RenderType. Spheres are generated here (32x32 like GLU), lighting was disabled so
+ * everything renders full bright. Beams use the lightning render type which has the same
+ * SRC_ALPHA/ONE additive blending the 1.12 code set up.
+ */
+public class RenderRedmatter extends EntityRenderer<EntityRedmatter>
 {
-    public static final ResourceLocation TEXTURE_FILE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "entity/redmatter/blackhole.png");
-    public static ResourceLocation GREY_TEXTURE = new ResourceLocation(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
+    public static final ResourceLocation TEXTURE_FILE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "entity/redmatter/blackhole.png");
+    public static ResourceLocation GREY_TEXTURE = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, ICBMConstants.TEXTURE_DIRECTORY + "models/grey.png");
 
     public static List<ColorB> randomColorsForBeams = new ArrayList();
 
     public ColorB colorIn = new ColorB(255, 255, 255); //TODO figure out how this works
     public ColorB colorOut = new ColorB(0, 0, 0);
 
-    public RenderRedmatter(RenderManager renderManager)
+    private static final int SPHERE_SLICES = 32;
+    private static final int SPHERE_STACKS = 32;
+
+    public RenderRedmatter(EntityRendererProvider.Context context)
     {
-        super(renderManager);
+        super(context);
     }
 
     @Override
-    public void doRender(EntityRedmatter redmatter, double x, double y, double z, float entityYaw, float partialTicks)
+    public void render(EntityRedmatter redmatter, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
         final float visualSize = redmatter.clientLogic.getVisualSize();
 
-        renderDisk(redmatter, x, y, z, visualSize);
-        GlStateManager.color(1, 1, 1, 1);
-
-        renderSphere(redmatter, x, y, z, visualSize);
-        GlStateManager.color(1, 1, 1, 1);
-
-        renderBeams(redmatter, x, y, z, visualSize);
-        GlStateManager.color(1, 1, 1, 1);
+        renderDisk(redmatter, poseStack, buffer, visualSize);
+        renderSphere(redmatter, poseStack, buffer, visualSize);
+        renderBeams(redmatter, poseStack, buffer, visualSize);
 
         //Update size with a smooth transition
         redmatter.clientLogic.lerpSize(partialTicks);
+
+        super.render(redmatter, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    public void renderSphere(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
+    public void renderSphere(EntityRedmatter redmatter, PoseStack poseStack, MultiBufferSource buffer, float visualSize)
     {
         final float radius = Math.max(ConfigBlast.redmatter.RENDER_SCALE * visualSize, 0.1f);
 
-        //--------------------------------------------------
-        //Inside sphere
-        //Setup
-        GlStateManager.pushMatrix();
-        //GlStateManager.enableBlend();
-        //GlStateManager.disableLighting();
+        //Inside sphere, black
+        // 1.12 used the grey texture with lighting enabled, the sphere is pure black so light makes no difference
+        final VertexConsumer inner = buffer.getBuffer(RenderType.entityTranslucent(GREY_TEXTURE));
+        drawSphere(poseStack, inner, radius * 0.8f, 0, 0, 0, 1);
 
-        //Translate
-        GlStateManager.translate((float) x, (float) y, (float) z);
+        //Outside sphere, pulsing dark blue
+        float ticks = redmatter.tickCount % 40;
 
-        //Assign texture
-        bindTexture(GREY_TEXTURE);
-
-        //Assign color
-        GlStateManager.color(0.0F, 0.0F, 0.0F, 1);
-
-        //Render outer sphere
-        new Sphere().draw(radius * 0.8f, 32, 32);
-
-        //Reset
-        //GlStateManager.enableLighting();
-        //GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
-
-
-        //--------------------------------------------------
-        //Outside sphere
-
-        float ticks = redmatter.ticksExisted % 40;
-
-        //Setup
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        GlStateManager.disableLighting();
-
-        //Translate
-        GlStateManager.translate((float) x, (float) y, (float) z);
-
-        //Assign texture
-        bindTexture(GREY_TEXTURE);
-
-        //Assign color
-        GlStateManager.color(0.0F, 0.0F, 0.2F, 0.8f);
-
-        //Render outer sphere
         final float scaleSize = 0.0005f;
         final float fullSize = radius * scaleSize * 20;
         float scaleDelta;
@@ -118,59 +84,83 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         {
             scaleDelta = radius * scaleSize * ticks;
         }
-        new Sphere().draw(radius + scaleDelta, 32, 32);
-
-        //Reset
-        GlStateManager.enableLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
-        RenderHelper.enableStandardItemLighting();
+        final VertexConsumer outer = buffer.getBuffer(RenderType.entityTranslucent(GREY_TEXTURE));
+        drawSphere(poseStack, outer, radius + scaleDelta, 0, 0, 0.2f, 0.8f);
     }
 
-    public void renderDisk(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
+    /** Replacement for GLU Sphere#draw(radius, 32, 32) */
+    private static void drawSphere(PoseStack poseStack, VertexConsumer consumer, float radius, float r, float g, float b, float a)
     {
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        float size = (float)Math.max(0.2, ConfigBlast.redmatter.RENDER_SCALE * visualSize * 3);
+        final PoseStack.Pose pose = poseStack.last();
+        for (int stack = 0; stack < SPHERE_STACKS; stack++)
+        {
+            final float phi0 = (float) Math.PI * stack / SPHERE_STACKS;
+            final float phi1 = (float) Math.PI * (stack + 1) / SPHERE_STACKS;
+            for (int slice = 0; slice < SPHERE_SLICES; slice++)
+            {
+                final float theta0 = (float) (Math.PI * 2) * slice / SPHERE_SLICES;
+                final float theta1 = (float) (Math.PI * 2) * (slice + 1) / SPHERE_SLICES;
 
-        //Setup
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        GlStateManager.disableLighting();
+                sphereVertex(pose, consumer, radius, phi0, theta0, r, g, b, a);
+                sphereVertex(pose, consumer, radius, phi1, theta0, r, g, b, a);
+                sphereVertex(pose, consumer, radius, phi1, theta1, r, g, b, a);
+                sphereVertex(pose, consumer, radius, phi0, theta1, r, g, b, a);
+            }
+        }
+    }
 
-        //Translate
-        GlStateManager.translate(x, y, z);
-        GlStateManager.rotate(-redmatter.ticksExisted, 0, 1, 0);
+    private static void sphereVertex(PoseStack.Pose pose, VertexConsumer consumer, float radius, float phi, float theta, float r, float g, float b, float a)
+    {
+        final float nx = Mth.sin(phi) * Mth.cos(theta);
+        final float ny = Mth.cos(phi);
+        final float nz = Mth.sin(phi) * Mth.sin(theta);
+        consumer.addVertex(pose, nx * radius, ny * radius, nz * radius)
+            .setColor(r, g, b, a)
+            .setUv(0, 0)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(LightTexture.FULL_BRIGHT)
+            .setNormal(pose, nx, ny, nz);
+    }
 
-        //Assign texture
-        this.bindTexture(TEXTURE_FILE);
-        GlStateManager.color(1, 0, 0, 1); // TODO pick color randomly and pulse the color using sin(angle)
+    public void renderDisk(EntityRedmatter redmatter, PoseStack poseStack, MultiBufferSource buffer, float visualSize)
+    {
+        float size = (float) Math.max(0.2, ConfigBlast.redmatter.RENDER_SCALE * visualSize * 3);
+
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(-redmatter.tickCount));
+
+        final VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE_FILE));
+        // TODO pick color randomly and pulse the color using sin(angle)
 
         //top render
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(-size, 0, -size).tex(0, 0).endVertex();
-        bufferbuilder.pos(-size, 0, +size).tex(0, 1).endVertex();
-        bufferbuilder.pos(+size, 0, +size).tex(1, 1).endVertex();
-        bufferbuilder.pos(+size, 0, -size).tex(1, 0).endVertex();
-        Tessellator.getInstance().draw();
+        PoseStack.Pose pose = poseStack.last();
+        diskVertex(pose, consumer, -size, -size, 0, 0);
+        diskVertex(pose, consumer, -size, +size, 0, 1);
+        diskVertex(pose, consumer, +size, +size, 1, 1);
+        diskVertex(pose, consumer, +size, -size, 1, 0);
 
         //bottom render
-        GlStateManager.rotate(180, 1, 0, 0);
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(-size, 0, -size).tex(1, 1).endVertex();
-        bufferbuilder.pos(-size, 0, +size).tex(1, 0).endVertex();
-        bufferbuilder.pos(+size, 0, +size).tex(0, 0).endVertex();
-        bufferbuilder.pos(+size, 0, -size).tex(0, 1).endVertex();
-        Tessellator.getInstance().draw();
+        poseStack.mulPose(Axis.XP.rotationDegrees(180));
+        pose = poseStack.last();
+        diskVertex(pose, consumer, -size, -size, 1, 1);
+        diskVertex(pose, consumer, -size, +size, 1, 0);
+        diskVertex(pose, consumer, +size, +size, 0, 0);
+        diskVertex(pose, consumer, +size, -size, 0, 1);
 
-        //Reset
-        GlStateManager.enableLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
-        RenderHelper.enableStandardItemLighting();
+        poseStack.popPose();
     }
 
-    public void renderBeams(EntityRedmatter redmatter, double x, double y, double z, float visualSize)
+    private static void diskVertex(PoseStack.Pose pose, VertexConsumer consumer, float x, float z, float u, float v)
+    {
+        consumer.addVertex(pose, x, 0, z)
+            .setColor(1f, 0f, 0f, 1f)
+            .setUv(u, v)
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(LightTexture.FULL_BRIGHT)
+            .setNormal(pose, 0, 1, 0);
+    }
+
+    public void renderBeams(EntityRedmatter redmatter, PoseStack poseStack, MultiBufferSource buffer, float visualSize)
     {
         //This is basically a copy of the ender dragon Lighting effect with modifications to fit
         //Animation has been changed to remove size scale and have a ramp up then down time.
@@ -180,15 +170,11 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         final int rotationAnimationTime = 200;
         final float animationPhaseTime = totalAnimationTime / 2f;
 
-        //Get buffer
-        final BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        RenderHelper.disableStandardItemLighting();
-
         //Get tick value
-        int ticks = redmatter.ticksExisted % totalAnimationTime;
+        int ticks = redmatter.tickCount % totalAnimationTime;
 
         //Controls rotation of beams
-        float rotationScale = (redmatter.ticksExisted % rotationAnimationTime) / (float) rotationAnimationTime;
+        float rotationScale = (redmatter.tickCount % rotationAnimationTime) / (float) rotationAnimationTime;
 
         //Controls beam count and other factors based on animation phase time
         float timeScale;
@@ -201,17 +187,7 @@ public class RenderRedmatter extends Render<EntityRedmatter>
             timeScale = (2 - (ticks / animationPhaseTime));
         }
 
-        //Start
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x, (float) y, (float) z);
-
-        //Setup
-        GlStateManager.disableTexture2D();
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        GlStateManager.disableAlpha();
-        GlStateManager.enableCull();
+        final VertexConsumer consumer = buffer.getBuffer(RenderType.lightning());
 
         Random redmatterBeamRandom = new Random(432L);
 
@@ -220,19 +196,19 @@ public class RenderRedmatter extends Render<EntityRedmatter>
         for (int beamIndex = 0; beamIndex < beamCount; ++beamIndex)
         {
             //Start
-            GlStateManager.pushMatrix();
+            poseStack.pushPose();
 
             //Calculate size
             float beamLength = (redmatterBeamRandom.nextFloat() + 1F) * visualSize;
-            float beamWidth = (float)Math.max(0.1, redmatterBeamRandom.nextFloat()) * visualSize / 10;
+            float beamWidth = (float) Math.max(0.1, redmatterBeamRandom.nextFloat()) * visualSize / 10;
 
             //Random rotations TODO see if we need to rotate so much
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(redmatterBeamRandom.nextFloat() * 360.0F + rotationScale * 360.0F, 0.0F, 0.0F, 1.0F);
+            poseStack.mulPose(Axis.XP.rotationDegrees(redmatterBeamRandom.nextFloat() * 360.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(redmatterBeamRandom.nextFloat() * 360.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(redmatterBeamRandom.nextFloat() * 360.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(redmatterBeamRandom.nextFloat() * 360.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(redmatterBeamRandom.nextFloat() * 360.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(redmatterBeamRandom.nextFloat() * 360.0F + rotationScale * 360.0F));
 
             //Get color based on state
             ColorB colorOut = this.colorOut;
@@ -255,52 +231,32 @@ public class RenderRedmatter extends Render<EntityRedmatter>
                 }
             }
 
-            //Draw spike shape
-            bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
-
-            //center vertex
-            bufferbuilder.pos(0.0D, 0.0D, 0.0D)
-                    .color(colorIn.getRed(), colorIn.getGreen(), colorIn.getBlue(), colorIn.getAlpha())
-                    .endVertex();
-
-            //Outside vertex
-            bufferbuilder.pos(-0.866D * beamWidth, beamLength, -0.5F * beamWidth)
-                    .color(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha())
-                    .endVertex();
-            bufferbuilder.pos(0.866D * beamWidth, beamLength, -0.5F * beamWidth)
-                    .color(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha())
-                    .endVertex();
-            bufferbuilder.pos(0.0D, beamLength, 1.0F * beamWidth)
-                    .color(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha())
-                    .endVertex();
-            bufferbuilder.pos(-0.866D * beamWidth, beamLength, -0.5F * beamWidth)
-                    .color(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha())
-                    .endVertex();
-
-            //draw
-            Tessellator.getInstance().draw();
+            //Draw spike shape, 1.12 used a triangle fan (center + 4 outer points), drawn as 3 degenerate quads
+            final Matrix4f matrix = poseStack.last().pose();
+            final float ax = -0.866F * beamWidth, az = -0.5F * beamWidth;
+            final float bx = 0.866F * beamWidth, bz = -0.5F * beamWidth;
+            final float cx = 0.0F, cz = 1.0F * beamWidth;
+            beamTriangle(consumer, matrix, colorIn, colorOut, beamLength, ax, az, bx, bz);
+            beamTriangle(consumer, matrix, colorIn, colorOut, beamLength, bx, bz, cx, cz);
+            beamTriangle(consumer, matrix, colorIn, colorOut, beamLength, cx, cz, ax, az);
 
             //end
-            GlStateManager.popMatrix();
+            poseStack.popPose();
         }
-
-        //Cleanup
-        GlStateManager.disableCull();
-        GlStateManager.disableBlend();
-        GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableAlpha();
-        RenderHelper.enableStandardItemLighting();
-
-        //End
-        GlStateManager.popMatrix();
     }
 
-    @Nullable
+    private static void beamTriangle(VertexConsumer consumer, Matrix4f matrix, ColorB colorIn, ColorB colorOut, float length, float x1, float z1, float x2, float z2)
+    {
+        consumer.addVertex(matrix, 0, 0, 0).setColor(colorIn.getRed(), colorIn.getGreen(), colorIn.getBlue(), colorIn.getAlpha());
+        consumer.addVertex(matrix, x1, length, z1).setColor(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha());
+        consumer.addVertex(matrix, x2, length, z2).setColor(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha());
+        consumer.addVertex(matrix, x2, length, z2).setColor(colorOut.getRed(), colorOut.getGreen(), colorOut.getBlue(), colorOut.getAlpha());
+    }
+
     @Override
-    protected ResourceLocation getEntityTexture(EntityRedmatter entity)
+    public ResourceLocation getTextureLocation(EntityRedmatter entity)
     {
         return GREY_TEXTURE;
     }
 }
+// PORTED

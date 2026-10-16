@@ -27,9 +27,12 @@ import icbm.classic.api.reg.content.IExGrenadeRegistry;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.api.reg.content.IExMissileRegistry;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * API reference class for ICBM-Classic mod
@@ -73,42 +76,31 @@ public final class ICBMClassicAPI
     //=== Capabilities ========
     //=========================
 
-    /** @deprecated used the injector */
-    @Deprecated
-    @CapabilityInject(IEMPReceiver.class)
-    public static Capability<IEMPReceiver> EMP_CAPABILITY = null;
+    private static ResourceLocation cap(String name)
+    {
+        return ResourceLocation.fromNamespaceAndPath(ID, name);
+    }
 
+    /** EMP handling for entities */
+    public static final EntityCapability<IEMPReceiver, Void> EMP_ENTITY_CAPABILITY = EntityCapability.createVoid(cap("emp"), IEMPReceiver.class);
+    /** EMP handling for block entities */
+    public static final BlockCapability<IEMPReceiver, @Nullable Direction> EMP_BLOCK_CAPABILITY = BlockCapability.createSided(cap("emp"), IEMPReceiver.class);
+    /** EMP handling for item stacks */
+    public static final ItemCapability<IEMPReceiver, Void> EMP_ITEM_CAPABILITY = ItemCapability.createVoid(cap("emp"), IEMPReceiver.class);
 
     /** Only applies to entities */
-    @CapabilityInject(IMissile.class)
-    public static Capability<IMissile> MISSILE_CAPABILITY = null;
+    public static final EntityCapability<IMissile, Void> MISSILE_CAPABILITY = EntityCapability.createVoid(cap("missile"), IMissile.class);
 
+    public static final BlockCapability<IMissileHolder, @Nullable Direction> MISSILE_HOLDER_CAPABILITY = BlockCapability.createSided(cap("missile_holder"), IMissileHolder.class);
 
-    /** @deprecated used the injector */
-    @Deprecated
-    @CapabilityInject(IMissileHolder.class)
-    public static Capability<IMissileHolder> MISSILE_HOLDER_CAPABILITY = null;
+    public static final BlockCapability<IMissileLauncher, @Nullable Direction> MISSILE_LAUNCHER_CAPABILITY = BlockCapability.createSided(cap("missile_launcher"), IMissileLauncher.class);
 
-    /** @deprecated used the injector */
-    @Deprecated
-    @CapabilityInject(IMissileLauncher.class)
-    public static Capability<IMissileLauncher> MISSILE_LAUNCHER_CAPABILITY = null;
+    public static final BlockCapability<IRadio, @Nullable Direction> RADIO_CAPABILITY = BlockCapability.createSided(cap("radio"), IRadio.class);
+    public static final ItemCapability<IRadio, Void> RADIO_ITEM_CAPABILITY = ItemCapability.createVoid(cap("radio"), IRadio.class);
 
-    /** @deprecated used the injector */
-    @Deprecated
-    @CapabilityInject(IRadio.class)
-    public static Capability<IRadio> RADIO_CAPABILITY = null;
+    public static final ItemCapability<IGPSData, Void> GPS_CAPABILITY = ItemCapability.createVoid(cap("gps"), IGPSData.class);
 
-    /** @deprecated used the injector */
-    @Deprecated
-    @CapabilityInject(IGPSData.class)
-    public static Capability<IGPSData> GPS_CAPABILITY = null;
-
-    /** @deprecated used the injector */
-    @Deprecated
-    @CapabilityInject(IProjectileStack.class)
-    public static Capability<IProjectileStack> PROJECTILE_STACK_CAPABILITY = null;
-
+    public static final ItemCapability<IProjectileStack, Void> PROJECTILE_STACK_CAPABILITY = ItemCapability.createVoid(cap("projectile_stack"), IProjectileStack.class);
 
     //=========================
     //=== Will be removed =====
@@ -136,30 +128,30 @@ public final class ICBMClassicAPI
     public static IBuilderRegistry<IExplosiveCustomization> EXPLOSIVE_CUSTOMIZATION_REGISTRY;
 
     @Deprecated
-    public static final ResourceLocation EX_MISSILE = new ResourceLocation(ID, "missile");
+    public static final ResourceLocation EX_MISSILE = ResourceLocation.fromNamespaceAndPath(ID, "missile");
     @Deprecated
-    public static final ResourceLocation EX_GRENADE = new ResourceLocation(ID, "grenade");
+    public static final ResourceLocation EX_GRENADE = ResourceLocation.fromNamespaceAndPath(ID, "grenade");
     @Deprecated
-    public static final ResourceLocation EX_BLOCK = new ResourceLocation(ID, "block");
+    public static final ResourceLocation EX_BLOCK = ResourceLocation.fromNamespaceAndPath(ID, "block");
     @Deprecated
-    public static final ResourceLocation EX_MINECART = new ResourceLocation(ID, "minecart");
+    public static final ResourceLocation EX_MINECART = ResourceLocation.fromNamespaceAndPath(ID, "minecart");
 
 
     @Deprecated
-    @CapabilityInject(IExplosive.class)
-    public static Capability<IExplosive> EXPLOSIVE_CAPABILITY = null;
+    public static final ItemCapability<IExplosive, Void> EXPLOSIVE_ITEM_CAPABILITY = ItemCapability.createVoid(cap("explosive"), IExplosive.class);
+    @Deprecated
+    public static final EntityCapability<IExplosive, Void> EXPLOSIVE_ENTITY_CAPABILITY = EntityCapability.createVoid(cap("explosive"), IExplosive.class);
+    @Deprecated
+    public static final BlockCapability<IExplosive, @Nullable Direction> EXPLOSIVE_BLOCK_CAPABILITY = BlockCapability.createSided(cap("explosive"), IExplosive.class);
 
     /** Only applies to ItemStack */
     @Deprecated
-    @CapabilityInject(ICapabilityMissileStack.class)
-    public static Capability<ICapabilityMissileStack> MISSILE_STACK_CAPABILITY = null;
+    public static final ItemCapability<ICapabilityMissileStack, Void> MISSILE_STACK_CAPABILITY = ItemCapability.createVoid(cap("missile_stack"), ICapabilityMissileStack.class);
 
     @Deprecated
-    @CapabilityInject(IBlastVelocity.class)
-    public static Capability<IBlastVelocity> BLAST_VELOCITY_CAPABILITY = null;
+    public static final EntityCapability<IBlastVelocity, Void> BLAST_VELOCITY_CAPABILITY = EntityCapability.createVoid(cap("blast_velocity"), IBlastVelocity.class);
 
     @Deprecated
-    @CapabilityInject(IBlast.class)
-    public static Capability<IBlast> BLAST_CAPABILITY = null;
+    public static final EntityCapability<IBlast, Void> BLAST_CAPABILITY = EntityCapability.createVoid(cap("blast"), IBlast.class);
 
 }

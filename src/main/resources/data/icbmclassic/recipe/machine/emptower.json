@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:battery"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "pwp",
+    "ece",
+    "prp"
+  ],
+  "key": {
+    "w": {
+      "tag": "c:wires/gold"
+    },
+    "c": {
+      "tag": "c:circuits/elite"
+    },
+    "p": {
+      "tag": "c:plates/steel"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "e": {
+      "item": "icbmclassic:battery"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:emptower",
+    "count": 1
+  }
+}

@@ -7,8 +7,8 @@ import com.builtbroken.jlib.data.vector.ITransform;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 
 /**
  * This object is not immutable like other vector objects. It is designed to take the player of storing 3 separate variables for rotation. Thus it will
@@ -55,7 +55,7 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
      *
      * @param tag - save
      */
-    public EulerAngle(NBTTagCompound tag)
+    public EulerAngle(CompoundTag tag)
     {
         readFromNBT(tag);
     }
@@ -71,11 +71,11 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
     }
 
     /**
-     * Creates a new EulerAngle from a {@link EnumFacing}
+     * Creates a new EulerAngle from a {@link Direction}
      *
      * @param direction - direction
      */
-    public EulerAngle(EnumFacing direction)
+    public EulerAngle(Direction direction)
     {
         switch (direction)
         {
@@ -525,20 +525,20 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
         return this;
     }
 
-    public NBTTagCompound writeNBT(NBTTagCompound nbt)
+    public CompoundTag writeNBT(CompoundTag nbt)
     {
-        nbt.setDouble(NBTConstants.YAW, yaw);
-        nbt.setDouble(NBTConstants.PITCH, pitch);
-        nbt.setDouble(NBTConstants.ROLL, roll);
+        nbt.putDouble(NBTConstants.YAW, yaw);
+        nbt.putDouble(NBTConstants.PITCH, pitch);
+        nbt.putDouble(NBTConstants.ROLL, roll);
         return nbt;
     }
 
-    public NBTTagCompound toNBT()
+    public CompoundTag toNBT()
     {
-        return writeNBT(new NBTTagCompound());
+        return writeNBT(new CompoundTag());
     }
 
-    public EulerAngle readFromNBT(NBTTagCompound nbt)
+    public EulerAngle readFromNBT(CompoundTag nbt)
     {
         yaw = nbt.getDouble(NBTConstants.YAW);
         pitch = nbt.getDouble(NBTConstants.PITCH);
@@ -824,3 +824,4 @@ public class EulerAngle implements Cloneable, ITransform, IByteBufWriter, IByteB
         roll = v;
     }
 }
+// PORTED

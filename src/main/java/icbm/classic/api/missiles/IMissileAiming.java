@@ -1,6 +1,6 @@
 package icbm.classic.api.missiles;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Applied to a missile entity to allow it's rotation and position to be set more cleanly
@@ -17,8 +17,8 @@ public interface IMissileAiming
      */
     default void initAimingPosition(Entity shooter, float offsetMultiplier, float forceMultiplier) {
         initAimingPosition(
-            shooter.posX, shooter.posY + (double) shooter.getEyeHeight(), shooter.posZ,
-            shooter.rotationYaw, shooter.rotationPitch,
+            shooter.getX(), shooter.getY() + (double) shooter.getEyeHeight(), shooter.getZ(),
+            shooter.getYRot(), shooter.getXRot(),
             offsetMultiplier, forceMultiplier
         );
     }
@@ -36,3 +36,4 @@ public interface IMissileAiming
      */
     void initAimingPosition(double x, double y, double z, float yaw, float pitch, float offsetMultiplier, float forceMultiplier);
 }
+// PORTED

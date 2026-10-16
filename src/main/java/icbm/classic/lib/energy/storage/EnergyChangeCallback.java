@@ -12,3 +12,4 @@ public interface EnergyChangeCallback {
      */
     void onChange(int prev, int current, EnergyActionType reason);
 }
+// PORTED

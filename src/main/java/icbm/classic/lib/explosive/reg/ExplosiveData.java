@@ -12,8 +12,8 @@ import icbm.classic.lib.actions.ActionDataBase;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,7 +54,7 @@ public class ExplosiveData extends ActionDataBase implements IExplosiveData
 
     @Override
     @Nonnull
-    public IAction create(World world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessors) {
+    public IAction create(Level world, double x, double y, double z, @Nonnull IActionSource source, @Nullable IActionFieldProvider fieldAccessors) {
         final IAction blast = blastCreationFactory.create(world, x, y, z, source);
 
         if(blast instanceof IBlastInit) {
@@ -88,3 +88,4 @@ public class ExplosiveData extends ActionDataBase implements IExplosiveData
         return Integer.compare(getRegistryID(), o.getRegistryID());
     }
 }
+// PORTED

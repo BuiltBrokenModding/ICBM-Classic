@@ -1,7 +1,7 @@
 package icbm.classic.config.missile;
 
 import icbm.classic.ICBMConstants;
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 /**
  * Configs for Missiles

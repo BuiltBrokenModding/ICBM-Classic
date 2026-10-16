@@ -2,10 +2,10 @@
 	"credit": "QueenOfMissiles",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "icbmclassic:items/missiles/tier3",
-		"2": "icbmclassic:items/missiles/exothermic",
-		"3": "blocks/lava_flow",
-		"particle": "icbmclassic:items/missiles/tier3"
+		"0": "icbmclassic:item/missiles/tier3",
+		"2": "icbmclassic:item/missiles/exothermic",
+		"3": "block/lava_flow",
+		"particle": "icbmclassic:item/missiles/tier3"
 	},
 	"elements": [
 		{

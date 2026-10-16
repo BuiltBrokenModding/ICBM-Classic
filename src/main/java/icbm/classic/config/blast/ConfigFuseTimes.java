@@ -1,6 +1,6 @@
 package icbm.classic.config.blast;
 
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 2/9/2020.

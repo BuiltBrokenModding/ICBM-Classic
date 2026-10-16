@@ -17,7 +17,6 @@ import icbm.classic.content.blocks.launcher.network.ILauncherComponent;
 import icbm.classic.content.blocks.launcher.network.LauncherEntry;
 import icbm.classic.content.blocks.launcher.network.LauncherNode;
 import icbm.classic.content.blocks.launcher.screen.gui.ContainerLaunchScreen;
-import icbm.classic.content.blocks.launcher.screen.gui.GuiLauncherScreen;
 import icbm.classic.content.missile.logic.targeting.BasicTargetData;
 import icbm.classic.lib.NBTConstants;
 import icbm.classic.lib.data.IMachineInfo;
@@ -34,17 +33,23 @@ import icbm.classic.prefab.inventory.InventoryWithSlots;
 import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import lombok.Getter;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import icbm.classic.content.reg.BlockReg;
+import icbm.classic.lib.capability.holder.ICapabilityHolderTile;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,17 +62,17 @@ import java.util.stream.Collectors;
  *
  * @author Calclavia
  */
-public class TileLauncherScreen extends TileMachine implements ILauncherComponent, IMachineInfo, IPlayerUsing, IGuiTile
+public class TileLauncherScreen extends TileMachine implements ILauncherComponent, IMachineInfo, IPlayerUsing, IGuiTile, ICapabilityHolderTile
 {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "launcherscreen");
+    public static final ResourceLocation REGISTRY_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "launcherscreen");
 
     /** Target position of the launcher */
-    private Vec3d _targetPos = Vec3d.ZERO;
+    private Vec3 _targetPos = Vec3.ZERO;
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigLauncher.POWER_CAPACITY)
-        .withOnChange((p,c,s) -> this.markDirty());
+        .withOnChange((p,c,s) -> this.setChanged());
     public final InventoryWithSlots inventory = new InventoryWithSlots(1)
-        .withChangeCallback((s, i) -> markDirty())
+        .withChangeCallback((s, i) -> setChanged())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
     private final LauncherNode launcherNode = new LauncherNode(this, false);
     public final RadioScreen radioCap = new RadioScreen(this);
@@ -75,16 +80,17 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     @Getter
     private float launcherInaccuracy = 0;
 
-    private final List<LauncherPair> statusList = new ArrayList();
+    private final List<LauncherPair> statusList = new ArrayList<>();
     private boolean refreshStatus = false;
 
     @Getter
-    private final List<EntityPlayer> playersUsing = new LinkedList<>();
+    private final List<Player> playersUsing = new LinkedList<>();
 
-    public TileLauncherScreen() {
+    public TileLauncherScreen(BlockPos pos, BlockState state) {
+        super(BlockReg.TILE_LAUNCHER_SCREEN.get(), pos, state);
         tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20,true,  (t) -> {
-            playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerLaunchScreen));
+            playersUsing.removeIf((player) -> !(player.containerMenu instanceof ContainerLaunchScreen));
         }));
         tickActions.add(inventory);
     }
@@ -127,7 +133,7 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
             }
 
             //Only launch if redstone
-            if (ticks % 3 == 0 && world.getStrongPower(getPos()) > 0) //TODO check for pulse instead of high only & add delay
+            if (ticks % 3 == 0 && level.getDirectSignalTo(getBlockPos()) > 0) //TODO check for pulse instead of high only & add delay
             {
                 fireAllLaunchers(false);
             }
@@ -139,15 +145,15 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
         if(getNetworkNode().getNetwork() != null) {
             return getNetworkNode().getNetwork().getLaunchers(getFiringGroup());
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public int getFiringGroup() {
         return -1;
     }
 
+    /** Registers packet codexes, block entity type lives in BlockReg */
     public static void register() {
-        GameRegistry.registerTileEntity(TileLauncherScreen.class, REGISTRY_NAME);
         PacketCodexReg.register(PACKET_RADIO_HZ, PACKET_RADIO_DISABLE, PACKET_TARGET, PACKET_GUI, PACKET_LAUNCH);
     }
 
@@ -157,27 +163,29 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
         .nodeString(t -> t.radioCap.getChannel(), (t, f) -> t.radioCap.setChannel(f))
         .nodeBoolean(t -> t.radioCap.isDisabled(), (t, f) -> t.radioCap.setDisabled(f))
         .nodeFloat(t -> t.launcherInaccuracy, (t, f) -> t.launcherInaccuracy = f)
+        // PORT: 1.12 never synced energy for the GUI, so the energy bar only showed the value from the chunk load
+        .nodeInt(t -> t.energyStorage.getEnergyStored(), (t, i) -> t.energyStorage.setEnergyStored(i))
         .nodeVec3d(TileLauncherScreen::getTarget, TileLauncherScreen::setTarget)
         .nodeNbtCompound(t -> {
-            final NBTTagCompound tag = new NBTTagCompound(); //TODO find a way to send bytes
-            final NBTTagList list = new NBTTagList();
+            final CompoundTag tag = new CompoundTag(); //TODO find a way to send bytes
+            final ListTag list = new ListTag();
             t.statusList.forEach((pair) -> {
-                final NBTTagCompound save = new NBTTagCompound();
-                save.setInteger("g", pair.getGroup());
-                save.setInteger("i", pair.getIndex());
-                save.setTag("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
-                list.appendTag(save);
+                final CompoundTag save = new CompoundTag();
+                save.putInt("g", pair.getGroup());
+                save.putInt("i", pair.getIndex());
+                save.put("p", ICBMClassicAPI.ACTION_STATUS_REGISTRY.save(pair.getStatus()));
+                list.add(save);
             });
-            tag.setTag("p", list);
+            tag.put("p", list);
             return tag;
         }, (t, tag) -> {
-            final NBTTagList list = tag.getTagList("p", 10);
-            final List<LauncherPair> status = new ArrayList<>(list.tagCount());
-            for(int i = 0; i < list.tagCount(); i++) {
-                final NBTTagCompound save = (NBTTagCompound) list.get(i);
-                final int group = save.getInteger("g");
-                final int index = save.getInteger("i");
-                final NBTTagCompound partSave = save.getCompoundTag("p");
+            final ListTag list = tag.getList("p", 10);
+            final List<LauncherPair> status = new ArrayList<>(list.size());
+            for(int i = 0; i < list.size(); i++) {
+                final CompoundTag save = (CompoundTag) list.get(i);
+                final int group = save.getInt("g");
+                final int index = save.getInt("i");
+                final CompoundTag partSave = save.getCompound("p");
                 final IActionStatus part = ICBMClassicAPI.ACTION_STATUS_REGISTRY.load(partSave);
                 if(part != null) {
                     status.add(new LauncherPair(group, index, part));
@@ -191,23 +199,23 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     public static final PacketCodexTile<TileLauncherScreen, RadioScreen> PACKET_RADIO_HZ = (PacketCodexTile<TileLauncherScreen, RadioScreen>) new PacketCodexTile<TileLauncherScreen, RadioScreen>(REGISTRY_NAME, "radio.frequency", (t) -> t.radioCap)
         .fromClient()
         .nodeString(RadioScreen::getChannel, RadioScreen::setChannel)
-        .onFinished((r, t, p) -> r.markDirty());
+        .onFinished((r, t, p) -> r.setChanged());
 
     public static final PacketCodexTile<TileLauncherScreen, RadioScreen> PACKET_RADIO_DISABLE = (PacketCodexTile<TileLauncherScreen, RadioScreen>) new PacketCodexTile<TileLauncherScreen, RadioScreen>(REGISTRY_NAME, "radio.disable", (t) -> t.radioCap)
         .fromClient()
         .toggleBoolean(RadioScreen::isDisabled, RadioScreen::setDisabled)
-        .onFinished((r, t, p) -> r.markDirty());
+        .onFinished((r, t, p) -> r.setChanged());
 
     public static final PacketCodexTile<TileLauncherScreen, TileLauncherScreen> PACKET_TARGET = (PacketCodexTile<TileLauncherScreen, TileLauncherScreen>) new PacketCodexTile<TileLauncherScreen, TileLauncherScreen>(REGISTRY_NAME, "target")
         .fromClient()
         .nodeVec3d(TileLauncherScreen::getTarget, TileLauncherScreen::setTarget)
-        .onFinished((r, t, p) -> r.markDirty());;
+        .onFinished((r, t, p) -> r.setChanged());
 
     public static final PacketCodexTile<TileLauncherScreen, TileLauncherScreen> PACKET_LAUNCH = (PacketCodexTile<TileLauncherScreen, TileLauncherScreen>) new PacketCodexTile<TileLauncherScreen, TileLauncherScreen>(REGISTRY_NAME, "launch")
         .fromClient()
         .onFinished((r, t, p) -> {
             r.fireAllLaunchers(false);
-            r.markDirty();
+            r.setChanged();
         });
 
     /**
@@ -222,7 +230,7 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     private IActionCause createCause() {
-        return new BlockScreenCause(world, pos, getBlockState()); //TODO cache?
+        return new BlockScreenCause(level, getBlockPos(), getBlockState()); //TODO cache?
     }
 
     public boolean fireAllLaunchers(boolean simulate) {
@@ -258,7 +266,7 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
      *
      * @return The string to be displayed
      */
-    public ITextComponent getStatusTranslation()
+    public Component getStatusTranslation()
     {
         // Network isn't setup
         if (getNetworkNode().getNetwork() == null)
@@ -277,24 +285,25 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
         if(errors.isEmpty()) {
             return LauncherLangs.TRANSLATION_READY;
         }
-        final ITextComponent status = new TextComponentTranslation(LauncherLangs.ERROR_MISSILE_MULTI, errors.size(), statusList.size());
+        final MutableComponent status = Component.translatable(LauncherLangs.ERROR_MISSILE_MULTI, errors.size(), statusList.size());
         for(int i = 0; i < errors.size() && i < 5; i++) {
-            status.appendText(" \n \t ");
-            status.appendSibling(errors.get(i).getStatus().message());
+            status.append(" \n \t ");
+            status.append(errors.get(i).getStatus().message());
         }
         return status;
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player)
+    public Component getDisplayName()
     {
-        return new ContainerLaunchScreen(player, this);
+        return Component.translatable("gui.launcherscreen.name");
     }
 
+    @Nullable
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player)
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player)
     {
-        return new GuiLauncherScreen(player, this);
+        return new ContainerLaunchScreen(windowId, player, this);
     }
 
     @Override
@@ -309,16 +318,16 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     @Override
-    public void invalidate()
+    public void setRemoved()
     {
         if(isServer()) {
             RadioRegistry.remove(radioCap);
         }
         getNetworkNode().onTileRemoved();
-        super.invalidate();
+        super.setRemoved();
     }
 
-    public Vec3d getTarget()
+    public Vec3 getTarget()
     {
         return this._targetPos;
     }
@@ -328,17 +337,17 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
      *
      * @param target
      */
-    public void setTarget(Vec3d target)
+    public void setTarget(Vec3 target)
     {
         if(target != this._targetPos) {
 
             // Only fire packet server side to avoid description packet triggering events
             if(isServer()) {
-                final LauncherSetTargetEvent event = new LauncherSetTargetEvent(world, getPos(), target);
+                final LauncherSetTargetEvent event = new LauncherSetTargetEvent(level, getBlockPos(), target);
 
-                if (!MinecraftForge.EVENT_BUS.post(event)) {
-                    this._targetPos = event.target == null ? Vec3d.ZERO : event.target;
-                    this.markDirty();
+                if (!NeoForge.EVENT_BUS.post(event).isCanceled()) {
+                    this._targetPos = event.target == null ? Vec3.ZERO : event.target;
+                    this.setChanged();
                 }
             }
             else {
@@ -348,16 +357,8 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return super.hasCapability(capability, facing)
-            || capability == ICBMClassicAPI.RADIO_CAPABILITY
-            || Optional.ofNullable(getNetworkNode().getNetwork()).map(network -> network.hasCapability(capability, facing)).orElse(false);
-    }
-
-    @Override
     @Nullable
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    public <T> T getCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing)
     {
         //TODO add IEnergyStorage wrapper to ensure this tile and the network both get power
         if(capability == ICBMClassicAPI.RADIO_CAPABILITY) {
@@ -365,37 +366,37 @@ public class TileLauncherScreen extends TileMachine implements ILauncherComponen
         }
         else if (getNetworkNode().getNetwork() != null)
         {
-            final T cap = getNetworkNode().getNetwork().getCapability(capability, facing);
-            if(cap != null) {
-                return cap;
-            }
+            return getNetworkNode().getNetwork().getCapability(capability, facing);
         }
-        return super.getCapability(capability, facing);
+        return null;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt)
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        super.readFromNBT(nbt);
+        super.loadAdditional(nbt, registries);
         SAVE_LOGIC.load(this, nbt);
 
         // Legacy handling TODO data fixer
-        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
-            this.radioCap.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+        if(nbt.contains(NBTConstants.FREQUENCY)) {
+            this.radioCap.setChannel(Integer.toString(nbt.getInt(NBTConstants.FREQUENCY)));
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
         SAVE_LOGIC.save(this, nbt);
-        return super.writeToNBT(nbt);
+        super.saveAdditional(nbt, registries);
     }
 
     private static final NbtSaveHandler<TileLauncherScreen> SAVE_LOGIC = new NbtSaveHandler<TileLauncherScreen>()
         .mainRoot()
         /* */.nodeINBTSerializable("radio", launcher -> launcher.radioCap)
         /* */.nodeINBTSerializable("inventory", launcher -> launcher.inventory)
+        // PORT: 1.12 never saved the screen's own buffer, so energy discharged from its battery slot was lost on reload
+        /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         /* */.nodeVec3d(NBTConstants.TARGET, launcher -> launcher._targetPos, (launcher, pos) -> launcher._targetPos = pos)
         .base();
 }
+// PORTED

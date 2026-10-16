@@ -3,8 +3,8 @@ package icbm.classic.api.reg.content;
 import icbm.classic.api.data.EntityTickFunction;
 import icbm.classic.api.data.WorldEntityIntSupplier;
 import icbm.classic.api.reg.IExplosiveData;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 9/7/2019.
@@ -54,3 +54,4 @@ public interface IExFuseEntityRegistry
      */
     int getFuseTime(Entity entity, IExplosiveData explosiveData);
 }
+// PORTED

@@ -1,10 +1,11 @@
 package icbm.classic.content.blocks.radarstation;
 
 import com.google.common.collect.Lists;
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
-public class PropertyRadarState extends PropertyEnum<EnumRadarState> {
+public class PropertyRadarState extends EnumProperty<EnumRadarState> {
     protected PropertyRadarState() {
         super("type", EnumRadarState.class, Lists.newArrayList(EnumRadarState.values()));
     }
 }
+// PORTED

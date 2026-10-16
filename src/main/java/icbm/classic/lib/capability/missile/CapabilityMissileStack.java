@@ -7,14 +7,9 @@ import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.content.missile.entity.explosive.EntityExplosiveMissile;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -40,29 +35,15 @@ public class CapabilityMissileStack implements ICapabilityMissileStack
     }
 
     @Override
-    public IMissile newMissile(World world)
+    public IMissile newMissile(Level world)
     {
         final EntityExplosiveMissile missile = new EntityExplosiveMissile(world);
         missile.explosive.setStack(stack);
+        // PORT: health was set in the constructor before the explosive (and so its tier) was known
+        missile.setHealth(missile.getMaxHealth());
         return missile.getMissileCapability();
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(ICapabilityMissileStack.class, new Capability.IStorage<ICapabilityMissileStack>()
-            {
-                @Nullable
-                @Override
-                public NBTBase writeNBT(Capability<ICapabilityMissileStack> capability, ICapabilityMissileStack instance, EnumFacing side)
-                {
-                    return null;
-                }
-
-                @Override
-                public void readNBT(Capability<ICapabilityMissileStack> capability, ICapabilityMissileStack instance, EnumFacing side, NBTBase nbt)
-                {
-                }
-            },
-            () -> new CapabilityMissileStack(ItemStack.EMPTY));
-    }
+    // PORT: register() (CapabilityManager storage) removed, not needed in NeoForge
 }
+// PORTED

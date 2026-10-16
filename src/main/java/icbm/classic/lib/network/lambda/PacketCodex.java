@@ -2,24 +2,22 @@ package icbm.classic.lib.network.lambda;
 
 import icbm.classic.ICBMClassic;
 import icbm.classic.lib.network.IPacket;
-import io.netty.buffer.ByteBuf;
+import icbm.classic.lib.network.TargetPoint;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nonnull;
@@ -65,7 +63,7 @@ public abstract class PacketCodex<RAW, TARGET> {
 
     /** Called when decoding is finished and all data is written to the target */
     @Accessors(chain = true, fluent = true)
-    private TriConsumer<RAW, TARGET, EntityPlayer> onFinished;
+    private TriConsumer<RAW, TARGET, Player> onFinished;
 
     public PacketCodex<RAW, TARGET> asClientOnly() {
         this.allowClient = true;
@@ -88,11 +86,11 @@ public abstract class PacketCodex<RAW, TARGET> {
     }
 
     public PacketCodex<RAW, TARGET> nodeInt(Function<TARGET, Integer> getter, BiConsumer<TARGET, Integer> setter) {
-        return node(Integer.class,false,  getter, setter, ByteBuf::writeInt, ByteBuf::readInt);
+        return node(Integer.class,false,  getter, setter, RegistryFriendlyByteBuf::writeInt, RegistryFriendlyByteBuf::readInt);
     }
 
     public PacketCodex<RAW, TARGET> nodeByte(Function<TARGET, Byte> getter, BiConsumer<TARGET, Byte> setter) {
-        entries.add(new PacketCodexEntry<TARGET, Byte>(Byte.class,false,  getter, setter, ByteBuf::writeByte, ByteBuf::readByte));
+        entries.add(new PacketCodexEntry<TARGET, Byte>(Byte.class,false,  getter, setter, (buf, b) -> buf.writeByte(b), RegistryFriendlyByteBuf::readByte));
         return this;
     }
 
@@ -103,57 +101,62 @@ public abstract class PacketCodex<RAW, TARGET> {
         return nodeByte((t) -> (byte) getter.apply(t).ordinal(), (t, v) -> setter.accept(t, e.getEnumConstants()[v]));
     }
 
-    public PacketCodex<RAW, TARGET> nodeFacing(Function<TARGET, EnumFacing> getter, BiConsumer<TARGET, EnumFacing> setter) {
-        return node(EnumFacing.class, false, getter, setter, (byteBuf, face) -> byteBuf.writeByte((byte)face.ordinal()), (byteBuf) -> EnumFacing.getFront(byteBuf.readByte()));
+    public PacketCodex<RAW, TARGET> nodeFacing(Function<TARGET, Direction> getter, BiConsumer<TARGET, Direction> setter) {
+        return node(Direction.class, false, getter, setter, (byteBuf, face) -> byteBuf.writeByte((byte)face.ordinal()), (byteBuf) -> Direction.from3DDataValue(byteBuf.readByte()));
     }
 
     public PacketCodex<RAW, TARGET> nodeDouble(Function<TARGET, Double> getter, BiConsumer<TARGET, Double> setter) {
-        return node(Double.class,false,  getter, setter, ByteBuf::writeDouble, ByteBuf::readDouble);
+        return node(Double.class,false,  getter, setter, RegistryFriendlyByteBuf::writeDouble, RegistryFriendlyByteBuf::readDouble);
     }
 
     public PacketCodex<RAW, TARGET> nodeFloat(Function<TARGET, Float> getter, BiConsumer<TARGET, Float> setter) {
-        return node(Float.class,false,  getter, setter, ByteBuf::writeFloat, ByteBuf::readFloat);
+        return node(Float.class,false,  getter, setter, RegistryFriendlyByteBuf::writeFloat, RegistryFriendlyByteBuf::readFloat);
     }
 
     public PacketCodex<RAW, TARGET> nodeString(Function<TARGET, String> getter, BiConsumer<TARGET, String> setter) {
-        return node(String.class,false,  getter, setter, ByteBufUtils::writeUTF8String, ByteBufUtils::readUTF8String);
+        return node(String.class,false,  getter, setter, (buf, str) -> buf.writeUtf(str), buf -> buf.readUtf());
     }
 
     public PacketCodex<RAW, TARGET> nodeItemStack(Function<TARGET, ItemStack> getter, BiConsumer<TARGET, ItemStack> setter) {
-        return node(ItemStack.class,false,  getter, setter,
-            (byteBuf, stack) -> { ByteBufUtils.writeTag(byteBuf, stack.serializeNBT());},
-            (byteBuf) -> new ItemStack(ByteBufUtils.readTag(byteBuf))
+        // PORT: encodeAsWriters captures the value at build time, but 1.21 encodes on the netty thread. The live stack
+        //  (a launcher's missile slot) can be shrunk or replaced by the server thread in between, so snapshot a copy.
+        return node(ItemStack.class,false,  (t) -> {
+                final ItemStack stack = getter.apply(t);
+                return stack == null ? ItemStack.EMPTY : stack.copy();
+            }, setter,
+            (byteBuf, stack) -> ItemStack.OPTIONAL_STREAM_CODEC.encode(byteBuf, stack),
+            ItemStack.OPTIONAL_STREAM_CODEC::decode
         );
     }
 
-    public PacketCodex<RAW, TARGET> nodeVec3d(Function<TARGET, Vec3d> getter, BiConsumer<TARGET, Vec3d> setter) {
-        entries.add(new PacketCodexEntry<TARGET, Vec3d>(Vec3d.class,false,  getter, setter,
+    public PacketCodex<RAW, TARGET> nodeVec3d(Function<TARGET, Vec3> getter, BiConsumer<TARGET, Vec3> setter) {
+        entries.add(new PacketCodexEntry<TARGET, Vec3>(Vec3.class,false,  getter, setter,
             (byteBuf, vec3d) -> {
                 byteBuf.writeDouble(vec3d.x);
                 byteBuf.writeDouble(vec3d.y);
                 byteBuf.writeDouble(vec3d.z);
             },
-            (byteBuf) -> new Vec3d(byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble())
+            (byteBuf) -> new Vec3(byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble())
         ));
         return this;
     }
 
-    public PacketCodex<RAW, TARGET> nodeNbtCompound(Function<TARGET, NBTTagCompound> getter, BiConsumer<TARGET, NBTTagCompound> setter) {
-        return node(NBTTagCompound.class,false,  getter, setter,ByteBufUtils::writeTag, ByteBufUtils::readTag);
+    public PacketCodex<RAW, TARGET> nodeNbtCompound(Function<TARGET, CompoundTag> getter, BiConsumer<TARGET, CompoundTag> setter) {
+        return node(CompoundTag.class,false,  getter, setter, (buf, tag) -> buf.writeNbt(tag), buf -> buf.readNbt());
     }
 
     public PacketCodex<RAW, TARGET> nodeBoolean(Function<TARGET, Boolean> getter, BiConsumer<TARGET, Boolean> setter) {
-        return node(Boolean.class, false, getter, setter, ByteBuf::writeBoolean, ByteBuf::readBoolean);
+        return node(Boolean.class, false, getter, setter, RegistryFriendlyByteBuf::writeBoolean, RegistryFriendlyByteBuf::readBoolean);
     }
 
     public PacketCodex<RAW, TARGET> toggleBoolean(Function<TARGET, Boolean> getter, BiConsumer<TARGET, Boolean> setter) {
         return nodeBoolean(getter, (t, b) -> setter.accept(t, !b));
     }
-    public <DATA> PacketCodex<RAW, TARGET> node(Class<DATA> clazz, boolean isArray, Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<ByteBuf, DATA> encoder, Function<ByteBuf, DATA> decoder) {
+    public <DATA> PacketCodex<RAW, TARGET> node(Class<DATA> clazz, boolean isArray, Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<RegistryFriendlyByteBuf, DATA> encoder, Function<RegistryFriendlyByteBuf, DATA> decoder) {
         return node(new PacketCodexEntry<>(clazz, isArray, getter, setter, encoder, decoder));
     }
 
-    public <DATA> PacketCodex<RAW, TARGET> node(Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<ByteBuf, DATA> encoder, Function<ByteBuf, DATA> decoder) {
+    public <DATA> PacketCodex<RAW, TARGET> node(Function<TARGET, DATA> getter, BiConsumer<TARGET, DATA> setter, BiConsumer<RegistryFriendlyByteBuf, DATA> encoder, Function<RegistryFriendlyByteBuf, DATA> decoder) {
         return node(new PacketCodexEntry<>(null, false, getter, setter, encoder, decoder));
     }
 
@@ -171,12 +174,12 @@ public abstract class PacketCodex<RAW, TARGET> {
      * @param target to encode
      * @return list of consumers to run for each field
      */
-    public List<Consumer<ByteBuf>> encodeAsWriters(TARGET target) {
+    public List<Consumer<RegistryFriendlyByteBuf>> encodeAsWriters(TARGET target) {
         return getEntries().stream()
             .map(entry -> {
                 final Object o = entry.getGetter().apply(target);
-                final BiConsumer<ByteBuf, Object> encoder = (BiConsumer<ByteBuf, Object>) entry.getEncoder();
-                return (Consumer<ByteBuf>) (byteBuf) -> encoder.accept(byteBuf, o);
+                final BiConsumer<RegistryFriendlyByteBuf, Object> encoder = (BiConsumer<RegistryFriendlyByteBuf, Object>) entry.getEncoder();
+                return (Consumer<RegistryFriendlyByteBuf>) (byteBuf) -> encoder.accept(byteBuf, o);
             })
             .collect(Collectors.toList());
     }
@@ -187,10 +190,10 @@ public abstract class PacketCodex<RAW, TARGET> {
      * @param byteBuf
      * @return
      */
-    public List<Consumer<TARGET>> decodeAsSetters(ByteBuf byteBuf) {
+    public List<Consumer<TARGET>> decodeAsSetters(RegistryFriendlyByteBuf byteBuf) {
         return getEntries().stream()
             .map(entry -> {
-                final Function<ByteBuf, Object> decoder = (Function<ByteBuf, Object>) entry.getDecoder();
+                final Function<RegistryFriendlyByteBuf, Object> decoder = (Function<RegistryFriendlyByteBuf, Object>) entry.getDecoder();
                 final Object data = decoder.apply(byteBuf);
                 final BiConsumer<TARGET, Object> setter = (BiConsumer<TARGET, Object>) entry.getSetter();
                 return (Consumer<TARGET>) (target) -> setter.accept(target, data);
@@ -211,12 +214,12 @@ public abstract class PacketCodex<RAW, TARGET> {
         }
     }
 
-    public void sendPacketToGuiUsers(RAW raw, Collection<EntityPlayer> players)
+    public void sendPacketToGuiUsers(RAW raw, Collection<? extends Player> players)
     {
         try {
             final IPacket packet = build(raw);
-            players.stream().filter(player -> player instanceof EntityPlayerMP).forEach((player) -> {
-                ICBMClassic.packetHandler.sendToPlayer(packet, (EntityPlayerMP) player);
+            players.stream().filter(player -> player instanceof ServerPlayer).forEach((player) -> {
+                ICBMClassic.packetHandler.sendToPlayer(packet, (ServerPlayer) player);
             });
         }
         catch (Exception e) {
@@ -224,7 +227,7 @@ public abstract class PacketCodex<RAW, TARGET> {
         }
     }
 
-    public void sendToAllAround(RAW raw, NetworkRegistry.TargetPoint point){
+    public void sendToAllAround(RAW raw, TargetPoint point){
         try {
             ICBMClassic.packetHandler.sendToAllAround(build(raw), point);
         }
@@ -238,12 +241,12 @@ public abstract class PacketCodex<RAW, TARGET> {
         return String.format("%s(%s,%s,%s)", getClass().getName(), id, parent, name);
     }
 
-    public String generateLogMessage(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message) {
+    public String generateLogMessage(@Nullable Level world, @Nullable BlockPos pos, @Nonnull String message) {
         return String.format(
             LOGGER_TEMPLATE,
             getId(),
             message,
-            Optional.ofNullable(world).map(World::getWorldInfo).map(WorldInfo::getWorldName).orElse("--"),
+            Optional.ofNullable(world).map(w -> w.dimension().location().toString()).orElse("--"),
             Optional.ofNullable(pos).map(BlockPos::getX).map(Object::toString).orElse("-"),
             Optional.ofNullable(pos).map(BlockPos::getY).map(Object::toString).orElse("-"),
             Optional.ofNullable(pos).map(BlockPos::getZ).map(Object::toString).orElse("-"),
@@ -253,17 +256,17 @@ public abstract class PacketCodex<RAW, TARGET> {
         );
     }
 
-    public void logDebug(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message) {
+    public void logDebug(@Nullable Level world, @Nullable BlockPos pos, @Nonnull String message) {
         if(ICBMClassic.logger().isDebugEnabled()) {
             ICBMClassic.logger().debug(generateLogMessage(world, pos, message));
         }
     }
 
-    public void logError(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message) { //TODO consider custom exceptions with doTrace() logic
+    public void logError(@Nullable Level world, @Nullable BlockPos pos, @Nonnull String message) { //TODO consider custom exceptions with doTrace() logic
         ICBMClassic.logger().error(generateLogMessage(world, pos, message));
     }
 
-    public void logError(@Nullable World world, @Nullable BlockPos pos, @Nonnull String message, Exception e) { //TODO consider custom exceptions with doTrace() logic
+    public void logError(@Nullable Level world, @Nullable BlockPos pos, @Nonnull String message, Exception e) { //TODO consider custom exceptions with doTrace() logic
         ICBMClassic.logger().error(generateLogMessage(world, pos, message), e);
     }
 }

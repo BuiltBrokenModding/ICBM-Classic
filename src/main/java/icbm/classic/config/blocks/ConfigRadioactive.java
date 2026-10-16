@@ -1,6 +1,6 @@
 package icbm.classic.config.blocks;
 
-import net.minecraftforge.common.config.Config;
+import icbm.classic.lib.config.Config;
 
 public class ConfigRadioactive {
 

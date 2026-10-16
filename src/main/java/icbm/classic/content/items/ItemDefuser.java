@@ -4,17 +4,16 @@ import icbm.classic.api.ICBMClassicHelpers;
 import icbm.classic.api.caps.IExplosive;
 import icbm.classic.api.events.ExplosiveDefuseEvent;
 import icbm.classic.content.entity.EntityBombCart;
-import icbm.classic.lib.LanguageUtility;
 import icbm.classic.prefab.item.ItemICBMElectrical;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.NeoForge;
 
 //Explosive Defuser
 public class ItemDefuser extends ItemICBMElectrical
@@ -23,7 +22,7 @@ public class ItemDefuser extends ItemICBMElectrical
 
     public ItemDefuser()
     {
-        super("defuser");
+        super("defuser", new Item.Properties());
     }
 
     /**
@@ -36,48 +35,48 @@ public class ItemDefuser extends ItemICBMElectrical
      * @return True to cancel the rest of the interaction.
      */
     @Override
-    public boolean onLeftClickEntity(ItemStack itemStack, EntityPlayer player, Entity entity)
+    public boolean onLeftClickEntity(ItemStack itemStack, Player player, Entity entity)
     {
         if (this.getEnergy(itemStack) >= ENERGY_COST)
         {
             if (ICBMClassicHelpers.isExplosive(entity))
             {
-                if (!entity.world.isRemote)
+                if (!entity.level().isClientSide())
                 {
                     final IExplosive explosive = ICBMClassicHelpers.getExplosive(entity);
                     if (explosive != null)
                     {
-                        if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive)))
+                        if (NeoForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMExplosive(player, entity, explosive)).isCanceled())
                         {
                             return false;
                         }
 
                         explosive.onDefuse();
                     }
-                    entity.setDead();
+                    entity.discard();
                 }
             }
-            else if (entity instanceof EntityTNTPrimed)
+            else if (entity instanceof PrimedTnt)
             {
-                if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity)))
+                if (NeoForge.EVENT_BUS.post(new ExplosiveDefuseEvent.TNTExplosive(player, entity)).isCanceled())
                 {
                     return false;
                 }
 
-                if (!entity.world.isRemote)
+                if (!entity.level().isClientSide())
                 {
-                    entity.world.spawnEntity(new EntityItem(entity.world, entity.posX, entity.posY, entity.posZ, new ItemStack(Blocks.TNT)));
+                    entity.level().addFreshEntity(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), new ItemStack(Blocks.TNT)));
                 }
-                entity.setDead();
+                entity.discard();
             }
             else if (entity instanceof EntityBombCart)
             {
-                if (MinecraftForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMBombCart(player, entity)))
+                if (NeoForge.EVENT_BUS.post(new ExplosiveDefuseEvent.ICBMBombCart(player, entity)).isCanceled())
                 {
                     return false;
                 }
 
-                ((EntityBombCart) entity).killMinecart(DamageSource.GENERIC);
+                ((EntityBombCart) entity).killMinecart(entity.damageSources().generic());
             }
 
             this.discharge(itemStack, ENERGY_COST, true);
@@ -85,9 +84,10 @@ public class ItemDefuser extends ItemICBMElectrical
         }
         else
         {
-            player.sendMessage(new TextComponentString(LanguageUtility.getLocal("message.defuser.nopower")));
+            player.sendSystemMessage(Component.translatable("message.defuser.nopower"));
         }
 
         return false;
     }
 }
+// PORTED

@@ -8,3 +8,4 @@ public class TriggerActionMessage implements ITriggerActionMessage {
 
     private final String channel;
 }
+// PORTED

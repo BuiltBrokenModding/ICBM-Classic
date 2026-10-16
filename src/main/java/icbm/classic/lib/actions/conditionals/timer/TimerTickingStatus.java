@@ -9,11 +9,11 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -21,9 +21,9 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimerTickingStatus implements IActionStatus, INBTSerializable<NBTTagCompound> {
+public class TimerTickingStatus implements IActionStatus, INBTSerializable<CompoundTag> {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "conditional.timer.ticking");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "conditional.timer.ticking");
     public static final ImmutableList<MetaTag> TAGS = ImmutableList.of(ActionStatusTypes.WAITING, ActionStatusTypes.BLOCKING);
     //TODO consider caching common ticks as 0/10 to 10/10 will be reused a lot
 
@@ -37,8 +37,8 @@ public class TimerTickingStatus implements IActionStatus, INBTSerializable<NBTTa
     }
 
     @Override
-    public ITextComponent message() {
-        return new TextComponentTranslation(getTranslationKey(), tickCurrent, tickTarget);
+    public Component message() {
+        return Component.translatable(getTranslationKey(), tickCurrent, tickTarget);
     }
 
     @Nonnull
@@ -48,12 +48,12 @@ public class TimerTickingStatus implements IActionStatus, INBTSerializable<NBTTa
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return SAVE_LOGIC.save(this);
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -63,3 +63,4 @@ public class TimerTickingStatus implements IActionStatus, INBTSerializable<NBTTa
         /* */.nodeInteger("tick_target", TimerTickingStatus::getTickTarget, TimerTickingStatus::setTickTarget)
         .base();
 }
+// PORTED

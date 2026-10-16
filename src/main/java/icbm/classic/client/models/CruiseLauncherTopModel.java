@@ -1,53 +1,78 @@
 package icbm.classic.client.models;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import icbm.classic.ICBMConstants;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.client.model.ModelBox;
-import net.minecraft.client.model.ModelRenderer;
-
-// Made with Blockbench 4.6.4
+/**
+ * Top (rotating) part of the cruise launcher. Made with Blockbench 4.6.4.
+ * <p>
+ * PORT: register {@link #LAYER} with {@link #createLayer()} in EntityRenderersEvent.RegisterLayerDefinitions,
+ * then construct with {@code context.bakeLayer(LAYER)}.
+ */
 public class CruiseLauncherTopModel extends ModelICBM {
 
-	private final ModelRenderer yaw;
-	private final ModelRenderer pitch;
-	private final ModelRenderer arm1;
-	private final ModelRenderer arm2;
+    public static final ModelLayerLocation LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "cruise_launcher_top"), "main");
 
-	public CruiseLauncherTopModel() {
-		textureWidth = 64;
-		textureHeight = 64;
+	private final ModelPart yaw;
+	private final ModelPart pitch;
 
-		yaw = new ModelRenderer(this);
-		yaw.setRotationPoint(0.0F, 24.0F, 0.0F);
-		yaw.cubeList.add(new ModelBox(yaw, 0, 56, -8.0F, -2.0F, -3.0F, 16, 2, 6, 0.0F, false));
-
-		pitch = new ModelRenderer(this);
-		pitch.setRotationPoint(0.0F, -15.0F, 0.0F);
-		yaw.addChild(pitch);
-		pitch.cubeList.add(new ModelBox(pitch, 0, 13, 4.0F, -2.0F, -7.0F, 2, 5, 14, 0.0F, false));
-		pitch.cubeList.add(new ModelBox(pitch, 30, 13, -6.0F, -2.0F, -7.0F, 2, 5, 14, 0.0F, false));
-		pitch.cubeList.add(new ModelBox(pitch, 3, 0, -4.0F, 1.0F, -6.0F, 8, 2, 4, 0.0F, false));
-		pitch.cubeList.add(new ModelBox(pitch, 27, 0, -4.0F, 1.0F, 2.0F, 8, 2, 4, 0.0F, false));
-
-		arm1 = new ModelRenderer(this);
-		arm1.setRotationPoint(0.0F, 0.0F, 0.0F);
-		yaw.addChild(arm1);
-		arm1.cubeList.add(new ModelBox(arm1, 6, 33, 6.0F, -17.0F, -3.0F, 2, 5, 6, 0.0F, false));
-		arm1.cubeList.add(new ModelBox(arm1, 2, 44, 6.0F, -12.0F, -3.0F, 2, 10, 2, 0.0F, false));
-		arm1.cubeList.add(new ModelBox(arm1, 18, 44, 6.0F, -12.0F, 1.0F, 2, 10, 2, 0.0F, false));
-
-		arm2 = new ModelRenderer(this);
-		arm2.setRotationPoint(-14.0F, 0.0F, 0.0F);
-		yaw.addChild(arm2);
-		arm2.cubeList.add(new ModelBox(arm2, 6, 33, 6.0F, -17.0F, -3.0F, 2, 5, 6, 0.0F, false));
-		arm2.cubeList.add(new ModelBox(arm2, 2, 44, 6.0F, -12.0F, -3.0F, 2, 10, 2, 0.0F, false));
-		arm2.cubeList.add(new ModelBox(arm2, 18, 44, 6.0F, -12.0F, 1.0F, 2, 10, 2, 0.0F, false));
+	public CruiseLauncherTopModel(ModelPart root) {
+        super(RenderType::entityCutoutNoCull);
+		this.yaw = root.getChild("yaw");
+		this.pitch = yaw.getChild("pitch");
 	}
 
-    public void render(float scale, float rotYaw, float rotPitch)
+    public static LayerDefinition createLayer()
     {
-        yaw.rotateAngleY = rotYaw;
-        pitch.rotateAngleX = rotPitch;
+        final MeshDefinition mesh = new MeshDefinition();
+        final PartDefinition root = mesh.getRoot();
 
-        yaw.render(scale);
+        final PartDefinition yaw = root.addOrReplaceChild("yaw", CubeListBuilder.create()
+            .texOffs(0, 56).addBox(-8.0F, -2.0F, -3.0F, 16, 2, 6),
+            PartPose.offset(0.0F, 24.0F, 0.0F));
+
+        yaw.addOrReplaceChild("pitch", CubeListBuilder.create()
+            .texOffs(0, 13).addBox(4.0F, -2.0F, -7.0F, 2, 5, 14)
+            .texOffs(30, 13).addBox(-6.0F, -2.0F, -7.0F, 2, 5, 14)
+            .texOffs(3, 0).addBox(-4.0F, 1.0F, -6.0F, 8, 2, 4)
+            .texOffs(27, 0).addBox(-4.0F, 1.0F, 2.0F, 8, 2, 4),
+            PartPose.offset(0.0F, -15.0F, 0.0F));
+
+        final CubeListBuilder arm = CubeListBuilder.create()
+            .texOffs(6, 33).addBox(6.0F, -17.0F, -3.0F, 2, 5, 6)
+            .texOffs(2, 44).addBox(6.0F, -12.0F, -3.0F, 2, 10, 2)
+            .texOffs(18, 44).addBox(6.0F, -12.0F, 1.0F, 2, 10, 2);
+        yaw.addOrReplaceChild("arm1", arm, PartPose.offset(0.0F, 0.0F, 0.0F));
+        yaw.addOrReplaceChild("arm2", arm, PartPose.offset(-14.0F, 0.0F, 0.0F));
+
+        return LayerDefinition.create(mesh, 64, 64);
+    }
+
+    /**
+     * 1.12 render(scale, yaw, pitch), scale 0.0625 is applied by ModelPart itself
+     */
+    public void render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float rotYaw, float rotPitch)
+    {
+        yaw.yRot = rotYaw;
+        pitch.xRot = rotPitch;
+
+        yaw.render(poseStack, buffer, packedLight, packedOverlay);
+    }
+
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color)
+    {
+        yaw.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
 }
+// PORTED

@@ -2,13 +2,13 @@ package icbm.classic.lib.network.lambda;
 
 import icbm.classic.ICBMConstants;
 import icbm.classic.lib.tracker.EventTrackerField;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class PacketEventUtils {
 
-    public static final ResourceLocation CODEX_KEY = new ResourceLocation(ICBMConstants.DOMAIN, "packet.codex.key");
-    public static final ResourceLocation CODEX_ID = new ResourceLocation(ICBMConstants.DOMAIN, "packet.codex.id");
-    public static final ResourceLocation ERROR = new ResourceLocation(ICBMConstants.DOMAIN, "packet.error");
+    public static final ResourceLocation CODEX_KEY = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.codex.key");
+    public static final ResourceLocation CODEX_ID = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.codex.id");
+    public static final ResourceLocation ERROR = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "packet.error");
 
     public static EventTrackerField<String> fieldCodexKey(int index) {
         return new EventTrackerField<>(CODEX_KEY, String.class, (entry) -> (String)entry.getData()[index]);

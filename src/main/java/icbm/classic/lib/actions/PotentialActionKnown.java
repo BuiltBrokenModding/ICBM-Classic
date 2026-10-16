@@ -4,7 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.actions.IActionData;
 import icbm.classic.api.actions.data.IActionFieldProvider;
 import icbm.classic.lib.data.LazyBuilder;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
@@ -31,3 +31,4 @@ public final class PotentialActionKnown extends PotentialActionImp<PotentialActi
         return null;
     }
 }
+// PORTED

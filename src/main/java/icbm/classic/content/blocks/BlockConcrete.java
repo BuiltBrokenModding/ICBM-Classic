@@ -1,117 +1,73 @@
 package icbm.classic.content.blocks;
 
-import com.google.common.collect.Lists;
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 
-import javax.annotation.Nullable;
-
+/**
+ * Concrete blocks, flattened from the 1.12 meta variants (concrete, concrete_compact, concrete_reinforced).
+ * <p>
+ * PORT: explosion resistance is now set per block through properties (1.12 overrode getExplosionResistance per state).
+ */
 public class BlockConcrete extends Block
 {
-    public static final PropertyType TYPE_PROP = new PropertyType();
+    private final EnumType type;
 
-    public BlockConcrete()
+    public BlockConcrete(EnumType type)
     {
-        super(Material.ROCK);
-        this.setRegistryName(ICBMConstants.PREFIX + "concrete");
-        this.setUnlocalizedName(ICBMConstants.PREFIX + "concrete");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setHardness(10);
+        // PORT: 1.12 Material.ROCK needed a pickaxe to drop -> requiresCorrectToolForDrops plus the mineable/pickaxe tag.
+        // BASEDRUM instrument + requiresCorrectToolForDrops is what BlastBlockHelpers#isRockMaterial treats as 1.12 rock
+        super(Properties.of()
+            .mapColor(MapColor.STONE)
+            .instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresCorrectToolForDrops()
+            .strength(10, type.getExplosionResistance())
+            .sound(SoundType.STONE));
+        this.type = type;
+    }
+
+    public EnumType getType()
+    {
+        return type;
     }
 
     @Override
-    public int damageDropped(IBlockState state)
+    public String getDescriptionId()
     {
-        return getMetaFromState(state);
+        return "tile." + ICBMConstants.PREFIX + "concrete." + type.ordinal();
     }
 
-    @Override
-    protected BlockStateContainer createBlockState()
+    public static enum EnumType implements StringRepresentable
     {
-        return new BlockStateContainer(this, TYPE_PROP);
-    }
+        NORMAL(28),
+        COMPACT(280),
+        REINFORCED(2800); //obsidian is 2000 (1.12 value, 1.21 obsidian is 1200)
 
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
-    {
-        return getDefaultState().withProperty(TYPE_PROP, EnumType.get(meta));
-    }
+        private final float explosionResistance;
 
-    @Override
-    public int getMetaFromState(IBlockState state)
-    {
-        return state.getValue(TYPE_PROP).ordinal();
-    }
-
-    @Deprecated
-    public IBlockState getStateFromMeta(int meta)
-    {
-        return this.getDefaultState().withProperty(TYPE_PROP, EnumType.get(meta));
-    }
-
-    @Override
-    public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder, Explosion explosion)
-    {
-        IBlockState blockState = world.getBlockState(pos);
-
-        switch (blockState.getValue(TYPE_PROP))
+        EnumType(float explosionResistance)
         {
-            case COMPACT:
-                return 280;
-            case REINFORCED:
-                return 2800; //obsidian is 2000
-            default:
-            case NORMAL:
-                return 28;
+            this.explosionResistance = explosionResistance;
         }
-    }
 
-    @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (tab == this.getCreativeTabToDisplayOn())
+        public float getExplosionResistance()
         {
-            for (int i = 0; i < 3; i++)
-            {
-                items.add(new ItemStack(this, 1, i));
-            }
+            return explosionResistance;
         }
-    }
-
-    public static class PropertyType extends PropertyEnum<EnumType>
-    {
-        public PropertyType()
-        {
-            super("type", EnumType.class, Lists.newArrayList(EnumType.values()));
-        }
-    }
-
-    public static enum EnumType implements IStringSerializable
-    {
-        NORMAL,
-        COMPACT,
-        REINFORCED;
 
         @Override
-        public String getName()
+        public String getSerializedName()
         {
             return name().toLowerCase();
+        }
+
+        /** 1.12 name */
+        public String getName()
+        {
+            return getSerializedName();
         }
 
         public static EnumType get(int meta)
@@ -120,3 +76,4 @@ public class BlockConcrete extends Block
         }
     }
 }
+// PORTED

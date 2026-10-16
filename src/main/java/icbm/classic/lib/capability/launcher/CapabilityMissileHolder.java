@@ -3,14 +3,9 @@ package icbm.classic.lib.capability.launcher;
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.caps.IMissileHolder;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
-import javax.annotation.Nullable;
 
 public class CapabilityMissileHolder implements IMissileHolder
 {
@@ -41,7 +36,7 @@ public class CapabilityMissileHolder implements IMissileHolder
     @Override
     public boolean consumeMissile() {
         if(hasMissile()) {
-            final ICapabilityMissileStack missileStack = getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
+            final ICapabilityMissileStack missileStack = getMissileStack().getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
             if(missileStack != null) {
                 inventory.setStackInSlot(slot, missileStack.consumeMissile());
                 return true;
@@ -56,23 +51,6 @@ public class CapabilityMissileHolder implements IMissileHolder
         return inventory.isItemValid(slot, stack);
     }
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register(IMissileHolder.class, new Capability.IStorage<IMissileHolder>()
-            {
-                @Nullable
-                @Override
-                public NBTBase writeNBT(Capability<IMissileHolder> capability, IMissileHolder instance, EnumFacing side)
-                {
-                    return null;
-                }
-
-                @Override
-                public void readNBT(Capability<IMissileHolder> capability, IMissileHolder instance, EnumFacing side, NBTBase nbt)
-                {
-
-                }
-            },
-            () -> new CapabilityMissileHolder(null, 0));
-    }
+    // PORT: register() (CapabilityManager storage) removed, not needed in NeoForge
 }
+// PORTED

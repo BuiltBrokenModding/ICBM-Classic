@@ -1,6 +1,6 @@
 package icbm.classic.command.system;
 
-import net.minecraft.command.ICommandSender;
+import net.minecraft.commands.CommandSourceStack;
 
 import java.util.Collection;
 
@@ -30,5 +30,6 @@ public interface ICommandGroup extends ISubCommand
      * @param sender - user of the command
      * @return string usage of the command
      */
-    String getUsage(ICommandSender sender);
+    String getUsage(CommandSourceStack sender);
 }
+// PORTED

@@ -13,11 +13,12 @@ import icbm.classic.lib.radar.RadarEntity;
 import icbm.classic.lib.radar.RadarRegistry;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegistry<IMissileTarget>> implements IMissileTarget {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "anti.missile");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "anti.missile");
 
     private static final int MAX_TARGETS = 5;
     private static final int SCAN_DELAY = 10;
@@ -69,16 +70,17 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     }
 
     private void seekByRadar() {
-        final List<RadarEntity> entries = RadarRegistry.getRadarMapForWorld(host.world).getRadarObjects(host.x(), host.y(), ConfigMissile.SAM_MISSILE.TARGET_RANGE);
-        final List<Entity> valid = entries.stream().filter(RadarEntity::isValid).map(e -> e.entity).filter(this::isValid).collect(Collectors.toList());
+        // PORT: 1.12 passed y as the z center and sorted the unused entries list, now searches x/z and sorts the targets
+        final List<RadarEntity> entries = RadarRegistry.getRadarMapForWorld(host.level()).getRadarObjects(host.x(), host.z(), ConfigMissile.SAM_MISSILE.TARGET_RANGE);
+        final List<Entity> valid = entries.stream().filter(RadarEntity::isValid).map(e -> e.entity).filter(this::isValid).collect(Collectors.toCollection(ArrayList::new));
 
         //Sort so we get more priority targets
-         entries.sort((a, b) -> {
+        valid.sort((a, b) -> {
             // we want to avoid comparing on tier as this can create balance issues
 
             //Compare with distance from self TODO add radar priority settings
-            final double distanceA = host.getDistanceSq(a.entity);
-            final double distanceB = host.getDistanceSq(b.entity);
+            final double distanceA = host.distanceToSqr(a);
+            final double distanceB = host.distanceToSqr(b);
             return Double.compare(distanceA, distanceB);
         });
 
@@ -95,8 +97,8 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
             // we want to avoid comparing on tier as this can create balance issues
 
             //Compare with distance from self TODO add radar priority settings
-            final double distanceA = host.getDistanceSq(a);
-            final double distanceB = host.getDistanceSq(b);
+            final double distanceA = host.distanceToSqr(a);
+            final double distanceB = host.distanceToSqr(b);
             return Double.compare(distanceA, distanceB);
         });
 
@@ -105,12 +107,12 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     }
 
     private List<Entity> getValidTargets() {
-        return host.world()
-            .getEntitiesWithinAABB(EntityMissile.class, targetArea(), this::isValid);
+        return new ArrayList<>(host.world()
+            .getEntitiesOfClass(EntityMissile.class, targetArea(), this::isValid));
     }
 
-    private AxisAlignedBB targetArea() {
-        return new AxisAlignedBB(
+    private AABB targetArea() {
+        return new AABB(
             host.x() - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
             host.y() - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
             host.z() - ConfigMissile.SAM_MISSILE.TARGET_RANGE,
@@ -123,7 +125,7 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     private boolean isValid(Entity entity) {
         return entity instanceof EntityMissile
             && !(entity instanceof EntitySurfaceToAirMissile)
-            && entity.isEntityAlive();
+            && entity.isAlive();
         //TODO setup a FoF system to prevent targeting friendly missiles
         //TODO link to radar system so we can prioritize targets
         //TODO create missile that can fake out ABs
@@ -148,8 +150,8 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
     }
 
     @Override
-    public Vec3d getPosition() {
-        return getTarget() != null ? getTarget().getPositionVector() : null;
+    public Vec3 getPosition() {
+        return getTarget() != null ? getTarget().position() : null;
     }
 
     @Override
@@ -159,16 +161,17 @@ public class SAMTargetData extends BuildableObject<SAMTargetData, IBuilderRegist
 
     @Override
     public double getX() {
-        return Optional.ofNullable(getTarget()).map((entity) -> entity.posX).orElse(0.0);
+        return Optional.ofNullable(getTarget()).map(Entity::getX).orElse(0.0);
     }
 
     @Override
     public double getY() {
-        return Optional.ofNullable(getTarget()).map((entity) -> entity.posY).orElse(0.0);
+        return Optional.ofNullable(getTarget()).map(Entity::getY).orElse(0.0);
     }
 
     @Override
     public double getZ() {
-        return Optional.ofNullable(getTarget()).map((entity) -> entity.posZ).orElse(0.0);
+        return Optional.ofNullable(getTarget()).map(Entity::getZ).orElse(0.0);
     }
 }
+// PORTED

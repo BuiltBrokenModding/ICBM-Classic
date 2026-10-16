@@ -8,9 +8,8 @@ import icbm.classic.content.entity.flyingblock.FlyingBlock;
 import icbm.classic.lib.explosive.ThreadWorkBlast;
 import icbm.classic.lib.thread.IThreadWork;
 import icbm.classic.lib.thread.WorkerThreadManager;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,7 +63,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
 
             //Basic explosion
             //TODO remove basic in favor of thread
-            this.world().createExplosion(this.exploder, location.x(), location.y(), location.z(), 4F, true);
+            this.world().explode(this.exploder, location.x(), location.y(), location.z(), 4F, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
 
             //Create beam
             this.lightBeam = new EntityLightBeam(this.world())
@@ -73,7 +72,7 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             this.lightBeam.beamSize = 1;
             this.lightBeam.beamGlowSize = 2;
             this.lightBeam.setTargetBeamProgress(0.1f);
-            this.world().spawnEntity(this.lightBeam);
+            this.world().addFreshEntity(this.lightBeam);
         }
 
         //Start first thread if not already started
@@ -81,6 +80,9 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         {
             hasStartedFirstThread = true;
             this.lightBeam.setTargetBeamProgress(0.2f);
+
+            // PORT: worker threads read the loaded chunks captured here, see ChunkSnapshot
+            captureChunkSnapshot(getBlastRadius());
             WorkerThreadManager.INSTANCE.addWork(getFirstThread());
         }
 
@@ -97,8 +99,8 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
                 for (BlockPos blockPos : blocksToRemove)
                 {
                     FlyingBlock.spawnFlyingBlock(this.world, blockPos,
-                        (entity) -> entity.setGravity(entity.getGravity() - 0.01f),
-                        (e) -> world.setBlockToAir(blockPos));
+                        (entity) -> entity.setGravity(entity.getBlockGravity() - 0.01f),
+                        (e) -> world.removeBlock(blockPos, false));
                 }
 
                 blocksToRemove.clear();
@@ -109,6 +111,9 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             {
                 this.lightBeam.setTargetBeamProgress(0.8f);
                 hasStartedSecondThread = true;
+
+                // Captured again as chunks may have loaded or unloaded since the first thread
+                captureChunkSnapshot(getBlastRadius());
                 WorkerThreadManager.INSTANCE.addWork(getSecondThread());
             }
         }
@@ -132,24 +137,30 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         return hasPlacedBlocks;
     }
 
+    // PORT: 1.12 wrote the results and flags from the worker thread with no synchronization, they are
+    //  handed to the server thread instead so doExplode always sees the full list with the flag
     protected IThreadWork getFirstThread()
     {
         return new ThreadWorkBlast(this.toString(), (steps, edits) -> collectFlyingBlocks(edits), edits ->
-        {
-            blocksToRemove.addAll(edits);
-            hasGeneratedFlyingBlocks = false;
-            hasCompletedFirstThread = true;
-        });
+            scheduleOnServerThread(() ->
+            {
+                releaseChunkSnapshot();
+                blocksToRemove.addAll(edits);
+                hasGeneratedFlyingBlocks = false;
+                hasCompletedFirstThread = true;
+            }));
     }
 
     protected IThreadWork getSecondThread()
     {
         return new ThreadWorkBlast(this.toString(), (steps, edits) -> collectBlocksToMutate(edits), edits ->
-        {
-            blocksToRemove.addAll(edits);
-            hasPlacedBlocks = false;
-            hasCompetedSecondThread = true;
-        });
+            scheduleOnServerThread(() ->
+            {
+                releaseChunkSnapshot();
+                blocksToRemove.addAll(edits);
+                hasPlacedBlocks = false;
+                hasCompetedSecondThread = true;
+            }));
     }
 
     public boolean collectFlyingBlocks(Consumer<BlockPos> edits)
@@ -176,16 +187,16 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
             if (distanceSQ <= radiusSQ)
             {
                 //Update position
-                blockPos.setPos(location.x() + x, location.y() + y, location.z() + z);
+                blockPos.set(location.x() + x, location.y() + y, location.z() + z);
 
-                //Get block
-                final IBlockState state = world.getBlockState(blockPos);
-                final Block block = state.getBlock();
+                //Get block, PORT: worker thread, reads the chunks captured on the server thread.
+                // Chunks that were not loaded read as air and are skipped instead of being loaded.
+                final BlockState state = getBlockStateThreaded(blockPos);
 
                 //Validate TODO rework to not access blockstates, instead just collect positions
-                if (!block.isAir(state, world, blockPos) && state.getBlockHardness(world, blockPos) >= 0)
+                if (!state.isAir() && state.getDestroySpeed(world, blockPos) >= 0)
                 {
-                    edits.accept(blockPos.toImmutable());
+                    edits.accept(blockPos.immutable());
                 }
             }
         });
@@ -205,3 +216,4 @@ public abstract class BlastBeam extends Blast implements IBlastTickable
         }
     }
 }
+// PORTED

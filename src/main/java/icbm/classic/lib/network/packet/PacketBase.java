@@ -4,12 +4,13 @@ import com.builtbroken.jlib.data.network.IByteBufWriter;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.transform.vector.Pos;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.DecoderException;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -24,19 +25,33 @@ import java.util.function.Consumer;
 @Deprecated
 public class PacketBase<P extends PacketBase> implements IPacket<P>
 {
-    protected List<Consumer<ByteBuf>> writers = new ArrayList();
+    protected List<Consumer<RegistryFriendlyByteBuf>> writers = new ArrayList();
     protected ByteBuf dataToRead;
 
     @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void encodeInto(RegistryFriendlyByteBuf buffer)
     {
-        writers.forEach((func) -> func.accept(buffer));
+        // Prefix with length so the remaining data can be copied out on decode
+        final RegistryFriendlyByteBuf data = new RegistryFriendlyByteBuf(Unpooled.buffer(), buffer.registryAccess());
+        writers.forEach((func) -> func.accept(data));
+        buffer.writeVarInt(data.readableBytes());
+        buffer.writeBytes(data);
     }
 
     @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void decodeInto(RegistryFriendlyByteBuf buffer)
     {
-        dataToRead = buffer.slice().copy();
+        final int length = buffer.readVarInt();
+        // Validate before allocating, the length comes from the other side
+        if (length < 0 || length > buffer.readableBytes())
+        {
+            throw new DecoderException("PacketBase: data length " + length + " is invalid, readable bytes " + buffer.readableBytes());
+        }
+        // Copy into an unpooled heap buffer, ByteBuf#readBytes(int) would allocate from the (pooled) network
+        // allocator and nothing releases this buffer
+        final byte[] bytes = new byte[length];
+        buffer.readBytes(bytes);
+        dataToRead = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(bytes), buffer.registryAccess());
     }
 
 
@@ -46,7 +61,7 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
      * @param object - object to write
      * @param buffer - location to write to
      */
-    private void writeData(Object object, ByteBuf buffer)
+    private void writeData(Object object, RegistryFriendlyByteBuf buffer)
     {
         if (object.getClass().isArray())
         {
@@ -92,15 +107,15 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
         }
         else if (object instanceof String)
         {
-            ByteBufUtils.writeUTF8String(buffer, (String) object);
+            buffer.writeUtf((String) object);
         }
-        else if (object instanceof NBTTagCompound)
+        else if (object instanceof CompoundTag)
         {
-            ByteBufUtils.writeTag(buffer, (NBTTagCompound) object);
+            buffer.writeNbt((CompoundTag) object);
         }
         else if (object instanceof ItemStack)
         {
-            ByteBufUtils.writeItemStack(buffer, (ItemStack) object);
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, (ItemStack) object);
         }
         else if (object instanceof Pos)
         {
@@ -121,11 +136,11 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
             buffer.writeInt(((Vec3i) object).getZ());
         }
 
-        else if (object instanceof Vec3d)
+        else if (object instanceof Vec3)
         {
-            buffer.writeDouble(((Vec3d) object).x);
-            buffer.writeDouble(((Vec3d) object).y);
-            buffer.writeDouble(((Vec3d) object).z);
+            buffer.writeDouble(((Vec3) object).x);
+            buffer.writeDouble(((Vec3) object).y);
+            buffer.writeDouble(((Vec3) object).z);
         }
         else
         {
@@ -150,7 +165,7 @@ public class PacketBase<P extends PacketBase> implements IPacket<P>
     }
 
     @Override
-    public P addData(Consumer<ByteBuf> writer) {
+    public P addData(Consumer<RegistryFriendlyByteBuf> writer) {
         writers.add(writer);
         return (P) this;
     }

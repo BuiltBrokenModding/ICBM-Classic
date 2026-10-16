@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:tag_empty",
+      "tag": "c:circuits/basic"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "c",
+    "e",
+    "m"
+  ],
+  "key": {
+    "m": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosive_missile",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:missile"
+      }
+    },
+    "e": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:condensed"
+      }
+    },
+    "c": {
+      "item": "minecraft:repeater"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:surface_to_air_missile",
+    "count": 1
+  }
+}

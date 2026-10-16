@@ -1,9 +1,11 @@
 package icbm.classic.prefab.item;
 
-import icbm.classic.ICBMClassic;
+import net.minecraft.world.item.Item;
 
 /**
- * Prefab for ICBM items that sets the creative tab, texture name, and translation name
+ * Prefab for ICBM items that sets the translation name
+ * <p>
+ * PORT: creative tab is no longer set per item, {@link icbm.classic.client.ICBMCreativeTab} lists every ICBM item.
  *
  * @author DarkGuardsman
  */
@@ -12,7 +14,13 @@ public class ItemICBMBase extends ItemBase
 {
     public ItemICBMBase(String name)
     {
+        this(name, new Item.Properties());
+    }
+
+    public ItemICBMBase(String name, Item.Properties properties)
+    {
+        super(properties);
         setName(name);
-        setCreativeTab(ICBMClassic.CREATIVE_TAB);
     }
 }
+// PORTED

@@ -1,39 +1,30 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "icbmclassic:silo_pad"
-  },
   "variants": {
-    "normal": {
-      "model": "icbmclassic:silo_pad"
+    "facing=up": {
+      "model": "icbmclassic:block/silo_pad"
     },
-    "inventory": {
-      "model": "icbmclassic:silo_pad"
+    "facing=down": {
+      "model": "icbmclassic:block/silo_pad",
+      "x": 180
     },
-    "facing": {
-      "up": {
-        "x": 0
-      },
-      "down": {
-        "x": 180
-      },
-      "north": {
-        "y": 180,
-        "x": -90
-      },
-      "south": {
-        "y": 0,
-        "x": -90
-      },
-      "east": {
-        "y": 270,
-        "x": -90
-      },
-      "west": {
-        "y": 90,
-        "x": -90
-      }
+    "facing=north": {
+      "model": "icbmclassic:block/silo_pad",
+      "x": 270,
+      "y": 180
+    },
+    "facing=south": {
+      "model": "icbmclassic:block/silo_pad",
+      "x": 270
+    },
+    "facing=east": {
+      "model": "icbmclassic:block/silo_pad",
+      "x": 270,
+      "y": 270
+    },
+    "facing=west": {
+      "model": "icbmclassic:block/silo_pad",
+      "x": 270,
+      "y": 90
     }
   }
 }
-

@@ -1,71 +1,42 @@
 package icbm.classic.content.blocks;
 
-import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 
-public class BlockReinforcedGlass extends Block
+/**
+ * PORT: 1.12 cutout render layer comes from the block model ("render_type": "cutout").
+ * Silk touch drops come from the loot table. 1.12 resistance field 144 maps to 28.8.
+ */
+public class BlockReinforcedGlass extends TransparentBlock
 {
     public BlockReinforcedGlass()
     {
-        super(Material.GLASS);
-        this.setRegistryName(ICBMConstants.PREFIX + "reinforcedGlass");
-        this.setUnlocalizedName(ICBMConstants.PREFIX + "reinforcedGlass");
-        this.setCreativeTab(ICBMClassic.CREATIVE_TAB);
-        this.setHardness(10);
-        this.setResistance(48);
+        super(Properties.of()
+            .mapColor(MapColor.NONE)
+            .strength(10, 28.8f)
+            .sound(SoundType.GLASS)
+            .noOcclusion()
+            .isValidSpawn((state, level, pos, type) -> false)
+            .isRedstoneConductor((state, level, pos) -> false)
+            .isSuffocating((state, level, pos) -> false)
+            .isViewBlocking((state, level, pos) -> false));
     }
 
     @Override
-    protected boolean canSilkHarvest()
+    public String getDescriptionId()
     {
-        return true;
+        return "tile." + ICBMConstants.PREFIX + "reinforcedGlass";
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state)
+    protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction side)
     {
-        return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-    {
-        IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
-        Block block = iblockstate.getBlock();
-
-        if (blockState != iblockstate)
-        {
-            return true;
-        }
-
-        if (block == this)
-        {
-            return false;
-        }
-
-        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
+        // Same as 1.12 shouldSideBeRendered: hide faces between identical states
+        return adjacentState.is(this) || super.skipRendering(state, adjacentState, side);
     }
 }
+// PORTED

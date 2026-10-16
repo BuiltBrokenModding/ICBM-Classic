@@ -148,3 +148,4 @@ public class Quaternion implements ITransform
         return "Quaternion[" + BigDecimal.valueOf(w).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(x).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(y).setScale(precision, RoundingMode.HALF_UP) + ", " + BigDecimal.valueOf(z).setScale(precision, RoundingMode.HALF_UP) + "]";
     }
 }
+// PORTED

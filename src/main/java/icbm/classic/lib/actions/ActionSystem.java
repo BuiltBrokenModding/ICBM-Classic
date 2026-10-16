@@ -35,17 +35,17 @@ import icbm.classic.lib.saving.nodes.SaveNodeResourceLocation;
 import icbm.classic.lib.saving.nodes.SaveNodeVec3d;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ActionSystem {
-    public static final ResourceLocation ACTION_ENTITY_SPAWN = new ResourceLocation(ICBMConstants.DOMAIN, "entity.spawn");
+    public static final ResourceLocation ACTION_ENTITY_SPAWN = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "entity.spawn");
 
     public static void setup()
     {
@@ -60,17 +60,17 @@ public final class ActionSystem {
     }
 
     private static void setupActionFields() {
-        ActionFields.AREA_SIZE = ActionField.getOrCreate("area.size", Float.class, NBTTagFloat::new, NBTTagFloat::getFloat);
+        ActionFields.AREA_SIZE = ActionField.getOrCreate("area.size", Float.class, FloatTag::valueOf, FloatTag::getAsFloat);
         ActionFields.HOST_ENTITY = ActionField.getOrCreate("host.entity", Entity.class, null, null);
-        ActionFields.HOST_POSITION = ActionField.getOrCreate("host.vec3d", Vec3d.class, SaveNodeVec3d::save, SaveNodeVec3d::load);
-        ActionFields.HOST_DIRECTION = ActionField.getOrCreate("host.direction", EnumFacing.class, SaveNodeFacing::save, SaveNodeFacing::load);
+        ActionFields.HOST_POSITION = ActionField.getOrCreate("host.vec3d", Vec3.class, SaveNodeVec3d::save, SaveNodeVec3d::load);
+        ActionFields.HOST_DIRECTION = ActionField.getOrCreate("host.direction", Direction.class, SaveNodeFacing::save, SaveNodeFacing::load);
         ActionFields.IMPACTED = ActionField.getOrCreate("impacted", Boolean.class, SaveNodeBoolean::save, SaveNodeBoolean::load);
-        ActionFields.TARGET_POSITION = ActionField.getOrCreate("target.vec3d", Vec3d.class, SaveNodeVec3d::save, SaveNodeVec3d::load);
-        ActionFields.MOTION_VECTOR = ActionField.getOrCreate("motion.vec3d", Vec3d.class, SaveNodeVec3d::save, SaveNodeVec3d::load);
-        ActionFields.YAW = ActionField.getOrCreate("yaw", Float.class, NBTTagFloat::new, NBTTagFloat::getFloat);
-        ActionFields.PITCH = ActionField.getOrCreate("pitch", Float.class, NBTTagFloat::new, NBTTagFloat::getFloat);
+        ActionFields.TARGET_POSITION = ActionField.getOrCreate("target.vec3d", Vec3.class, SaveNodeVec3d::save, SaveNodeVec3d::load);
+        ActionFields.MOTION_VECTOR = ActionField.getOrCreate("motion.vec3d", Vec3.class, SaveNodeVec3d::save, SaveNodeVec3d::load);
+        ActionFields.YAW = ActionField.getOrCreate("yaw", Float.class, FloatTag::valueOf, FloatTag::getAsFloat);
+        ActionFields.PITCH = ActionField.getOrCreate("pitch", Float.class, FloatTag::valueOf, FloatTag::getAsFloat);
         ActionFields.ENTITY_REG_NAME = ActionField.getOrCreate("entity.regName", ResourceLocation.class, SaveNodeResourceLocation::save, SaveNodeResourceLocation::load);
-        ActionFields.ENTITY_DATA = ActionField.getOrCreate("entity.data", NBTTagCompound.class, (v) -> v, (t) -> t);
+        ActionFields.ENTITY_DATA = ActionField.getOrCreate("entity.data", CompoundTag.class, (v) -> v, (t) -> t);
     }
 
     private static void setupConditionalRegistry() {
@@ -83,7 +83,7 @@ public final class ActionSystem {
         ICBMClassicAPI.CONDITION_REGISTRY.register(ConditionOR.REG_NAME, ConditionOR::new);
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ConditionalRegistryEvent(ICBMClassicAPI.CONDITION_REGISTRY));
+        NeoForge.EVENT_BUS.post(new ConditionalRegistryEvent(ICBMClassicAPI.CONDITION_REGISTRY));
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry)ICBMClassicAPI.CONDITION_REGISTRY).lock();
@@ -99,7 +99,7 @@ public final class ActionSystem {
         ICBMClassicAPI.ACTION_STATUS_REGISTRY.register(MissingFieldStatus.REG_NAME, MissingFieldStatus::new);
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ActionStatusRegistryEvent(ICBMClassicAPI.ACTION_STATUS_REGISTRY));
+        NeoForge.EVENT_BUS.post(new ActionStatusRegistryEvent(ICBMClassicAPI.ACTION_STATUS_REGISTRY));
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry)ICBMClassicAPI.ACTION_STATUS_REGISTRY).lock();
@@ -113,12 +113,12 @@ public final class ActionSystem {
         ICBMClassicAPI.ACTION_REGISTRY.register(ActionDataCluster.REG_NAME, ActionDataCluster::new);
         ICBMClassicAPI.ACTION_REGISTRY.register(ACTION_ENTITY_SPAWN,
             () -> new ActionDataGeneric(ACTION_ENTITY_SPAWN,
-                (w, x, y, z, s, d) -> new ActionSpawnEntity(w, new Vec3d(x, y, z), s, d),
+                (w, x, y, z, s, d) -> new ActionSpawnEntity(w, new Vec3(x, y, z), s, d),
                 ActionSpawnEntity.FIELDS
             ));
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ActionRegistryEvent(ICBMClassicAPI.ACTION_REGISTRY));
+        NeoForge.EVENT_BUS.post(new ActionRegistryEvent(ICBMClassicAPI.ACTION_REGISTRY));
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry)ICBMClassicAPI.ACTION_REGISTRY).lock();
@@ -136,7 +136,7 @@ public final class ActionSystem {
         ICBMClassicAPI.ACTION_CAUSE_REGISTRY.register(CauseByTimer.REG_NAME, CauseByTimer::new);
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ActionCauseRegistryEvent(ICBMClassicAPI.ACTION_CAUSE_REGISTRY));
+        NeoForge.EVENT_BUS.post(new ActionCauseRegistryEvent(ICBMClassicAPI.ACTION_CAUSE_REGISTRY));
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry)ICBMClassicAPI.ACTION_CAUSE_REGISTRY).lock();
@@ -150,9 +150,10 @@ public final class ActionSystem {
         ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY.register(PotentialAction.REG_NAME, PotentialAction::new);
 
         //Fire registry event
-        MinecraftForge.EVENT_BUS.post(new ActionPotentialRegistryEvent(ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY));
+        NeoForge.EVENT_BUS.post(new ActionPotentialRegistryEvent(ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY));
 
         //Lock to prevent late registry
         ((BuildableObjectRegistry)ICBMClassicAPI.ACTION_POTENTIAL_REGISTRY).lock();
     }
 }
+// PORTED

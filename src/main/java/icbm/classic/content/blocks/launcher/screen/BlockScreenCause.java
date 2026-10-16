@@ -5,10 +5,10 @@ import icbm.classic.content.missile.logic.source.cause.CausedByBlock;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -17,9 +17,9 @@ import javax.annotation.Nonnull;
 @NoArgsConstructor
 public class BlockScreenCause extends CausedByBlock {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "block.screen");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "block.screen");
 
-    public BlockScreenCause(World world, BlockPos pos, IBlockState state) {
+    public BlockScreenCause(Level world, BlockPos pos, BlockState state) {
         super(world, pos, state);
     }
 
@@ -29,3 +29,4 @@ public class BlockScreenCause extends CausedByBlock {
         return REG_NAME;
     }
 }
+// PORTED

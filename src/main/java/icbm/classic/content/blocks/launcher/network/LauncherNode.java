@@ -1,16 +1,17 @@
 package icbm.classic.content.blocks.launcher.network;
 
 import lombok.Data;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 @Data
 public class LauncherNode {
 
     private LauncherNetwork network;
 
-    private final TileEntity self;
+    private final BlockEntity self;
 
     /**
      * True to allow external tiles to insert items into this tile using the network.
@@ -27,9 +28,26 @@ public class LauncherNode {
      * @param self hosting the node
      * @param acceptsItems to enable network to feed this tile items. If enabled this tile shouldn't dump back to the network.
      */
-    public LauncherNode(TileEntity self, boolean acceptsItems) {
+    public LauncherNode(BlockEntity self, boolean acceptsItems) {
         this.self = self;
         this.acceptsItems = acceptsItems;
+    }
+
+    public void setNetwork(LauncherNetwork network) {
+        if(this.network != network) {
+            this.network = network;
+            invalidateCapabilities();
+        }
+    }
+
+    /**
+     * PORT: 1.21 caches block capabilities, network backed caps (energy/items) change with the network
+     */
+    protected void invalidateCapabilities() {
+        final Level level = self.getLevel();
+        if(level != null && !level.isClientSide()) {
+            level.invalidateCapabilities(self.getBlockPos());
+        }
     }
 
     /**
@@ -45,18 +63,22 @@ public class LauncherNode {
     }
 
     public void onNetworkInvalidate() {
-        network = null;
+        setNetwork(null);
     }
 
     public void connectToTiles() {
-        for (EnumFacing side : EnumFacing.VALUES) {
-            final BlockPos nextPos = self.getPos().offset(side);
+        final Level level = self.getLevel();
+        if(level == null) {
+            return;
+        }
+        for (Direction side : Direction.values()) {
+            final BlockPos nextPos = self.getBlockPos().relative(side);
 
             // Only search for tiles in loaded chunks
-            if (self.getWorld().isBlockLoaded(nextPos)) {
+            if (level.isLoaded(nextPos)) {
 
                 //Get next possible connection
-                final TileEntity tile = self.getWorld().getTileEntity(nextPos);
+                final BlockEntity tile = level.getBlockEntity(nextPos);
                 if (tile instanceof ILauncherComponent && ((ILauncherComponent) tile).isValid()) {
                     final LauncherNode node = ((ILauncherComponent) tile).getNetworkNode();
 
@@ -90,7 +112,13 @@ public class LauncherNode {
     }
 
     @Override
+    public boolean equals(Object o) {
+        return this == o;
+    }
+
+    @Override
     public int hashCode() {
-        return self.getPos().hashCode();
+        return self.getBlockPos().hashCode();
     }
 }
+// PORTED

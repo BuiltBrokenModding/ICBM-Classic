@@ -2,41 +2,37 @@ package icbm.classic.mods.jei;
 
 import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
-import icbm.classic.content.cluster.missile.CapabilityClusterMissileStack;
 import icbm.classic.content.missile.entity.itemstack.item.CapabilityHeldItemMissile;
 import lombok.AllArgsConstructor;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-
+/**
+ * Held item missile + item -> missile holding the item.
+ * PORT: 1.12 ICraftingRecipeWrapper, now builds a display only shapeless recipe for JEI 19.
+ */
 @AllArgsConstructor
-public class HeldItemMissileWrapper implements ICraftingRecipeWrapper {
+public class HeldItemMissileWrapper {
 
     private final ItemStack output;
     private final ItemStack input;
     private final ResourceLocation regName;
 
-    @Override
-    public void getIngredients(IIngredients iIngredients) {
-
-        iIngredients.setInputs(ItemStack.class, Arrays.asList(output, input));
-
-        final ItemStack out = output.copy();
-        final ICapabilityMissileStack missileStack = out.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY, null);
-        if(missileStack instanceof CapabilityHeldItemMissile) {
-            ((CapabilityHeldItemMissile) missileStack).setHeldItem(input.copy());
-        }
-        iIngredients.setOutput(ItemStack.class, Collections.singletonList(out));
+    public RecipeHolder<CraftingRecipe> build() {
+        return JeiRecipeHelper.shapeless(regName, createMissileWithItem(output, input),
+            JeiRecipeHelper.exact(output), JeiRecipeHelper.exact(input));
     }
 
-    @Override
-    @Nullable
-    public ResourceLocation getRegistryName() {
-        return regName;
+    /** Shared with {@link DecraftHeldItemMissileWrapper} */
+    static ItemStack createMissileWithItem(ItemStack missile, ItemStack held) {
+        final ItemStack out = missile.copy();
+        final ICapabilityMissileStack missileStack = out.getCapability(ICBMClassicAPI.MISSILE_STACK_CAPABILITY);
+        if(missileStack instanceof CapabilityHeldItemMissile) {
+            ((CapabilityHeldItemMissile) missileStack).setHeldItem(held.copy());
+        }
+        return out;
     }
 }
+// PORTED

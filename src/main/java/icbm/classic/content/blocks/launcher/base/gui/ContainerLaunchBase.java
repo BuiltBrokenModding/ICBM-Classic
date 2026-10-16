@@ -1,11 +1,11 @@
 package icbm.classic.content.blocks.launcher.base.gui;
 
 import icbm.classic.content.blocks.launcher.base.TileLauncherBase;
+import icbm.classic.content.reg.MenuReg;
 import icbm.classic.prefab.gui.ContainerBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  *
@@ -13,73 +13,23 @@ import net.minecraftforge.items.SlotItemHandler;
  */
 public class ContainerLaunchBase extends ContainerBase<TileLauncherBase>
 {
-    public ContainerLaunchBase(EntityPlayer player, TileLauncherBase tileEntity)
+    public ContainerLaunchBase(int windowId, Player player, TileLauncherBase tileEntity)
     {
-        super(player, tileEntity);
+        super(MenuReg.LAUNCHER_BASE.get(), windowId, player, tileEntity);
 
         // Missile Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 0, 88, 47));
+        this.addSlot(new SlotItemHandler(tileEntity.inventory, 0, 88, 47));
         // Battery Slot
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.inventory, 1, 141, 47));
+        this.addSlot(new SlotItemHandler(tileEntity.inventory, 1, 141, 47));
 
         addPlayerInventory(player, 7, 84);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex)
+    public ItemStack quickMoveStack(Player player, int slotIndex)
     {
-        ItemStack targetItemStackCopy = null;
-        Slot targetSlot = (Slot) this.inventorySlots.get(slotIndex);
-
-        if (targetSlot != null && targetSlot.getHasStack())
-        {
-            ItemStack targetItemStack = targetSlot.getStack();
-            targetItemStackCopy = targetItemStack.copy();
-
-            if (slotIndex > 0)
-            {
-                if (this.getSlot(0).isItemValid(targetItemStack))
-                {
-                    if (!this.mergeItemStack(targetItemStack, 0, 1, false))
-                    {
-                        return ItemStack.EMPTY;
-                    }
-                }
-                else if (this.getSlot(1).isItemValid(targetItemStack))
-                {
-                    if (!this.mergeItemStack(targetItemStack, 1, 2, false))
-                    {
-                        return ItemStack.EMPTY;
-                    }
-                }
-            }
-            else if (!this.mergeItemStack(targetItemStack, 2, 36 + 2, false))
-            {
-                return ItemStack.EMPTY;
-            }
-
-            if (targetItemStack.getCount() == 0)
-            {
-                targetSlot.putStack(ItemStack.EMPTY);
-                return ItemStack.EMPTY;
-            }
-            else
-            {
-                targetSlot.onSlotChanged();
-            }
-
-            if (targetItemStack.getCount() == targetItemStackCopy.getCount())
-            {
-                return ItemStack.EMPTY;
-            }
-
-            targetSlot.onTake(par1EntityPlayer, targetItemStack);
-        }
-
-        if(targetItemStackCopy==null)
-        {
-            return ItemStack.EMPTY;
-        }
-        return targetItemStackCopy;
+        // PORT: 1.12 treated any slot > 0 as the player side, so the battery slot could never be shift-clicked out
+        return transferStackInSlot(player, slotIndex, 2, 2);
     }
 }
+// PORTED

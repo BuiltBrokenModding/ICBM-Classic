@@ -37,3 +37,4 @@ public interface IExplosiveData extends Comparable<IExplosiveData>, IActionData
         return EnumTier.NONE;
     }
 }
+// PORTED

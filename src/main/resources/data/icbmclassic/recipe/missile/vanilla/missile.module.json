@@ -1,0 +1,42 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:and",
+      "values": [
+        {
+          "type": "neoforge:tag_empty",
+          "tag": "c:circuits/basic"
+        },
+        {
+          "type": "neoforge:tag_empty",
+          "tag": "c:ingots/steel"
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " i ",
+    "ici",
+    "ifi"
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:redstone_block"
+    },
+    "i": {
+      "tag": "c:ingots/iron"
+    },
+    "f": {
+      "item": "minecraft:flint_and_steel"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosive_missile",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:missile"
+    }
+  }
+}

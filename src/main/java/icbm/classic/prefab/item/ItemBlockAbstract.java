@@ -1,119 +1,73 @@
 package icbm.classic.prefab.item;
 
-import icbm.classic.lib.LanguageUtility;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import icbm.classic.ICBMClassic;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Generic prefab to use in all items providing common implementation
- *
- *
+ * <p>
+ * PORT: the 1.12 onItemUse copy of ItemBlock placement is gone, vanilla {@link BlockItem#place} does the same
+ * (replaceable check, offset, sound, shrink). Placement checks are overridden with {@link #canPlace(BlockPlaceContext, BlockState)}.
+ * <p>
  * Created by Dark(DarkGuardsman, Robin) on 12/20/2016.
  */
-public class ItemBlockAbstract extends ItemBlock
+public class ItemBlockAbstract extends BlockItem
 {
     //Make sure to mirror all changes to other abstract class
-    public ItemBlockAbstract(Block p_i45328_1_)
+    public ItemBlockAbstract(Block block)
     {
-        super(p_i45328_1_);
+        this(block, new Item.Properties());
     }
 
-    @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public ItemBlockAbstract(Block block, Item.Properties properties)
     {
-        IBlockState iblockstate = worldIn.getBlockState(pos);
-        Block block = iblockstate.getBlock();
-
-        if (!block.isReplaceable(worldIn, pos))
-        {
-            pos = pos.offset(facing);
-        }
-
-        ItemStack itemstack = player.getHeldItem(hand);
-
-        if (!itemstack.isEmpty() && canPlace(player, worldIn, pos, itemstack, facing, hitX, hitY, hitZ))
-        {
-            int i = this.getMetadata(itemstack.getMetadata());
-            IBlockState iblockstate1 = this.block.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, i, player, hand);
-
-            if (placeBlockAt(itemstack, player, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1))
-            {
-                iblockstate1 = worldIn.getBlockState(pos);
-                SoundType soundtype = iblockstate1.getBlock().getSoundType(iblockstate1, worldIn, pos, player);
-                worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                itemstack.shrink(1);
-            }
-
-            return EnumActionResult.SUCCESS;
-        }
-        else
-        {
-            return EnumActionResult.FAIL;
-        }
+        super(block, properties);
     }
 
     /**
      * Called to check if the player can place the block
      * <p>
      * Allows for easy override of placement checks
-     *
-     * @param player
-     * @param worldIn
-     * @param pos
-     * @param itemstack
-     * @param facing
-     * @param hitX
-     * @param hitY
-     * @param hitZ
-     * @return
      */
-    protected boolean canPlace(EntityPlayer player, World worldIn, BlockPos pos, ItemStack itemstack, EnumFacing facing, float hitX, float hitY, float hitZ)
+    @Override
+    protected boolean canPlace(BlockPlaceContext context, BlockState state)
     {
-        return player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(this.block, pos, false, facing, (Entity) null);
+        return super.canPlace(context, state);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World world, List list, ITooltipFlag flag)
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag)
     {
         //Get player, don't run tool tips without
-        final EntityPlayer player = Minecraft.getMinecraft().player;
+        final Player player = ItemBase.getClientPlayer();
         try
         {
             //Generic info
-            String translationKey = getUnlocalizedName(stack) + ".info";
-            String translation = LanguageUtility.getLocal(translationKey);
+            final String translationKey = getDescriptionId(stack) + ".info";
+            final String translation = ItemBase.translate(translationKey);
             if (!translation.isEmpty() && !translation.equals(translationKey))
             {
-                list.add(translation);
+                list.add(Component.literal(translation));
             }
 
             getDetailedInfo(stack, player, list);
 
             if (hasShiftInfo(stack, player))
             {
-                if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+                if (!ICBMClassic.proxy.isShiftHeld())
                 {
-                    list.add(LanguageUtility.getLocal("info.voltzengine:tooltip.noShift").replace("#0", "\u00a7b").replace("#1", "\u00a77"));
+                    list.add(Component.literal(ItemBase.translate("info.voltzengine:tooltip.noShift").replace("#0", "§b").replace("#1", "§7")));
                 }
                 else
                 {
@@ -124,7 +78,7 @@ public class ItemBlockAbstract extends ItemBlock
         catch (Exception e)
         {
             //TODO display tooltip if error happens to often
-            e.printStackTrace();
+            ICBMClassic.logger().error("Failed to build tooltip for " + stack, e);
         }
     }
 
@@ -133,17 +87,17 @@ public class ItemBlockAbstract extends ItemBlock
      * global generic item details.
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @param list
      */
-    protected void getDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
+    public void getDetailedInfo(ItemStack stack, @Nullable Player player, List<Component> list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info.detailed";
-        String translation = LanguageUtility.getLocal(translationKey);
+        final String translationKey = getDescriptionId(stack) + ".info.detailed";
+        final String translation = ItemBase.translate(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
-            list.addAll(LanguageUtility.splitByLine(translation));
+            ItemBase.splitLines(translation, list);
         }
     }
 
@@ -154,17 +108,17 @@ public class ItemBlockAbstract extends ItemBlock
      * This is in addition to normal details
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @param list
      */
-    protected void getShiftDetailedInfo(ItemStack stack, @Nullable EntityPlayer player, List list)
+    protected void getShiftDetailedInfo(ItemStack stack, @Nullable Player player, List<Component> list)
     {
         //Per item detailed info
-        String translationKey = getUnlocalizedName(stack) + ".info.shifted";
-        String translation = LanguageUtility.getLocal(translationKey);
+        final String translationKey = getDescriptionId(stack) + ".info.shifted";
+        final String translation = ItemBase.translate(translationKey);
         if (!translation.isEmpty() && !translation.equals(translationKey))
         {
-            list.addAll(LanguageUtility.splitByLine(translation));
+            ItemBase.splitLines(translation, list);
         }
     }
 
@@ -173,11 +127,12 @@ public class ItemBlockAbstract extends ItemBlock
      * shift is held
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @return
      */
-    protected boolean hasShiftInfo(ItemStack stack, @Nullable EntityPlayer player)
+    protected boolean hasShiftInfo(ItemStack stack, @Nullable Player player)
     {
         return false;
     }
 }
+// PORTED

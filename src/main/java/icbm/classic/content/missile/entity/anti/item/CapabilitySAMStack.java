@@ -4,7 +4,7 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.api.missiles.ICapabilityMissileStack;
 import icbm.classic.api.missiles.IMissile;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 public class CapabilitySAMStack implements ICapabilityMissileStack
 {
@@ -14,8 +14,8 @@ public class CapabilitySAMStack implements ICapabilityMissileStack
     }
 
     @Override
-    public IMissile newMissile(World world)
+    public IMissile newMissile(Level world)
     {
         return new EntitySurfaceToAirMissile(world).getMissileCapability();
     }
-}
+}// PORTED

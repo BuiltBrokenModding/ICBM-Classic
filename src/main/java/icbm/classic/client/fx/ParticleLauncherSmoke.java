@@ -1,46 +1,46 @@
 package icbm.classic.client.fx;
 
 import icbm.classic.content.reg.BlockReg;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.ParticleSmokeNormal;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.SmokeParticle;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SideOnly(Side.CLIENT)
-public class ParticleLauncherSmoke extends ParticleSmokeNormal
+public class ParticleLauncherSmoke extends SmokeParticle
 {
-    public static Set<Block> blocksToIgnoreCollisions = new HashSet();
+    public static Set<Block> blocksToIgnoreCollisions = new HashSet<>();
 
-    public ParticleLauncherSmoke(World worldIn, double x, double y, double z, double vx, double vy, double vz, float scale)
+    public ParticleLauncherSmoke(ClientLevel worldIn, double x, double y, double z, double vx, double vy, double vz, float scale)
     {
-        super(worldIn, x, y, z, vx, vy, vz, scale);
+        super(worldIn, x, y, z, vx, vy, vz, scale, SmokeSprites.INSTANCE);
     }
 
     public ParticleLauncherSmoke setAge(int age)
     {
-        this.particleMaxAge = age;
+        this.lifetime = age;
         return this;
     }
 
     public ParticleLauncherSmoke setColor(float r, float g, float b, boolean addColorVariant)
     {
-        this.particleRed = r;
-        this.particleGreen = g;
-        this.particleBlue = b;
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
 
         if (addColorVariant)
         {
             float colorVariant = (float) (Math.random() * 0.90000001192092896D);
-            this.particleRed *= colorVariant;
-            this.particleBlue *= colorVariant;
-            this.particleGreen *= colorVariant;
+            this.rCol *= colorVariant;
+            this.bCol *= colorVariant;
+            this.gCol *= colorVariant;
         }
         return this;
     }
@@ -53,55 +53,48 @@ public class ParticleLauncherSmoke extends ParticleSmokeNormal
         double origX = x;
         double origZ = z;
 
-        if (this.canCollide)
+        if (this.hasPhysics)
         {
-            List<AxisAlignedBB> list = ParticleCollisionLogic.getCollisionBoxes(this.world, this.getBoundingBox().expand(x, y, z), ParticleLauncherSmoke::shouldAllowCollision);
+            AABB box = this.getBoundingBox();
+            final List<VoxelShape> list = ParticleCollisionLogic.getCollisionBoxes(this.level, box.expandTowards(x, y, z), ParticleLauncherSmoke::shouldAllowCollision);
 
-            for (AxisAlignedBB axisalignedbb : list)
-            {
-                y = axisalignedbb.calculateYOffset(this.getBoundingBox(), y);
-            }
+            y = Shapes.collide(Direction.Axis.Y, box, list, y);
+            box = box.move(0.0D, y, 0.0D);
 
-            this.setBoundingBox(this.getBoundingBox().offset(0.0D, y, 0.0D));
+            x = Shapes.collide(Direction.Axis.X, box, list, x);
+            box = box.move(x, 0.0D, 0.0D);
 
-            for (AxisAlignedBB axisalignedbb1 : list)
-            {
-                x = axisalignedbb1.calculateXOffset(this.getBoundingBox(), x);
-            }
+            z = Shapes.collide(Direction.Axis.Z, box, list, z);
+            box = box.move(0.0D, 0.0D, z);
 
-            this.setBoundingBox(this.getBoundingBox().offset(x, 0.0D, 0.0D));
-
-            for (AxisAlignedBB axisalignedbb2 : list)
-            {
-                z = axisalignedbb2.calculateZOffset(this.getBoundingBox(), z);
-            }
-
-            this.setBoundingBox(this.getBoundingBox().offset(0.0D, 0.0D, z));
-        } else
+            this.setBoundingBox(box);
+        }
+        else
         {
-            this.setBoundingBox(this.getBoundingBox().offset(x, y, z));
+            this.setBoundingBox(this.getBoundingBox().move(x, y, z));
         }
 
-        this.resetPositionToBB();
+        this.setLocationFromBoundingbox();
         this.onGround = d0 != y && d0 < 0.0D;
 
         if (origX != x)
         {
-            this.motionX = 0.0D;
+            this.xd = 0.0D;
         }
 
         if (origZ != z)
         {
-            this.motionZ = 0.0D;
+            this.zd = 0.0D;
         }
     }
 
-    public static boolean shouldAllowCollision(IBlockState blockState)
+    public static boolean shouldAllowCollision(BlockState blockState)
     {
         final Block block = blockState.getBlock();
-        return block != BlockReg.blockLaunchBase
-            && block != BlockReg.blockLaunchSupport
-            && block != BlockReg.blockLaunchScreen
+        return block != BlockReg.blockLaunchBase.get()
+            && block != BlockReg.blockLaunchSupport.get()
+            && block != BlockReg.blockLaunchScreen.get()
             && !blocksToIgnoreCollisions.contains(block);
     }
 }
+// PORTED

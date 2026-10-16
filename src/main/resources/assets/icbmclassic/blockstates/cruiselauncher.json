@@ -1,28 +1,25 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "icbmclassic:cruise_launcher"
-  },
   "variants": {
-    "inventory": {
-      "model": "icbmclassic:cruise_launcher"
+    "rotation=down": {
+      "model": "icbmclassic:block/cruise_launcher"
     },
-    "rotation": {
-      "up": {},
-      "down": {},
-      "north": {
-        "y": 0
-      },
-      "south": {
-        "y": 180
-      },
-      "east": {
-        "y": 90
-      },
-      "west": {
-        "y": 270
-      }
+    "rotation=up": {
+      "model": "icbmclassic:block/cruise_launcher"
+    },
+    "rotation=north": {
+      "model": "icbmclassic:block/cruise_launcher"
+    },
+    "rotation=south": {
+      "model": "icbmclassic:block/cruise_launcher",
+      "y": 180
+    },
+    "rotation=west": {
+      "model": "icbmclassic:block/cruise_launcher",
+      "y": 270
+    },
+    "rotation=east": {
+      "model": "icbmclassic:block/cruise_launcher",
+      "y": 90
     }
   }
 }
-

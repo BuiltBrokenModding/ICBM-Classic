@@ -1,8 +1,8 @@
 package icbm.classic.api.data;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
 
 /**
  * Created by Dark(DarkGuardsman, Robin) on 1/7/19.
@@ -10,5 +10,6 @@ import net.minecraft.util.EnumHand;
 @FunctionalInterface
 public interface EntityInteractionFunction
 {
-    boolean onInteraction(Entity entity, EntityPlayer player, EnumHand hand);
+    boolean onInteraction(Entity entity, Player player, InteractionHand hand);
 }
+// PORTED

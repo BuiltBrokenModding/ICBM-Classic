@@ -1,27 +1,27 @@
 package icbm.classic.client.render.entity.item;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import icbm.classic.lib.data.LazyBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,14 +29,17 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 /**
- * EntityItem style render
+ * ItemEntity style render
+ * <p>
+ * PORT: GL state calls replaced with the PoseStack. The pose already sits at the entity position, so the
+ * 1.12 x/y/z offsets are gone from the hooks. A fixed standalone model can be set with {@link #setModelOverride}
+ * (1.12 used a fake item meta for the 3D balloon).
  *
  * @param <E> to render
  */
-@SideOnly(Side.CLIENT)
-public abstract class RenderItemImp<E extends Entity> extends Render<E>
+public abstract class RenderItemImp<E extends Entity> extends EntityRenderer<E>
 {
-    private final RenderItem itemRenderer;
+    protected final ItemRenderer itemRenderer;
     private final Random random = new Random();
 
     private static final Supplier<ItemStack> BACKUP_RENDER_STACK = new LazyBuilder<>(() -> new ItemStack(Blocks.FIRE));
@@ -45,136 +48,120 @@ public abstract class RenderItemImp<E extends Entity> extends Render<E>
     @Accessors(chain = true)
     protected boolean billboard = false;
 
-    public RenderItemImp(RenderManager renderManagerIn)
+    /** Standalone model to render instead of the stack's item model, null to use the item model */
+    @Setter @Getter
+    @Accessors(chain = true)
+    protected ModelResourceLocation modelOverride = null;
+
+    public RenderItemImp(EntityRendererProvider.Context context)
     {
-        super(renderManagerIn);
-        this.itemRenderer = Minecraft.getMinecraft().getRenderItem();
-        this.shadowSize = 0.15F;
-        this.shadowOpaque = 0.75F;
+        super(context);
+        this.itemRenderer = context.getItemRenderer();
+        this.shadowRadius = 0.15F;
+        this.shadowStrength = 0.75F;
     }
 
     @Nonnull
     protected abstract ItemStack getRenderItem(E entity, int index);
 
-    protected ItemCameraTransforms.TransformType getTransformType(int index) {
-        return ItemCameraTransforms.TransformType.NONE;
+    protected ItemDisplayContext getTransformType(int index)
+    {
+        return ItemDisplayContext.NONE;
     }
 
-    protected void translate(@Nullable E entity, ItemStack itemstack, IBakedModel iBakedModel, double x, double y, double z, float partialTicks, int index) {
-        float hoverStart = iBakedModel.getItemCameraTransforms().getTransform(ItemCameraTransforms.TransformType.GROUND).scale.y;
-        GlStateManager.translate((float)x, (float)y + 0.25F * hoverStart, (float)z);
+    protected void translate(@Nullable E entity, ItemStack itemstack, BakedModel iBakedModel, PoseStack poseStack, float partialTicks, int index)
+    {
+        final float hoverStart = iBakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();
+        poseStack.translate(0, 0.25F * hoverStart, 0);
     }
 
-    protected void rotate(@Nullable E entity, ItemStack itemstack, float entityYaw, float entityPitch, float partialTicks, int index) {
+    protected void rotate(@Nullable E entity, ItemStack itemstack, PoseStack poseStack, float entityYaw, float entityPitch, float partialTicks, int index)
+    {
         // Rotate by entity yaw
-        if(billboard) {
-            GlStateManager.rotate(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F); //fish ><>
+        if (billboard)
+        {
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - this.entityRenderDispatcher.camera.getYRot())); //fish ><>
         }
         else
         {
-            GlStateManager.rotate(entityYaw, 0.0F, 1.0F, 0.0F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw));
         }
     }
 
-    protected void scale(@Nullable E e, ItemStack itemstack, float partialTicks, int index) {
-        //GlStateManager.scale(2, 2, 2);
+    protected void scale(@Nullable E e, ItemStack itemstack, PoseStack poseStack, float partialTicks, int index)
+    {
+        //poseStack.scale(2, 2, 2);
     }
 
     @Override
-    public void doRender(@Nonnull E entity, double x, double y, double z, float entityYaw, float partialTicks)
+    public void render(@Nonnull E entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight)
     {
         final float yaw = getYaw(entity, entityYaw, partialTicks); // yaw is already lerped by render manager
-        final float entityPitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+        final float entityPitch = entity.xRotO + (entity.getXRot() - entity.xRotO) * partialTicks;
         final float pitch = getPitch(entity, entityPitch, partialTicks);
-        doRenderItem(entity, entity.world, x, y, z, yaw, pitch, partialTicks);
+        doRenderItem(entity, entity.level(), poseStack, buffer, packedLight, yaw, pitch, partialTicks);
 
-        super.doRender(entity, x, y, z, yaw, partialTicks);
+        super.render(entity, yaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    protected void doRenderItem(@Nonnull E entity, World world, double x, double y, double z, float yaw, float pitch, float partialTicks) {
-        this.renderItem(entity, getRenderItem(entity, 0), entity.world, x, y, z, yaw, pitch, partialTicks, 0);
+    protected void doRenderItem(@Nonnull E entity, Level world, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float yaw, float pitch, float partialTicks)
+    {
+        this.renderItem(entity, getRenderItem(entity, 0), world, poseStack, buffer, packedLight, yaw, pitch, partialTicks, 0);
     }
 
-    protected float getYaw(@Nonnull E entity, float providedYaw, float partialTicks) {
+    protected float getYaw(@Nonnull E entity, float providedYaw, float partialTicks)
+    {
         return providedYaw;
     }
 
-    protected float getPitch(@Nonnull E entity, float entityPitch, float partialTicks) {
-        return entity.rotationPitch;
-    }
-
-    protected IBakedModel getBakedModel(@Nullable E entity, World world, ItemStack stack) {
-        // TODO may need optimization, upcraft suggests caching model as doing the lookup per frame is slow.. could do per entity? or tree(item -> key -> model)
-        return this.itemRenderer.getItemModelWithOverrides(stack, world, (EntityLivingBase) null);
-    }
-
-    public void renderItem(ItemStack missileStack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks)
+    protected float getPitch(@Nonnull E entity, float entityPitch, float partialTicks)
     {
-        this.renderItem(null, missileStack, world, x, y, z, entityYaw, entityPitch, partialTicks, 0);
+        return entity.getXRot();
     }
 
-    protected void renderItem(@Nullable E entity, ItemStack itemstack, World world, double x, double y, double z, float entityYaw, float entityPitch, float partialTicks, int index) {
-        if(itemstack == null || itemstack.isEmpty()) {
+    protected BakedModel getBakedModel(@Nullable E entity, Level world, ItemStack stack)
+    {
+        if (modelOverride != null)
+        {
+            return Minecraft.getInstance().getModelManager().getModel(modelOverride);
+        }
+        // TODO may need optimization, upcraft suggests caching model as doing the lookup per frame is slow.. could do per entity? or tree(item -> key -> model)
+        return this.itemRenderer.getModel(stack, world, null, 0);
+    }
+
+    public void renderItem(ItemStack missileStack, Level world, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float entityYaw, float entityPitch, float partialTicks)
+    {
+        this.renderItem(null, missileStack, world, poseStack, buffer, packedLight, entityYaw, entityPitch, partialTicks, 0);
+    }
+
+    protected void renderItem(@Nullable E entity, ItemStack itemstack, Level world, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                              float entityYaw, float entityPitch, float partialTicks, int index)
+    {
+        if (itemstack == null || itemstack.isEmpty())
+        {
             itemstack = BACKUP_RENDER_STACK.get();
         }
 
-        this.random.setSeed(Item.getIdFromItem(itemstack.getItem()) + itemstack.getMetadata());
-        boolean hasTexture = false;
+        this.random.setSeed(BuiltInRegistries.ITEM.getId(itemstack.getItem()));
 
-        if (this.bindEntityTexture(entity))
-        {
-            this.renderManager.renderEngine.getTexture(this.getEntityTexture(entity)).setBlurMipmap(false, false);
-            hasTexture = true;
-        }
+        poseStack.pushPose();
 
-        //Setup
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.alphaFunc(516, 0.1F);
-        GlStateManager.enableBlend();
-        RenderHelper.enableStandardItemLighting();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.pushMatrix();
+        final BakedModel ibakedmodel = this.getBakedModel(entity, world, itemstack);
+        this.translate(entity, itemstack, ibakedmodel, poseStack, partialTicks, index);
+        this.rotate(entity, itemstack, poseStack, entityYaw, entityPitch, partialTicks, index);
+        this.scale(entity, itemstack, poseStack, partialTicks, index);
 
-        IBakedModel ibakedmodel = this.getBakedModel(entity, world, itemstack);
-        this.translate(entity, itemstack, ibakedmodel, x, y, z, partialTicks, index);
-        this.rotate(entity, itemstack, entityYaw, entityPitch, partialTicks, index);
-        this.scale(entity, itemstack, partialTicks, index);
+        // Render item, applies the display transform of the context and centers the model like 1.12 renderItem
+        this.itemRenderer.render(itemstack, getTransformType(index), false, poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, ibakedmodel);
 
-        if (this.renderOutlines)
-        {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.enableOutlineMode(this.getTeamColor(entity));
-        }
-
-        // Render item
-        GlStateManager.pushMatrix();
-        ibakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(ibakedmodel, getTransformType(index), false);
-        this.itemRenderer.renderItem(itemstack, ibakedmodel);
-        GlStateManager.popMatrix();
-
-        // Reset
-        if (this.renderOutlines)
-        {
-            GlStateManager.disableOutlineMode();
-            GlStateManager.disableColorMaterial();
-        }
-
-        GlStateManager.popMatrix();
-
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.disableBlend();
-        this.bindEntityTexture(entity);
-
-        if (hasTexture)
-        {
-            this.renderManager.renderEngine.getTexture(this.getEntityTexture(entity)).restoreLastBlurMipmap();
-        }
+        poseStack.popPose();
     }
 
     @Override
     @Nonnull
-    protected ResourceLocation getEntityTexture(@Nullable E entity)
+    public ResourceLocation getTextureLocation(@Nullable E entity)
     {
-        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 }
+// PORTED

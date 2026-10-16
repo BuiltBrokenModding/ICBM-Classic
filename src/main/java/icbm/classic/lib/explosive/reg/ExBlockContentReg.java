@@ -8,10 +8,11 @@ import icbm.classic.api.data.WorldTickFunction;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.IExBlockRegistry;
 import icbm.classic.content.reg.BlockReg;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IntHashMap;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import icbm.classic.lib.explosive.ExplosiveStacks;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 
@@ -24,9 +25,9 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     private final HashMap<ResourceLocation, WorldTickFunction> fuseTickCallbackMap = new HashMap();
     private final HashMap<ResourceLocation, BlockActivateFunction> blockActivationCallbackMap = new HashMap();
 
-    private final IntHashMap<WorldPosIntSupplier> fuseSetSupplier = new IntHashMap();
-    private final IntHashMap<WorldTickFunction> fuseTickCallback = new IntHashMap();
-    private final IntHashMap<BlockActivateFunction> blockActiviationCallback = new IntHashMap();
+    private final Int2ObjectOpenHashMap<WorldPosIntSupplier> fuseSetSupplier = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<WorldTickFunction> fuseTickCallback = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<BlockActivateFunction> blockActiviationCallback = new Int2ObjectOpenHashMap<>();
 
     public ExBlockContentReg()
     {
@@ -36,7 +37,7 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     @Override
     public ItemStack getDeviceStack(ResourceLocation regName)
     {
-        return new ItemStack(BlockReg.blockExplosive, 1, ICBMClassicHelpers.getExplosive(regName, false).getRegistryID());
+        return ExplosiveStacks.create(BlockReg.blockExplosive.get(), ICBMClassicHelpers.getExplosive(regName, false));
     }
 
     @Override
@@ -49,21 +50,21 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    fuseSetSupplier.addKey(data.getRegistryID(), func);
+                    fuseSetSupplier.put(data.getRegistryID(), func);
                 }
             });
             fuseTickCallbackMap.forEach((regName, func) -> {
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    fuseTickCallback.addKey(data.getRegistryID(), func);
+                    fuseTickCallback.put(data.getRegistryID(), func);
                 }
             });
             blockActivationCallbackMap.forEach((regName, func) -> {
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    blockActiviationCallback.addKey(data.getRegistryID(), func);
+                    blockActiviationCallback.put(data.getRegistryID(), func);
                 }
             });
         }
@@ -90,9 +91,9 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     }
 
     @Override
-    public void tickFuse(World world, double posX, double posY, double posZ, int ticksExisted, int explosiveID)
+    public void tickFuse(Level world, double posX, double posY, double posZ, int ticksExisted, int explosiveID)
     {
-        final WorldTickFunction function = fuseTickCallback.lookup(explosiveID);
+        final WorldTickFunction function = fuseTickCallback.get(explosiveID);
         if (function != null)
         {
             function.onTick(world, posX, posY, posZ, ticksExisted);
@@ -100,9 +101,9 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
     }
 
     @Override
-    public int getFuseTime(World world, double posX, double posY, double posZ, int explosiveID)
+    public int getFuseTime(Level world, double posX, double posY, double posZ, int explosiveID)
     {
-        final WorldPosIntSupplier function = fuseSetSupplier.lookup(explosiveID);
+        final WorldPosIntSupplier function = fuseSetSupplier.get(explosiveID);
         if (function != null)
         {
             return function.get(world, posX, posY, posZ);
@@ -110,3 +111,4 @@ public class ExBlockContentReg extends ExplosiveContentRegistry implements IExBl
         return 100;
     }
 }
+// PORTED

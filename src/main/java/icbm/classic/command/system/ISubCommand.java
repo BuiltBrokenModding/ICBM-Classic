@@ -1,10 +1,10 @@
 package icbm.classic.command.system;
 
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,6 +12,9 @@ import java.util.List;
 
 /**
  * Created by Robin Seifert on 1/6/20.
+ *
+ * PORT: 1.21 commands run through Brigadier. Each sub command is bridged into a Brigadier literal by
+ * {@link CommandEntryPoint}, with its raw arguments passed in as a string array exactly like 1.12.
  */
 public interface ISubCommand
 {
@@ -22,18 +25,18 @@ public interface ISubCommand
      * @param server - server handling the command
      * @param sender - user triggering the command
      * @param args   - arguments for the command
-     * @throws CommandException - failed to run the command
+     * @throws CommandSyntaxException - failed to run the command
      */
-    void handleCommand(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException;
+    void handleCommand(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args) throws CommandSyntaxException;
 
     /**
      * Sends all help text to the sender
      *
      * @param sender
      */
-    default void displayHelp(ICommandSender sender)
+    default void displayHelp(CommandSourceStack sender)
     {
-        sender.sendMessage(new TextComponentString(getUsage(sender)));
+        sender.sendSystemMessage(Component.literal(getUsage(sender)));
     }
 
     /**
@@ -45,7 +48,7 @@ public interface ISubCommand
      * @param targetPos - block position for the command
      * @return empty list or list containing suggestions
      */
-    List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos targetPos);
+    List<String> getTabSuggestions(@Nonnull MinecraftServer server, @Nonnull CommandSourceStack sender, @Nonnull String[] args, @Nullable BlockPos targetPos);
 
 
     /**
@@ -61,7 +64,7 @@ public interface ISubCommand
      * @param sender - sender of the command
      * @return usage string (/parent + name)
      */
-    String getUsage(ICommandSender sender);
+    String getUsage(CommandSourceStack sender);
 
     /**
      * Sets the parent of the command
@@ -70,3 +73,4 @@ public interface ISubCommand
      */
     void setParent(ICommandGroup parent);
 }
+// PORTED

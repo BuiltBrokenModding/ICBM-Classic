@@ -45,3 +45,4 @@ public interface IThreadWork
         return -1;
     }
 }
+// PORTED

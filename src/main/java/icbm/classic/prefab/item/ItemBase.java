@@ -1,17 +1,16 @@
 package icbm.classic.prefab.item;
 
+import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
-import icbm.classic.lib.LanguageUtility;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.fml.loading.FMLEnvironment;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -22,23 +21,49 @@ import java.util.List;
  */
 public class ItemBase extends Item
 {
+    /** 1.12 unlocalized name, e.g. item.icbmclassic:radarGun. Null to use the vanilla registry based key. */
+    private String unlocalizedName;
 
+    public ItemBase()
+    {
+        this(new Item.Properties());
+    }
+
+    public ItemBase(Item.Properties properties)
+    {
+        super(properties);
+    }
+
+    /**
+     * Sets the translation key to the 1.12 format. Registry name is handled by the DeferredRegister.
+     *
+     * @param name - 1.12 name, e.g. radarGun
+     * @return this
+     */
     public ItemBase setName(String name)
     {
-        this.setUnlocalizedName(ICBMConstants.PREFIX + name);
-        this.setRegistryName(ICBMConstants.PREFIX + name);
+        this.unlocalizedName = "item." + ICBMConstants.PREFIX + name;
         return this;
+    }
+
+    @Override
+    public String getDescriptionId()
+    {
+        if (unlocalizedName != null)
+        {
+            return unlocalizedName;
+        }
+        return super.getDescriptionId();
     }
 
     //Make sure to mirror all changes to other abstract class
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag)
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag)
     {
-        EntityPlayer player = Minecraft.getMinecraft().player;
+        final Player player = getClientPlayer();
 
         //Generic info, shared by item group
-        splitAdd(getUnlocalizedName(stack) + ".info", list, false, true);
+        splitAdd(getDescriptionId(stack) + ".info", list, false, true);
 
         if (hasDetailedInfo(stack, player))
         {
@@ -47,9 +72,9 @@ public class ItemBase extends Item
 
         if (hasShiftInfo(stack, player))
         {
-            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+            if (!ICBMClassic.proxy.isShiftHeld())
             {
-                list.add(LanguageUtility.getLocal("info.voltzengine:tooltip.noShift").replace("#0", "\u00a7b").replace("#1", "\u00a77"));
+                list.add(Component.literal(translate("info.voltzengine:tooltip.noShift").replace("#0", "§b").replace("#1", "§7")));
             }
             else
             {
@@ -63,13 +88,13 @@ public class ItemBase extends Item
      * global generic item details.
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @param list
      */
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
+    protected void getDetailedInfo(ItemStack stack, @Nullable Player player, List<Component> list)
     {
         //Per item detailed info
-        splitAdd(getUnlocalizedName(stack) + ".info", list, true, true);
+        splitAdd(getDescriptionId(stack) + ".info", list, true, true);
     }
 
     /**
@@ -79,21 +104,21 @@ public class ItemBase extends Item
      * This is in addition to normal details
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @param list
      */
-    protected void getShiftDetailedInfo(ItemStack stack, EntityPlayer player, List<String> list)
+    protected void getShiftDetailedInfo(ItemStack stack, @Nullable Player player, List<Component> list)
     {
         //Per item detailed info
-        splitAdd(getUnlocalizedName(stack) + ".info.detailed", list, true, true);
+        splitAdd(getDescriptionId(stack) + ".info.detailed", list, true, true);
     }
 
-    protected void splitAdd(String translationKey, List<String> list, boolean addKeyIfEmpty, boolean translate)
+    protected void splitAdd(String translationKey, List<Component> list, boolean addKeyIfEmpty, boolean translate)
     {
-        String translation = translate ? LanguageUtility.getLocal(translationKey) : translationKey;
+        final String translation = translate ? translate(translationKey) : translationKey;
         if (!translate || !translation.isEmpty() && !translation.equals(translationKey))
         {
-            list.addAll(LanguageUtility.splitByLine(translation));
+            splitLines(translation, list);
         }
     }
 
@@ -101,10 +126,10 @@ public class ItemBase extends Item
      * Does the item have detailed information to be shown
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @return
      */
-    protected boolean hasDetailedInfo(ItemStack stack, EntityPlayer player)
+    protected boolean hasDetailedInfo(ItemStack stack, @Nullable Player player)
     {
         return false;
     }
@@ -114,11 +139,51 @@ public class ItemBase extends Item
      * shift is held
      *
      * @param stack
-     * @param player
+     * @param player - client player, may be null
      * @return
      */
-    protected boolean hasShiftInfo(ItemStack stack, EntityPlayer player)
+    protected boolean hasShiftInfo(ItemStack stack, @Nullable Player player)
     {
         return false;
     }
+
+    // ---- Shared helpers, also used by ItemBlockAbstract ----
+
+    /**
+     * Translates a key using the loaded language. Safe on both sides, the server only knows en_us.
+     *
+     * @return translation, or the key if missing
+     */
+    public static String translate(String key)
+    {
+        return Language.getInstance().getOrDefault(key);
+    }
+
+    /** @return true if the key has a translation */
+    public static boolean hasTranslation(String key)
+    {
+        return Language.getInstance().has(key);
+    }
+
+    /** Splits a translated string into tooltip lines the same way 1.12 LanguageUtility#splitByLine did */
+    public static void splitLines(String translation, List<Component> list)
+    {
+        icbm.classic.lib.LanguageUtility.splitByLine(translation, icbm.classic.lib.LanguageUtility.toolTipLineLength, line -> list.add(Component.literal(line)));
+    }
+
+    /**
+     * Gets the client player for tooltips. 1.12 used Minecraft#player directly.
+     *
+     * @return player, or null on a dedicated server or before the player exists
+     */
+    @Nullable
+    public static Player getClientPlayer()
+    {
+        if (FMLEnvironment.dist.isClient())
+        {
+            return icbm.classic.client.ClientHelpers.getPlayer();
+        }
+        return null;
+    }
 }
+// PORTED

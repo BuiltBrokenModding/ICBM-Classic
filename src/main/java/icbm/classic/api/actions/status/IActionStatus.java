@@ -4,7 +4,7 @@ import icbm.classic.api.ICBMClassicAPI;
 import icbm.classic.api.data.meta.ITypeTaggable;
 import icbm.classic.api.reg.obj.IBuildableObject;
 import icbm.classic.api.reg.obj.IBuilderRegistry;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
@@ -62,5 +62,6 @@ public interface IActionStatus extends IBuildableObject, ITypeTaggable {
      *
      * @return message
      */
-    ITextComponent message();
+    Component message();
 }
+// PORTED

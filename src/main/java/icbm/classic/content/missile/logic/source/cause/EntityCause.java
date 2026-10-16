@@ -9,10 +9,11 @@ import icbm.classic.lib.saving.NbtSaveHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -25,7 +26,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EntityCause extends ActionCause implements ICausedByEntity {
 
-    public static final ResourceLocation REG_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "entity");
+    public static final ResourceLocation REG_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "entity");
 
     private String name;
     private UUID id;
@@ -36,9 +37,9 @@ public class EntityCause extends ActionCause implements ICausedByEntity {
 
     public EntityCause(Entity source) {
         entity = source;
-        name = source.getName();
-        id = source.getUniqueID();
-        isPlayer = source instanceof EntityPlayer;
+        name = source.getName().getString();
+        id = source.getUUID();
+        isPlayer = source instanceof Player;
     }
 
     @Override
@@ -59,13 +60,13 @@ public class EntityCause extends ActionCause implements ICausedByEntity {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return SAVE_LOGIC.save(this, super.serializeNBT());
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return SAVE_LOGIC.save(this, super.serializeNBT(provider));
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
@@ -77,3 +78,4 @@ public class EntityCause extends ActionCause implements ICausedByEntity {
         /* */.nodeBoolean("player", EntityCause::isPlayer, EntityCause::setPlayer)
         .base();
 }
+// PORTED

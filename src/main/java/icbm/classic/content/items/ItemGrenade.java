@@ -1,139 +1,143 @@
 package icbm.classic.content.items;
 
 import icbm.classic.api.ICBMClassicAPI;
-import icbm.classic.api.reg.IExplosiveData;
-import icbm.classic.content.blocks.explosive.ItemBlockExplosive;
 import icbm.classic.content.entity.EntityGrenade;
-import icbm.classic.content.reg.BlockReg;
+import icbm.classic.content.reg.ItemReg;
 import icbm.classic.lib.capability.ex.CapabilityExplosiveStack;
+import icbm.classic.lib.capability.holder.ICapabilityHolderItem;
+import icbm.classic.prefab.item.ISubItemProvider;
 import icbm.classic.prefab.item.ItemBase;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemGrenade extends ItemBase
+public class ItemGrenade extends ItemBase implements ICapabilityHolderItem, ISubItemProvider
 {
     public static final int MAX_USE_DURATION = 3 * 20; //TODO config
 
     public ItemGrenade()
     {
-        this.setMaxStackSize(16);
-        this.setMaxDamage(0);
-        this.setHasSubtypes(true);
+        super(new Item.Properties().stacksTo(16));
     }
 
-    @Override
     @Nullable
-    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getCapability(ItemCapability<T, Void> capability, ItemStack stack)
     {
-        final CapabilityExplosiveStack capabilityExplosive = new CapabilityExplosiveStack(stack);
-        if(nbt != null)
+        if (capability == ICBMClassicAPI.EXPLOSIVE_ITEM_CAPABILITY)
         {
-            capabilityExplosive.deserializeNBT(nbt);
+            return (T) new CapabilityExplosiveStack(stack);
         }
-        return capabilityExplosive;
+        return null;
     }
 
     @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
+    public UseAnim getUseAnimation(ItemStack stack)
     {
-        return EnumAction.BOW;
+        return UseAnim.BOW;
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack par1ItemStack)
+    public int getUseDuration(ItemStack stack, LivingEntity entity)
     {
         return MAX_USE_DURATION;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
     {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        playerIn.setActiveHand(handIn);
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        playerIn.startUsingItem(handIn);
+        // PORT: consume instead of success, in 1.21 success swings the arm before the throw pose
+        return InteractionResultHolder.consume(itemstack);
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack itemStack, World world, EntityLivingBase entityLiving, int timeLeft)
+    public void releaseUsing(ItemStack itemStack, Level world, LivingEntity entityLiving, int timeLeft)
     {
-        if (!world.isRemote)
+        if (!world.isClientSide())
         {
-            //Play throw sound
-            world.playSound(null, entityLiving.posX, entityLiving.posY, entityLiving.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-
             //Calculate energy based on player hold time
-            final float throwEnergy = (float) (this.getMaxItemUseDuration(itemStack) - timeLeft) / (float) this.getMaxItemUseDuration(itemStack);
+            final float throwEnergy = (float) (MAX_USE_DURATION - timeLeft) / (float) MAX_USE_DURATION;
+            throwGrenade(itemStack, world, entityLiving, throwEnergy);
+        }
+    }
 
-            //Create generate entity
-            new EntityGrenade(world)
+    /**
+     * PORT: 1.12 silently dropped the throw once the full use duration ran out, as the use finished
+     * without a release. Throw at full power instead.
+     */
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entityLiving)
+    {
+        if (!world.isClientSide())
+        {
+            throwGrenade(stack, world, entityLiving, 1.0F);
+        }
+        return stack;
+    }
+
+    private void throwGrenade(ItemStack itemStack, Level world, LivingEntity entityLiving, float throwEnergy)
+    {
+        //Play throw sound
+        world.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+
+        //Create generate entity
+        new EntityGrenade(world)
             .setItemStack(itemStack)
             .setThrower(entityLiving)
             .aimFromThrower()
             .setThrowMotion(throwEnergy).spawn();
 
-            //Consume item
-            if (!(entityLiving instanceof EntityPlayer) || !((EntityPlayer) entityLiving).capabilities.isCreativeMode)
-            {
-                itemStack.shrink(1);
-            }
-        }
-    }
-
-    @Override
-    public int getMetadata(int damage)
-    {
-        return damage;
-    }
-
-    @Override
-    public String getUnlocalizedName(ItemStack itemstack)
-    {
-        final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(itemstack.getItemDamage());
-        if (data != null)
+        //Consume item
+        if (!(entityLiving instanceof Player) || !((Player) entityLiving).isCreative())
         {
-            return "grenade." + data.getRegistryKey();
+            itemStack.shrink(1);
         }
-        return "grenade";
     }
 
     @Override
-    public String getUnlocalizedName()
+    public String getDescriptionId(ItemStack itemstack)
+    {
+        return ExplosiveItemHelper.getVariantKey("grenade", itemstack);
+    }
+
+    @Override
+    public String getDescriptionId()
     {
         return "grenade";
     }
 
     @Override
-    protected boolean hasDetailedInfo(ItemStack stack, EntityPlayer player)
+    protected boolean hasDetailedInfo(ItemStack stack, @Nullable Player player)
     {
         return true;
     }
 
     @Override
-    protected void getDetailedInfo(ItemStack stack, EntityPlayer player, List list)
+    protected void getDetailedInfo(ItemStack stack, @Nullable Player player, List<Component> list)
     {
-        ((ItemBlockExplosive) Item.getItemFromBlock(BlockReg.blockExplosive)).getDetailedInfo(stack, player, list);
+        ItemReg.itemBlockExplosive.get().getDetailedInfo(stack, player, list);
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+    public void getSubItems(NonNullList<ItemStack> list)
     {
-        if (tab == getCreativeTab() || tab == CreativeTabs.SEARCH)
-        {
-            for (int id : ICBMClassicAPI.EX_GRENADE_REGISTRY.getExplosivesIDs())
-            {
-                list.add(new ItemStack(this, 1, id));
-            }
-        }
+        ExplosiveItemHelper.addSubItems(this, ICBMClassicAPI.EX_GRENADE_REGISTRY, list);
     }
 }
+// PORTED

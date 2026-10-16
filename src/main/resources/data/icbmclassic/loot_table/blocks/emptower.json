@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "icbmclassic:emptower_extender",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "icbmclassic:emptower",
+                  "properties": {
+                    "type": "spin"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "icbmclassic:emptower"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "icbmclassic:blocks/emptower"
+}

@@ -1,8 +1,8 @@
 package icbm.classic.lib.network.ex;
 
 import icbm.classic.lib.transform.vector.Location;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Exception that is thrown when reading a packet with bad data.
@@ -13,8 +13,8 @@ import net.minecraft.tileentity.TileEntity;
 public class PacketTileReadException extends RuntimeException
 {
     protected Location location;
-    private TileEntity tile;
-    private IBlockState block;
+    private BlockEntity tile;
+    private BlockState block;
 
     public PacketTileReadException(Location location, String message)
     {

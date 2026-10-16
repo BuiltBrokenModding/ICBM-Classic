@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "mx"
+  ],
+  "key": {
+    "m": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosive_missile",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:missile"
+      }
+    },
+    "x": {
+      "type": "neoforge:components",
+      "items": "icbmclassic:explosives",
+      "components": {
+        "icbmclassic:explosive": "icbmclassic:exothermic"
+      }
+    }
+  },
+  "result": {
+    "id": "icbmclassic:explosive_missile",
+    "count": 1,
+    "components": {
+      "icbmclassic:explosive": "icbmclassic:exothermic"
+    }
+  }
+}

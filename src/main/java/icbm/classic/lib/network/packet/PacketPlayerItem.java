@@ -1,14 +1,12 @@
 package icbm.classic.lib.network.packet;
 
 import icbm.classic.lib.network.IPacketIDReceiver;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author tgame14
@@ -22,7 +20,7 @@ public class PacketPlayerItem extends PacketBase<PacketPlayerItem>
 
     public PacketPlayerItem()
     {
-        //Needed for forge to construct the packet
+        //Needed to construct the packet
     }
 
     public PacketPlayerItem(int slotId)
@@ -30,51 +28,47 @@ public class PacketPlayerItem extends PacketBase<PacketPlayerItem>
         this.slotId = slotId;
     }
 
-    public PacketPlayerItem(EntityPlayer player)
+    public PacketPlayerItem(Player player)
     {
-        this(player.inventory.currentItem);
+        this(player.getInventory().selected);
     }
 
     @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void encodeInto(RegistryFriendlyByteBuf buffer)
     {
         buffer.writeInt(slotId);
         buffer.writeInt(id);
-        super.encodeInto(ctx, buffer);
+        super.encodeInto(buffer);
     }
 
     @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void decodeInto(RegistryFriendlyByteBuf buffer)
     {
         slotId = buffer.readInt();
         id = buffer.readInt();
-        super.decodeInto(ctx, buffer);
+        super.decodeInto(buffer);
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, Player player)
     {
         handleServerSide(player);
     }
 
     @Override
-    public void handleServerSide(EntityPlayer player)
+    public void handleServerSide(Player player)
     {
         if (slotId < 0)
         {
-            final Item item = Item.getItemById(Math.abs(this.slotId));
-            if (item != null)
+            final Item item = BuiltInRegistries.ITEM.byId(Math.abs(this.slotId));
+            if (item instanceof IPacketIDReceiver)
             {
-                if (item instanceof IPacketIDReceiver)
-                {
-                    ((IPacketIDReceiver) item).read(data(), id, player, this);
-                }
+                ((IPacketIDReceiver) item).read(data(), id, player, this);
             }
         }
         else
         {
-            final ItemStack stack = player.inventory.getStackInSlot(this.slotId);
+            final ItemStack stack = player.getInventory().getItem(this.slotId);
             if (stack.getItem() instanceof IPacketIDReceiver)
             {
                 ((IPacketIDReceiver) stack.getItem()).read(data(), id, player, this);

@@ -8,8 +8,8 @@ import icbm.classic.api.radio.IRadioChannelAccess;
 import icbm.classic.config.ConfigMain;
 import icbm.classic.config.machines.ConfigRadar;
 import icbm.classic.content.blocks.radarstation.data.RadarRenderData;
+import icbm.classic.content.blocks.radarstation.data.RadarRenderDot;
 import icbm.classic.content.blocks.radarstation.gui.ContainerRadarStation;
-import icbm.classic.content.blocks.radarstation.gui.GuiRadarStation;
 import icbm.classic.content.missile.entity.anti.EntitySurfaceToAirMissile;
 import icbm.classic.content.reg.BlockReg;
 import icbm.classic.lib.NBTConstants;
@@ -34,20 +34,22 @@ import icbm.classic.prefab.tile.IGuiTile;
 import icbm.classic.prefab.tile.TileMachine;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import icbm.classic.lib.capability.holder.ICapabilityHolderTile;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -55,16 +57,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiTile, IPlayerUsing
+public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiTile, IPlayerUsing, ICapabilityHolderTile
 {
-    public static final ResourceLocation REGISTRY_NAME = new ResourceLocation(ICBMConstants.DOMAIN, "radarstation");
+    public static final ResourceLocation REGISTRY_NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "radarstation");
 
 
-    public static final ITextComponent TRANSLATION_GUI_NAME = new TextComponentTranslation("gui.icbmclassic:radar.name");
-    public static final ITextComponent TRANSLATION_TOOLTIP_RANGE = new TextComponentTranslation("gui.icbmclassic:radar.range");
-    public static final ITextComponent TRANSLATION_TOOLTIP_RANGE_SHIFT = new TextComponentTranslation("gui.icbmclassic:radar.range.shift");
-    public static final ITextComponent TRANSLATION_TOOLTIP_REDSTONE_OFF = new TextComponentTranslation("gui.icbmclassic:radar.redstone.off");
-    public static final ITextComponent TRANSLATION_TOOLTIP_REDSTONE_ON = new TextComponentTranslation("gui.icbmclassic:radar.redstone.on");
+    public static final Component TRANSLATION_GUI_NAME = Component.translatable("gui.icbmclassic:radar.name");
+    public static final Component TRANSLATION_TOOLTIP_RANGE = Component.translatable("gui.icbmclassic:radar.range");
+    public static final Component TRANSLATION_TOOLTIP_RANGE_SHIFT = Component.translatable("gui.icbmclassic:radar.range.shift");
+    public static final Component TRANSLATION_TOOLTIP_REDSTONE_OFF = Component.translatable("gui.icbmclassic:radar.redstone.off");
+    public static final Component TRANSLATION_TOOLTIP_REDSTONE_ON = Component.translatable("gui.icbmclassic:radar.redstone.on");
 
     public static final String NBT_DETECTION_RANGE = "detection_range"; //TODO fix name
     public static final String NBT_TRIGGER_RANGE = "safetyRadius"; //TODO fix name
@@ -89,16 +91,16 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     private final List<Entity> detectedThreats = new ArrayList<Entity>();
     /** Threats that will cause harm to our protection area */
     @Getter
-    private final List<IMissile> incomingThreats = new ArrayList(); //TODO decouple from missile so we can track other entities
+    private final List<IMissile> incomingThreats = new ArrayList<>(); //TODO decouple from missile so we can track other entities
 
     @Getter
     private final RadarRenderData radarRenderData = new RadarRenderData(this);
 
     public final EnergyBuffer energyStorage = new EnergyBuffer(() -> ConfigRadar.POWER_CAPACITY)
-        .withOnChange((p,c,s) -> this.markDirty());
+        .withOnChange((p,c,s) -> this.setChanged());
     @Getter
     private final InventoryWithSlots inventory = new InventoryWithSlots(1)
-        .withChangeCallback((s, i) -> markDirty())
+        .withChangeCallback((s, i) -> setChanged())
         .withSlot(new InventorySlot(0, EnergySystem::isEnergyItem).withTick(this.energyStorage::dischargeItem));
 
     @Getter
@@ -110,23 +112,24 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     private final TickDoOnce descriptionPacketSender = new TickDoOnce((t) -> PACKET_DESCRIPTION.sendToAllAround(this));
 
     @Getter
-    private final List<EntityPlayer> playersUsing = new LinkedList<>();
+    private final List<Player> playersUsing = new LinkedList<>();
 
     private int firingCooldown = 0;
 
-    public TileRadarStation() {
+    public TileRadarStation(BlockPos pos, BlockState state) {
+        super(BlockReg.TILE_RADAR_STATION.get(), pos, state);
         tickActions.add(descriptionPacketSender);
         tickActions.add(new TickAction(3, true, (t) -> PACKET_GUI.sendPacketToGuiUsers(this, playersUsing)));
         tickActions.add(new TickAction(20, true, (t) -> {
-            playersUsing.removeIf((player) -> !(player.openContainer instanceof ContainerRadarStation));
+            playersUsing.removeIf((player) -> !(player.containerMenu instanceof ContainerRadarStation));
         }));
         tickActions.add(inventory);
     }
 
     @Override
-    public void markDirty()
+    public void setChanged()
     {
-        super.markDirty();
+        super.setChanged();
         if(isServer()) {
             descriptionPacketSender.doNext();
         }
@@ -168,7 +171,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
 
                     if(firingCooldown <= 0) {
                         firingCooldown = ConfigRadar.SAM_TICKS;
-                        RadioRegistry.popMessage(world, radio, new IncomingMissileMessage(radio.getChannel(), this.incomingThreats.get(0), true));
+                        RadioRegistry.popMessage(level, radio, new IncomingMissileMessage(radio.getChannel(), this.incomingThreats.get(0), true));
                     }
                 }
             }
@@ -181,37 +184,37 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
 
             //Update redstone state
             final boolean shouldBeOn = hasPower && hasIncomingMissiles();
-            if (world.getBlockState(getPos()).getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn)
-            {
-                final BlockPos selfPos = getPos();
 
-                world.setBlockState(selfPos, getBlockState().withProperty(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn), 3);
-                for (EnumFacing facing : EnumFacing.values())
+            // Track our state server side
+            this.radarVisualState = getRadarState(hasPower);
+
+            // PORT: 1.12 forced a client re-render of the computed radar state, RADAR_STATE is now a stored property
+            final BlockState currentState = getBlockState();
+            if (currentState.hasProperty(BlockRadarStation.REDSTONE_PROPERTY)
+                && (currentState.getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn || currentState.getValue(BlockRadarStation.RADAR_STATE) != radarVisualState))
+            {
+                final boolean redstoneChanged = currentState.getValue(BlockRadarStation.REDSTONE_PROPERTY) != shouldBeOn;
+                final BlockPos selfPos = getBlockPos();
+                level.setBlock(selfPos, currentState
+                    .setValue(BlockRadarStation.REDSTONE_PROPERTY, shouldBeOn)
+                    .setValue(BlockRadarStation.RADAR_STATE, radarVisualState), 3);
+
+                if (redstoneChanged)
                 {
-                    final BlockPos targetPos = selfPos.offset(facing);
-                    world.neighborChanged(targetPos, getBlockType(), getPos());
-                    world.notifyNeighborsOfStateExcept(targetPos, getBlockType(), facing.getOpposite());
+                    for (Direction facing : Direction.values())
+                    {
+                        final BlockPos targetPos = selfPos.relative(facing);
+                        level.neighborChanged(targetPos, getBlockState().getBlock(), selfPos);
+                        level.updateNeighborsAtExceptFromFacing(targetPos, getBlockState().getBlock(), facing.getOpposite());
+                    }
                 }
             }
-        }
 
-        // Track our state server side
-        if(isServer()) {
-            this.radarVisualState = getRadarState();
+            if (preRadarVisualState != radarVisualState) {
+                this.setChanged();
+                preRadarVisualState = radarVisualState;
+            }
         }
-
-        // Force block re-render if our state has changed
-        if(preRadarVisualState != radarVisualState) {
-            this.markDirty();
-            this.world.markAndNotifyBlock(pos, null, getBlockState().withProperty(BlockRadarStation.RADAR_STATE, preRadarVisualState), getBlockState().withProperty(BlockRadarStation.RADAR_STATE, radarVisualState), 3);
-            preRadarVisualState = radarVisualState;
-        }
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
-    {
-        return !(oldState.getBlock() == BlockReg.blockRadarStation && newState.getBlock() == BlockReg.blockRadarStation); //Don't kill tile if the radar station is still there
     }
 
     private void doScan() //TODO document and thread
@@ -221,7 +224,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         this.descriptionPacketSender.doNext();
         this.radarRenderData.clear();
 
-        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(world, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, Math.min(detectionRange, ConfigRadar.MAX_RANGE));
+        final List<Entity> entities = RadarRegistry.getAllLivingObjectsWithin(level, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, Math.min(detectionRange, ConfigRadar.MAX_RANGE));
 
         // Loop list of contacts to ID threats
         for (Entity entity : entities)
@@ -265,9 +268,10 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     }
 
     private int distance(Entity entity) {
-        final int deltaX = (int)Math.floor(Math.abs(pos.getX() + 0.5) - entity.posX);
-        final int deltaY = (int)Math.floor(Math.abs(pos.getY() + 0.5) - entity.posY);
-        final int deltaZ = (int)Math.floor(Math.abs(pos.getZ() + 0.5) - entity.posZ);
+        final BlockPos pos = getBlockPos();
+        final int deltaX = (int)Math.floor(Math.abs(pos.getX() + 0.5) - entity.getX());
+        final int deltaY = (int)Math.floor(Math.abs(pos.getY() + 0.5) - entity.getY());
+        final int deltaZ = (int)Math.floor(Math.abs(pos.getZ() + 0.5) - entity.getZ());
 
         return deltaX + deltaY + deltaZ;
     }
@@ -279,8 +283,8 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
             // Ignore SAM missiles
             && !(entity instanceof EntitySurfaceToAirMissile)
             // Track explosive missiles (using caps to allow other mods to interact more easily)
-            && entity.hasCapability(ICBMClassicAPI.MISSILE_CAPABILITY, null)
-            && entity.hasCapability(ICBMClassicAPI.EXPLOSIVE_CAPABILITY, null); //TODO recode to use a radar classification system
+            && entity.getCapability(ICBMClassicAPI.MISSILE_CAPABILITY) != null
+            && entity.getCapability(ICBMClassicAPI.EXPLOSIVE_ENTITY_CAPABILITY) != null; //TODO recode to use a radar classification system
     }
 
     /**
@@ -291,16 +295,16 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
      */
     public boolean isMissileGoingToHit(IMissile missile)
     {
-        if (missile == null || missile.getMissileEntity() == null || !missile.getMissileEntity().isEntityAlive())
+        if (missile == null || missile.getMissileEntity() == null || !missile.getMissileEntity().isAlive())
         {
             return false;
         }
         //TODO rewrite this as a 2D without objects for less memory waste
 
-        Vec3d mpos = new Vec3d(missile.xf(),missile.yf(), missile.zf());    // missile position
-        Vec3d rpos = new Vec3d(this.pos.getX(),this.pos.getY(), this.pos.getZ());   // radar position
+        Vec3 mpos = new Vec3(missile.xf(),missile.yf(), missile.zf());    // missile position
+        Vec3 rpos = new Vec3(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());   // radar position
 
-        double nextDistance = mpos.addVector(missile.getMissileEntity().motionX, missile.getMissileEntity().motionY, missile.getMissileEntity().motionZ).distanceTo(rpos);   // next distance from missile to radar
+        double nextDistance = mpos.add(missile.getMissileEntity().getDeltaMovement()).distanceTo(rpos);   // next distance from missile to radar
         double currentDistance = mpos.distanceTo(rpos); // current distance from missile to radar
 
         return nextDistance < currentDistance;   // we assume that the missile hits if the distance decreases (the missile is coming closer)
@@ -311,8 +315,17 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         if(isClient()) {
             return radarVisualState;
         }
+        return getRadarState(this.energyStorage.consumePower(getEnergyCost(), true));
+    }
 
-        if(!this.energyStorage.consumePower(getEnergyCost(), false)) {
+    /**
+     * PORT: 1.12 consumed the per tick energy cost a second time here (the config documents a single cost per tick).
+     * With the energy buffer now reporting real extraction that would show OFF while still scanning, so the power
+     * result of the tick's single consume is passed in.
+     */
+    protected EnumRadarState getRadarState(boolean hasPower) {
+
+        if(!hasPower) {
             return EnumRadarState.OFF;
         }
         else if(this.incomingThreats.size() > 0) {
@@ -324,7 +337,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         return EnumRadarState.ON;
     }
 
-    public int getStrongRedstonePower(EnumFacing side)
+    public int getStrongRedstonePower(Direction side)
     {
         if (this.outputRedstone && incomingThreats.size() > 0) //TODO add UI customization to pick side of redstone output and minimal number of missiles to trigger
         {
@@ -342,54 +355,44 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
     }
 
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
         return TRANSLATION_GUI_NAME;
     }
 
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+    @Nullable
+    public <T> T getCapability(BlockCapability<T, Direction> capability, @Nullable Direction facing)
     {
-        if (capability == CapabilityEnergy.ENERGY)
+        if (capability == Capabilities.EnergyStorage.BLOCK)
         {
-            return (T) energyStorage;
+            return ConfigMain.REQUIRES_POWER ? (T) energyStorage : null;
         }
-        return super.getCapability(capability, facing);
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player)
+    {
+        return new ContainerRadarStation(windowId, player, this);
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries)
     {
-        return super.hasCapability(capability, facing)
-            || capability == CapabilityEnergy.ENERGY && ConfigMain.REQUIRES_POWER;
-    }
-
-    @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player)
-    {
-        return new ContainerRadarStation(player, this);
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player)
-    {
-        return new GuiRadarStation(player, this);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound nbt)
-    {
-        super.readFromNBT(nbt);
+        super.loadAdditional(nbt, registries);
         SAVE_LOGIC.load(this, nbt);
-        if(nbt.hasKey(NBTConstants.FREQUENCY)) {
-            this.radio.setChannel(Integer.toString(nbt.getInteger(NBTConstants.FREQUENCY)));
+        if(nbt.contains(NBTConstants.FREQUENCY)) {
+            this.radio.setChannel(Integer.toString(nbt.getInt(NBTConstants.FREQUENCY)));
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-    {   SAVE_LOGIC.save(this, nbt);
-        return super.writeToNBT(nbt);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries)
+    {
+        SAVE_LOGIC.save(this, nbt);
+        super.saveAdditional(nbt, registries);
     }
 
     private static final NbtSaveHandler<TileRadarStation> SAVE_LOGIC = new NbtSaveHandler<TileRadarStation>()
@@ -402,8 +405,9 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         /* */.nodeInteger("energy", tile -> tile.energyStorage.getEnergyStored(), (tile, i) -> tile.energyStorage.setEnergyStored(i))
         /* */.nodeInteger("sam_delay", tile -> tile.firingCooldown, (tile, i) -> tile.firingCooldown = i)
         .base();
+
+    /** Registers packet codexes, block entity type lives in BlockReg */
     public static void register() {
-        GameRegistry.registerTileEntity(TileRadarStation.class, REGISTRY_NAME);
         PacketCodexReg.register(PACKET_DESCRIPTION, PACKET_GUI, PACKET_RADIO_HZ, PACKET_RADIO_DISABLE, PACKET_DETECTION_RANGE, PACKET_TRIGGER_RANGE, PACKET_REDSTONE_OUTPUT);
     }
 
@@ -433,5 +437,7 @@ public class TileRadarStation extends TileMachine implements IMachineInfo, IGuiT
         .nodeString((t) -> t.radio.getChannel(), (t, s) -> t.radio.setChannel(s))
         .nodeBoolean((t) -> t.radio.isDisabled(), (t, b) -> t.radio.setDisabled(b))
         .nodeBoolean(TileRadarStation::isOutputRedstone, TileRadarStation::setOutputRedstone)
-        .node( (t) -> t.radarRenderData.getDots(), (t, dots) -> t.radarRenderData.setDots(dots), RadarRenderData::encodeDots, RadarRenderData::decodeDots);
+        // PORT: snapshot the dots, 1.21 encodes on the netty thread while the server thread clears/refills the live list
+        .<List<RadarRenderDot>>node((t) -> new ArrayList<>(t.radarRenderData.getDots()), (t, dots) -> t.radarRenderData.setDots(dots), RadarRenderData::encodeDots, RadarRenderData::decodeDots);
 }
+// PORTED

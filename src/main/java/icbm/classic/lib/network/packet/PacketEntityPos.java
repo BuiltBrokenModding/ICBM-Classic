@@ -1,12 +1,12 @@
 package icbm.classic.lib.network.packet;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * Packet to handle updating entity position, motion, and rotation.
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class PacketEntityPos extends PacketBase<PacketEntityPos>
 {
     public int entityId;
-    public int world;
+    public ResourceKey<Level> world;
     public double x, y, z;
     public double mx, my, mz;
     public float yaw, pitch;
@@ -29,23 +29,23 @@ public class PacketEntityPos extends PacketBase<PacketEntityPos>
 
     public PacketEntityPos(Entity entity)
     {
-        this.entityId = entity.getEntityId();
-        this.world = entity.world.provider.getDimension();
-        this.x = entity.posX;
-        this.y = entity.posY;
-        this.z = entity.posZ;
-        this.mx = entity.motionX;
-        this.my = entity.motionY;
-        this.mz = entity.motionZ;
-        this.yaw = entity.rotationYaw;
-        this.pitch = entity.rotationPitch;
+        this.entityId = entity.getId();
+        this.world = entity.level().dimension();
+        this.x = entity.getX();
+        this.y = entity.getY();
+        this.z = entity.getZ();
+        this.mx = entity.getDeltaMovement().x;
+        this.my = entity.getDeltaMovement().y;
+        this.mz = entity.getDeltaMovement().z;
+        this.yaw = entity.getYRot();
+        this.pitch = entity.getXRot();
     }
 
     @Override
-    public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void encodeInto(RegistryFriendlyByteBuf buffer)
     {
         buffer.writeInt(entityId);
-        buffer.writeInt(world);
+        buffer.writeResourceKey(world);
         buffer.writeDouble(x);
         buffer.writeDouble(y);
         buffer.writeDouble(z);
@@ -54,14 +54,14 @@ public class PacketEntityPos extends PacketBase<PacketEntityPos>
         buffer.writeDouble(mz);
         buffer.writeFloat(yaw);
         buffer.writeFloat(pitch);
-        super.encodeInto(ctx, buffer);
+        super.encodeInto(buffer);
     }
 
     @Override
-    public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
+    public void decodeInto(RegistryFriendlyByteBuf buffer)
     {
         entityId = buffer.readInt();
-        world = buffer.readInt();
+        world = buffer.readResourceKey(Registries.DIMENSION);
         x = buffer.readDouble();
         y = buffer.readDouble();
         z = buffer.readDouble();
@@ -70,29 +70,26 @@ public class PacketEntityPos extends PacketBase<PacketEntityPos>
         mz = buffer.readDouble();
         yaw = buffer.readFloat();
         pitch = buffer.readFloat();
-        super.decodeInto(ctx, buffer);
+        super.decodeInto(buffer);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void handleClientSide(Minecraft minecraft, EntityPlayer player)
+    public void handleClientSide(Minecraft minecraft, Player player)
     {
-        if (player != null && player.world.provider.getDimension() == world)
+        if (player != null && player.level().dimension().equals(world))
         {
-            final Entity entity = player.world.getEntityByID(entityId);
+            final Entity entity = player.level().getEntity(entityId);
             if(entity != null) {
-                entity.setPosition(x, y, z);
-                entity.motionX = mx;
-                entity.motionY = my;
-                entity.motionZ = mz;
-                entity.rotationYaw = yaw;
-                entity.rotationPitch = pitch;
+                entity.setPos(x, y, z);
+                entity.setDeltaMovement(mx, my, mz);
+                entity.setYRot(yaw);
+                entity.setXRot(pitch);
             }
         }
     }
 
     @Override
-    public void handleServerSide(EntityPlayer player)
+    public void handleServerSide(Player player)
     {
     }
 }

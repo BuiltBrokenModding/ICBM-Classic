@@ -1,5 +1,7 @@
 package icbm.classic.lib;
 
+import net.minecraft.util.RandomSource;
+
 import java.util.Random;
 
 /**
@@ -63,4 +65,27 @@ public final class CalculationHelpers
     {
         return (rand.nextDouble() * (max - min)) + min;
     }
+
+    // PORT: 1.21 worlds and entities use RandomSource instead of java.util.Random, overloads below mirror the ones above
+
+    public static float randFloatRange(RandomSource rand, float scale)
+    {
+        return randFloatRange(rand, -scale, scale);
+    }
+
+    public static float randFloatRange(RandomSource rand, float min, float max)
+    {
+        return (rand.nextFloat() * (max - min)) + min;
+    }
+
+    public static double randDoubleRange(RandomSource rand, double scale)
+    {
+        return randDoubleRange(rand, -scale, scale);
+    }
+
+    public static double randDoubleRange(RandomSource rand, double min, double max)
+    {
+        return (rand.nextDouble() * (max - min)) + min;
+    }
 }
+// PORTED

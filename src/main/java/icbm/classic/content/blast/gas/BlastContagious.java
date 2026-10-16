@@ -5,16 +5,16 @@ import icbm.classic.config.ConfigMain;
 import icbm.classic.content.blast.BlastMutation;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.entity.LivingEntity;
+import icbm.classic.content.blast.ICBMDamageTypes;
+import net.minecraft.core.Vec3i;
 
 /**
  * Created by Robin Seifert on 4/1/2022.
  */
 public class BlastContagious extends BlastGasBase
 {
-    public static final DamageSource CONTAGIOUS_DAMAGE = new DamageSource("icbm.contagious");
+    // PORT: 1.12 static CONTAGIOUS_DAMAGE source is now data driven, see ICBMDamageTypes.CONTAGIOUS
     public static final float red = 0.3f, green = 0.8f, blue = 0;
 
     @Setter @Accessors(chain = true)
@@ -31,9 +31,9 @@ public class BlastContagious extends BlastGasBase
     }
 
     @Override
-    protected boolean canGasEffect(EntityLivingBase entity)
+    protected boolean canGasEffect(LivingEntity entity)
     {
-        return super.canGasEffect(entity) && !entity.isEntityInvulnerable(CONTAGIOUS_DAMAGE);
+        return super.canGasEffect(entity) && !entity.isInvulnerableTo(ICBMDamageTypes.source(world, ICBMDamageTypes.CONTAGIOUS));
     }
 
     @Override
@@ -42,14 +42,14 @@ public class BlastContagious extends BlastGasBase
     }
 
     @Override
-    protected void applyEffect(final EntityLivingBase entity, final int hitCount)
+    protected void applyEffect(final LivingEntity entity, final int hitCount)
     {
-        ICBMClassic.contagiousPotion.poisonEntity(location.toPos(), entity, 3);
+        ICBMClassic.contagiousPotion.get().poisonEntity(location.toPos(), entity, 3);
 
         //Apply damage to non-mutated entities if toxin level is high enough
         if (!BlastMutation.applyMutationEffect(entity) && hitCount > toxicityBuildup)
         {
-            entity.attackEntityFrom(CONTAGIOUS_DAMAGE,  Math.max(toxicityMinDamage, hitCount * toxicityScale));
+            entity.hurt(ICBMDamageTypes.source(world, ICBMDamageTypes.CONTAGIOUS),  Math.max(toxicityMinDamage, hitCount * toxicityScale));
         }
     }
 
@@ -71,3 +71,4 @@ public class BlastContagious extends BlastGasBase
         return blue;
     }
 }
+// PORTED

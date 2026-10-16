@@ -3,20 +3,20 @@ package icbm.classic.content.blast;
 import icbm.classic.content.entity.EntityFragments;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Function;
 
 public class BlastShrapnel extends Blast
 {
     @Setter @Accessors(chain = true)
-    private Function<World, EntityFragments> projectile;
+    private Function<Level, EntityFragments> projectile;
 
     @Override
     public boolean doExplode(int callCount)
     {
-        if (!world().isRemote)
+        if (!world().isClientSide())
         {
             float rotationStep = 360 / this.getBlastRadius();
 
@@ -32,22 +32,25 @@ public class BlastShrapnel extends Blast
                     final EntityFragments fragment = projectile.apply(world);
 
                     float rotationPitch = 0.0F + rotationStep * pitchIndex;
-                    fragment.setLocationAndAngles(location.x(), Math.floor(location.y()) + 1.5, location.z(), rotationYaw, rotationPitch); //TODO fix y-pos to not offset by 1.5
-                    fragment.posX -= (MathHelper.cos(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);
-                    fragment.posY -= 0.10000000149011612D; //TODO figure out why magic number
-                    fragment.posZ -= (MathHelper.sin(rotationYaw / 180.0F * (float) Math.PI) * 0.16F);
-                    fragment.setPosition(fragment.posX, fragment.posY, fragment.posZ);
+                    fragment.moveTo(location.x(), Math.floor(location.y()) + 1.5, location.z(), rotationYaw, rotationPitch); //TODO fix y-pos to not offset by 1.5
+                    fragment.setPos(
+                        fragment.getX() - (Mth.cos(rotationYaw / 180.0F * (float) Math.PI) * 0.16F),
+                        fragment.getY() - 0.10000000149011612D, //TODO figure out why magic number
+                        fragment.getZ() - (Mth.sin(rotationYaw / 180.0F * (float) Math.PI) * 0.16F));
 
-                    fragment.motionX = (-MathHelper.sin(rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float) Math.PI));
-                    fragment.motionZ = (MathHelper.cos(rotationYaw / 180.0F * (float) Math.PI) * MathHelper.cos(rotationPitch / 180.0F * (float) Math.PI));
-                    fragment.motionY = (-MathHelper.sin(rotationPitch / 180.0F * (float) Math.PI));
+                    final double motionX = (-Mth.sin(rotationYaw / 180.0F * (float) Math.PI) * Mth.cos(rotationPitch / 180.0F * (float) Math.PI));
+                    final double motionZ = (Mth.cos(rotationYaw / 180.0F * (float) Math.PI) * Mth.cos(rotationPitch / 180.0F * (float) Math.PI));
+                    final double motionY = (-Mth.sin(rotationPitch / 180.0F * (float) Math.PI));
+                    fragment.setDeltaMovement(motionX, motionY, motionZ);
 
-                    fragment.setArrowHeading(fragment.motionX * world().rand.nextFloat(), fragment.motionY * world().rand.nextFloat(), fragment.motionZ * world().rand.nextFloat(), 0.5f + (0.7f * world().rand.nextFloat()), 1.0F);
-                    world().spawnEntity(fragment);
+                    fragment.setArrowHeading(motionX * world().random.nextFloat(), motionY * world().random.nextFloat(), motionZ * world().random.nextFloat(), 0.5f + (0.7f * world().random.nextFloat()), 1.0F);
+                    world().addFreshEntity(fragment);
 
                 }
             }
         }
-        return false;
+        // PORT: one-shot blast, return true so completeBlast runs and the blast leaves WorkTickingActionHandler.activeBlasts (1.12 left it there until world unload)
+        return true;
     }
 }
+// PORTED

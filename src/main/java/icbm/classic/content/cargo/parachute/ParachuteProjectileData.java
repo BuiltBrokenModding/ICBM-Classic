@@ -4,8 +4,8 @@ import icbm.classic.ICBMConstants;
 import icbm.classic.content.cargo.CargoProjectileData;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -13,10 +13,10 @@ import javax.annotation.Nonnull;
 @ToString
 public class ParachuteProjectileData extends CargoProjectileData<ParachuteProjectileData, EntityParachute> {
 
-    public final static ResourceLocation NAME = new ResourceLocation(ICBMConstants.DOMAIN, "holder.parachute");
+    public final static ResourceLocation NAME = ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "holder.parachute");
 
     @Override
-    public EntityParachute newEntity(World world, boolean allowItemPicku) {
+    public EntityParachute newEntity(Level world, boolean allowItemPicku) {
         return new EntityParachute(world); //.setRenderItemStack(parachute);
     }
 
@@ -26,3 +26,4 @@ public class ParachuteProjectileData extends CargoProjectileData<ParachuteProjec
         return NAME;
     }
 }
+// PORTED

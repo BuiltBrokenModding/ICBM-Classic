@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "coc",
+    "oco",
+    "coc"
+  ],
+  "key": {
+    "c": {
+      "item": "icbmclassic:concrete_compact"
+    },
+    "o": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:concrete_reinforced",
+    "count": 8
+  }
+}

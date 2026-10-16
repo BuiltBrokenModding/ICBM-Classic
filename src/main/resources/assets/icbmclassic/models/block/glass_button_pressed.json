@@ -1,6 +1,7 @@
 {
-    "parent": "block/button_pressed",
-    "textures": {
-        "texture": "icbmclassic:blocks/glass_button"
-    }
+  "parent": "block/button_pressed",
+  "textures": {
+    "texture": "icbmclassic:block/glass_button"
+  },
+  "render_type": "minecraft:cutout"
 }

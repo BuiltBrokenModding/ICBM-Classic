@@ -7,10 +7,11 @@ import icbm.classic.api.data.WorldEntityIntSupplier;
 import icbm.classic.api.reg.IExplosiveData;
 import icbm.classic.api.reg.content.IExMinecartRegistry;
 import icbm.classic.content.reg.ItemReg;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IntHashMap;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import icbm.classic.lib.explosive.ExplosiveStacks;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 
@@ -23,8 +24,8 @@ public class ExMinecartContentReg extends ExplosiveContentRegistry implements IE
     private final HashMap<ResourceLocation, WorldEntityIntSupplier> fuseSetSupplierMap = new HashMap();
     private final HashMap<ResourceLocation, EntityTickFunction> fuseTickCallbackMap = new HashMap();
 
-    private final IntHashMap<WorldEntityIntSupplier> fuseSetSupplier = new IntHashMap();
-    private final IntHashMap<EntityTickFunction> fuseTickCallback = new IntHashMap();
+    private final Int2ObjectOpenHashMap<WorldEntityIntSupplier> fuseSetSupplier = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<EntityTickFunction> fuseTickCallback = new Int2ObjectOpenHashMap<>();
 
     public ExMinecartContentReg()
     {
@@ -34,7 +35,7 @@ public class ExMinecartContentReg extends ExplosiveContentRegistry implements IE
     @Override
     public ItemStack getDeviceStack(ResourceLocation regName)
     {
-        return new ItemStack(ItemReg.itemBombCart, 1, ICBMClassicHelpers.getExplosive(regName, false).getRegistryID());
+        return ExplosiveStacks.create(ItemReg.itemBombCart.get(), ICBMClassicHelpers.getExplosive(regName, false));
     }
 
     @Override
@@ -47,14 +48,14 @@ public class ExMinecartContentReg extends ExplosiveContentRegistry implements IE
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    fuseSetSupplier.addKey(data.getRegistryID(), func);
+                    fuseSetSupplier.put(data.getRegistryID(), func);
                 }
             });
             fuseTickCallbackMap.forEach((regName, func) -> {
                 final IExplosiveData data = ICBMClassicAPI.EXPLOSIVE_REGISTRY.getExplosiveData(regName);
                 if (data != null)
                 {
-                    fuseTickCallback.addKey(data.getRegistryID(), func);
+                    fuseTickCallback.put(data.getRegistryID(), func);
                 }
             });
         }
@@ -77,7 +78,7 @@ public class ExMinecartContentReg extends ExplosiveContentRegistry implements IE
     @Override
     public void tickFuse(Entity entity, IExplosiveData data, int ticksExisted)
     {
-        final EntityTickFunction function = fuseTickCallback.lookup(data != null ? data.getRegistryID() : 0);
+        final EntityTickFunction function = fuseTickCallback.get(data != null ? data.getRegistryID() : 0);
         if (function != null)
         {
             function.onTick(entity, ticksExisted);
@@ -87,7 +88,7 @@ public class ExMinecartContentReg extends ExplosiveContentRegistry implements IE
     @Override
     public int getFuseTime(Entity entity, IExplosiveData data)
     {
-        final WorldEntityIntSupplier function = fuseSetSupplier.lookup(data != null ? data.getRegistryID() : 0);
+        final WorldEntityIntSupplier function = fuseSetSupplier.get(data != null ? data.getRegistryID() : 0);
         if (function != null)
         {
             return function.get(entity);
@@ -95,3 +96,4 @@ public class ExMinecartContentReg extends ExplosiveContentRegistry implements IE
         return 100;
     }
 }
+// PORTED

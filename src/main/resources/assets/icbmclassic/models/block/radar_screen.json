@@ -8,12 +8,12 @@
     }
   },
   "textures": {
-    "particle": "icbmclassic:blocks/machine_green",
-    "down": "icbmclassic:blocks/machine_green",
-    "up": "icbmclassic:blocks/machine_green",
-    "north": "icbmclassic:blocks/screen/radar",
-    "east": "icbmclassic:blocks/machine_green",
-    "south": "icbmclassic:blocks/machine_green",
-    "west": "icbmclassic:blocks/machine_green"
+    "particle": "icbmclassic:block/machine_green",
+    "down": "icbmclassic:block/machine_green",
+    "up": "icbmclassic:block/machine_green",
+    "north": "icbmclassic:block/screen/radar",
+    "east": "icbmclassic:block/machine_green",
+    "south": "icbmclassic:block/machine_green",
+    "west": "icbmclassic:block/machine_green"
   }
 }

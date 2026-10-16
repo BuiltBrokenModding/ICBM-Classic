@@ -3,45 +3,47 @@ package icbm.classic.content.entity.flyingblock;
 import icbm.classic.ICBMClassic;
 import icbm.classic.ICBMConstants;
 import icbm.classic.config.ConfigFlyingBlocks;
-import icbm.classic.content.entity.EntityPlayerSeat;
+import icbm.classic.content.reg.EntityReg;
 import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.saving.NbtSaveHandler;
-import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemDoor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import javax.annotation.Nonnull;
 
 /**
- * Similiar to {@link net.minecraft.entity.item.EntityFallingBlock} but specifically as a projectile to be spawned
+ * Similiar to {@link net.minecraft.world.entity.item.FallingBlockEntity} but specifically as a projectile to be spawned
  * by {@link icbm.classic.content.blast.redmatter.EntityRedmatter} and other sources.
  *
  * Normally created by {@link FlyingBlock} handling logic
  */
-public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> implements IEntityAdditionalSpawnData
+public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> implements IEntityWithComplexSpawn
 {
     /** Data about the block we are replicating */
     @Setter(value = AccessLevel.PACKAGE)
@@ -50,18 +52,43 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     public float yawChange = 0;
     public float pitchChange = 0;
 
-    @Getter
-    @Setter
+    /** PORT: 1.21 Entity#getGravity() is final, the getter is named getBlockGravity and applied through getDefaultGravity */
     private float gravity = DEFAULT_GRAVITY;
 
-    public EntityFlyingBlock(World world)
+    public EntityFlyingBlock(EntityType<? extends EntityFlyingBlock> type, Level world)
     {
-        super(world);
-        this.ticksExisted = 0;
-        this.preventEntitySpawning = true;
-        this.isImmuneToFire = true;
-        this.setSize(0.98F, 0.98F);
+        super(type, world);
+        this.tickCount = 0;
+        this.blocksBuilding = true;
         this.inGroundKillTime = ICBMConstants.TICKS_SEC;
+    }
+
+    public EntityFlyingBlock(Level world)
+    {
+        this(EntityReg.BLOCK_GRAVITY.get(), world);
+    }
+
+    /** 1.12 isImmuneToFire = true */
+    @Override
+    public boolean fireImmune()
+    {
+        return true;
+    }
+
+    public float getBlockGravity()
+    {
+        return gravity;
+    }
+
+    public void setGravity(float gravity)
+    {
+        this.gravity = gravity;
+    }
+
+    @Override
+    protected double getDefaultGravity()
+    {
+        return gravity;
     }
 
     public void restoreGravity()
@@ -80,57 +107,68 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
 
     @Nonnull
     @Override
-    public String getName()
+    public Component getName()
     {
-        return "Flying Block [" + getBlockData().getBlockState() + ", " + hashCode() + "]";
+        return Component.literal("Flying Block [" + getBlockData().getBlockState() + ", " + hashCode() + "]");
     }
 
     @Override
-    public void writeSpawnData(ByteBuf data)
+    public void writeSpawnData(RegistryFriendlyByteBuf data)
     {
-        ByteBufUtils.writeTag(data, this.getBlockData().serializeNBT());
+        super.writeSpawnData(data);
+        // PORT: client only renders the block state, captured tile data and the clone stack (chest/shulker contents)
+        // are server side placement data and can push the spawn packet over the NBT/packet size limits
+        final CompoundTag blockTag = this.getBlockData().serializeNBT(data.registryAccess());
+        blockTag.remove("block_entity");
+        blockTag.remove("source_stack");
+        data.writeNbt(blockTag);
         data.writeFloat(this.gravity);
         data.writeFloat(yawChange);
         data.writeFloat(pitchChange);
     }
 
     @Override
-    public void readSpawnData(ByteBuf data)
+    public void readSpawnData(RegistryFriendlyByteBuf data)
     {
-        this.getBlockData().deserializeNBT(ByteBufUtils.readTag(data));
+        super.readSpawnData(data);
+        final CompoundTag tag = data.readNbt();
+        if (tag != null)
+        {
+            this.getBlockData().deserializeNBT(data.registryAccess(), tag);
+        }
         gravity = data.readFloat();
         yawChange = data.readFloat();
         pitchChange = data.readFloat();
     }
 
     @Override
-    public void onUpdate()
+    public void tick()
     {
-        super.onUpdate();
+        super.tick();
 
         //Animation
         if (this.yawChange > 0)
         {
-            this.rotationYaw += this.yawChange;
+            this.setYRot(this.getYRot() + this.yawChange);
             this.yawChange -= 2;
         }
 
         if (this.pitchChange > 0)
         {
-            this.rotationPitch += this.pitchChange;
+            this.setXRot(this.getXRot() + this.pitchChange);
             this.pitchChange -= 2;
         }
     }
 
     @Override
     protected boolean shouldExpire() {
-        return super.shouldExpire() || this.posY > 400;
+        return super.shouldExpire() || this.getY() > 400;
     }
 
     @Override
     protected void destroy() {
-        this.placeBlockIntoWorld(this.getPos(), new RayTraceResult(this.getPositionVector(), EnumFacing.UP));
-        this.setDead();
+        this.placeBlockIntoWorld(this.blockPosition(), new BlockHitResult(this.position(), Direction.UP, this.blockPosition(), false));
+        this.discard();
     }
 
     @Override
@@ -139,25 +177,31 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     }
 
     @Override
-    protected void onImpact(@Nonnull RayTraceResult impactLocation) {
+    protected void onImpact(@Nonnull HitResult impactLocation) {
         //Grace period to get away from the ground
         if(ticksInAir < 5) return;
 
-        if(impactLocation.entityHit == null) {
-            this.placeBlockIntoWorld(new BlockPos(impactLocation.hitVec), impactLocation);
+        if(!(impactLocation instanceof EntityHitResult)) {
+            final BlockPos pos = BlockPos.containing(impactLocation.getLocation());
+            final BlockHitResult blockHit = impactLocation instanceof BlockHitResult hit
+                ? hit
+                : new BlockHitResult(impactLocation.getLocation(), Direction.UP, pos, false);
+            this.placeBlockIntoWorld(pos, blockHit);
         }
         else {
             // TODO spawn fragments based on block in some cases (wood material -> wood fragments)
             // TODO if entity is dead, continue moving under previous speed minus some for impact
-            dropSourceStack(getBlockData().getSourceStack());
+            // PORT: 1.12 dropped the item but kept flying, duplicating the block on every further hit
+            dropSourceStack(getBlockData().getSourceStack().copy());
+            this.discard();
         }
     }
 
-    public void placeBlockIntoWorld(BlockPos pos, RayTraceResult hit)
+    public void placeBlockIntoWorld(BlockPos pos, BlockHitResult hit)
     {
-        this.setDead();
+        this.discard();
 
-        if (!this.world.isRemote)
+        if (!this.level().isClientSide())
         {
             if (isServer() && !tryPlacement(pos, hit))
             {
@@ -166,57 +210,60 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
         }
     }
 
-    protected boolean tryPlacement(BlockPos pos, RayTraceResult hit) {
+    protected boolean tryPlacement(BlockPos pos, BlockHitResult hit) {
 
         // Attempt to place using item, as it will better handle unique rules
-        final ItemStack sourceStack = this.blockData.getSourceStack();
+        final ItemStack sourceStack = this.getBlockData().getSourceStack();
         if(!sourceStack.isEmpty()) {
 
             // Use fake player to handle TE placement or other special placement rules
-            final FakePlayer player = FakePlayerFactory.getMinecraft((WorldServer) world); //TODO attempt to get actual player who create the source of this entity
-            player.setHeldItem(EnumHand.MAIN_HAND, sourceStack);
+            final FakePlayer player = FakePlayerFactory.getMinecraft((ServerLevel) level()); //TODO attempt to get actual player who create the source of this entity
+            player.setItemInHand(InteractionHand.MAIN_HAND, sourceStack);
 
             //TODO pull entityYaw to get placement direction. This way furnace places facing the same way as it renders.
-            final EnumActionResult result =  sourceStack.getItem()
-                .onItemUse(player, world, pos, EnumHand.MAIN_HAND, hit.sideHit, (float)hit.hitVec.x, (float)hit.hitVec.y, (float)hit.hitVec.z);
+            // 1.12 onItemUse(player, world, pos, hand, side, hitX, hitY, hitZ)
+            final BlockHitResult useHit = new BlockHitResult(hit.getLocation(), hit.getDirection(), pos, false);
+            final InteractionResult result = sourceStack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, useHit));
 
             // cleanup fake
-            player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 
-            if(result == EnumActionResult.SUCCESS) {
+            // PORT: 1.12 checked SUCCESS, 1.21 block items return CONSUME on the server
+            if(result.consumesAction()) {
                 return true;
             }
         }
 
         // Backup plan if we can't place via item, this will break in some cases TODO implement a config to disable blocks or change placement rules
-        final IBlockState blockState = this.getBlockData().getBlockState();
-        if (this.world.mayPlace(blockState.getBlock(), pos, true, EnumFacing.UP, this)) {
+        final BlockState blockState = this.getBlockData().getBlockState();
+        // 1.12 world.mayPlace(block, pos, skipCollisionCheck = true, UP, this)
+        if (level().getBlockState(pos).canBeReplaced() && blockState.canSurvive(level(), pos)) {
 
-            if (!world.setBlockState(pos, blockState, 11)) return false;
+            if (!level().setBlock(pos, blockState, 11)) return false;
 
             if (this.getBlockData().getTileEntityData() != null)
             {
-                final TileEntity tileentity = this.world.getTileEntity(pos);
+                final BlockEntity tileentity = this.level().getBlockEntity(pos);
 
                 if (tileentity != null)
                 {
-                    final NBTTagCompound currentSave = tileentity.writeToNBT(new NBTTagCompound());
+                    final CompoundTag currentSave = tileentity.saveWithFullMetadata(level().registryAccess());
 
                     // Ensure these are the same tile saves, otherwise we can corrupt a block badly
                     if(currentSave.getString("id").equals(this.getBlockData().getTileEntityData().getString("id"))) {
                         currentSave.merge(this.getBlockData().getTileEntityData());
-                        currentSave.setInteger("x", pos.getX());
-                        currentSave.setInteger("y", pos.getY());
-                        currentSave.setInteger("z", pos.getZ());
-                        tileentity.readFromNBT(currentSave);
-                        tileentity.markDirty();
+                        currentSave.putInt("x", pos.getX());
+                        currentSave.putInt("y", pos.getY());
+                        currentSave.putInt("z", pos.getZ());
+                        tileentity.loadWithComponents(currentSave, level().registryAccess());
+                        tileentity.setChanged();
                     }
                 }
             }
 
             // Play placement audio, RIP headphone users when redmatter spams :D
-            SoundType soundtype = blockState.getBlock().getSoundType(blockState, world, pos, this);
-            world.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+            SoundType soundtype = blockState.getSoundType(level(), pos, this);
+            level().playSound(null, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
 
             return true;
         }
@@ -226,61 +273,61 @@ public class EntityFlyingBlock extends EntityProjectile<EntityFlyingBlock> imple
     protected void dropSourceStack(ItemStack itemStack) {
         // TODO implement this.shouldDropItem && this.world.getGameRules().getBoolean("doEntityDrops")
         if(itemStack != null && !itemStack.isEmpty()) {
-            final EntityItem entityItem = new EntityItem(world, posX, posY, posZ);
-            entityItem.setItem(itemStack);
-            if(!world.spawnEntity(entityItem)) {
-                ICBMClassic.logger().error("EntityFlyingBlock: Failed to drop source stack '{}' at dim[{}] pos[{}]", itemStack, this.world.provider.getDimension(), this.getPos());
+            final ItemEntity entityItem = new ItemEntity(level(), getX(), getY(), getZ(), itemStack);
+            if(!level().addFreshEntity(entityItem)) {
+                ICBMClassic.logger().error("EntityFlyingBlock: Failed to drop source stack '{}' at dim[{}] pos[{}]", itemStack, this.level().dimension().location(), this.blockPosition());
             }
         }
     }
 
     @Override
-    protected DamageSource getImpactDamageSource(Entity entityHit, float velocity, RayTraceResult hit) {
-        return DamageSource.FALLING_BLOCK;
+    protected DamageSource getImpactDamageSource(Entity entityHit, float velocity, HitResult hit) {
+        return level().damageSources().fallingBlock(this);
     }
 
     @Override
-    protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
-        return MathHelper.ceil(velocity * ConfigFlyingBlocks.damageScale);
+    protected float getImpactDamage(Entity entityHit, float velocity, HitResult hit) {
+        return Mth.ceil(velocity * ConfigFlyingBlocks.damageScale);
     }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound save)
+    protected void addAdditionalSaveData(CompoundTag save)
     {
-        super.writeEntityToNBT(save);
+        super.addAdditionalSaveData(save);
         SAVE_LOGIC.save(this, save);
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound save)
+    protected void readAdditionalSaveData(CompoundTag save)
     {
-       super.readEntityFromNBT(save);
+       super.readAdditionalSaveData(save);
        SAVE_LOGIC.load(this, save);
     }
 
     private static final NbtSaveHandler<EntityFlyingBlock> SAVE_LOGIC = new NbtSaveHandler<EntityFlyingBlock>()
         //Stuck in ground data
         .mainRoot()
-        .nodeFloat("gravity", EntityFlyingBlock::getGravity, EntityFlyingBlock::setGravity)
+        .nodeFloat("gravity", EntityFlyingBlock::getBlockGravity, EntityFlyingBlock::setGravity)
         .nodeINBTSerializable("mimic_block", EntityFlyingBlock::getBlockData)
         .base();
 
 
     @Override
-    public boolean canBePushed()
+    public boolean isPushable()
     {
         return true;
     }
 
     @Override
-    protected boolean canTriggerWalking()
+    protected Entity.MovementEmission getMovementEmission()
     {
-        return true;
+        return Entity.MovementEmission.ALL;
     }
 
     @Override
-    public boolean canBeCollidedWith()
+    public boolean isPickable()
     {
         return true;
     }
 }
+// PORTED

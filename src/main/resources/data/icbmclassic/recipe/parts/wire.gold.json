@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "icbmclassic:gold_wire"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "gwg",
+    "gsg",
+    "gwg"
+  ],
+  "key": {
+    "g": {
+      "tag": "c:ingots/gold"
+    },
+    "s": {
+      "tag": "c:rods/wooden"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:gold_wire",
+    "count": 18
+  }
+}

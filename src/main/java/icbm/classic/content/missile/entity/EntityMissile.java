@@ -8,41 +8,41 @@ import icbm.classic.api.events.MissileEvent;
 import icbm.classic.api.events.MissileRideEvent;
 import icbm.classic.client.ICBMSounds;
 import icbm.classic.config.missile.ConfigMissile;
-import icbm.classic.content.missile.logic.flight.ArcFlightLogic;
 import icbm.classic.content.missile.logic.flight.BallisticFlightLogicOld;
 import icbm.classic.content.missile.logic.flight.DeadFlightLogic;
 import icbm.classic.lib.CalculationHelpers;
+import icbm.classic.lib.RegistryHelper;
 import icbm.classic.lib.capability.chicken.CapSpaceChicken;
-import icbm.classic.lib.capability.emp.CapabilityEMP;
+import icbm.classic.lib.capability.holder.ICapabilityHolderEntity;
 import icbm.classic.lib.network.IPacket;
 import icbm.classic.lib.network.IPacketIDReceiver;
 import icbm.classic.lib.network.lambda.PacketCodexReg;
 import icbm.classic.lib.network.lambda.entity.PacketCodexEntity;
+import icbm.classic.lib.projectile.EntityProjectile;
 import icbm.classic.lib.radar.RadarRegistry;
 import icbm.classic.lib.saving.NbtSaveHandler;
 import icbm.classic.lib.saving.NbtSaveNode;
-import icbm.classic.lib.projectile.EntityProjectile;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +52,7 @@ import java.util.Optional;
 /**
  * Created by Robin Seifert on 12/12/2021.
  */
-public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E> implements IEntityAdditionalSpawnData, IPacketIDReceiver
+public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityProjectile<E> implements IEntityWithComplexSpawn, IPacketIDReceiver, ICapabilityHolderEntity
 {
     // Generic shared missile data
     private final HashSet<Entity> collisionIgnoreList = new HashSet<Entity>();
@@ -68,31 +68,24 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
     protected boolean syncClient = false;
 
-    public EntityMissile(World world)
+    public EntityMissile(EntityType<? extends EntityMissile> type, Level world)
     {
-        super(world);
+        super(type, world);
         this.hasHealth = true;
     }
 
+    @Nullable
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
+    public <T> T getEntityCapability(EntityCapability<T, Void> capability)
     {
-        if (capability == CapabilityEMP.EMP)
+        if (capability == ICBMClassicAPI.EMP_ENTITY_CAPABILITY)
         {
             return (T) getEmpCapability();
         } else if (capability == ICBMClassicAPI.MISSILE_CAPABILITY)
         {
             return (T) getMissileCapability();
         }
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
-    {
-        return capability == CapabilityEMP.EMP
-            || capability == ICBMClassicAPI.MISSILE_CAPABILITY
-            || super.hasCapability(capability, facing);
+        return null;
     }
 
     public EntityMissile<E> ignore(Entity entity)
@@ -102,12 +95,14 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
+    public void tick() {
+        super.tick();
 
         if(syncClient) {
             this.syncClient = false;
-            PACKET_DESC.sendToAllAround(this);
+            if(!level().isClientSide()) {
+                PACKET_DESC.sendToAllAround(this);
+            }
         }
     }
 
@@ -121,7 +116,10 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
 
                 if(logic.shouldRunEngineEffects(this)) {
                     ICBMClassic.proxy.spawnMissileSmoke(this, logic, ticksInAir);
-                    ICBMSounds.MISSILE_ENGINE.play(world, posX, posY, posZ, Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.world.rand, 0.2F)) * 0.7F, true);
+                    // PORT: 1.12 also played this on the server, which sent a sound packet every tick on top of the client's own sound
+                    if (level().isClientSide()) {
+                        ICBMSounds.MISSILE_ENGINE.play(level(), getX(), getY(), getZ(), Math.min(1, ticksInAir / 40F), (1.0F + CalculationHelpers.randFloatRange(this.level().random, 0.2F)) * 0.7F, true);
+                    }
                 }
             });
 
@@ -142,18 +140,13 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected void handleEntityCollision(@Nonnull RayTraceResult hit, @Nonnull Entity entityHit)
+    protected void handleEntityCollision(@Nonnull HitResult hit, @Nonnull Entity entityHit)
     {
-        if(entityHit instanceof EntityChicken) { //TODO baby zombie for lolz?
-            if(getRidingEntity() == null) {
+        if(entityHit instanceof Chicken chicken) { //TODO baby zombie for lolz?
+            if(getVehicle() == null) {
                 ICBMSounds.MEEP.play(entityHit, 2, 1, true);
                 entityHit.startRiding(this, true);
-                if(entityHit.hasCapability(CapSpaceChicken.INSTANCE, null)) {
-                    final CapSpaceChicken cap = entityHit.getCapability(CapSpaceChicken.INSTANCE, null);
-                    if(cap != null) {
-                        cap.setSpace(true);
-                    }
-                }
+                CapSpaceChicken.setSpace(chicken, true);
             }
         }
         else
@@ -163,54 +156,71 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     /**
-     * Checks to see if an entity is touching the missile. If so, blow up!
+     * PORT: 1.12 getCollisionBox(entity) made the missile solid to other entities except those in the ignore list.
+     * 1.21 asks the moving entity, so the ignore list only applies to the missile moving into others.
      */
-    @Override
-    public AxisAlignedBB getCollisionBox(Entity entity)
-    {
-        if (collisionIgnoreList.contains(entity))
-        {
-            return null;
-        }
-        return getEntityBoundingBox();
-    }
-
-    @Override
-    public void setDead()
-    {
-        if (!world.isRemote)
-        {
-            RadarRegistry.remove(this);
-        }
-
-        super.setDead();
-    }
-
     @Override
     public boolean canBeCollidedWith()
     {
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public AxisAlignedBB getRenderBoundingBox()
+    public boolean canCollideWith(Entity entity)
     {
-        return this.getEntityBoundingBox().expand(5, 5, 5);
+        return !collisionIgnoreList.contains(entity) && super.canCollideWith(entity);
+    }
+
+    /**
+     * PORT: 1.12 only added the missile to the radar map on launch. Missiles in flight that are loaded
+     * back from a saved chunk were invisible to radar stations and SAMs until relaunched.
+     */
+    @Override
+    public void onAddedToLevel()
+    {
+        super.onAddedToLevel();
+        if (!level().isClientSide() && getMissileCapability().canRunFlightLogic())
+        {
+            RadarRegistry.add(this);
+        }
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isInRangeToRenderDist(double distance)
+    public void remove(RemovalReason reason)
     {
-        double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
+        if (!level().isClientSide())
+        {
+            RadarRegistry.remove(this);
+        }
+
+        super.remove(reason);
+    }
+
+    /** 1.12 canBeCollidedWith, allows ray traces and attacks to hit the missile */
+    @Override
+    public boolean isPickable()
+    {
+        return true;
+    }
+
+    @Override
+    public AABB getBoundingBoxForCulling()
+    {
+        // PORT: 1.12 AABB#expand only grew towards positive values
+        return this.getBoundingBox().expandTowards(5, 5, 5);
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double distance)
+    {
+        double d0 = this.getBoundingBox().getSize() * 10.0D;
 
         if (Double.isNaN(d0))
         {
             d0 = 1.0D;
         }
 
-        d0 = d0 * 64.0D * getRenderDistanceWeight();
+        d0 = d0 * 64.0D * getViewScale();
         return distance < d0 * d0;
     }
 
@@ -221,42 +231,49 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    public boolean processInitialInteract(@Nonnull EntityPlayer player, @Nonnull EnumHand hand)
+    public InteractionResult interact(@Nonnull Player player, @Nonnull InteractionHand hand)
     {
         //Handle player riding missile
-        if (!this.world.isRemote && (this.getRidingEntity() == null || this.getRidingEntity() == player) && !MinecraftForge.EVENT_BUS.post(new MissileRideEvent.Start(getMissileCapability(), player)))
+        if (!this.level().isClientSide() && (this.getVehicle() == null || this.getVehicle() == player) && !NeoForge.EVENT_BUS.post(new MissileRideEvent.Start(getMissileCapability(), player)).isCanceled())
         {
             player.startRiding(this);
-            return true;
+            return InteractionResult.SUCCESS;
         }
 
-        return false;
+        return InteractionResult.PASS;
     }
 
-    @Override
+    /** 1.12 getMountedYOffset */
     public double getMountedYOffset()
     {
         if (this.ticksInAir <= 0 && getMissileCapability().getFlightLogic() instanceof BallisticFlightLogicOld) //TODO abstract or find better way to handle seat position
         {
-            return height;
+            return getBbHeight();
         } else if (getMissileCapability().getFlightLogic() instanceof DeadFlightLogic)
         {
-            return height / 10;
+            return getBbHeight() / 10;
         }
 
-        return height / 2 + motionY;
+        return getBbHeight() / 2 + getDeltaMovement().y;
     }
 
     @Override
-    protected boolean ignoreImpact(RayTraceResult hit)
+    protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dimensions, float scale)
     {
-        return MinecraftForge.EVENT_BUS.post(new MissileEvent.PreImpact(getMissileCapability(), this, hit));
+        // PORT: replaces getMountedYOffset, rider offsets (1.12 Entity#getYOffset) now come from the rider's vehicle attachment
+        return new Vec3(0, getMountedYOffset(), 0);
     }
 
     @Override
-    protected void postImpact(RayTraceResult hit)
+    protected boolean ignoreImpact(HitResult hit)
     {
-        MinecraftForge.EVENT_BUS.post(new MissileEvent.PostImpact(getMissileCapability(), this, hit));
+        return NeoForge.EVENT_BUS.post(new MissileEvent.PreImpact(getMissileCapability(), this, hit)).isCanceled();
+    }
+
+    @Override
+    protected void postImpact(HitResult hit)
+    {
+        NeoForge.EVENT_BUS.post(new MissileEvent.PostImpact(getMissileCapability(), this, hit));
     }
 
     @Override
@@ -266,7 +283,7 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     public boolean isRider(Entity entity) {
-        return entity != null && (entity.getRidingEntity() == this || isRider(entity.getRidingEntity()));
+        return entity != null && (entity.getVehicle() == this || isRider(entity.getVehicle()));
     }
 
     public boolean hasPlayerRiding() {
@@ -274,34 +291,34 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     public static boolean hasPlayerRiding(Entity entity) {
-        return entity.getPassengers().stream().anyMatch(e -> e instanceof EntityPlayer || hasPlayerRiding(e));
+        return entity.getPassengers().stream().anyMatch(e -> e instanceof Player || hasPlayerRiding(e));
     }
 
     @Override
-    protected final void onImpact(@Nonnull RayTraceResult impactLocation) {
+    protected final void onImpact(@Nonnull HitResult impactLocation) {
         if(!hasImpacted) {
             this.hasImpacted = true; //TODO store impact information and move this to projectile
-            logImpact(impactLocation.hitVec);
+            logImpact(impactLocation.getLocation());
             actionOnImpact(impactLocation);
         }
     }
 
-    protected void actionOnImpact(RayTraceResult impactLocation) {
+    protected void actionOnImpact(HitResult impactLocation) {
         this.destroy();
     }
 
-    protected void logImpact(Vec3d impactLocation)
+    protected void logImpact(Vec3 impactLocation)
     {
         // TODO make optional via config
         // TODO log to ICBM file separated from main config
         // TODO offer hook for database logging
         final String formatString = "Missile[%s] (%sx, %sy, %sz, %sd) impacted at (%s, %s, %s)";
         final String formattedMessage = String.format(formatString,
-            this.getEntityId(),
+            this.getId(),
             xi(),
             yi(),
             zi(),
-            world().provider.getDimension(),
+            level().dimension().location(),
             impactLocation.x,
             impactLocation.y,
             impactLocation.z
@@ -310,72 +327,79 @@ public abstract class EntityMissile<E extends EntityMissile<E>> extends EntityPr
     }
 
     @Override
-    protected float getImpactDamage(Entity entityHit, float velocity, RayTraceResult hit) {
+    protected float getImpactDamage(Entity entityHit, float velocity, HitResult hit) {
         if(ConfigMissile.DAMAGE_LIMIT >= 0) {
-            return Math.min(MathHelper.ceil(velocity * ConfigMissile.DAMAGE_SCALE), ConfigMissile.DAMAGE_LIMIT);
+            return Math.min(Mth.ceil(velocity * ConfigMissile.DAMAGE_SCALE), ConfigMissile.DAMAGE_LIMIT);
         }
-        return MathHelper.ceil(velocity * ConfigMissile.DAMAGE_SCALE);
+        return Mth.ceil(velocity * ConfigMissile.DAMAGE_SCALE);
     }
 
     @Override
-    public boolean read(ByteBuf buf, int id, EntityPlayer player, IPacket type) {
-        if(id == 1) {
-            readSpawnData(buf);
+    public boolean read(ByteBuf buf, int id, Player player, IPacket type) {
+        if(id == 1 && buf instanceof RegistryFriendlyByteBuf registryBuf) {
+            readSpawnData(registryBuf);
             return true;
         }
         return false;
     }
 
     @Override
-    public void writeSpawnData(ByteBuf additionalMissileData)
+    public void writeSpawnData(RegistryFriendlyByteBuf additionalMissileData)
     {
         super.writeSpawnData(additionalMissileData);
-        final NBTTagCompound saveData = SAVE_LOGIC.save(this, new NBTTagCompound());
-        ByteBufUtils.writeTag(additionalMissileData, saveData);
+        final CompoundTag saveData = SAVE_LOGIC.save(this, new CompoundTag());
+        additionalMissileData.writeNbt(saveData);
     }
 
     @Override
-    public void readSpawnData(ByteBuf additionalMissileData)
+    public void readSpawnData(RegistryFriendlyByteBuf additionalMissileData)
     {
         super.readSpawnData(additionalMissileData);
-        final NBTTagCompound saveData = ByteBufUtils.readTag(additionalMissileData);
-        SAVE_LOGIC.load(this, saveData);
+        final CompoundTag saveData = additionalMissileData.readNbt();
+        if (saveData != null)
+        {
+            SAVE_LOGIC.load(this, saveData);
+        }
     }
 
-    /**
-     * (abstract) Protected helper method to read subclass entity additionalMissileData from NBT.
-     */
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbt)
+    protected void readAdditionalSaveData(CompoundTag nbt)
     {
-        super.readEntityFromNBT(nbt);
+        super.readAdditionalSaveData(nbt);
         SAVE_LOGIC.load(this, nbt);
     }
 
-    /**
-     * (abstract) Protected helper method to write subclass entity additionalMissileData to NBT.
-     */
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbt)
+    protected void addAdditionalSaveData(CompoundTag nbt)
     {
-        super.writeEntityToNBT(nbt);
+        super.addAdditionalSaveData(nbt);
         SAVE_LOGIC.save(this, nbt);
     }
 
     private static final NbtSaveHandler<EntityMissile> SAVE_LOGIC = new NbtSaveHandler<EntityMissile>()
         .mainRoot()
-        /* */.node(new NbtSaveNode<EntityMissile, NBTTagCompound>("missile",
-            (missile) -> missile.getMissileCapability().serializeNBT(),
-            (missile, data) -> missile.getMissileCapability().deserializeNBT(data)
+        /* */.node(new NbtSaveNode<EntityMissile, CompoundTag>("missile",
+            (missile) -> missile.getMissileCapability().serializeNBT(RegistryHelper.access()),
+            (missile, data) -> missile.getMissileCapability().deserializeNBT(RegistryHelper.access(), data)
         ))
         .base();
 
-    public static final PacketCodexEntity<EntityMissile, EntityMissile> PACKET_DESC = (PacketCodexEntity<EntityMissile, EntityMissile>) new PacketCodexEntity<EntityMissile, EntityMissile>(new ResourceLocation(ICBMConstants.DOMAIN, "missile"), "description")
+    public static final PacketCodexEntity<EntityMissile, EntityMissile> PACKET_DESC = (PacketCodexEntity<EntityMissile, EntityMissile>) new PacketCodexEntity<EntityMissile, EntityMissile>(ResourceLocation.fromNamespaceAndPath(ICBMConstants.DOMAIN, "missile"), "description")
+            .fromServer()
             .nodeNbtCompound(SAVE_LOGIC::save, SAVE_LOGIC::load);
 
-    static  {
-        PacketCodexReg.register(PACKET_DESC);
+    private static boolean registered = false;
+
+    /** PORT: 1.12 registered in a static block, now called from the mod constructor so codex ids match on both sides */
+    public static void register()
+    {
+        if (!registered)
+        {
+            registered = true;
+            PacketCodexReg.register(PACKET_DESC);
+        }
     }
 
     public abstract ItemStack toStack();
 }
+// PORTED

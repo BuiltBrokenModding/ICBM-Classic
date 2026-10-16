@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ici",
+    "ppp"
+  ],
+  "key": {
+    "c": {
+      "tag": "c:circuits/basic"
+    },
+    "i": {
+      "tag": "c:ingots/steel"
+    },
+    "p": {
+      "tag": "c:plates/steel"
+    }
+  },
+  "result": {
+    "id": "icbmclassic:launcherbase",
+    "count": 1
+  }
+}
