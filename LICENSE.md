@@ -4,10 +4,12 @@ Copyright (c) 2023 Built Broken Modding
 
 # Definitions & Notes
 
-* Code: Any .java file, data not considered assets. Examples include, not limited to: recipes, configurations, 
+* Code: Any file related to logic and data-structures; usually contained in .java files
+* Data: Any file not considered an asset or code such as recipes, and configurations
 * Assets: Files including but not limited to: textures (.png), models (.obj, .json used as render data), audio (.ogg)
 * Exclusion(1): Some folders and files will define a different license as required. These licenses override the global license (this file). 
 * Exclusion(2): License does not apply to binaries created from the source nor to sections of code owned by Mojang.
+* Exclusion(3): License does not apply to documents, names, likeness, or other references used in the files.
 
 # License
 
