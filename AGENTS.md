@@ -13,6 +13,10 @@ This file provides guidance for AI coding agents (Codex, Claude, Qwen, Llama, et
 
 Do not copy/duplicate the above values into other docs. Always point readers (human or agent) back to these reference files so the values never go stale.
 
+## Project Task Tracking
+
+Codeck for project roadmap and task tracking: see `README.md` -> "Roadmap and task boards".
+
 ## AI Usage Policy
 
 See `docs/policies/ai-usage-policy.md` for the AI usage policy, which points to `LICENSE.md` and `README.md` for the project's license terms and any AI usage guidelines. Always point readers (human or agent) back to that file instead of duplicating or paraphrasing its contents here, so the policy never goes stale.
