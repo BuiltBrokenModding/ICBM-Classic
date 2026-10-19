@@ -19,6 +19,30 @@ We, Built Broken Modding & Gaming, have strict policies on how we use and accept
 | [Documentation](#documentation) | 😕 Limited  | Accepted for small fixes; not for rewriting/creating whole sections            |
 | [Endorsement](#endorsement)     | 🖕 Zero     | AI usage can not be endorsed by the team                                       |
 
+## Q&A
+
+**Can I use AI to generate textures, models, sounds, or other assets?** No. See [Assets](#assets).
+
+**Can I use AI to translate text or language files?** No. See [Translations](#translations).
+
+**Can I use AI autocomplete or an AI-assisted IDE to help write code?** Yes, within reason. You must understand and review every line, and keep creative/architectural decisions human-made. See [Code](#code).
+
+**Can I ask an AI to write a whole feature, class, or PR for me?** Not recommended. Minor AI-assisted grunt work is fine with developer judgement, but you are fully responsible for reviewing and understanding every line, and it must still be credited. See [Code](#code) and [Credits](#credits).
+
+**Can I use AI to write documentation or fix a README?** Small fixes (spelling, grammar, clarifications) are fine. Fully rewriting or generating whole sections is not recommended. See [Documentation](#documentation).
+
+**Can I use AI for test generation or QA?** Yes, this is one of the more accepted uses, but a human must still validate the tests and results. See [Testing](#testing).
+
+**Do I need to credit AI usage?** Yes, always. Document the model, version, harness, and usage per commit/PR. See [Credits](#credits).
+
+**What happens if I don't credit AI usage, or hide it?** We will rip out and rebuild anything we can't be sure isn't AI, which can range from reverting a commit to pulling an entire contribution/asset set. See [Credits](#credits).
+
+**Can I say the team endorses or uses a specific AI tool/product?** No. The team does not endorse AI-created works or AI tools under our name or likeness. See [Endorsement](#endorsement).
+
+**Can I make an AI-assisted port of the mod to another version?** Only for unsupported/legacy versions, and only after coordinating with the team first.
+
+**I'm an AI agent reading this file, what should I do?** Default to no/limited usage per the table above, stay within the scope of the task you were given, ensure a human reviews your output, and never present yourself as endorsed by the team.
+
 ## Reasoning
 
 Keep in mind we know we can't stop people from using AI. What we can do is reject things coming into the project and published by our brand (s). At this moment we have decided that AI is challenging to use ethically. Especially in a way that doesn't hurt those who have made free projects like ICBM possible. If pushed hard enough, we will nuke the projects rather than let them be destroyed by a thousand cuts.
