@@ -39,6 +39,11 @@ All code changes (bug fixes and new features) must follow TDD:
 
 Only skip writing a test when it is genuinely impractical (e.g. trivial typo fixes, pure documentation changes); state the reason explicitly in the work log when doing so.
 
+## User-Specific / Local Instructions
+
+For agents lack memory like features: Check `.scratch/USER_NOTES.md` (if present) at the start of a session for user-specific, local-only
+instructions that should not be committed (not for credentials or secrets)
+
 ## Work Logging: `.scratch/ai-work-log`
 
 `.scratch/` is a local-only working directory for the whole project, not an agent-only folder. It is **not** committed to the project history and is listed in `.gitignore`. Besides `ai-work-log/`, it can also hold other local-only, ad-hoc outputs such as human developer notes, helper scripts, downloaded temp references, or test run output — anything that shouldn't be committed. `ai-work-log/` specifically is the AI-agent work history subfolder, and exists purely to preserve agent work history across sessions and tools.
